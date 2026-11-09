@@ -2,9 +2,9 @@
 
 **Policy:** The primary Thomas edition follows the **Coptic** (NHC II) sequence and division. Greek fragment forms that diverge are **separate witnesses** — never silently merged into Coptic units. Machine-readable catalog: [`data/evidence/divergences/greek-thomas-fragment-divergences-v1.json`](../data/evidence/divergences/greek-thomas-fragment-divergences-v1.json).
 
-**Coptic source id (JAK-30):** `dilley-thomas`  
-**Fragment corpus id (JAK-31):** `greek-thomas-fragments-v1`  
-**Corpus role:** `evaluation-witness` (excluded from Greek–Sahidic training mappings — see [`benchmark-holdouts.md`](benchmark-holdouts.md))
+- **Coptic source id (JAK-30):** `dilley-thomas`
+- **Fragment corpus id (JAK-31):** `greek-thomas-fragments-v1`
+- **Corpus role:** `evaluation-witness` (excluded from Greek–Sahidic training mappings — see [`benchmark-holdouts.md`](benchmark-holdouts.md))
 
 ## Documented cases
 
