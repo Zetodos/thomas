@@ -1,7 +1,7 @@
 # Greek Thomas fragments (P.Oxy.) — JAK-31
 
-**Evidence type:** G (direct Greek manuscripts of Thomas)  
-**Corpus role:** `evaluation-witness` (hold out from JAK-28 Greek–Sahidic training unless waived)  
+**Evidence type:** G (direct Greek manuscripts of Thomas)
+**Corpus role:** `evaluation-witness` (hold out from JAK-28 Greek–Sahidic training unless waived)
 **Mode:** `bundled` (offline after clone)
 
 ## Imported transcriptions
@@ -12,7 +12,7 @@
 | [`dclp-poxy-654`](../data/manifests/dclp-poxy-654.json) | P.Oxy. 654 | 62840 | **CC BY 3.0** (same) | `DCLP/62/62840.xml` |
 | [`dclp-poxy-655`](../data/manifests/dclp-poxy-655.json) | P.Oxy. 655 | 62839 | **CC BY 3.0** (same) | `DCLP/62/62839.xml` |
 
-Each TEI file was checked individually for a Creative Commons Attribution 3.0 license ref. Do **not** treat DCLP materials as public domain by default.
+Each TEI file was checked individually for a Creative Commons Attribution 3.0 license ref. Do **not** treat DCLP materials as public domain by default. Manifest checksums are of the **committed** TEI after repo trailing-whitespace / EOF normalization (substantive text unchanged from the idp.data pin).
 
 Derived layered corpus: [`data/sources/fragments/greek-thomas-fragments.json`](../data/sources/fragments/greek-thomas-fragments.json).
 

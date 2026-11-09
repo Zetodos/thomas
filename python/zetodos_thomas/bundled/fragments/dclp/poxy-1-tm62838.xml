@@ -107,7 +107,7 @@
   </teiHeader>
   <text>
       <body><head><ref n="74208"><title>Grenfell / Hunt, Logia Jêsou: sayings of our Lord from an early Greek papyrus</title><date>1897</date></ref>; <ref n="82278" target="https://papyri.info/editions/p.oxy/1/1"><title>P.Oxy. 1 1</title><date>1898</date></ref>; <ref n="1146018"><title>Aland, Repertorium I. Apokryphen 9</title><date>1976</date></ref>; <ref n="1144037"><title>Publ.Sorb.Pap. 594 descr.</title><date>1976</date></ref>; <ref n="167616"><title>Bernhard, Other early Christian gospels (Library of New Testament studies 315) p. 32-34</title><date>2006</date></ref>; <ref n="817372"><title>Wayment, The text of the New Testament apocrypha (100-400 CE) p. 171-177 [logia 26-33]</title><date>2013</date></ref>; <ref n="1015672"><title>Blumell / Wayment, Christian Oxyrynchus 57</title><date>2015</date></ref></head><div xml:lang="grc" type="edition" xml:space="preserve">
-<div type="textpart" xml:id="d20086e209" n="v"><head>v</head><ab> 
+<div type="textpart" xml:id="d20086e209" n="v"><head>v</head><ab>
     <lb n="1"/>καὶ τότε διαβλέψεις
 
     <lb n="2"/>ἐκβαλεῖν τὸ κάρφος
@@ -152,7 +152,7 @@
 
     <lb n="21"/><gap reason="lost" extent="unknown" unit="line"/>
 </ab></div>
-<div type="textpart" xml:id="d20086e350" n="r"><head>r</head><ab> 
+<div type="textpart" xml:id="d20086e350" n="r"><head>r</head><ab>
     <lb n="1"/><app type="editorial"><lem><gap reason="lost" extent="unknown" unit="character"/> <supplied reason="lost">ἐνοι</supplied>
 
     <lb n="1" break="no"/><supplied reason="lost">κ</supplied><unclear>εῖ</unclear> <supplied reason="lost">ταύτ</supplied>η<supplied reason="lost">ν τ</supplied>ὴν</lem><rdg><gap reason="lost" quantity="4" unit="character"/><gap reason="illegible" quantity="2" unit="character"/><gap reason="lost" quantity="1" unit="character"/> <supplied reason="lost">τ</supplied>ὴν</rdg></app> <expan>πτωχ<add place="above">ε</add>ία<ex>ν</ex></expan>
@@ -202,32 +202,32 @@
             <listBibl>
                <bibl n="1" type="reference" subtype="previous">
                   <title level="s" type="abbreviated">P. Oxy.</title>
-                  
-                  
+
+
                   <ptr target="http://papyri.info/biblio/95223"/>
                   <biblScope n="1" unit="number">1</biblScope>
                   <biblScope n="2" unit="volume"/>
                   <biblScope n="3" unit="book"/>
                </bibl>
                <bibl n="2" type="reference" subtype="principal">
-            
-            
+
+
                   <ptr target="http://papyri.info/biblio/95751"/>
                   <biblScope n="1" unit="volume"/>
                   <biblScope n="2" unit="chapter"/>
                   <biblScope n="3" unit="page" from="174" to="176">174-176</biblScope>
                </bibl>
                <bibl n="3" type="reference" subtype="study">
-            
-            
+
+
                   <ptr target="http://papyri.info/biblio/43370"/>
                   <biblScope n="1" unit="volume"/>
                   <biblScope n="2" unit="chapter"/>
                   <biblScope n="3" unit="page">190</biblScope>
                </bibl>
                <bibl n="4" type="reference" subtype="catalogue">
-            
-            
+
+
                   <ptr target="http://papyri.info/biblio/8932"/>
                   <biblScope n="1" unit="number">594</biblScope>
                   <biblScope n="2" unit="chapter"/>
