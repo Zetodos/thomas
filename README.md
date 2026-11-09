@@ -44,9 +44,13 @@ Do **not** bundle or redistribute:
 
 Full list and allowlist: [`docs/source-licenses.md`](docs/source-licenses.md#never-ship).
 
-## Sahidic NT baseline
+## Text baselines (Phase 0 decisions)
 
-Default Sahidic New Testament parallel text: **Horner** via CrossWire **`CopSahHorner`** (Public Domain). Do **not** treat Wells Sahidica as the NT baseline. Horner import and quality verification are later work ([JAK-24](https://linear.app/jake-danton/issue/JAK-24)); this repo does not yet contain corpus files.
+- **Sahidic NT:** **Horner** via CrossWire **`CopSahHorner`** (Public Domain). Do **not** treat Wells Sahidica as the NT baseline. Import/verification: [JAK-24](https://linear.app/jake-danton/issue/JAK-24).
+- **Greek NT:** **Westcott–Hort 1881** (PD Robinson transcription) per [JAK-15](https://linear.app/jake-danton/issue/JAK-15). SBLGNT (now CC BY 4.0) is a separate revisit — [JAK-25](https://linear.app/jake-danton/issue/JAK-25); do not flip the default here.
+- **LXX / lexicon / critical texts:** Swete LXX, CCL TEI, and CC BY 4.0 for project-authored critical Greek/English — see [`docs/source-licenses.md`](docs/source-licenses.md).
+
+This repo does not yet contain corpus files.
 
 ## Planned setup (not implemented)
 

@@ -11,8 +11,8 @@ Caveat: not legal advice. Re-check licenses and pin versions before bundling.
 | --- | --- |
 | Project-owned software (Python, TypeScript `web/`, schemas, tests, tooling) | **Apache-2.0** (root [`LICENSE`](../LICENSE)) |
 | Imported texts, dictionaries, corpora | **Per-source** terms in manifests — never assumed Apache/CC |
-| Mapping models / derived parallel DBs | Separate derivation-rights decision (see open items) |
-| Critical Greek / rough English (project-authored) | Separate editorial license decision — **not decided** |
+| Mapping models / derived parallel DBs | ShareAlike **only when** the published artifact is a legal adaptation of BY-SA material ([JAK-16](https://linear.app/jake-danton/issue/JAK-16)); otherwise project/data terms as recorded |
+| Critical Greek / rough English (project-authored) | **CC BY 4.0** ([JAK-17](https://linear.app/jake-danton/issue/JAK-17)) |
 
 Do **not** put the whole repository under a single Creative Commons or Apache license. README and manifests must state boundaries explicitly.
 
@@ -28,22 +28,31 @@ Every source manifest must declare exactly one availability mode:
 
 **Invariant:** the reproducible working dataset must be present locally *before* an offline run. No hidden data fetching during build or reconstruction. Making a restricted corpus downloadable during setup does **not** by itself authorize redistribution.
 
-## Provisional allowlist (clean stack)
+## Allowlist (pilot / clean stack)
 
-Preferred redistributable core for an offline open repo (provisional; pin versions at ingest):
+Adopted redistributable core ([JAK-15](https://linear.app/jake-danton/issue/JAK-15) Done). Pin versions at ingest. Sahidica is **not** required.
 
 | Family | Typical mode | Notes |
 | --- | --- | --- |
-| Dilley Thomas (Coptic SCRIPTORIUM) | `bundled` or `setup-download` | CC BY |
-| P.Oxy. via DCLP or PD Grenfell/Hunt | `bundled` (small) | CC BY 3.0 / PD |
-| **Horner Sahidic NT** (`CopSahHorner`) | `setup-download` (later) | **Default Sahidic NT baseline** (PD module; JAK-14) |
-| SBLGNT (+ MorphGNT morph) | `bundled` or `setup-download` | CC BY / morph BY-SA |
-| Swete LXX (First1KGreek) | `setup-download` | BY-SA digitization; lean preference pending JAK-18 |
-| SCRIPTORIUM `sahidic.ot` | `setup-download` / `bundled` | CC BY-SA 4.0 |
-| CCL / DDGLC TEI | `setup-download` / `bundled` | CC BY-SA 4.0; lean preference pending JAK-19 |
+| Dilley Thomas (Coptic SCRIPTORIUM) | `bundled` or `setup-download` | CC BY 4.0 |
+| P.Oxy. fragments (verify each transcription) | `bundled` (small) | Prefer DCLP (CC BY 3.0) or PD Grenfell/Hunt; Evelyn-White **1920** original is US PD (see audit §2) |
+| **Horner Sahidic NT** (`CopSahHorner`) | `setup-download` (later) | **Default Sahidic NT** (PD module; [JAK-14](https://linear.app/jake-danton/issue/JAK-14) Done; ingest [JAK-24](https://linear.app/jake-danton/issue/JAK-24)) |
+| **Westcott–Hort 1881 Greek NT** (PD Robinson transcription) | `bundled` or `setup-download` | **Default Greek NT** per JAK-15 |
+| SCRIPTORIUM `sahidic.ot` | `setup-download` / `bundled` | CC BY-SA 4.0 (secondary) |
+| **Swete LXX** (First1KGreek / nathans/lxx-swete) | `setup-download` | CC BY-SA 4.0 ([JAK-18](https://linear.app/jake-danton/issue/JAK-18)); not Rahlfs-Hanhart; Rahlfs 1935 not preferred |
+| **CCL / DDGLC TEI** | `setup-download` / `bundled` | CC BY-SA 4.0 ([JAK-19](https://linear.app/jake-danton/issue/JAK-19)); do not wait on DIOSKOROS; no scrape |
 | WEB English passages | `bundled` (passages) | Public domain; trademark care |
 
-**Pilot note (JAK-15 open):** a legally clean pilot can use **Horner + SBLGNT** (plus Dilley Thomas, OT/CCL as needed) without Wells corpora.
+### SBLGNT follow-up (do not flip default yet)
+
+Westcott–Hort remains the **current** default Greek NT under JAK-15. SBLGNT’s current **CC BY 4.0** status (since Dec 2022) is tracked separately in [JAK-25](https://linear.app/jake-danton/issue/JAK-25) (revisit SBLGNT vs WH). Do **not** switch the default mid-stream in this Phase 0 PR.
+
+## ShareAlike policy ([JAK-16](https://linear.app/jake-danton/issue/JAK-16) Done)
+
+- Apply ShareAlike **only** when published outputs are legally **adaptations** of BY-SA material.
+- Do **not** blanket-SA the whole project, all learned statistics, or independent critical texts.
+- Keep separable: raw source imports, adapted tables/DBs, independent critical Greek/English, and Apache-2.0 code.
+- Manifest each published artifact with license and derivation notes.
 
 ## Gated: Wells Sahidica / NTAEG / Bohairica
 
@@ -51,7 +60,7 @@ Preferred redistributable core for an offline open repo (provisional; pin versio
 | --- | --- |
 | Sahidica (J. Warren Wells) | **Do not bundle.** Custom license; Thomas training/parallel use is not clearly within the “free electronic editions of the New Testament” grant. |
 | NTAEG | **Do not bundle.** Companion Greek; rights not assumed from Sahidica. |
-| Bohairica | **Do not bundle.** Copyright / electronic permission unclear. |
+| Bohairica | **Do not bundle.** Copyright / electronic permission unclear. Mode: gated **`manual-import` only** after rights confirmation — **not** `setup-download`. |
 
 Optional user-supplied import may be documented later without distributing files or claiming permission. Default offline operation must not require these texts ([JAK-14](https://linear.app/jake-danton/issue/JAK-14) Done).
 
@@ -70,6 +79,8 @@ Hard exclusions — do not commit, vendor, or redistribute:
 
 Reference-only citation and short fair-use quotation policy may apply in scholarly notes; that is not permission to package continuous text.
 
+**Note:** Evelyn-White’s 1920 *The Sayings of Jesus from Oxyrhynchus* is **US public domain** and is **not** in this never-ship list. Later copyrighted editorial work (e.g. Attridge/Layton) remains excluded.
+
 ## Manifest schema (draft)
 
 Machine-readable manifests will live under [`data/manifests/`](../data/manifests/) (YAML or JSON). No corpus files are committed in Phase 0.
@@ -78,7 +89,7 @@ Machine-readable manifests will live under [`data/manifests/`](../data/manifests
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `id` | string | Stable canonical source ID (e.g. `copsahhorner`, `sblgnt`) |
+| `id` | string | Stable canonical source ID (e.g. `copsahhorner`, `westcott-hort`) |
 | `title` | string | Human-readable title / edition name |
 | `version` | string | Edition or module version / date pin |
 | `url` | string | Provenance / download URL |
@@ -115,16 +126,14 @@ notes: "Default Sahidic NT baseline (JAK-14). Pin module; verify verse map vs Gr
 redistributable: true
 ```
 
-## Open decisions (do not treat as resolved)
+## Decision status
 
-Recorded briefly; provisional leans from the audit only:
-
-| Issue | Topic | Status |
-| --- | --- | --- |
-| [JAK-15](https://linear.app/jake-danton/issue/JAK-15) | Pilot corpus packing | Open — note Horner + SBLGNT clean stack |
-| [JAK-16](https://linear.app/jake-danton/issue/JAK-16) | ShareAlike on derived outputs | Open |
-| [JAK-17](https://linear.app/jake-danton/issue/JAK-17) | Critical Greek / English license | Open |
-| [JAK-18](https://linear.app/jake-danton/issue/JAK-18) | Swete vs Rahlfs 1935 | Open — audit leans Swete |
-| [JAK-19](https://linear.app/jake-danton/issue/JAK-19) | CCL TEI vs DIOSKOROS | Open — audit leans CCL |
-
-**Decided:** code Apache-2.0 ([JAK-13](https://linear.app/jake-danton/issue/JAK-13)); Sahidic NT baseline Horner / exclude Wells default ([JAK-14](https://linear.app/jake-danton/issue/JAK-14)).
+| Issue | Topic | Status | Adopted policy |
+| --- | --- | --- | --- |
+| [JAK-13](https://linear.app/jake-danton/issue/JAK-13) | Code license | **Done** | Apache-2.0 for project-owned software only |
+| [JAK-14](https://linear.app/jake-danton/issue/JAK-14) | Sahidic NT / Wells | **Done** (decision) | Horner/`CopSahHorner` default; do not bundle Sahidica/NTAEG/Bohairica without explicit rights. Implementation: [JAK-24](https://linear.app/jake-danton/issue/JAK-24) |
+| [JAK-15](https://linear.app/jake-danton/issue/JAK-15) | Pilot corpus | **Done** | Redistributable stack above; Greek NT = Westcott–Hort (PD Robinson). SBLGNT revisit: [JAK-25](https://linear.app/jake-danton/issue/JAK-25) |
+| [JAK-16](https://linear.app/jake-danton/issue/JAK-16) | ShareAlike outputs | **Done** | SA only on legal adaptations of BY-SA material; no blanket SA |
+| [JAK-17](https://linear.app/jake-danton/issue/JAK-17) | Critical Greek/English | **Done** | Project-authored critical Greek + rough English: **CC BY 4.0** |
+| [JAK-18](https://linear.app/jake-danton/issue/JAK-18) | LXX edition | **Done** | Default Swete via First1KGreek / nathans/lxx-swete (CC BY-SA 4.0) |
+| [JAK-19](https://linear.app/jake-danton/issue/JAK-19) | Lexicon / loanwords | **Done** | Default CCL TEI incl. DDGLC (CC BY-SA 4.0); not DIOSKOROS scrape |
