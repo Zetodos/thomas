@@ -21,8 +21,10 @@ Derived layered corpus: [`data/sources/fragments/greek-thomas-fragments.json`](.
 | Layer | TEI source | Meaning |
 | --- | --- | --- |
 | `surviving` | plain text, `unclear`, diplomatic letters | Letters present on the papyrus |
-| `lacuna` | `gap` | Lost text without a restoration in this encoding |
-| `restoration` | `supplied` (+ `ex` abbreviation expansions) | Scholarly restorations / expansions — **not** surviving letters |
+| `lacuna` | `gap` (including gaps nested inside `supplied`) | Lost / illegible spans — never flattened away |
+| `restoration` | `supplied` text (+ `ex` abbreviation expansions) | Scholarly restorations / expansions — **not** surviving letters |
+
+`thomas sources build-fragments` verifies each TEI file’s bytes against its manifest checksum before parsing (rejects mismatched `--tei-dir` inputs).
 
 Editorial `app` uses **`lem` only**; `rdg` (Attridge, Fitzmyer, Hofius, …) are not promoted into layers. This is **not** redistribution of Layton/Attridge continuous critical Greek.
 

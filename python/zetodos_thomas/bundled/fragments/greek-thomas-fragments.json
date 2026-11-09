@@ -516,7 +516,7 @@
               "kind": "lacuna",
               "text": "",
               "reason": "lost",
-              "quantity": null,
+              "quantity": "unknown",
               "unit": "line",
               "certainty": null
             }
@@ -531,7 +531,7 @@
               "kind": "lacuna",
               "text": "",
               "reason": "lost",
-              "quantity": null,
+              "quantity": "unknown",
               "unit": "character",
               "certainty": null
             },
@@ -640,7 +640,23 @@
             },
             {
               "kind": "restoration",
-              "text": "Ἰησοῦς· ὃπ",
+              "text": "Ἰ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ησοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ς· ὃπ",
               "reason": "lost",
               "quantity": null,
               "unit": null,
@@ -1287,7 +1303,7 @@
               "kind": "lacuna",
               "text": "",
               "reason": "lost",
-              "quantity": null,
+              "quantity": "unknown",
               "unit": "line",
               "certainty": null
             }
@@ -1446,7 +1462,23 @@
             },
             {
               "kind": "restoration",
-              "text": "λέγει Ἰησοῦς·",
+              "text": "λέγει Ἰη",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ς·",
               "reason": "lost",
               "quantity": null,
               "unit": null,
@@ -1554,7 +1586,23 @@
             },
             {
               "kind": "restoration",
-              "text": "ησοῦς",
+              "text": "η",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ς",
               "reason": "lost",
               "quantity": null,
               "unit": null,
@@ -1724,7 +1772,23 @@
             },
             {
               "kind": "restoration",
-              "text": "ιλεία τοῦ θεοῦ",
+              "text": "ιλεία τοῦ θ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "εο",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ῦ",
               "reason": "lost",
               "quantity": null,
               "unit": null,
@@ -1902,7 +1966,23 @@
             },
             {
               "kind": "restoration",
-              "text": "χεία. λέγει Ἰησοῦς·",
+              "text": "χεία. λέγει Ἰη",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ς·",
               "reason": "lost",
               "quantity": null,
               "unit": null,
@@ -2214,15 +2294,7 @@
             },
             {
               "kind": "restoration",
-              "text": "αί",
-              "reason": "lost",
-              "quantity": null,
-              "unit": null,
-              "certainty": null
-            },
-            {
-              "kind": "restoration",
-              "text": " σοι· οὐ γάρ ἐσ",
+              "text": "αί σοι· οὐ γάρ ἐσ",
               "reason": "lost",
               "quantity": null,
               "unit": null,
@@ -2830,7 +2902,23 @@
           "tokens": [
             {
               "kind": "restoration",
-              "text": "λέγει Ἰησοῦς· μὴ μεριμνᾶ",
+              "text": "λέγει Ἰη",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ς· μὴ μεριμνᾶ",
               "reason": "lost",
               "quantity": null,
               "unit": null,
@@ -3128,11 +3216,19 @@
             },
             {
               "kind": "restoration",
-              "text": "εισ",
+              "text": "ει",
               "reason": "lost",
               "quantity": null,
               "unit": null,
               "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
             }
           ]
         },
@@ -3785,7 +3881,7 @@
               "kind": "lacuna",
               "text": "",
               "reason": "lost",
-              "quantity": null,
+              "quantity": "unknown",
               "unit": "line",
               "certainty": null
             }
@@ -3808,7 +3904,7 @@
               "kind": "lacuna",
               "text": "",
               "reason": "lost",
-              "quantity": null,
+              "quantity": "unknown",
               "unit": "character",
               "certainty": null
             }
@@ -3829,7 +3925,23 @@
             },
             {
               "kind": "restoration",
-              "text": "γει Ἰησοῦς· πολλάκις",
+              "text": "γει Ἰη",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ς· πολλάκις",
               "reason": "lost",
               "quantity": null,
               "unit": null,
@@ -4139,7 +4251,23 @@
           "tokens": [
             {
               "kind": "restoration",
-              "text": "Ἰησοῦς· οἱ Φαρισαῖοι",
+              "text": "Ἰη",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ς· οἱ Φαρισαῖοι",
               "reason": "lost",
               "quantity": null,
               "unit": null,
@@ -4500,6 +4628,14 @@
               "reason": "lost",
               "quantity": null,
               "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "illegible",
+              "quantity": "unknown",
+              "unit": "character",
               "certainty": null
             }
           ]

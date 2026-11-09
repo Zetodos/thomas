@@ -54,7 +54,10 @@ from zetodos_thomas.ingest.pilot import (
     load_pilot_corpus,
     write_pilot_corpus,
 )
-from zetodos_thomas.ingest.verify_inputs import verify_pilot_rebuild_inputs
+from zetodos_thomas.ingest.verify_inputs import (
+    verify_fragment_rebuild_inputs,
+    verify_pilot_rebuild_inputs,
+)
 from zetodos_thomas.schemas.source import GATED_DEFAULT_SOURCE_IDS
 
 sources_app = typer.Typer(
@@ -433,9 +436,15 @@ def build_fragments(
 
     try:
         manifests = validate_manifests_dir(manifests_path)
+        # Pin TEI bytes to manifests before parse (same pattern as build-pilot).
+        verify_fragment_rebuild_inputs(
+            manifests_dir=manifests_path,
+            tei_dir=source_tei,
+        )
         corpus = build_fragment_corpus(source_tei)
         validate_fragment_corpus_or_raise(corpus, manifests)
     except (
+        DownloadError,
         FragmentValidationError,
         ManifestValidationError,
         FileNotFoundError,

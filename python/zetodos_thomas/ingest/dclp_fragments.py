@@ -60,9 +60,11 @@ class _LineBuilder:
                 return
             self._n = "0"
         if (
-            token.kind is FragmentLayerKind.SURVIVING
-            and self._tokens
-            and self._tokens[-1].kind is FragmentLayerKind.SURVIVING
+            self._tokens
+            and self._tokens[-1].kind is token.kind
+            and token.kind
+            in {FragmentLayerKind.SURVIVING, FragmentLayerKind.RESTORATION}
+            and self._tokens[-1].reason == token.reason
             and self._tokens[-1].certainty == token.certainty
         ):
             self._tokens[-1].text += token.text
@@ -121,7 +123,38 @@ class _LineBuilder:
         self._n = None
 
 
-def _walk(el: ET.Element, builder: _LineBuilder) -> None:
+def _emit_text(
+    builder: _LineBuilder,
+    text: str,
+    *,
+    in_restoration: str | None,
+    certainty: str | None = None,
+) -> None:
+    if in_restoration is not None:
+        builder.add(
+            FragmentToken(
+                kind=FragmentLayerKind.RESTORATION,
+                text=text,
+                reason=in_restoration,
+                certainty=certainty,
+            )
+        )
+        return
+    builder.add(
+        FragmentToken(
+            kind=FragmentLayerKind.SURVIVING,
+            text=text,
+            certainty=certainty,
+        )
+    )
+
+
+def _walk(
+    el: ET.Element,
+    builder: _LineBuilder,
+    *,
+    in_restoration: str | None = None,
+) -> None:
     tag = _local(el.tag)
 
     if tag == "lb":
@@ -133,46 +166,41 @@ def _walk(el: ET.Element, builder: _LineBuilder) -> None:
         return
 
     if tag == "gap":
+        # Nested gaps inside <supplied> must remain lacuna tokens (not itertext).
         builder.add(
             FragmentToken(
                 kind=FragmentLayerKind.LACUNA,
                 text="",
                 reason=el.get("reason"),
-                quantity=el.get("quantity"),
+                quantity=el.get("quantity") or el.get("extent"),
                 unit=el.get("unit"),
             )
         )
         return
 
     if tag == "supplied":
-        # Entire supplied span is scholarly restoration (may nest expan/unclear).
-        text = "".join(el.itertext())
-        builder.add(
-            FragmentToken(
-                kind=FragmentLayerKind.RESTORATION,
-                text=text,
-                reason=el.get("reason") or "lost",
-            )
-        )
+        # Traverse children under restoration context so nested <gap> survives.
+        reason = el.get("reason") or "lost"
+        _walk_children(el, builder, in_restoration=reason)
         return
 
     if tag == "app":
         lem = el.find(f"{TEI}lem")
         if lem is not None:
-            _walk_children(lem, builder)
+            _walk_children(lem, builder, in_restoration=in_restoration)
         return
 
     if tag == "choice":
         orig = el.find(f"{TEI}orig")
         target = orig if orig is not None else el.find(f"{TEI}reg")
         if target is not None:
-            _walk_children(target, builder)
+            _walk_children(target, builder, in_restoration=in_restoration)
         return
 
     if tag == "subst":
         add = el.find(f"{TEI}add")
         if add is not None:
-            _walk_children(add, builder)
+            _walk_children(add, builder, in_restoration=in_restoration)
         return
 
     if tag == "ex":
@@ -187,38 +215,38 @@ def _walk(el: ET.Element, builder: _LineBuilder) -> None:
 
     if tag == "unclear":
         text = "".join(el.itertext())
-        builder.add(
-            FragmentToken(
-                kind=FragmentLayerKind.SURVIVING,
-                text=text,
-                certainty="unclear",
-            )
+        _emit_text(
+            builder,
+            text,
+            in_restoration=in_restoration,
+            certainty="unclear",
         )
         return
 
     if tag in {"rdg", "del"}:
         return
 
-    # Default: emit element text as surviving, recurse into children.
+    # Default: emit element text in the active layer, recurse into children.
     if el.text:
-        builder.add(FragmentToken(kind=FragmentLayerKind.SURVIVING, text=el.text))
+        _emit_text(builder, el.text, in_restoration=in_restoration)
     for child in list(el):
-        _walk(child, builder)
+        _walk(child, builder, in_restoration=in_restoration)
         if child.tail:
-            builder.add(
-                FragmentToken(kind=FragmentLayerKind.SURVIVING, text=child.tail)
-            )
+            _emit_text(builder, child.tail, in_restoration=in_restoration)
 
 
-def _walk_children(el: ET.Element, builder: _LineBuilder) -> None:
+def _walk_children(
+    el: ET.Element,
+    builder: _LineBuilder,
+    *,
+    in_restoration: str | None = None,
+) -> None:
     if el.text:
-        builder.add(FragmentToken(kind=FragmentLayerKind.SURVIVING, text=el.text))
+        _emit_text(builder, el.text, in_restoration=in_restoration)
     for child in list(el):
-        _walk(child, builder)
+        _walk(child, builder, in_restoration=in_restoration)
         if child.tail:
-            builder.add(
-                FragmentToken(kind=FragmentLayerKind.SURVIVING, text=child.tail)
-            )
+            _emit_text(builder, child.tail, in_restoration=in_restoration)
 
 
 def _side_label(textpart: ET.Element) -> str | None:

@@ -7,6 +7,7 @@ import hashlib
 import zipfile
 from pathlib import Path
 
+from zetodos_thomas.ingest.dclp_fragments import DCLP_THOMAS_FRAGMENTS
 from zetodos_thomas.ingest.download import (
     NTVMR_TEIRAW_FILES,
     DownloadError,
@@ -90,3 +91,31 @@ def verify_pilot_rebuild_inputs(
         raise DownloadError(msg)
 
     _verify_sword_matches_zip(sword_root, zip_path)
+
+
+def verify_fragment_rebuild_inputs(
+    *,
+    manifests_dir: Path,
+    tei_dir: Path,
+) -> None:
+    """Reject fragment rebuild when TEI bytes diverge from manifest checksums.
+
+    Mirrors :func:`verify_pilot_rebuild_inputs`: altered ``--tei-dir`` files must
+    not inherit pinned provenance.
+    """
+    for meta in DCLP_THOMAS_FRAGMENTS:
+        source_id = meta["source_id"]
+        filename = meta["filename"]
+        manifest_path = manifests_dir / f"{source_id}.json"
+        if not manifest_path.is_file():
+            msg = f"missing fragment manifest required for rebuild: {manifest_path}"
+            raise DownloadError(msg)
+        manifest = load_manifest(manifest_path)
+        if not manifest.checksum:
+            msg = f"{source_id}: manifest checksum is empty"
+            raise DownloadError(msg)
+        path = tei_dir / filename
+        if not path.is_file():
+            msg = f"missing DCLP TEI required for rebuild: {path}"
+            raise DownloadError(msg)
+        verify_checksum(path, manifest.checksum)

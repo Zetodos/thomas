@@ -20,6 +20,7 @@ from zetodos_thomas.ingest.dclp_fragments import (
     parse_dclp_edition,
     read_dclp_license,
 )
+from zetodos_thomas.ingest.download import DownloadError
 from zetodos_thomas.ingest.fragments import (
     FragmentValidationError,
     build_fragment_corpus,
@@ -28,6 +29,7 @@ from zetodos_thomas.ingest.fragments import (
     validate_fragment_corpus_or_raise,
 )
 from zetodos_thomas.ingest.manifests import load_manifest, validate_manifests_dir
+from zetodos_thomas.ingest.verify_inputs import verify_fragment_rebuild_inputs
 from zetodos_thomas.schemas.fragment import (
     CorpusRole,
     EvidenceType,
@@ -89,6 +91,66 @@ def test_lacuna_layer_present_on_poxy_1() -> None:
     assert any(
         t.kind is FragmentLayerKind.LACUNA for line in lines for t in line.tokens
     )
+
+
+def test_nested_gap_inside_supplied_survives_parse_and_corpus() -> None:
+    """P.Oxy. 655 col. ii line 23: <supplied>…<gap/></supplied> must keep lacuna."""
+    lines = parse_dclp_edition(TEI_DIR / "poxy-655-tm62839.xml")
+    line = next(ln for ln in lines if ln.line_id == "column-ii.23")
+    kinds = [t.kind for t in line.tokens]
+    assert FragmentLayerKind.LACUNA in kinds
+    lacuna = next(t for t in line.tokens if t.kind is FragmentLayerKind.LACUNA)
+    assert lacuna.reason == "illegible"
+    assert lacuna.unit == "character"
+    # Derived JSON (checkout + bundled) must retain the nested marker.
+    for path in (CORPUS_PATH, bundled_fragments_corpus_path()):
+        corpus = load_fragment_corpus(path)
+        tx = next(t for t in corpus.transcriptions if t.id == "poxy-655-dclp")
+        derived = next(ln for ln in tx.lines if ln.line_id == "column-ii.23")
+        assert any(t.kind is FragmentLayerKind.LACUNA for t in derived.tokens)
+
+
+def test_verify_fragment_rebuild_rejects_checksum_mismatch(tmp_path: Path) -> None:
+    tei_dir = tmp_path / "tei"
+    tei_dir.mkdir()
+    for meta in DCLP_THOMAS_FRAGMENTS:
+        dest = tei_dir / meta["filename"]
+        dest.write_bytes((TEI_DIR / meta["filename"]).read_bytes())
+    # Tamper one TEI after copy — must not inherit pinned provenance.
+    target = tei_dir / "poxy-1-tm62838.xml"
+    target.write_bytes(target.read_bytes() + b"\n<!-- tampered -->\n")
+    with pytest.raises(DownloadError, match="checksum mismatch"):
+        verify_fragment_rebuild_inputs(manifests_dir=MANIFESTS_DIR, tei_dir=tei_dir)
+
+
+def test_cli_build_fragments_rejects_tei_dir_checksum_mismatch(tmp_path: Path) -> None:
+    tei_dir = tmp_path / "tei"
+    tei_dir.mkdir()
+    for meta in DCLP_THOMAS_FRAGMENTS:
+        (tei_dir / meta["filename"]).write_bytes(
+            (TEI_DIR / meta["filename"]).read_bytes()
+        )
+    (tei_dir / "poxy-654-tm62840.xml").write_text(
+        "not-the-pinned-tei", encoding="utf-8"
+    )
+    out = tmp_path / "out.json"
+    runner = CliRunner()
+    result = runner.invoke(
+        app,
+        [
+            "sources",
+            "build-fragments",
+            "--repo-root",
+            str(REPO_ROOT),
+            "--tei-dir",
+            str(tei_dir),
+            "-o",
+            str(out),
+        ],
+    )
+    assert result.exit_code == 1
+    assert "checksum" in (result.stdout + result.stderr).lower()
+    assert not out.exists()
 
 
 def test_committed_fragment_corpus_validates() -> None:
