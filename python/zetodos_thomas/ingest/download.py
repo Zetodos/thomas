@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Explicit setup downloads for CopSahHorner and NTVMR Vaticanus B* TEI."""
+"""Explicit setup downloads for CopSahHorner, Vaticanus B* TEI, and Dilley Thomas."""
 
 from __future__ import annotations
 
@@ -11,6 +11,7 @@ from urllib.error import URLError
 from urllib.parse import urlencode
 from urllib.request import urlopen
 
+from zetodos_thomas.ingest.dilley_thomas import TT_FILENAME, TT_TAG_URL
 from zetodos_thomas.ingest.manifests import load_manifest
 from zetodos_thomas.ingest.ntvmr_vaticanus import DOC_ID, teiraw_filename
 
@@ -156,12 +157,34 @@ def download_ntvmr_vaticanus(
     return tei_dir
 
 
+def download_dilley_thomas(
+    downloads_dir: Path,
+    *,
+    manifests_dir: Path,
+    force: bool = False,
+) -> Path:
+    """Download pinned Dilley SCRIPTORIUM Thomas ``*.tt``; return the file path."""
+    manifest = load_manifest(manifests_dir / "dilley-thomas.json")
+    if not manifest.checksum.startswith("sha256:"):
+        msg = "dilley-thomas manifest checksum must be sha256:…"
+        raise DownloadError(msg)
+
+    dest_dir = downloads_dir / "dilley-thomas"
+    dest = dest_dir / TT_FILENAME
+    if dest.is_file() and not force:
+        verify_checksum(dest, manifest.checksum)
+    else:
+        _fetch(TT_TAG_URL, dest)
+        verify_checksum(dest, manifest.checksum)
+    return dest
+
+
 def download_pilot_sources(
     repo_root: Path,
     *,
     force: bool = False,
-) -> tuple[Path, Path]:
-    """Download CopSahHorner + NTVMR Vaticanus TEI under ``data/downloads``."""
+) -> tuple[Path, Path, Path]:
+    """Download CopSahHorner, Vaticanus TEI, and Dilley Thomas under downloads."""
     manifests_dir = repo_root / "data" / "manifests"
     downloads_dir = repo_root / "data" / "downloads"
     downloads_dir.mkdir(parents=True, exist_ok=True)
@@ -171,4 +194,7 @@ def download_pilot_sources(
     tei_dir = download_ntvmr_vaticanus(
         downloads_dir, manifests_dir=manifests_dir, force=force
     )
-    return sword_root, tei_dir
+    dilley_tt = download_dilley_thomas(
+        downloads_dir, manifests_dir=manifests_dir, force=force
+    )
+    return sword_root, tei_dir, dilley_tt

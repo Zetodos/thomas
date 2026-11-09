@@ -50,7 +50,8 @@ Validation also parses each token/span/parallel id and rejects:
 
 `TextUnit.chapter` allows `0` specifically so the SCRIPTORIUM prologue chapter
 label can be preserved without inventing a fake chapter 1. NT verse units keep
-`chapter >= 1` in practice via their OSIS-style ids.
+`chapter >= 1` in practice via their OSIS-style ids. Later token ids must use
+`v1:dilley-thomas/thomas.0/t/0` (etc.); do not mint `thomas.N.stub0`.
 
 ## Shared Token / Span (ingest PRs must rebase)
 
@@ -58,13 +59,15 @@ Canonical models: `zetodos_thomas.schemas.alignment.Token` and `.Span`
 (field name `id`, plus `source_id`, span `kind`, etc.).
 
 Do **not** add a second Token/Span with `token_id` / `span_id` fields in
-`schemas.source`. JAK-30 Dilley ingest should:
+`schemas.source`, and do **not** mint `thomas.N.stub0`-style ids. JAK-30 Dilley
+ingest should:
 
-1. Keep `thomas.0` / `chapter=0` / `kind=prologue`.
-2. Mint tokens with `token_id(source, unit, sequence)` (or equivalent v1 ids).
-3. Emit `ThomasCorpus` (or an `AlignmentDocument` without parallels) using the
-   shared types.
-4. Mint SCRIPTORIUM tokens from **per-token** orig↔norm pairs — never from
+1. Keep `thomas.0` / `chapter=0` / `kind=prologue` (logia `kind=logion`).
+2. Emit shared `ThomasCorpus` with exact units `thomas.0`…`thomas.114`.
+3. **Unit-level package:** leave `tokens[]` / `spans[]` empty and label notes
+   as unit-level / not alignment-ready (current `data/sources/thomas/` import).
+4. When tokens are ingested later, mint with `token_id(source, unit, sequence)`
+   from **per-token** SCRIPTORIUM orig↔norm pairs — never from
    `whitespace_tokens()` positional zip (concatenated orig ≠ segmented norm).
 
 ## Whitespace helper limits
@@ -120,7 +123,8 @@ optional mapping file if editorial cost justifies it.
 | Path | Role |
 | --- | --- |
 | `data/sources/pilot/horner-vaticanus-nt-pilot.json` | Verse-level Horner × Vaticanus B\* pairs (JAK-24) |
+| `data/sources/thomas/dilley-thomas-v6.2.0.json` | **Unit-level** Dilley SCRIPTORIUM Coptic Thomas (JAK-30; not token-complete / not alignment-ready) |
 | `tests/fixtures/alignment/horner-vaticanus-john1.1-phrase.json` | Phrase-level stub from that pilot |
-| `tests/fixtures/alignment/thomas-7-unit-stub.json` | Coptic Thomas unit + Greek fragment stub |
+| `tests/fixtures/alignment/thomas-7-unit-stub.json` | Phrase-alignment stub using `dilley-thomas` source id |
 
 Offline tests load these fixtures without network access.

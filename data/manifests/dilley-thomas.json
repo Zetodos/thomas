@@ -1,0 +1,22 @@
+{
+  "id": "dilley-thomas",
+  "title": "Gospel of Thomas — Dilley / Coptic SCRIPTORIUM annotated edition",
+  "version": "6.2.0",
+  "url": "https://raw.githubusercontent.com/CopticScriptorium/corpora/v6.2.0/thomas-gospel/thomas.gospel_TT/thomas_gospel.tt",
+  "spdx_or_custom": "CC-BY-4.0",
+  "attribution": "Paul C. Dilley (edition and primary annotations); Coptic SCRIPTORIUM. Annotation/metadata contributions by Caroline T. Schroeder, Lydia Bremer-McCollum, and Amir Zeldes. Licensed CC BY 4.0.",
+  "mode": "setup-download",
+  "checksum": "sha256:59a9f10437d5a059fe62249b83d3bf0ae078a40c4fd511094cf419bb7adf3403",
+  "notes": "Primary Phase 1 Coptic Thomas target (JAK-30). Pin SCRIPTORIUM corpora release v6.2.0 TreeTagger SGML (*.tt), which carries recoverable orig (manuscript-oriented) and norm (analysis) layers. Packaged import is UNIT-LEVEL ONLY (TextUnits thomas.0-thomas.114) — not token-complete and not alignment-ready; full SCRIPTORIUM token/group relationships remain for later work under JAK-32 AlignmentDocument / v1 ID grammar. Portal: https://data.copticscriptorium.org/texts/thomasgospel/gospel-of-thomas/ . Zenodo archive for the corpora release: doi:10.5281/zenodo.17917497. Local path after setup: data/downloads/dilley-thomas/thomas_gospel.tt . Redistributable import under data/sources/thomas/. Do not substitute Layton/Attridge or Bethge continuous critical Greek. Facsimile images are not part of this grant.",
+  "editor": "Paul C. Dilley; Coptic SCRIPTORIUM",
+  "language": "cop",
+  "dialect": "Sahidic (with Lycopolitan features)",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "local_path": "data/downloads/dilley-thomas/",
+  "redistributable": true,
+  "gate": null,
+  "module_name": "thomas.gospel",
+  "sword_version_date": null,
+  "text_source": "Nag Hammadi Codex II (NHAM.02) via Dilley SCRIPTORIUM edition",
+  "counterpart_source_id": null
+}

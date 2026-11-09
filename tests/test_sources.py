@@ -9,8 +9,25 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from zetodos_thomas.bundled import bundled_manifests_dir, bundled_pilot_path
+from zetodos_thomas.align.tokenize import TokenCountMismatchError, whitespace_tokens
+from zetodos_thomas.bundled import (
+    bundled_manifests_dir,
+    bundled_pilot_path,
+    bundled_thomas_path,
+)
 from zetodos_thomas.cli.app import app
+from zetodos_thomas.ingest.dilley_thomas import (
+    EXPECTED_LOGIA,
+    INGEST_LEVEL,
+    TT_TAG_URL,
+    expected_unit_ids,
+    load_thomas_corpus,
+    parse_tt,
+    validate_thomas_unit_sequence,
+)
+from zetodos_thomas.ingest.dilley_thomas import (
+    SOURCE_ID as DILLEY_SOURCE_ID,
+)
 from zetodos_thomas.ingest.download import (
     NTVMR_TEIRAW_FILES,
     DownloadError,
@@ -23,20 +40,29 @@ from zetodos_thomas.ingest.manifests import (
 )
 from zetodos_thomas.ingest.normalize import normalize_coptic, normalize_greek
 from zetodos_thomas.ingest.ntvmr_vaticanus import SOURCE_ID, parse_teiraw
-from zetodos_thomas.ingest.paths import find_repo_root, resolve_manifests_dir
+from zetodos_thomas.ingest.paths import (
+    find_repo_root,
+    resolve_manifests_dir,
+    resolve_thomas_path,
+)
 from zetodos_thomas.ingest.pilot import load_pilot_corpus
 from zetodos_thomas.ingest.verify_inputs import verify_pilot_rebuild_inputs
+from zetodos_thomas.schemas.alignment import ThomasCorpus
+from zetodos_thomas.schemas.ids import ID_SCHEME_VERSION
 from zetodos_thomas.schemas.source import (
     GATED_DEFAULT_SOURCE_IDS,
     AvailabilityMode,
     SourceManifest,
+    UnitKind,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 MANIFESTS_DIR = REPO_ROOT / "data" / "manifests"
 PILOT_PATH = REPO_ROOT / "data" / "sources" / "pilot" / "horner-vaticanus-nt-pilot.json"
+THOMAS_PATH = REPO_ROOT / "data" / "sources" / "thomas" / "dilley-thomas-v6.2.0.json"
 FIXTURES = Path(__file__).parent / "fixtures"
 NTVMR_FIXTURES = FIXTURES / "ntvmr"
+DILLEY_FIXTURE = FIXTURES / "dilley" / "thomas_gospel_snippet.tt"
 
 
 def test_parse_vaticanus_john_1_firsthand(tmp_path: Path) -> None:
@@ -68,7 +94,7 @@ def test_normalize_coptic_strips_overlines() -> None:
 def test_committed_manifests_validate() -> None:
     manifests = validate_manifests_dir(MANIFESTS_DIR)
     ids = {m.id for m in manifests}
-    assert ids == {"copsahhorner", "ntvmr-vaticanus-b"}
+    assert ids == {"copsahhorner", "dilley-thomas", "ntvmr-vaticanus-b"}
     assert ids.isdisjoint(GATED_DEFAULT_SOURCE_IDS)
     horner = load_manifest(MANIFESTS_DIR / "copsahhorner.json")
     assert horner.mode is AvailabilityMode.SETUP_DOWNLOAD
@@ -78,6 +104,28 @@ def test_committed_manifests_validate() -> None:
     assert vat.counterpart_source_id == "copsahhorner"
     assert vat.spdx_or_custom == "CC-BY-4.0"
     assert "westcott" not in vat.id
+    dilley = load_manifest(MANIFESTS_DIR / "dilley-thomas.json")
+    assert dilley.mode is AvailabilityMode.SETUP_DOWNLOAD
+    assert dilley.spdx_or_custom == "CC-BY-4.0"
+    assert dilley.checksum.startswith("sha256:")
+    assert dilley.url == TT_TAG_URL
+    assert "Dilley" in dilley.attribution or "Dilley" in dilley.title
+
+
+def test_parse_dilley_fixture_orig_norm_layers() -> None:
+    corpus = parse_tt(DILLEY_FIXTURE, expect_complete=False)
+    assert [u.chapter for u in corpus.units] == [0, 1, 2]
+    prologue = corpus.units[0]
+    assert prologue.unit_id == "thomas.0"
+    assert prologue.kind is UnitKind.PROLOGUE
+    assert prologue.original_text.startswith("ⲛⲁⲉⲓ")
+    assert prologue.normalized_text.startswith("ⲛⲁⲓ")
+    assert prologue.original_text != prologue.normalized_text
+    assert INGEST_LEVEL in corpus.notes
+    assert "not alignment-ready" in corpus.notes
+    # Shared JAK-32 ThomasCorpus: tokens/spans present but empty at unit-level.
+    assert corpus.tokens == []
+    assert corpus.spans == []
 
 
 def test_gated_source_rejected_in_default_set() -> None:
@@ -140,12 +188,77 @@ def test_pilot_corpus_committed() -> None:
     assert all(u.notes for u in empty)
 
 
+def test_thomas_corpus_committed() -> None:
+    corpus = load_thomas_corpus(THOMAS_PATH)
+    assert corpus.source_id == DILLEY_SOURCE_ID
+    assert corpus.id_scheme_version == ID_SCHEME_VERSION
+    assert INGEST_LEVEL in corpus.notes
+    assert [u.unit_id for u in corpus.units] == expected_unit_ids()
+    assert [u.chapter for u in corpus.units] == list(range(EXPECTED_LOGIA + 1))
+    assert all(u.original_text for u in corpus.units)
+    assert all(u.normalized_text for u in corpus.units)
+    # Recoverable distinct layers (Dilley orig vs norm) on prologue.
+    prologue = corpus.units[0]
+    assert prologue.unit_id == "thomas.0"
+    assert prologue.chapter == 0
+    assert prologue.kind is UnitKind.PROLOGUE
+    assert "ⲛⲁⲉⲓ" in prologue.original_text
+    assert prologue.normalized_text.split()[0] == "ⲛⲁⲓ"
+    assert corpus.units[7].unit_id == "thomas.7"
+    assert corpus.units[7].kind is UnitKind.LOGION
+    assert corpus.units[114].unit_id == "thomas.114"
+    assert corpus.tokens == []
+    assert corpus.spans == []
+    assert "unit-level" in corpus.notes.lower()
+    assert "not alignment-ready" in corpus.notes.lower()
+    assert "whitespace_tokens" in corpus.notes
+
+
+def test_whitespace_tokens_rejects_dilley_units() -> None:
+    corpus = load_thomas_corpus(THOMAS_PATH)
+    with pytest.raises(TokenCountMismatchError, match=r"Dilley/SCRIPTORIUM"):
+        whitespace_tokens(corpus.units[1])
+
+
+def test_thomas_validate_rejects_wrong_sequence() -> None:
+    good = load_thomas_corpus(THOMAS_PATH)
+    # Drop prologue — count of logia alone would still be 114.
+    broken_units = list(good.units[1:])
+    with pytest.raises(ValueError, match=r"thomas\.0"):
+        validate_thomas_unit_sequence(broken_units)
+    # Duplicate last logion instead of a missing middle one.
+    dup = list(good.units)
+    dup[50] = good.units[114]
+    with pytest.raises(ValueError, match=r"thomas\.0 through thomas\.114"):
+        validate_thomas_unit_sequence(dup)
+    # load_thomas_corpus must enforce the same check.
+    tmp = THOMAS_PATH.parent / "_bad_sequence.json"
+    try:
+        bad = ThomasCorpus(
+            id="bad",
+            title="bad",
+            source_id=DILLEY_SOURCE_ID,
+            units=broken_units,
+            notes=f"{INGEST_LEVEL}; not alignment-ready",
+        )
+        tmp.write_text(bad.model_dump_json(), encoding="utf-8")
+        with pytest.raises(ValueError, match=r"thomas\.0"):
+            load_thomas_corpus(tmp)
+    finally:
+        if tmp.exists():
+            tmp.unlink()
+
+
 def test_cli_sources_validate() -> None:
     runner = CliRunner()
     result = runner.invoke(app, ["sources", "validate"])
     assert result.exit_code == 0, result.stdout + result.stderr
     assert "copsahhorner" in result.stdout
     assert "ntvmr-vaticanus-b" in result.stdout
+    assert "dilley-thomas" in result.stdout
+    assert "thomas.0..thomas.114" in result.stdout
+    assert "unit-level" in result.stdout
+    assert "not alignment-ready" in result.stdout
     assert "Sahidica" in result.stdout
     assert "westcott" not in result.stdout.lower()
 
@@ -191,17 +304,25 @@ def test_fixture_manifest_roundtrip() -> None:
 
 
 def test_bundled_resources_match_checkout() -> None:
-    for name in ("copsahhorner.json", "ntvmr-vaticanus-b.json"):
+    for name in (
+        "copsahhorner.json",
+        "ntvmr-vaticanus-b.json",
+        "dilley-thomas.json",
+    ):
         checkout = (MANIFESTS_DIR / name).read_text(encoding="utf-8")
         bundled = (bundled_manifests_dir() / name).read_text(encoding="utf-8")
         assert checkout == bundled
     assert PILOT_PATH.read_text(encoding="utf-8") == bundled_pilot_path().read_text(
         encoding="utf-8"
     )
+    assert THOMAS_PATH.read_text(encoding="utf-8") == bundled_thomas_path().read_text(
+        encoding="utf-8"
+    )
 
 
 def test_resolve_manifests_prefers_checkout() -> None:
     assert resolve_manifests_dir(REPO_ROOT) == MANIFESTS_DIR
+    assert resolve_thomas_path(REPO_ROOT) == THOMAS_PATH
 
 
 def test_verify_rebuild_rejects_bad_inputs(tmp_path: Path) -> None:

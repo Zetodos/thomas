@@ -14,4 +14,11 @@ Bundled pilot excerpt (data/sources/pilot/):
   - Greek: INTF/NTVMR Codex Vaticanus GA 03 firsthand (B*) transcription
     (CC BY 4.0). Attribution: Institut für neutestamentliche Textforschung.
     Manuscript images are not included.
+
+Bundled Coptic Thomas import (data/sources/thomas/):
+  - Dilley / Coptic SCRIPTORIUM Gospel of Thomas v6.2.0 (CC BY 4.0).
+    Attribution: Paul C. Dilley; Coptic SCRIPTORIUM; annotation/metadata
+    contributions by Caroline T. Schroeder, Lydia Bremer-McCollum, and
+    Amir Zeldes. See https://creativecommons.org/licenses/by/4.0/
+
 See data/manifests/*.json and docs/horner-vaticanus-alignment-notes.md.

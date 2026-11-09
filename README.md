@@ -3,7 +3,7 @@
 Offline-capable, evidence-based reconstruction and reader for the *Gospel of Thomas*.
 
 **Repository:** <https://github.com/Zetodos/thomas>
-**Status:** Phase 0–1 foundation — licensing, Python toolchain, and a redistributable Horner × Vaticanus B* NT pilot import (JAK-24). Reconstruction feasibility is not yet proven.
+**Status:** Phase 0–1 foundation — licensing, Python toolchain, Horner × Vaticanus B* NT pilot (JAK-24), and Dilley SCRIPTORIUM Coptic Thomas ingest (JAK-30). Reconstruction feasibility is not yet proven.
 
 ## Objective
 
@@ -31,8 +31,9 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`docs/licensing-provenance-audit.md`](docs/licensing-provenance-audit.md) | 2026-11-09 provenance audit (updated for Horner decision) |
 | [`docs/horner-vaticanus-alignment-notes.md`](docs/horner-vaticanus-alignment-notes.md) | CopSahHorner + Vaticanus B* pilot notes (JAK-24) |
 | [`docs/id-scheme.md`](docs/id-scheme.md) | Stable unit/token/span IDs + retokenization rule (JAK-32) |
-| [`data/manifests/`](data/manifests/) | Per-source JSON manifests (Horner, Vaticanus B*) |
+| [`data/manifests/`](data/manifests/) | Per-source JSON manifests (Horner, Vaticanus B*, Dilley Thomas) |
 | [`data/sources/pilot/`](data/sources/pilot/) | Bundled Horner × Vaticanus B* pilot excerpt |
+| [`data/sources/thomas/`](data/sources/thomas/) | Unit-level Dilley / SCRIPTORIUM Coptic Thomas import (JAK-30; not alignment-ready) |
 
 ## Never ship (summary)
 
@@ -50,11 +51,12 @@ Full list and allowlist: [`docs/source-licenses.md`](docs/source-licenses.md#nev
 
 ## Text baselines (Phase 0–1 decisions)
 
+- **Coptic Thomas (target):** **Dilley / Coptic SCRIPTORIUM** annotated Gospel of Thomas v6.2.0 (**CC BY 4.0**). Unit-level ingest with original + normalized layers (JAK-30); **not** token-complete / **not** alignment-ready yet. Manifest: [`data/manifests/dilley-thomas.json`](data/manifests/dilley-thomas.json).
 - **Sahidic NT:** **Horner** via CrossWire **`CopSahHorner`** v1.5 (Public Domain). Do **not** treat Wells Sahidica as the NT baseline. Verified + pilot-imported: JAK-24.
-- **Greek NT:** **INTF/NTVMR Codex Vaticanus GA 03 firsthand (B\*)** (`docID` 20003), CC BY 4.0 transcription (JAK-25 GO; updates the JAK-15 WH default). Do **not** mix Westcott–Hort or SBLGNT into lacunae. Do **not** ship manuscript images.
+- **Greek NT:** **INTF/NTVMR Codex Vaticanus GA 03 firsthand (B\*)** (`docID` 20003), CC BY 4.0 transcription (JAK-25 GO; updates the JAK-15 WH default). Do **not** mix Westcott–Hort or SBLGNT into lacunae. Do **not** ship manuscript images. Do **not** change this Greek spine in Coptic Thomas ingest work.
 - **LXX / lexicon / critical texts:** Swete LXX, CCL TEI, and CC BY 4.0 for project-authored critical Greek/English — see [`docs/source-licenses.md`](docs/source-licenses.md).
 
-Bundled pilot: [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](data/sources/pilot/horner-vaticanus-nt-pilot.json). Full downloads stay under gitignored `data/downloads/` (see that README).
+Bundled corpora: [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](data/sources/pilot/horner-vaticanus-nt-pilot.json) (NT pilot) and [`data/sources/thomas/dilley-thomas-v6.2.0.json`](data/sources/thomas/dilley-thomas-v6.2.0.json) (Thomas). Full downloads stay under gitignored `data/downloads/` (see that README).
 
 ## Python setup
 
@@ -87,7 +89,7 @@ uv run ty check
 uv run pytest
 ```
 
-The `thomas` console script currently exposes `sources validate` (offline), `sources download` (explicit setup fetch into `data/downloads/`), and `sources build-pilot` (local rebuild from downloads). Further subcommands live in [`PLAN.md`](PLAN.md).
+The `thomas` console script currently exposes `sources validate` (offline), `sources download` (explicit setup fetch into `data/downloads/`), `sources build-pilot`, and `sources build-thomas`. Further subcommands live in [`PLAN.md`](PLAN.md).
 
 Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web/` only (not started yet).
 
@@ -95,8 +97,8 @@ Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web
 
 After clone and `uv sync --locked`:
 
-1. **Offline immediately:** `uv run thomas sources validate` uses committed manifests + the PD pilot only (no network).
-2. **Optional setup downloads** (gitignored): `uv run thomas sources download` (see [`data/downloads/README.md`](data/downloads/README.md)); then `uv run thomas sources build-pilot` to regenerate the pilot.
+1. **Offline immediately:** `uv run thomas sources validate` uses committed manifests + bundled corpora only (no network).
+2. **Optional setup downloads** (gitignored): `uv run thomas sources download` (see [`data/downloads/README.md`](data/downloads/README.md)); then `build-pilot` / `build-thomas` to regenerate imports.
 3. After setup, CLI work must remain offline (no cloud APIs, CDNs, or hidden network fetches).
 
 Default CLI/CI never fetches Sahidica, NTAEG, or Bohairica.
