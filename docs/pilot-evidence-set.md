@@ -3,9 +3,12 @@
 Inspectable structured data spanning PLAN.md evidence types **G / L / N / P**.
 This is **not** a polished critical edition.
 
-**Package:** [`data/evidence/pilot/thomas-7-17-30-77.json`](../data/evidence/pilot/thomas-7-17-30-77.json)  
-**JSONL:** [`data/evidence/pilot/thomas-7-17-30-77.jsonl`](../data/evidence/pilot/thomas-7-17-30-77.jsonl)  
-**Schema:** `PilotEvidenceSet` in `zetodos_thomas.schemas.evidence`  
+**Package:** [`data/evidence/pilot/thomas-7-17-30-77.json`](../data/evidence/pilot/thomas-7-17-30-77.json)
+
+**JSONL:** [`data/evidence/pilot/thomas-7-17-30-77.jsonl`](../data/evidence/pilot/thomas-7-17-30-77.jsonl)
+
+**Schema:** `PilotEvidenceSet` in `zetodos_thomas.schemas.evidence`
+
 **IDs:** [`docs/id-scheme.md`](id-scheme.md) (JAK-32)
 
 ## Baselines (unchanged)
