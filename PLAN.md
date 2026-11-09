@@ -1,7 +1,7 @@
 # Zetodos Thomas — Implementation Plan
 
-**Repository:** <https://github.com/Zetodos/thomas>  
-**Status:** Proposed implementation plan; validate reconstruction feasibility before committing to a full engine  
+**Repository:** <https://github.com/Zetodos/thomas>
+**Status:** Proposed implementation plan; validate reconstruction feasibility before committing to a full engine
 **Target:** Version 0.1, an open-source, offline-capable, evidence-based reconstruction and reader for the *Gospel of Thomas*
 
 ## 1. Objective

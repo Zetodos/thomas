@@ -1,6 +1,6 @@
 # Source-license policy and manifest schema
 
-**Status:** Phase 0 policy (enforce before any corpus import).  
+**Status:** Phase 0 policy (enforce before any corpus import).
 **Related:** [PLAN.md](../PLAN.md) §4 · [licensing-provenance-audit.md](licensing-provenance-audit.md) · Linear [JAK-12](https://linear.app/jake-danton/issue/JAK-12) / [JAK-22](https://linear.app/jake-danton/issue/JAK-22) / [JAK-23](https://linear.app/jake-danton/issue/JAK-23)
 
 Caveat: not legal advice. Re-check licenses and pin versions before bundling.

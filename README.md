@@ -2,7 +2,7 @@
 
 Offline-capable, evidence-based reconstruction and reader for the *Gospel of Thomas*.
 
-**Repository:** <https://github.com/Zetodos/thomas>  
+**Repository:** <https://github.com/Zetodos/thomas>
 **Status:** Phase 0 — licensing, docs, and Python toolchain scaffold. Reconstruction feasibility is not yet proven. No corpus import or reconstruction engine ships yet.
 
 ## Objective
@@ -59,6 +59,23 @@ Requires [uv](https://docs.astral.sh/uv/) and Python 3.12+.
 ```bash
 uv sync --locked
 uv run thomas --help
+```
+
+### Pre-commit hooks
+
+Install git hooks with one command (after `uv sync --locked`):
+
+```bash
+uv run pre-commit install
+```
+
+That installs the same suite CI runs (`uv run pre-commit run --all-files`): `uv lock --check`, ruff format/check, `ty`, pytest (fast suite), trailing whitespace / EOF / YAML / TOML checks, large-file guard, and SPDX headers on `python/` and `tests/`. Hook revisions are pinned in [`.pre-commit-config.yaml`](.pre-commit-config.yaml); Dependabot (and a weekly autoupdate workflow) keep them current.
+
+The weekly autoupdate workflow opens a PR only when repository secret `PRE_COMMIT_AUTOUPDATE_TOKEN` is set to a fine-grained PAT or GitHub App token with `contents` + `pull-requests` write (so the PR can trigger CI). Without that secret it still runs `pre-commit autoupdate` and skips PR creation; Dependabot remains the primary update path.
+
+Manual equivalents without hooks:
+
+```bash
 uv run ruff check .
 uv run ruff format --check .
 uv run ty check
@@ -78,4 +95,4 @@ After clone and `uv sync --locked`:
 
 ## Phase 0 scope
 
-This phase covers license/docs plus the Python toolchain scaffold (uv, ruff, ty, pytest, Typer, Pydantic). Out of scope: web app, corpus downloads, Horner import, and reconstruction.
+This phase covers license/docs, the Python toolchain scaffold (uv, ruff, ty, pytest, Typer, Pydantic), and pre-commit/CI quality gates. Out of scope: web app, corpus downloads, Horner import, and reconstruction.

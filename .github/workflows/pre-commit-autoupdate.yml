@@ -1,0 +1,72 @@
+# SPDX-License-Identifier: Apache-2.0
+# Backup path for hook rev bumps if Dependabot misses a release.
+#
+# PRs opened with the default GITHUB_TOKEN do not trigger pull_request CI.
+# Set repository secret PRE_COMMIT_AUTOUPDATE_TOKEN to a fine-grained PAT
+# (or GitHub App installation token) with contents + pull-requests write on
+# this repo so created PRs run workflows. Without that secret, this workflow
+# still runs `pre-commit autoupdate` but skips opening a PR.
+name: Pre-commit autoupdate
+
+on:
+  schedule:
+    # Mondays 08:00 UTC
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: pre-commit-autoupdate
+  cancel-in-progress: true
+
+jobs:
+  autoupdate:
+    name: Autoupdate hook revs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync --locked
+
+      - name: Run pre-commit autoupdate
+        run: uv run pre-commit autoupdate
+
+      - name: Check for PR token
+        id: token
+        env:
+          PRE_COMMIT_AUTOUPDATE_TOKEN: ${{ secrets.PRE_COMMIT_AUTOUPDATE_TOKEN }}
+        run: |
+          set -euo pipefail
+          if [ -n "${PRE_COMMIT_AUTOUPDATE_TOKEN:-}" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::PRE_COMMIT_AUTOUPDATE_TOKEN is not set; skipping PR creation."
+            echo "Set a fine-grained PAT (or GitHub App token) with contents + pull-requests"
+            echo "write so autoupdate PRs trigger CI. Dependabot remains the primary update path."
+          fi
+
+      - name: Open PR when hooks changed
+        if: steps.token.outputs.available == 'true'
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.PRE_COMMIT_AUTOUPDATE_TOKEN }}
+          commit-message: "chore: pre-commit autoupdate"
+          title: "chore: pre-commit autoupdate"
+          body: |
+            Automated `pre-commit autoupdate` (JAK-27 update path).
+
+            Dependabot also watches `.pre-commit-config.yaml`; close whichever
+            PR is redundant if both land.
+          branch: chore/pre-commit-autoupdate
+          delete-branch: true
