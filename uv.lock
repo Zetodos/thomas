@@ -281,6 +281,12 @@ wheels = [
 ]
 
 [[package]]
+name = "pysword"
+version = "0.2.8"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/3c/d9/4fdf24472c91c63703281e3bb3868f59caf49ca11d606c95742652db7e7e/pysword-0.2.8.tar.gz", hash = "sha256:6302f350c22f39090e2556729551fac57a4c25ceb268f90cd7fd0584b9cca4f0", size = 28071, upload-time = "2022-05-28T20:39:36.295Z" }
+
+[[package]]
 name = "pytest"
 version = "9.2.0"
 source = { registry = "https://pypi.org/simple" }
@@ -488,9 +494,15 @@ dependencies = [
     { name = "typer" },
 ]
 
+[package.optional-dependencies]
+sword = [
+    { name = "pysword" },
+]
+
 [package.dev-dependencies]
 dev = [
     { name = "pre-commit" },
+    { name = "pysword" },
     { name = "pytest" },
     { name = "ruff" },
     { name = "ty" },
@@ -499,12 +511,15 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "pydantic", specifier = ">=2.10" },
+    { name = "pysword", marker = "extra == 'sword'", specifier = ">=0.2.8" },
     { name = "typer", specifier = ">=0.15" },
 ]
+provides-extras = ["sword"]
 
 [package.metadata.requires-dev]
 dev = [
     { name = "pre-commit", specifier = ">=4.0" },
+    { name = "pysword", specifier = ">=0.2.8" },
     { name = "pytest", specifier = ">=8.3" },
     { name = "ruff", specifier = ">=0.9" },
     { name = "ty", specifier = ">=0.0.1" },

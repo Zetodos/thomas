@@ -36,8 +36,8 @@ Adopted redistributable core ([JAK-15](https://linear.app/jake-danton/issue/JAK-
 | --- | --- | --- |
 | Dilley Thomas (Coptic SCRIPTORIUM) | `bundled` or `setup-download` | CC BY 4.0 |
 | P.Oxy. fragments (verify each transcription) | `bundled` (small) | Prefer DCLP (CC BY 3.0) or PD Grenfell/Hunt; Evelyn-White **1920** original is US PD (see audit §2) |
-| **Horner Sahidic NT** (`CopSahHorner`) | `setup-download` (later) | **Default Sahidic NT** (PD module; [JAK-14](https://linear.app/jake-danton/issue/JAK-14) Done; ingest [JAK-24](https://linear.app/jake-danton/issue/JAK-24)) |
-| **Westcott–Hort 1881 Greek NT** (PD Robinson transcription) | `bundled` or `setup-download` | **Default Greek NT** per JAK-15 |
+| **Horner Sahidic NT** (`CopSahHorner`) | `setup-download` (+ bundled pilot excerpt) | **Default Sahidic NT** (PD module; [JAK-14](https://linear.app/jake-danton/issue/JAK-14) Done; ingest [JAK-24](https://linear.app/jake-danton/issue/JAK-24)). Manifest: [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json). Alignment notes: [`horner-wh-alignment-notes.md`](horner-wh-alignment-notes.md) |
+| **Westcott–Hort 1881 Greek NT** (PD Robinson transcription) | `setup-download` (+ bundled pilot excerpt) | **Default Greek NT** per JAK-15. Manifest: [`data/manifests/westcott-hort.json`](../data/manifests/westcott-hort.json) |
 | SCRIPTORIUM `sahidic.ot` | `setup-download` / `bundled` | CC BY-SA 4.0 (secondary) |
 | **Swete LXX** (First1KGreek / nathans/lxx-swete) | `setup-download` | CC BY-SA 4.0 ([JAK-18](https://linear.app/jake-danton/issue/JAK-18)); not Rahlfs-Hanhart; Rahlfs 1935 not preferred |
 | **CCL / DDGLC TEI** | `setup-download` / `bundled` | CC BY-SA 4.0 ([JAK-19](https://linear.app/jake-danton/issue/JAK-19)); do not wait on DIOSKOROS; no scrape |
@@ -81,9 +81,11 @@ Reference-only citation and short fair-use quotation policy may apply in scholar
 
 **Note:** Evelyn-White’s 1920 *The Sayings of Jesus from Oxyrhynchus* is **US public domain** and is **not** in this never-ship list. Later copyrighted editorial work (e.g. Attridge/Layton) remains excluded.
 
-## Manifest schema (draft)
+## Manifest schema
 
-Machine-readable manifests will live under [`data/manifests/`](../data/manifests/) (YAML or JSON). No corpus files are committed in Phase 0.
+Machine-readable manifests live under [`data/manifests/`](../data/manifests/) as **JSON** (one file per source). Typed model: `zetodos_thomas.schemas.source.SourceManifest`. Validate offline with `uv run thomas sources validate`.
+
+Full CrossWire / Robinson downloads stay under gitignored `data/downloads/`. A redistributable PD pilot excerpt is committed at [`data/sources/pilot/horner-wh-nt-pilot.json`](../data/sources/pilot/horner-wh-nt-pilot.json).
 
 ### Required / expected fields
 
@@ -111,20 +113,9 @@ Machine-readable manifests will live under [`data/manifests/`](../data/manifests
 | `redistributable` | boolean | Explicit project judgment |
 | `gate` | string | If gated: reason / Linear issue |
 
-### Example stub (illustrative — not a live corpus)
+### Live example
 
-```yaml
-id: copsahhorner
-title: Sahidic Coptic New Testament (Horner) — CrossWire CopSahHorner
-version: "1.5"
-url: https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=CopSahHorner
-spdx_or_custom: "custom:Public-Domain"  # CrossWire DistributionLicense=Public Domain
-attribution: "G. W. Horner; CrossWire CopSahHorner module"
-mode: setup-download
-checksum: ""  # fill at ingest
-notes: "Default Sahidic NT baseline (JAK-14). Pin module; verify verse map vs Greek spine."
-redistributable: true
-```
+See [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json) (checksum pinned for `CopSahHorner.zip`) and [`data/manifests/westcott-hort.json`](../data/manifests/westcott-hort.json) (git commit + `JOH.WH` checksum).
 
 ## Decision status
 
