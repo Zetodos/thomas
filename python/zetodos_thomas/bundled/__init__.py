@@ -54,3 +54,39 @@ def bundled_evidence_pilot_path() -> Path:
             / "thomas-7-17-30-77.json"
         )
     )
+
+
+def bundled_nt_split_path() -> Path:
+    """Packaged Horner x Vaticanus B* train/dev/holdout split (JAK-33)."""
+    return Path(
+        str(
+            files("zetodos_thomas.bundled")
+            / "training"
+            / "splits"
+            / "horner-vaticanus-nt-split-v1.json"
+        )
+    )
+
+
+def bundled_omission_fixtures_path() -> Path:
+    """Packaged John 8 PA omission fixture catalog (JAK-33)."""
+    return Path(
+        str(
+            files("zetodos_thomas.bundled")
+            / "evidence"
+            / "omissions"
+            / "john-8-pa-omission-fixture-v1.json"
+        )
+    )
+
+
+def bundled_fragment_divergences_path() -> Path:
+    """Packaged Greek Thomas fragment divergence catalog (JAK-33)."""
+    return Path(
+        str(
+            files("zetodos_thomas.bundled")
+            / "evidence"
+            / "divergences"
+            / "greek-thomas-fragment-divergences-v1.json"
+        )
+    )

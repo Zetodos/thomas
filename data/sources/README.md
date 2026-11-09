@@ -12,4 +12,6 @@ Phrase-level alignment stubs (JAK-32) used by offline tests live under
 [`tests/fixtures/alignment/`](../../tests/fixtures/alignment/). ID grammar and
 migration rules: [`docs/id-scheme.md`](../../docs/id-scheme.md).
 
+Train/dev/holdout roles for this pilot live under [`data/training/splits/`](../training/splits/) (JAK-33), not here. Omission and divergence catalogs: [`data/evidence/`](../evidence/).
+
 Full module / TEI / TT downloads stay under gitignored [`data/downloads/`](../downloads/) after explicit setup. See [`docs/horner-vaticanus-alignment-notes.md`](../../docs/horner-vaticanus-alignment-notes.md), [`docs/greek-thomas-fragments.md`](../../docs/greek-thomas-fragments.md), and [`docs/source-licenses.md`](../../docs/source-licenses.md).

@@ -7,8 +7,11 @@ from pathlib import Path
 
 from zetodos_thomas.bundled import (
     bundled_evidence_pilot_path,
+    bundled_fragment_divergences_path,
     bundled_fragments_corpus_path,
     bundled_manifests_dir,
+    bundled_nt_split_path,
+    bundled_omission_fixtures_path,
     bundled_pilot_path,
     bundled_thomas_path,
 )
@@ -18,6 +21,11 @@ from zetodos_thomas.ingest.fragments import DEFAULT_FRAGMENT_CORPUS_FILENAME
 
 PILOT_FILENAME = "horner-vaticanus-nt-pilot.json"
 THOMAS_FILENAME = f"{THOMAS_CORPUS_ID}.json"
+NT_SPLIT_REL = Path("data/training/splits/horner-vaticanus-nt-split-v1.json")
+OMISSION_REL = Path("data/evidence/omissions/john-8-pa-omission-fixture-v1.json")
+DIVERGENCE_REL = Path(
+    "data/evidence/divergences/greek-thomas-fragment-divergences-v1.json"
+)
 
 
 def find_repo_root(start: Path | None = None) -> Path:
@@ -128,3 +136,36 @@ def require_repo_root(explicit: Path | None = None) -> Path:
     if explicit is not None:
         return explicit.resolve()
     return find_repo_root()
+
+
+def _resolve_data_file(repo_root: Path | None, relative: Path, bundled: Path) -> Path:
+    """Prefer checkout path when the file exists; else packaged resource."""
+    if repo_root is not None:
+        checkout = repo_root / relative
+        if checkout.is_file():
+            return checkout
+    try:
+        root = find_repo_root()
+        checkout = root / relative
+        if checkout.is_file():
+            return checkout
+    except FileNotFoundError:
+        pass
+    return bundled
+
+
+def resolve_nt_split_path(repo_root: Path | None) -> Path:
+    """Prefer checkout NT split JSON; fall back to packaged artifact."""
+    return _resolve_data_file(repo_root, NT_SPLIT_REL, bundled_nt_split_path())
+
+
+def resolve_omission_fixtures_path(repo_root: Path | None) -> Path:
+    """Prefer checkout omission fixtures; fall back to packaged artifact."""
+    return _resolve_data_file(repo_root, OMISSION_REL, bundled_omission_fixtures_path())
+
+
+def resolve_fragment_divergences_path(repo_root: Path | None) -> Path:
+    """Prefer checkout divergence catalog; fall back to packaged artifact."""
+    return _resolve_data_file(
+        repo_root, DIVERGENCE_REL, bundled_fragment_divergences_path()
+    )

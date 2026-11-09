@@ -22,9 +22,11 @@
 
 | Passage | Units | Role |
 | --- | --- | --- |
-| John 1:1–18 | 18 | Prologue; B\* omits corrector supplies (e.g. John 1:4 lacks `των ανθρωπων`) |
-| Mark 1:1–8 | 8 | Gospel opening + loanword density |
-| John 8:1–11 | 11 | **Empty on both sides** (PA absent in Horner and Vaticanus) |
+| John 1:1–18 | 18 | Prologue; B\* omits corrector supplies (e.g. John 1:4 lacks `των ανθρωπων`) — **train** (JAK-33) |
+| Mark 1:1–8 | 8 | Gospel opening + loanword density — **holdout** (JAK-33) |
+| John 8:1–11 | 11 | **Empty on both sides** (PA absent in Horner and Vaticanus) — **omission fixture only** (JAK-33) |
+
+Benchmark policy: [`benchmark-holdouts.md`](benchmark-holdouts.md).
 
 ## Initial lexical / phrase observations
 
