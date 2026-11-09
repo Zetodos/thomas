@@ -1,9 +1,9 @@
 # Greek–Sahidic alignment pilot benchmark (JAK-28)
 
-**Status:** Baseline measurement for PLAN.md Phases 1–2 — **no pass/fail threshold**.  
-**Machine report:** [`data/sources/alignment/benchmark-report.json`](../data/sources/alignment/benchmark-report.json) (regenerate with `uv run thomas align benchmark`)  
-**Splits:** [`docs/alignment-pilot-splits.md`](alignment-pilot-splits.md)  
-**Human gold:** [`data/sources/alignment/reference/horner-vaticanus-gold-sample-v1.json`](../data/sources/alignment/reference/horner-vaticanus-gold-sample-v1.json)  
+**Status:** Baseline measurement for PLAN.md Phases 1–2 — **no pass/fail threshold**.
+**Machine report:** [`data/sources/alignment/benchmark-report.json`](../data/sources/alignment/benchmark-report.json) (regenerate with `uv run thomas align benchmark`)
+**Splits:** [`docs/alignment-pilot-splits.md`](alignment-pilot-splits.md)
+**Human gold:** [`data/sources/alignment/reference/horner-vaticanus-gold-sample-v1.json`](../data/sources/alignment/reference/horner-vaticanus-gold-sample-v1.json)
 **Greek spine:** NTVMR Vaticanus B\* only (GA 03 / `docID` 20003). **Never** mix WH/SBLGNT.
 
 ## What was measured

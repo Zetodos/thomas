@@ -1,8 +1,8 @@
 # Alignment pilot passage splits (JAK-28)
 
-**Corpus:** [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](../data/sources/pilot/horner-vaticanus-nt-pilot.json) (`horner-vaticanus-nt-pilot-v2`)  
-**Machine splits:** [`data/sources/pilot/splits.json`](../data/sources/pilot/splits.json)  
-**Greek:** NTVMR Vaticanus B\* only (GA 03 / `docID` 20003) — never WH/SBLGNT  
+**Corpus:** [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](../data/sources/pilot/horner-vaticanus-nt-pilot.json) (`horner-vaticanus-nt-pilot-v2`)
+**Machine splits:** [`data/sources/pilot/splits.json`](../data/sources/pilot/splits.json)
+**Greek:** NTVMR Vaticanus B\* only (GA 03 / `docID` 20003) — never WH/SBLGNT
 **Sahidic:** CopSahHorner v1.5 (Public Domain)
 
 Splits are **whole passages**, never random words. Omission fixtures are kept in the corpus but excluded from positive lexical/phrase denominators.
