@@ -1,0 +1,49 @@
+# SPDX-License-Identifier: Apache-2.0
+# Backup path for hook rev bumps if Dependabot misses a release.
+name: Pre-commit autoupdate
+
+on:
+  schedule:
+    # Mondays 08:00 UTC
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: pre-commit-autoupdate
+  cancel-in-progress: true
+
+jobs:
+  autoupdate:
+    name: Autoupdate hook revs
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync --locked
+
+      - name: Run pre-commit autoupdate
+        run: uv run pre-commit autoupdate
+
+      - name: Open PR when hooks changed
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore: pre-commit autoupdate"
+          title: "chore: pre-commit autoupdate"
+          body: |
+            Automated `pre-commit autoupdate` (JAK-27 update path).
+
+            Dependabot also watches `.pre-commit-config.yaml`; close whichever
+            PR is redundant if both land.
+          branch: chore/pre-commit-autoupdate
+          delete-branch: true

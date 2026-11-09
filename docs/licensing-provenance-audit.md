@@ -1,8 +1,8 @@
 # Licensing & provenance audit — Gospel of Thomas reconstruction resources
 
-**Scope:** Redistributability for an offline open-source repo (`Zetodos/thomas`).  
-**Method:** Public web / primary license pages / corpus READMEs (2026-11-09).  
-**Updates:** JAK-13–19 decisions recorded as **Done** (see § Decisions). Sahidic NT: Horner / CrossWire `CopSahHorner` ([JAK-14](https://linear.app/jake-danton/issue/JAK-14); implementation [JAK-24](https://linear.app/jake-danton/issue/JAK-24)). Greek NT default: Westcott–Hort ([JAK-15](https://linear.app/jake-danton/issue/JAK-15)); SBLGNT revisit [JAK-25](https://linear.app/jake-danton/issue/JAK-25).  
+**Scope:** Redistributability for an offline open-source repo (`Zetodos/thomas`).
+**Method:** Public web / primary license pages / corpus READMEs (2026-11-09).
+**Updates:** JAK-13–19 decisions recorded as **Done** (see § Decisions). Sahidic NT: Horner / CrossWire `CopSahHorner` ([JAK-14](https://linear.app/jake-danton/issue/JAK-14); implementation [JAK-24](https://linear.app/jake-danton/issue/JAK-24)). Greek NT default: Westcott–Hort ([JAK-15](https://linear.app/jake-danton/issue/JAK-15)); SBLGNT revisit [JAK-25](https://linear.app/jake-danton/issue/JAK-25).
 **Caveat:** Not legal advice. Licenses change; pin versions and re-check before bundling. Confidence tags: **High** (primary license text seen), **Medium** (reputable secondary + consistent primary snippets), **Low** (inference / conflicting claims / no clear instrument).
 
 Setup modes used below:
@@ -28,9 +28,9 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 | **Blocking risks** | Low for Dilley open text. Do **not** substitute Layton (Brill) or Bethge (DBG *Synopsis*) full texts. Dilley uses Nag Hammadi facsimile images as sources — images themselves are not the license grant. |
 | **Confidence** | **High** for CC BY on Thomas corpus metadata / SCRIPTORIUM README defaults |
 
-**Primary refs:**  
-- https://github.com/CopticScriptorium/corpora (README “Sources and licenses”)  
-- Thomas ANNIS metadata: `license CC-BY 4.0`, `Coptic_edition Paul Dilley`, `project Coptic SCRIPTORIUM, Dilley`  
+**Primary refs:**
+- https://github.com/CopticScriptorium/corpora (README “Sources and licenses”)
+- Thomas ANNIS metadata: `license CC-BY 4.0`, `Coptic_edition Paul Dilley`, `project Coptic SCRIPTORIUM, Dilley`
 - https://data.copticscriptorium.org/texts/thomasgospel/gospel-of-thomas/
 
 ---
@@ -46,10 +46,10 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 | **Blocking risks** | Copying Attridge’s Greek appendix wholesale is a clear blocker. Do **not** conflate Evelyn-White **1920** (US PD) with later copyrighted critical editions. Website dumps that silently mix modern restorations without provenance. Prefer diplomatic + marked restorations. |
 | **Confidence** | **High** for DCLP CC BY 3.0, for “do not redistribute Brill/Attridge”, and for US PD of Evelyn-White 1920. **Medium** for asserting PD of every Grenfell/Hunt digitization (encoding layer may add rights — prefer DCLP or self-OCR of PD scan). |
 
-**Primary refs:**  
-- https://github.com/papyri/idp.data/blob/master/README.md (CC BY 3.0)  
-- Grenfell & Hunt 1897 / 1904 editions  
-- Evelyn-White 1920 (US PD original): https://archive.org/details/sayingsofjesusfr00eveluoft  
+**Primary refs:**
+- https://github.com/papyri/idp.data/blob/master/README.md (CC BY 3.0)
+- Grenfell & Hunt 1897 / 1904 editions
+- Evelyn-White 1920 (US PD original): https://archive.org/details/sayingsofjesusfr00eveluoft
 - Do **not** treat Layton 1989 / Attridge appendix as open
 
 ---
@@ -66,9 +66,9 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 | **Blocking risks** | Ambiguous scope of Wells grant; print prohibition; NTAEG/Bohairica do not inherit Sahidica permission by inference; SCRIPTORIUM annotations do not erase underlying text rights. |
 | **Confidence** | **High** for custom-license wording via SCRIPTORIUM’s dedicated license page. **Low–Medium** for whether Thomas-mapping use would be permitted. |
 
-**Primary refs:**  
-- https://copticscriptorium.org/download/corpora/Mark/coptic_nt_sahidic.html  
-- CopticScriptorium/corpora README exceptions list  
+**Primary refs:**
+- https://copticscriptorium.org/download/corpora/Mark/coptic_nt_sahidic.html
+- CopticScriptorium/corpora README exceptions list
 - CrossWire CopSahidica module about-text (same Wells terms)
 
 ---
@@ -86,10 +86,10 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 
 **Blocking risks (updated):** Lack of a Wells-free Sahidic NT is **resolved for licensing** by Horner/`CopSahHorner`. Remaining work is quality/coverage verification at ingest ([JAK-24](https://linear.app/jake-danton/issue/JAK-24)), not a Phase 0 license blocker.
 
-**Primary refs (Horner):**  
-- https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=CopSahHorner  
-- https://www.crosswire.org/sword/copyright/ModInfoCopyright.jsp?modName=CopSahHorner  
-- https://www.crosswire.org/ftpmirror/pub/sword/raw/mods.d/copsahhorner.conf  
+**Primary refs (Horner):**
+- https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=CopSahHorner
+- https://www.crosswire.org/sword/copyright/ModInfoCopyright.jsp?modName=CopSahHorner
+- https://www.crosswire.org/ftpmirror/pub/sword/raw/mods.d/copsahhorner.conf
 
 ---
 
@@ -138,18 +138,18 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 
 ### Dual approach (implemented in Phase 0)
 
-1. **Code / tooling** (`python/`, `web/`, scripts, schemas authored by the project): **Apache-2.0** ([JAK-13](https://linear.app/jake-danton/issue/JAK-13) Done).  
+1. **Code / tooling** (`python/`, `web/`, scripts, schemas authored by the project): **Apache-2.0** ([JAK-13](https://linear.app/jake-danton/issue/JAK-13) Done).
    - Do **not** put the whole repository under a single CC license.
 
 2. **Data**: **No umbrella data license.** Use:
-   - Root `LICENSE` = code license only  
-   - Optional short `NOTICE` + machine-readable **`data/manifests/*`** with: `id`, `title`, `version`, `url`, `spdx_or_custom`, `attribution`, `mode` (`bundled`|`setup-download`|`manual-import`), `checksum`, `notes`  
-   - Per-tree `LICENSE` / `COPYING` files next to vendored data when present  
-   - SPDX `REUSE.toml` optional later  
+   - Root `LICENSE` = code license only
+   - Optional short `NOTICE` + machine-readable **`data/manifests/*`** with: `id`, `title`, `version`, `url`, `spdx_or_custom`, `attribution`, `mode` (`bundled`|`setup-download`|`manual-import`), `checksum`, `notes`
+   - Per-tree `LICENSE` / `COPYING` files next to vendored data when present
+   - SPDX `REUSE.toml` optional later
 
-3. **ShareAlike handling ([JAK-16](https://linear.app/jake-danton/issue/JAK-16) Done):**  
-   - Apply SA **only** when published outputs are legal **adaptations** of BY-SA material (e.g. MorphGNT morph BY-SA 3.0, CCL / sahidic.ot / Swete BY-SA 4.0).  
-   - Do **not** blanket-SA the whole project, all learned stats, or independent critical texts.  
+3. **ShareAlike handling ([JAK-16](https://linear.app/jake-danton/issue/JAK-16) Done):**
+   - Apply SA **only** when published outputs are legal **adaptations** of BY-SA material (e.g. MorphGNT morph BY-SA 3.0, CCL / sahidic.ot / Swete BY-SA 4.0).
+   - Do **not** blanket-SA the whole project, all learned stats, or independent critical texts.
    - Keep separable: raw imports, adapted tables/DBs, independent critical Greek/English, and Apache-2.0 code. Manifest each published artifact.
 
 4. **Project-authored critical Greek + rough English:** **CC BY 4.0** ([JAK-17](https://linear.app/jake-danton/issue/JAK-17) Done). Must contain no pasted copyrighted critical editions.
@@ -181,17 +181,17 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 
 ### Done
 
-1. **Code license ([JAK-13](https://linear.app/jake-danton/issue/JAK-13)):** Apache-2.0 for project-owned software.  
-2. **Sahidic NT / Wells ([JAK-14](https://linear.app/jake-danton/issue/JAK-14)):** Horner / `CopSahHorner` default; do not bundle Sahidica, NTAEG, Bohairica without explicit rights. **Implementation/verification continues on [JAK-24](https://linear.app/jake-danton/issue/JAK-24).**  
-3. **Pilot corpus ([JAK-15](https://linear.app/jake-danton/issue/JAK-15)):** Redistributable stack (Dilley + Horner + Westcott–Hort + sahidic.ot + Swete + CCL + verified Thomas fragments + WEB). Sahidica not required.  
-4. **ShareAlike outputs ([JAK-16](https://linear.app/jake-danton/issue/JAK-16)):** SA only on legal adaptations of BY-SA material; no blanket SA.  
-5. **Critical Greek/English ([JAK-17](https://linear.app/jake-danton/issue/JAK-17)):** Project-authored critical Greek + rough English = **CC BY 4.0**.  
-6. **LXX ([JAK-18](https://linear.app/jake-danton/issue/JAK-18)):** Default Swete via First1KGreek / nathans/lxx-swete (CC BY-SA 4.0); not Rahlfs-Hanhart; Rahlfs 1935 not preferred.  
+1. **Code license ([JAK-13](https://linear.app/jake-danton/issue/JAK-13)):** Apache-2.0 for project-owned software.
+2. **Sahidic NT / Wells ([JAK-14](https://linear.app/jake-danton/issue/JAK-14)):** Horner / `CopSahHorner` default; do not bundle Sahidica, NTAEG, Bohairica without explicit rights. **Implementation/verification continues on [JAK-24](https://linear.app/jake-danton/issue/JAK-24).**
+3. **Pilot corpus ([JAK-15](https://linear.app/jake-danton/issue/JAK-15)):** Redistributable stack (Dilley + Horner + Westcott–Hort + sahidic.ot + Swete + CCL + verified Thomas fragments + WEB). Sahidica not required.
+4. **ShareAlike outputs ([JAK-16](https://linear.app/jake-danton/issue/JAK-16)):** SA only on legal adaptations of BY-SA material; no blanket SA.
+5. **Critical Greek/English ([JAK-17](https://linear.app/jake-danton/issue/JAK-17)):** Project-authored critical Greek + rough English = **CC BY 4.0**.
+6. **LXX ([JAK-18](https://linear.app/jake-danton/issue/JAK-18)):** Default Swete via First1KGreek / nathans/lxx-swete (CC BY-SA 4.0); not Rahlfs-Hanhart; Rahlfs 1935 not preferred.
 7. **Lexicon ([JAK-19](https://linear.app/jake-danton/issue/JAK-19)):** Default CCL TEI incl. DDGLC; do not wait on DIOSKOROS; no scrape.
 
 ### Follow-up (not reversing JAK-15)
 
-8. **SBLGNT vs Westcott–Hort ([JAK-25](https://linear.app/jake-danton/issue/JAK-25)):** SBLGNT is now CC BY 4.0 (Dec 2022). Revisit whether to change the default Greek NT; **do not flip in this Phase 0 PR**.  
+8. **SBLGNT vs Westcott–Hort ([JAK-25](https://linear.app/jake-danton/issue/JAK-25)):** SBLGNT is now CC BY 4.0 (Dec 2022). Revisit whether to change the default Greek NT; **do not flip in this Phase 0 PR**.
 9. **Counsel:** Optional quick IP review before claiming the repo is fully redistributable offline including all corpora.
 
 ---

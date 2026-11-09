@@ -1,0 +1,59 @@
+# SPDX-License-Identifier: Apache-2.0
+# Local and CI share this config. CI runs: uv run pre-commit run --all-files
+# Keep hook revs pinned; Dependabot updates them weekly.
+
+default_language_version:
+  python: python3.12
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-toml
+      - id: check-added-large-files
+        args: [--maxkb=500]
+
+  - repo: local
+    hooks:
+      - id: uv-lock-check
+        name: uv lock check
+        entry: uv lock --check
+        language: system
+        pass_filenames: false
+        files: ^(pyproject\.toml|uv\.lock)$
+
+      - id: ruff-format
+        name: ruff format
+        entry: uv run ruff format
+        language: system
+        types_or: [python, pyi]
+
+      - id: ruff-check
+        name: ruff check
+        entry: uv run ruff check --fix
+        language: system
+        types_or: [python, pyi]
+
+      - id: ty
+        name: ty typecheck
+        entry: uv run ty check
+        language: system
+        pass_filenames: false
+        types_or: [python, pyi]
+
+      - id: pytest-fast
+        name: pytest (fast suite)
+        entry: uv run pytest
+        language: system
+        pass_filenames: false
+        types_or: [python, pyi]
+
+      - id: spdx-headers
+        name: SPDX license headers
+        entry: uv run python scripts/check_spdx_headers.py
+        language: system
+        types_or: [python, pyi]
+        files: ^(python|tests)/
