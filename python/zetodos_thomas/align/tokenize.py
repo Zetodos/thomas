@@ -1,9 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
 """Whitespace tokenization helpers for stable token minting (schema fixtures).
 
-This is intentionally dumb: Phase 1 uses space-separated surfaces from Horner
-and Vaticanus diplomatic text. It is **not** a morphological analyzer and does
-not train or invoke eflomal.
+This helper is for sources where **whitespace token counts match** between
+``original_text`` and ``normalized_text`` (Horner / Vaticanus B* pilot
+surfaces). It is **not** valid for Dilley / SCRIPTORIUM Thomas: there
+``original_text`` is a continuous concatenation of ``orig`` surfaces while
+``normalized_text`` is independently morpheme-segmented. SCRIPTORIUM ingest
+must mint tokens from per-token orig↔norm pairs (JAK-30), not this zip.
 """
 
 from __future__ import annotations
@@ -17,33 +20,49 @@ from zetodos_thomas.schemas.source import TextUnit
 _TOKEN_RE = re.compile(r"\S+")
 
 
-def whitespace_tokens(
-    unit: TextUnit,
-    *,
-    use_normalized_surface: bool = False,
-) -> list[Token]:
-    """Mint ordered tokens from a text unit's surface string.
+class TokenCountMismatchError(ValueError):
+    """Raised when original and normalized whitespace token counts differ."""
 
-    Offsets always refer to ``unit.original_text`` when
-    ``use_normalized_surface`` is false (default). When true, ``surface`` and
-    offsets refer to ``normalized_text`` (useful when originals are empty but
-    a normalized placeholder exists — rare for the NT pilot).
+
+def whitespace_token_counts(unit: TextUnit) -> tuple[int, int]:
+    """Return ``(original_count, normalized_count)`` after whitespace split."""
+    original_n = len(_TOKEN_RE.findall(unit.original_text))
+    normalized_n = len(_TOKEN_RE.findall(unit.normalized_text))
+    return original_n, normalized_n
+
+
+def whitespace_tokens(unit: TextUnit) -> list[Token]:
+    """Mint ordered tokens by whitespace-zipping original and normalized text.
+
+    ``Token.char_start`` / ``char_end`` are always offsets into
+    ``unit.original_text``. ``normalized`` comes from the same-index whitespace
+    token in ``normalized_text``.
+
+    Raises ``TokenCountMismatchError`` when the two layers disagree on token
+    count (the Dilley/SCRIPTORIUM case). Empty units (both layers empty) yield
+    an empty token list.
     """
-    text = unit.normalized_text if use_normalized_surface else unit.original_text
-    norm_source = unit.normalized_text
-    norm_parts = _TOKEN_RE.findall(norm_source) if norm_source else []
+    original_parts = list(_TOKEN_RE.finditer(unit.original_text))
+    norm_parts = _TOKEN_RE.findall(unit.normalized_text)
+    if len(original_parts) != len(norm_parts):
+        msg = (
+            f"whitespace token count mismatch for {unit.source_id}/{unit.unit_id}: "
+            f"original={len(original_parts)} normalized={len(norm_parts)}. "
+            "whitespace_tokens only supports matching counts (Horner/Vaticanus). "
+            "Dilley/SCRIPTORIUM must use per-token orig↔norm pairs, not positional zip."
+        )
+        raise TokenCountMismatchError(msg)
+
     tokens: list[Token] = []
-    for sequence, match in enumerate(_TOKEN_RE.finditer(text)):
-        surface = match.group(0)
-        normalized = norm_parts[sequence] if sequence < len(norm_parts) else surface
+    for sequence, match in enumerate(original_parts):
         tokens.append(
             Token(
                 id=token_id(unit.source_id, unit.unit_id, sequence),
                 source_id=unit.source_id,
                 unit_id=unit.unit_id,
                 sequence=sequence,
-                surface=surface,
-                normalized=normalized,
+                surface=match.group(0),
+                normalized=norm_parts[sequence],
                 char_start=match.start(),
                 char_end=match.end(),
             )

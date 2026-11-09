@@ -1,7 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
 """Alignment utilities: tokenization helpers and schema-backed validation."""
 
-from zetodos_thomas.align.tokenize import whitespace_tokens
+from zetodos_thomas.align.tokenize import (
+    TokenCountMismatchError,
+    whitespace_token_counts,
+    whitespace_tokens,
+)
 from zetodos_thomas.schemas.alignment import (
     AgreementDegree,
     AlignmentDocument,
@@ -9,6 +13,7 @@ from zetodos_thomas.schemas.alignment import (
     ParallelRelation,
     Span,
     SpanKind,
+    ThomasCorpus,
     Token,
 )
 from zetodos_thomas.schemas.ids import (
@@ -26,9 +31,12 @@ __all__ = [
     "ParallelRelation",
     "Span",
     "SpanKind",
+    "ThomasCorpus",
     "Token",
+    "TokenCountMismatchError",
     "parallel_id",
     "span_id",
     "token_id",
+    "whitespace_token_counts",
     "whitespace_tokens",
 ]

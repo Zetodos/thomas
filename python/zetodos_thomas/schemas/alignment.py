@@ -5,6 +5,9 @@ Extends the JAK-24/JAK-25 ``TextUnit`` / ``ParallelUnit`` / ``PilotCorpus``
 verse-pairing layer (PLAN.md §6) with span-first IDs suitable for JAK-28
 evaluation. Many-to-many Coptic↔Greek mappings are first-class; discontinuous
 and empty spans are allowed when explicitly marked.
+
+**Canonical Token/Span models live here** (JAK-32). Ingest PRs (JAK-30/31)
+must use these types — do not introduce parallel stub Token/Span classes.
 """
 
 from __future__ import annotations
@@ -14,7 +17,12 @@ from typing import Self
 
 from pydantic import BaseModel, Field, model_validator
 
-from zetodos_thomas.schemas.ids import ID_SCHEME_VERSION
+from zetodos_thomas.schemas.ids import (
+    ID_SCHEME_VERSION,
+    parse_parallel_id,
+    parse_span_id,
+    parse_token_id,
+)
 from zetodos_thomas.schemas.source import TextUnit
 
 
@@ -149,6 +157,193 @@ class Parallel(BaseModel):
         return self
 
 
+def _validate_token_span_parallel_graph(
+    *,
+    id_scheme_version: str,
+    text_units: list[TextUnit],
+    tokens: list[Token],
+    spans: list[Span],
+    parallels: list[Parallel],
+) -> None:
+    """Shared integrity checks for AlignmentDocument and ThomasCorpus."""
+    if id_scheme_version != ID_SCHEME_VERSION:
+        msg = (
+            f"id_scheme_version {id_scheme_version!r} does not match "
+            f"code scheme {ID_SCHEME_VERSION!r}; migrate per docs/id-scheme.md"
+        )
+        raise ValueError(msg)
+
+    unit_keys = {(u.source_id, u.unit_id) for u in text_units}
+    if len(unit_keys) != len(text_units):
+        msg = "duplicate TextUnit (source_id, unit_id) pairs"
+        raise ValueError(msg)
+
+    token_by_id: dict[str, Token] = {}
+    seq_seen: set[tuple[str, str, int]] = set()
+    for token in tokens:
+        try:
+            parsed = parse_token_id(token.id)
+        except ValueError as exc:
+            msg = f"invalid token id {token.id!r}: {exc}"
+            raise ValueError(msg) from exc
+        if parsed.scheme_version != id_scheme_version:
+            msg = (
+                f"token id {token.id} scheme v{parsed.scheme_version} does not "
+                f"match document id_scheme_version {id_scheme_version}"
+            )
+            raise ValueError(msg)
+        if parsed.source_id != token.source_id or parsed.unit_id != token.unit_id:
+            msg = (
+                f"token id {token.id} encodes {parsed.source_id}/{parsed.unit_id}, "
+                f"not {token.source_id}/{token.unit_id}"
+            )
+            raise ValueError(msg)
+        if parsed.sequence != token.sequence:
+            msg = (
+                f"token id {token.id} encodes sequence {parsed.sequence}, "
+                f"not Token.sequence={token.sequence}"
+            )
+            raise ValueError(msg)
+
+        key = (token.source_id, token.unit_id)
+        if key not in unit_keys:
+            msg = (
+                f"dangling token {token.id}: unknown unit "
+                f"{token.source_id}/{token.unit_id}"
+            )
+            raise ValueError(msg)
+        if token.id in token_by_id:
+            msg = f"duplicate token id: {token.id}"
+            raise ValueError(msg)
+        seq_key = (token.source_id, token.unit_id, token.sequence)
+        if seq_key in seq_seen:
+            msg = (
+                f"duplicate token sequence {token.sequence} in "
+                f"{token.source_id}/{token.unit_id}"
+            )
+            raise ValueError(msg)
+        seq_seen.add(seq_key)
+        token_by_id[token.id] = token
+
+    span_by_id: dict[str, Span] = {}
+    exclusive: dict[tuple[str, str, str], list[set[str]]] = {}
+    for span in spans:
+        try:
+            parsed_span = parse_span_id(span.id)
+        except ValueError as exc:
+            msg = f"invalid span id {span.id!r}: {exc}"
+            raise ValueError(msg) from exc
+        if parsed_span.scheme_version != id_scheme_version:
+            msg = (
+                f"span id {span.id} scheme v{parsed_span.scheme_version} does not "
+                f"match document id_scheme_version {id_scheme_version}"
+            )
+            raise ValueError(msg)
+        if (
+            parsed_span.source_id != span.source_id
+            or parsed_span.unit_id != span.unit_id
+        ):
+            msg = (
+                f"span id {span.id} encodes "
+                f"{parsed_span.source_id}/{parsed_span.unit_id}, "
+                f"not {span.source_id}/{span.unit_id}"
+            )
+            raise ValueError(msg)
+
+        key = (span.source_id, span.unit_id)
+        if key not in unit_keys:
+            msg = (
+                f"dangling span {span.id}: unknown unit {span.source_id}/{span.unit_id}"
+            )
+            raise ValueError(msg)
+        if span.id in span_by_id:
+            msg = f"duplicate span id: {span.id}"
+            raise ValueError(msg)
+        span_by_id[span.id] = span
+
+        sequences: list[int] = []
+        for tid in span.token_ids:
+            token = token_by_id.get(tid)
+            if token is None:
+                msg = f"dangling token id {tid} in span {span.id}"
+                raise ValueError(msg)
+            if token.source_id != span.source_id or token.unit_id != span.unit_id:
+                msg = (
+                    f"token {tid} in span {span.id} belongs to "
+                    f"{token.source_id}/{token.unit_id}, not "
+                    f"{span.source_id}/{span.unit_id}"
+                )
+                raise ValueError(msg)
+            sequences.append(token.sequence)
+
+        # Ordered token_ids contract: sequences must be strictly increasing.
+        if sequences and any(
+            sequences[i] >= sequences[i + 1] for i in range(len(sequences) - 1)
+        ):
+            msg = (
+                f"span {span.id} token_ids are out of order "
+                f"(sequences {sequences}); must be strictly increasing"
+            )
+            raise ValueError(msg)
+
+        if span.kind is SpanKind.CONTIGUOUS and sequences:
+            lo, hi = sequences[0], sequences[-1]
+            expected = list(range(lo, hi + 1))
+            if sequences != expected:
+                msg = (
+                    f"contiguous span {span.id} has non-contiguous "
+                    f"token sequences {sequences}"
+                )
+                raise ValueError(msg)
+        if span.kind is SpanKind.DISCONTINUOUS and sequences:
+            lo, hi = sequences[0], sequences[-1]
+            if sequences == list(range(lo, hi + 1)):
+                msg = f"discontinuous span {span.id} has no gap; use kind=contiguous"
+                raise ValueError(msg)
+
+        if span.exclusive_group is not None:
+            ekey = (span.exclusive_group, span.source_id, span.unit_id)
+            exclusive.setdefault(ekey, []).append(set(span.token_ids))
+
+    for ekey, groups in exclusive.items():
+        for i, left in enumerate(groups):
+            for right in groups[i + 1 :]:
+                overlap = left & right
+                if overlap:
+                    group, source_id, unit_id = ekey
+                    msg = (
+                        f"illegal overlap in exclusive_group {group!r} "
+                        f"for {source_id}/{unit_id}: {sorted(overlap)}"
+                    )
+                    raise ValueError(msg)
+
+    parallel_ids: set[str] = set()
+    for parallel in parallels:
+        try:
+            parsed_par = parse_parallel_id(parallel.id)
+        except ValueError as exc:
+            msg = f"invalid parallel id {parallel.id!r}: {exc}"
+            raise ValueError(msg) from exc
+        if parsed_par.scheme_version != id_scheme_version:
+            msg = (
+                f"parallel id {parallel.id} scheme v{parsed_par.scheme_version} "
+                f"does not match document id_scheme_version {id_scheme_version}"
+            )
+            raise ValueError(msg)
+        if parallel.id in parallel_ids:
+            msg = f"duplicate parallel id: {parallel.id}"
+            raise ValueError(msg)
+        parallel_ids.add(parallel.id)
+        for side, ids in (
+            ("left", parallel.left_span_ids),
+            ("right", parallel.right_span_ids),
+        ):
+            for sid in ids:
+                if sid not in span_by_id:
+                    msg = f"dangling {side} span id {sid} in parallel {parallel.id}"
+                    raise ValueError(msg)
+
+
 class AlignmentDocument(BaseModel):
     """Self-contained units + tokens + spans + parallels for offline validation.
 
@@ -171,118 +366,48 @@ class AlignmentDocument(BaseModel):
 
     @model_validator(mode="after")
     def _referential_integrity(self) -> Self:
-        if self.id_scheme_version != ID_SCHEME_VERSION:
-            msg = (
-                f"id_scheme_version {self.id_scheme_version!r} does not match "
-                f"code scheme {ID_SCHEME_VERSION!r}; migrate per docs/id-scheme.md"
-            )
-            raise ValueError(msg)
+        _validate_token_span_parallel_graph(
+            id_scheme_version=self.id_scheme_version,
+            text_units=self.text_units,
+            tokens=self.tokens,
+            spans=self.spans,
+            parallels=self.parallels,
+        )
+        return self
 
-        unit_keys = {(u.source_id, u.unit_id) for u in self.text_units}
-        if len(unit_keys) != len(self.text_units):
-            msg = "duplicate TextUnit (source_id, unit_id) pairs"
-            raise ValueError(msg)
 
-        token_by_id: dict[str, Token] = {}
-        seq_seen: set[tuple[str, str, int]] = set()
-        for token in self.tokens:
-            key = (token.source_id, token.unit_id)
-            if key not in unit_keys:
+class ThomasCorpus(BaseModel):
+    """Imported Coptic Gospel of Thomas units with shared Token/Span layers.
+
+    Canonical home for Dilley/SCRIPTORIUM ingest (JAK-30). Uses the same
+    ``Token`` / ``Span`` models and id scheme as ``AlignmentDocument`` — do
+    not invent a second Token/Span shape. Phrase parallels belong in a later
+    ``AlignmentDocument`` (JAK-28/32 consumers), not here.
+    """
+
+    id: str
+    title: str
+    source_id: str
+    id_scheme_version: str = Field(default=ID_SCHEME_VERSION)
+    units: list[TextUnit]
+    tokens: list[Token] = Field(default_factory=list)
+    spans: list[Span] = Field(default_factory=list)
+    notes: str = ""
+
+    @model_validator(mode="after")
+    def _referential_integrity(self) -> Self:
+        for unit in self.units:
+            if unit.source_id != self.source_id:
                 msg = (
-                    f"dangling token {token.id}: unknown unit "
-                    f"{token.source_id}/{token.unit_id}"
+                    f"unit {unit.unit_id} source_id {unit.source_id!r} != "
+                    f"corpus source_id {self.source_id!r}"
                 )
                 raise ValueError(msg)
-            if token.id in token_by_id:
-                msg = f"duplicate token id: {token.id}"
-                raise ValueError(msg)
-            seq_key = (token.source_id, token.unit_id, token.sequence)
-            if seq_key in seq_seen:
-                msg = (
-                    f"duplicate token sequence {token.sequence} in "
-                    f"{token.source_id}/{token.unit_id}"
-                )
-                raise ValueError(msg)
-            seq_seen.add(seq_key)
-            token_by_id[token.id] = token
-
-        span_by_id: dict[str, Span] = {}
-        # exclusive_group -> unit_key -> list of token-id sets
-        exclusive: dict[tuple[str, str, str], list[set[str]]] = {}
-        for span in self.spans:
-            key = (span.source_id, span.unit_id)
-            if key not in unit_keys:
-                msg = (
-                    f"dangling span {span.id}: unknown unit "
-                    f"{span.source_id}/{span.unit_id}"
-                )
-                raise ValueError(msg)
-            if span.id in span_by_id:
-                msg = f"duplicate span id: {span.id}"
-                raise ValueError(msg)
-            span_by_id[span.id] = span
-
-            sequences: list[int] = []
-            for tid in span.token_ids:
-                token = token_by_id.get(tid)
-                if token is None:
-                    msg = f"dangling token id {tid} in span {span.id}"
-                    raise ValueError(msg)
-                if token.source_id != span.source_id or token.unit_id != span.unit_id:
-                    msg = (
-                        f"token {tid} in span {span.id} belongs to "
-                        f"{token.source_id}/{token.unit_id}, not "
-                        f"{span.source_id}/{span.unit_id}"
-                    )
-                    raise ValueError(msg)
-                sequences.append(token.sequence)
-
-            if span.kind is SpanKind.CONTIGUOUS and sequences:
-                lo, hi = min(sequences), max(sequences)
-                expected = list(range(lo, hi + 1))
-                if sorted(sequences) != expected:
-                    msg = (
-                        f"contiguous span {span.id} has non-contiguous "
-                        f"token sequences {sequences}"
-                    )
-                    raise ValueError(msg)
-            if span.kind is SpanKind.DISCONTINUOUS and sequences:
-                lo, hi = min(sequences), max(sequences)
-                if sorted(sequences) == list(range(lo, hi + 1)):
-                    msg = (
-                        f"discontinuous span {span.id} has no gap; use kind=contiguous"
-                    )
-                    raise ValueError(msg)
-
-            if span.exclusive_group is not None:
-                ekey = (span.exclusive_group, span.source_id, span.unit_id)
-                exclusive.setdefault(ekey, []).append(set(span.token_ids))
-
-        for ekey, groups in exclusive.items():
-            for i, left in enumerate(groups):
-                for right in groups[i + 1 :]:
-                    overlap = left & right
-                    if overlap:
-                        group, source_id, unit_id = ekey
-                        msg = (
-                            f"illegal overlap in exclusive_group {group!r} "
-                            f"for {source_id}/{unit_id}: {sorted(overlap)}"
-                        )
-                        raise ValueError(msg)
-
-        parallel_ids: set[str] = set()
-        for parallel in self.parallels:
-            if parallel.id in parallel_ids:
-                msg = f"duplicate parallel id: {parallel.id}"
-                raise ValueError(msg)
-            parallel_ids.add(parallel.id)
-            for side, ids in (
-                ("left", parallel.left_span_ids),
-                ("right", parallel.right_span_ids),
-            ):
-                for sid in ids:
-                    if sid not in span_by_id:
-                        msg = f"dangling {side} span id {sid} in parallel {parallel.id}"
-                        raise ValueError(msg)
-
+        _validate_token_span_parallel_graph(
+            id_scheme_version=self.id_scheme_version,
+            text_units=self.units,
+            tokens=self.tokens,
+            spans=self.spans,
+            parallels=[],
+        )
         return self

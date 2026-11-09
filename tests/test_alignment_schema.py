@@ -9,7 +9,11 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from zetodos_thomas.align.tokenize import whitespace_tokens
+from zetodos_thomas.align.tokenize import (
+    TokenCountMismatchError,
+    whitespace_token_counts,
+    whitespace_tokens,
+)
 from zetodos_thomas.ingest.pilot import load_pilot_corpus
 from zetodos_thomas.schemas.alignment import (
     AgreementDegree,
@@ -18,11 +22,13 @@ from zetodos_thomas.schemas.alignment import (
     ParallelRelation,
     Span,
     SpanKind,
+    ThomasCorpus,
     Token,
 )
 from zetodos_thomas.schemas.ids import (
     ID_SCHEME_VERSION,
     parallel_id,
+    parse_token_id,
     scheme_version_of,
     span_id,
     token_id,
@@ -44,6 +50,9 @@ def test_id_helpers_embed_scheme_version() -> None:
     assert scheme_version_of(tid) == ID_SCHEME_VERSION
     assert scheme_version_of(sid) == ID_SCHEME_VERSION
     assert scheme_version_of(pid) == ID_SCHEME_VERSION
+    parsed = parse_token_id(tid)
+    assert parsed.sequence == 0
+    assert parsed.source_id == "ntvmr-vaticanus-b"
     with pytest.raises(ValueError):
         span_id("copsahhorner", "john.1.1", "has space")
 
@@ -64,12 +73,54 @@ def test_whitespace_tokens_from_pilot_john_1_1() -> None:
     sahidic = whitespace_tokens(pair.sahidic)
     assert greek[0].surface == "εν"
     assert greek[0].id == token_id("ntvmr-vaticanus-b", "john.1.1", 0)
+    assert greek[0].char_start == 0
     assert any(t.normalized == "λογος" for t in greek)
     assert any("ϣⲁϫⲉ" in t.normalized for t in sahidic)
-    # Empty PA units mint zero tokens
     empty = next(u for u in corpus.units if u.unit_id == "john.8.1")
     assert whitespace_tokens(empty.greek) == []
     assert whitespace_tokens(empty.sahidic) == []
+
+
+def test_whitespace_tokens_rejects_dilley_style_mismatch() -> None:
+    """SCRIPTORIUM-like: continuous orig concat vs segmented norm must not zip."""
+    unit = TextUnit(
+        source_id="dilley-thomas",
+        unit_id="thomas.0",
+        book="thomas",
+        chapter=0,
+        verse=0,
+        original_text="ⲛⲁⲉⲓⲛⲉⲛϣⲁϫⲉ",  # continuous concat (no spaces)
+        normalized_text="ⲛⲁⲓ ⲛⲉ ⲛ ϣⲁϫⲉ",  # morpheme-segmented
+        kind=UnitKind.PROLOGUE,
+        sequence=0,
+    )
+    orig_n, norm_n = whitespace_token_counts(unit)
+    assert orig_n == 1
+    assert norm_n == 4
+    with pytest.raises(TokenCountMismatchError, match="mismatch"):
+        whitespace_tokens(unit)
+
+
+def test_thomas_prologue_unit_allowed() -> None:
+    unit = TextUnit(
+        source_id="dilley-thomas",
+        unit_id="thomas.0",
+        book="thomas",
+        chapter=0,
+        verse=0,
+        original_text="",
+        normalized_text="",
+        kind=UnitKind.PROLOGUE,
+        sequence=0,
+    )
+    corpus = ThomasCorpus(
+        id="thomas-prologue-smoke",
+        title="prologue smoke",
+        source_id="dilley-thomas",
+        units=[unit],
+    )
+    assert corpus.units[0].chapter == 0
+    assert corpus.units[0].kind is UnitKind.PROLOGUE
 
 
 def test_horner_vaticanus_phrase_fixture() -> None:
@@ -93,7 +144,6 @@ def test_thomas_unit_stub_fixture() -> None:
     assert {u.kind for u in doc.text_units} == {UnitKind.LOGION}
     assert any(u.unit_id == "thomas.7" for u in doc.text_units)
     assert any(p.relation is ParallelRelation.LOANWORD for p in doc.parallels)
-    # many-to-one: whole Coptic logion ↔ single Greek fragment span reused
     rights = [sid for p in doc.parallels for sid in p.right_span_ids]
     assert len(rights) >= 2
     assert len(set(rights)) < len(rights)
@@ -124,6 +174,97 @@ def test_rejects_dangling_token_in_span() -> None:
             text_units=[unit],
             tokens=tokens,
             spans=[span],
+        )
+
+
+def test_rejects_mismatched_token_id_scheme_or_sequence() -> None:
+    unit = TextUnit(
+        source_id="ntvmr-vaticanus-b",
+        unit_id="john.1.1",
+        book="john",
+        chapter=1,
+        verse=1,
+        original_text="εν",
+        normalized_text="εν",
+    )
+    with pytest.raises(ValidationError, match="scheme"):
+        AlignmentDocument(
+            id="v0",
+            title="v0",
+            text_units=[unit],
+            tokens=[
+                Token(
+                    id="v0:ntvmr-vaticanus-b/john.1.1/t/0",
+                    source_id=unit.source_id,
+                    unit_id=unit.unit_id,
+                    sequence=0,
+                    surface="εν",
+                    normalized="εν",
+                )
+            ],
+        )
+    with pytest.raises(ValidationError, match="sequence"):
+        AlignmentDocument(
+            id="seq",
+            title="seq",
+            text_units=[unit],
+            tokens=[
+                Token(
+                    id=token_id(unit.source_id, unit.unit_id, 0),
+                    source_id=unit.source_id,
+                    unit_id=unit.unit_id,
+                    sequence=1,  # disagrees with id …/t/0
+                    surface="εν",
+                    normalized="εν",
+                )
+            ],
+        )
+
+
+def test_rejects_out_of_order_span_token_ids() -> None:
+    unit = TextUnit(
+        source_id="ntvmr-vaticanus-b",
+        unit_id="john.1.1",
+        book="john",
+        chapter=1,
+        verse=1,
+        original_text="α β γ",
+        normalized_text="α β γ",
+    )
+    tokens = whitespace_tokens(unit)
+    # Contiguous membership but wrong stored order: [t/2, t/0, t/1]
+    with pytest.raises(ValidationError, match="out of order"):
+        AlignmentDocument(
+            id="order",
+            title="order",
+            text_units=[unit],
+            tokens=tokens,
+            spans=[
+                Span(
+                    id=span_id(unit.source_id, unit.unit_id, "scrambled"),
+                    source_id=unit.source_id,
+                    unit_id=unit.unit_id,
+                    kind=SpanKind.CONTIGUOUS,
+                    token_ids=[tokens[2].id, tokens[0].id, tokens[1].id],
+                )
+            ],
+        )
+    # Reversed discontinuous span
+    with pytest.raises(ValidationError, match="out of order"):
+        AlignmentDocument(
+            id="rev",
+            title="rev",
+            text_units=[unit],
+            tokens=tokens,
+            spans=[
+                Span(
+                    id=span_id(unit.source_id, unit.unit_id, "reversed"),
+                    source_id=unit.source_id,
+                    unit_id=unit.unit_id,
+                    kind=SpanKind.DISCONTINUOUS,
+                    token_ids=[tokens[2].id, tokens[0].id],
+                )
+            ],
         )
 
 
