@@ -3,7 +3,7 @@
 Offline-capable, evidence-based reconstruction and reader for the *Gospel of Thomas*.
 
 **Repository:** <https://github.com/Zetodos/thomas>  
-**Status:** Phase 0 — licensing and repo foundation. Reconstruction feasibility is not yet proven. No CLI, package, or corpus import ships yet.
+**Status:** Phase 0 — licensing, docs, and Python toolchain scaffold. Reconstruction feasibility is not yet proven. No corpus import or reconstruction engine ships yet.
 
 ## Objective
 
@@ -52,17 +52,30 @@ Full list and allowlist: [`docs/source-licenses.md`](docs/source-licenses.md#nev
 
 This repo does not yet contain corpus files.
 
-## Planned setup (not implemented)
+## Python setup
 
-When tooling exists, the intended workflow is:
+Requires [uv](https://docs.astral.sh/uv/) and Python 3.12+.
 
-1. Clone the repository.
-2. Create a local environment with **`uv`** (Python) and install declared dependencies.
-3. Run an explicit one-time **setup** that may download permitted corpora and optional local models.
-4. After setup, CLI commands, site builds, and local website use must work **offline** (no cloud APIs, CDNs, or hidden network fetches).
+```bash
+uv sync --locked
+uv run thomas --help
+uv run ruff check .
+uv run ruff format --check .
+uv run ty check
+uv run pytest
+```
 
-There is **no** `thomas` CLI yet. Do not invent commands; follow `PLAN.md` until Phase 1 scaffolding lands.
+The `thomas` console script is a Phase 0 Typer scaffold (`--help` only). Planned subcommands live in [`PLAN.md`](PLAN.md); do not invent them ahead of their phases.
+
+Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web/` only (not started yet).
+
+## Offline workflow (planned)
+
+After clone and `uv sync --locked`:
+
+1. Run an explicit one-time **setup** that may download permitted corpora and optional local models (not implemented yet).
+2. After setup, CLI commands, site builds, and local website use must work **offline** (no cloud APIs, CDNs, or hidden network fetches).
 
 ## Phase 0 scope
 
-This phase adds license, README, and source-policy docs only. Out of scope: Python package, web app, corpus downloads, and Horner import.
+This phase covers license/docs plus the Python toolchain scaffold (uv, ruff, ty, pytest, Typer, Pydantic). Out of scope: web app, corpus downloads, Horner import, and reconstruction.

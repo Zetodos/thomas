@@ -1,0 +1,50 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python toolchain
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync --locked
+
+      - name: Ruff lint
+        run: uv run ruff check .
+
+      - name: Ruff format
+        run: uv run ruff format --check .
+
+      - name: Type check
+        run: uv run ty check
+
+      - name: Tests
+        run: uv run pytest
+
+      - name: Build wheel
+        run: uv build
+
+      - name: Smoke-test wheel entrypoint
+        run: |
+          set -euo pipefail
+          WHEEL="$(ls -1 dist/zetodos_thomas-*.whl | head -n 1)"
+          test -n "${WHEEL}"
+          uv venv .venv-wheel
+          uv pip install --python .venv-wheel "${WHEEL}"
+          .venv-wheel/bin/thomas --help
