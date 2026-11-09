@@ -41,8 +41,8 @@ packages = ["python/zetodos_thomas"]
 # Ship redistributable JSON (non-.py) inside the wheel for offline validate.
 [tool.hatch.build.targets.wheel.force-include]
 "python/zetodos_thomas/bundled/manifests/copsahhorner.json" = "zetodos_thomas/bundled/manifests/copsahhorner.json"
-"python/zetodos_thomas/bundled/manifests/westcott-hort.json" = "zetodos_thomas/bundled/manifests/westcott-hort.json"
-"python/zetodos_thomas/bundled/pilot/horner-wh-nt-pilot.json" = "zetodos_thomas/bundled/pilot/horner-wh-nt-pilot.json"
+"python/zetodos_thomas/bundled/manifests/ntvmr-vaticanus-b.json" = "zetodos_thomas/bundled/manifests/ntvmr-vaticanus-b.json"
+"python/zetodos_thomas/bundled/pilot/horner-vaticanus-nt-pilot.json" = "zetodos_thomas/bundled/pilot/horner-vaticanus-nt-pilot.json"
 [tool.uv]
 package = true
 default-groups = ["dev"]
@@ -67,7 +67,7 @@ select = [
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["ANN", "RUF001"]
 "python/zetodos_thomas/cli/**" = ["B008"]
-"python/zetodos_thomas/ingest/westcott_hort.py" = ["RUF001"]
+"python/zetodos_thomas/ingest/ntvmr_vaticanus.py" = ["RUF001"]
 "python/zetodos_thomas/ingest/copsahhorner.py" = ["RUF001"]
 "python/zetodos_thomas/ingest/pilot.py" = ["RUF001"]
 

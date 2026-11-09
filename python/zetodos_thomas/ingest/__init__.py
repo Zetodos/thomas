@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Source ingestion: manifests, CopSahHorner, Westcott-Hort, pilot corpus."""
+"""Source ingestion: manifests, CopSahHorner, Vaticanus B*, pilot corpus."""
 
 from zetodos_thomas.ingest.manifests import (
     ManifestValidationError,

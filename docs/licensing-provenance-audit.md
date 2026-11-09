@@ -2,7 +2,7 @@
 
 **Scope:** Redistributability for an offline open-source repo (`Zetodos/thomas`).
 **Method:** Public web / primary license pages / corpus READMEs (2026-11-09).
-**Updates:** JAK-13–19 decisions recorded as **Done** (see § Decisions). Sahidic NT: Horner / CrossWire `CopSahHorner` (JAK-14; implementation JAK-24). Greek NT default: Westcott–Hort (JAK-15); SBLGNT revisit JAK-25.
+**Updates:** JAK-13–19 decisions recorded as **Done** (see § Decisions). Sahidic NT: Horner / CrossWire `CopSahHorner` (JAK-14; implementation JAK-24). Greek NT default: **NTVMR Vaticanus B\*** (JAK-25 GO; updates JAK-15 WH default).
 **Caveat:** Not legal advice. Licenses change; pin versions and re-check before bundling. Confidence tags: **High** (primary license text seen), **Medium** (reputable secondary + consistent primary snippets), **Low** (inference / conflicting claims / no clear instrument).
 
 Setup modes used below:
@@ -77,7 +77,7 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 
 | Source | License | Redistributable | Setup | Notes / confidence |
 | --- | --- | --- | --- | --- |
-| **CrossWire `CopSahHorner`** (G. W. Horner Sahidic NT, module v1.5) | CrossWire **DistributionLicense = Public Domain**; print edition 1911–1924 (Horner d. 1930) PD in US for pre-1929 / author-dead works | **Yes** for this CrossWire module (pin version/checksum) | **setup-download** (+ bundled PD pilot excerpt) | **Default Sahidic NT baseline (JAK-14).** Ingest/verify: JAK-24 — zip `sha256:4f074891…2132`; Unicode Coptic + overlines confirmed; John 7:53–8:11 / Mark 16:9–20 empty. See [`horner-wh-alignment-notes.md`](horner-wh-alignment-notes.md) and [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json). TextSource: Slavic Bible for Windows → CrossWire Unicode/OSIS. Quality caveats: eclectic MSS base; NRSV versification; historical verse misnumbering fixed in v1.5; weaker than Sahidica for Greek-parallel NLP. **High** confidence on CrossWire PD claim for the module. |
+| **CrossWire `CopSahHorner`** (G. W. Horner Sahidic NT, module v1.5) | CrossWire **DistributionLicense = Public Domain**; print edition 1911–1924 (Horner d. 1930) PD in US for pre-1929 / author-dead works | **Yes** for this CrossWire module (pin version/checksum) | **setup-download** (+ bundled PD pilot excerpt) | **Default Sahidic NT baseline (JAK-14).** Ingest/verify: JAK-24 — zip `sha256:4f074891…2132`; Unicode Coptic + overlines confirmed; John 7:53–8:11 / Mark 16:9–20 empty. See [`horner-vaticanus-alignment-notes.md`](horner-vaticanus-alignment-notes.md) and [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json). TextSource: Slavic Bible for Windows → CrossWire Unicode/OSIS. Quality caveats: eclectic MSS base; NRSV versification; historical verse misnumbering fixed in v1.5; weaker than Sahidica for Greek-parallel NLP. **High** confidence on CrossWire PD claim for the module. |
 | **SCRIPTORIUM `sahidic.ot`** (Göttingen / CoptOT basetext via SCRIPTORIUM) | **CC BY-SA 4.0** (SCRIPTORIUM OT license page) | **Yes** (SA obligations) | **bundled** or **setup-download** | Strong OT parallel candidate. English alignment often WEB (PD). **High** confidence for CC BY-SA claim on SCRIPTORIUM page. |
 | **SCRIPTORIUM Bohairic NT/OT / Wells Bohairica** | SCRIPTORIUM default CC BY 3.0/4.0; third-party notes also say CC BY-SA 4.0 for bohairic corpora. Underlying Wells **Bohairica** © 2006 “all rights reserved” with **unclear** electronic permission (unlike Sahidica’s explicit free-electronic clause). Marcion/Takla also in provenance chain. | **Uncertain** for full NT text | **`manual-import` only** after rights confirmation; **not** `setup-download` while unresolved; otherwise unavailable / out of default | Secondary dialect only per plan. Gated with Sahidica/NTAEG (JAK-14). **Medium** conflict between SCRIPTORIUM packaging and Wells ©. |
 | **CoptOT manuscript transcriptions / critical edition** | Project DMP discusses publication; do not assume full critical edition dump is free to ship | **Uncertain** beyond SCRIPTORIUM OT release | Prefer SCRIPTORIUM `sahidic.ot` | **Medium** |
@@ -108,8 +108,9 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 
 | Edition | License status | Redistributable | Setup | Notes |
 | --- | --- | --- | --- | --- |
-| **Westcott–Hort 1881** (PD Robinson transcription) | 1881 print PD; Robinson digital transcription treated as **public domain** for project use | **Yes** | **setup-download** (+ bundled PD pilot excerpt) | **Default Greek NT** (JAK-15 Done). Pinned at ingest (JAK-24): `byztxt/greektext-westcott-hort` commit `91473892…` + `textonly/JOH.WH` checksum in [`data/manifests/westcott-hort.json`](../data/manifests/westcott-hort.json). **High** for 1881 print PD |
-| **SBLGNT** (Holmes) | **CC BY 4.0** since GitHub v1.1 (2022-12); sblgnt.com/license is CC BY 4.0; Faithlife/SBLGNT repo | **Yes** | not default | Eligible for revisit vs WH under JAK-25. Do **not** flip the default in Phase 0. Attribute SBL + Logos/Faithlife, Holmes if used. **High** for CC BY 4.0 |
+| **NTVMR Vaticanus GA 03 B\*** (INTF TEI, `docID` 20003) | Transcription **CC BY 4.0** (TEI `publicationStmt` / INTF); images separately restricted | **Yes** for TEI text with attribution; **No** for images | **setup-download** (+ bundled pilot excerpt) | **Default Greek NT** (JAK-25 GO; updates JAK-15). Firsthand only; empty firsthand = omission; no corrector/WH/SBLGNT fill; no images. Manifest: [`data/manifests/ntvmr-vaticanus-b.json`](../data/manifests/ntvmr-vaticanus-b.json). **High** for CC BY 4.0 on transcription |
+| **Westcott–Hort 1881** (PD Robinson transcription) | 1881 print PD; Robinson digital transcription treated as **public domain** for project use | **Yes** | not default | Former JAK-15 default; retained as documented unused fallback only — **not** in default manifests/CLI after JAK-25. **High** for 1881 print PD |
+| **SBLGNT** (Holmes) | **CC BY 4.0** since GitHub v1.1 (2022-12); sblgnt.com/license is CC BY 4.0; Faithlife/SBLGNT repo | **Yes** | not default | Not adopted as default (JAK-25 chose Vaticanus B\*). Do not mix into lacunae. **High** for CC BY 4.0 |
 | **MorphGNT: SBLGNT Edition** | Text: SBLGNT CC BY 4.0; **morphology/lemmas: CC BY-SA 3.0** | **Yes** with dual attribution; adaptations of morph layer are **ShareAlike** | optional if SBLGNT adopted later | Do not drop SA on derived morph DBs. **High** |
 | **NA28 / UBS GNT** | © Deutsche Bibelgesellschaft; written permission required for redistribution | **No** | citation / short fair-use quotation policy only; not corpus | **High** |
 | **Rahlfs-Hanhart LXX (2006)** | © DBG (“Septuaginta, © 2006”) | **No** | — | **High** |
@@ -165,8 +166,9 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 | Dilley Thomas (SCRIPTORIUM) | bundled |
 | P.Oxy. via DCLP, PD Grenfell/Hunt, or Evelyn-White 1920 | bundled (small) |
 | **Horner / CopSahHorner** | setup-download (default Sahidic NT) |
-| **Westcott–Hort 1881** (PD Robinson) | bundled or setup-download (default Greek NT) |
-| SBLGNT (+ MorphGNT) | not default; revisit JAK-25 |
+| **NTVMR Vaticanus GA 03 B\*** (INTF CC BY 4.0) | setup-download (+ bundled pilot; default Greek NT) |
+| Westcott–Hort 1881 (PD Robinson) | not default (unused fallback only) |
+| SBLGNT (+ MorphGNT) | not default (JAK-25 chose Vaticanus B*) |
 | Swete LXX (First1KGreek / nathans/lxx-swete) | setup-download (default LXX) |
 | sahidic.ot | setup-download / bundled |
 | CCL / DDGLC TEI | setup-download / bundled (default lexicon) |
@@ -191,7 +193,7 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 
 ### Follow-up (not reversing JAK-15)
 
-8. **SBLGNT vs Westcott–Hort (JAK-25):** SBLGNT is now CC BY 4.0 (Dec 2022). Revisit whether to change the default Greek NT; **do not flip in this Phase 0 PR**.
+8. **Greek NT default (JAK-25):** **GO** for INTF/NTVMR Vaticanus B\* as sole primary Greek NT; WH no longer default; SBLGNT not adopted; no edition mixing.
 9. **Counsel:** Optional quick IP review before claiming the repo is fully redistributable offline including all corpora.
 
 ---
@@ -205,7 +207,7 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 | P1 | Horner quality / verse-alignment verification at ingest (JAK-24) |
 | P1 | ShareAlike only on adapted BY-SA artifacts (manifest each publish) |
 | P1 | DIOSKOROS — do not scrape; use CCL |
-| P2 | JAK-25 SBLGNT vs WH default revisit |
+| P2 | JAK-25 Vaticanus B* default — Done (GO) |
 | P2 | Bohairica / Wells secondary dialect if ever revisited with rights |
 
-**Adopted clean core stack:** Dilley Thomas (CC BY) + DCLP/PD P.Oxy. (incl. Evelyn-White 1920 where used) + **Horner/`CopSahHorner` (PD)** + **Westcott–Hort (PD Robinson)** + Swete LXX (BY-SA) + sahidic.ot (BY-SA) + CCL/DDGLC TEI (BY-SA) + WEB (PD), with Apache-2.0 code, CC BY 4.0 critical Greek/English, and per-source manifests. Wells Sahidica/NTAEG/Bohairica remain gated **`manual-import` only**.
+**Adopted clean core stack:** Dilley Thomas (CC BY) + DCLP/PD P.Oxy. (incl. Evelyn-White 1920 where used) + **Horner/`CopSahHorner` (PD)** + **NTVMR Vaticanus B\* (CC BY 4.0 INTF)** + Swete LXX (BY-SA) + sahidic.ot (BY-SA) + CCL/DDGLC TEI (BY-SA) + WEB (PD), with Apache-2.0 code, CC BY 4.0 critical Greek/English, and per-source manifests. Wells Sahidica/NTAEG/Bohairica remain gated **`manual-import` only**. Do not ship Vaticanus images.

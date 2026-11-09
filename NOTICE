@@ -9,7 +9,9 @@ Third-party source texts, linguistic datasets, and editorial outputs are not
 covered by that Apache-2.0 grant. Their terms are recorded in per-source
 manifests under data/manifests/ (see docs/source-licenses.md).
 
-Bundled public-domain pilot excerpt (data/sources/pilot/):
+Bundled pilot excerpt (data/sources/pilot/):
   - Sahidic: G. W. Horner via CrossWire CopSahHorner v1.5 (Public Domain)
-  - Greek: Westcott–Hort 1881, Maurice A. Robinson transcription (Public Domain)
-See data/manifests/*.json and docs/horner-wh-alignment-notes.md.
+  - Greek: INTF/NTVMR Codex Vaticanus GA 03 firsthand (B*) transcription
+    (CC BY 4.0). Attribution: Institut für neutestamentliche Textforschung.
+    Manuscript images are not included.
+See data/manifests/*.json and docs/horner-vaticanus-alignment-notes.md.

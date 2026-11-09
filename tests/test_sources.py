@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Tests for source manifests, WH/Coptic normalize, and pilot import."""
+"""Tests for source manifests, Vaticanus B* TEI, and pilot import."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from typer.testing import CliRunner
 from zetodos_thomas.bundled import bundled_manifests_dir, bundled_pilot_path
 from zetodos_thomas.cli.app import app
 from zetodos_thomas.ingest.download import (
-    WH_TEXTONLY_FILES,
+    NTVMR_TEIRAW_FILES,
     DownloadError,
     verify_checksum,
 )
@@ -22,10 +22,10 @@ from zetodos_thomas.ingest.manifests import (
     validate_manifests_dir,
 )
 from zetodos_thomas.ingest.normalize import normalize_coptic, normalize_greek
+from zetodos_thomas.ingest.ntvmr_vaticanus import SOURCE_ID, parse_teiraw
 from zetodos_thomas.ingest.paths import find_repo_root, resolve_manifests_dir
 from zetodos_thomas.ingest.pilot import load_pilot_corpus
 from zetodos_thomas.ingest.verify_inputs import verify_pilot_rebuild_inputs
-from zetodos_thomas.ingest.westcott_hort import beta_to_unicode, parse_wh_textonly
 from zetodos_thomas.schemas.source import (
     GATED_DEFAULT_SOURCE_IDS,
     AvailabilityMode,
@@ -34,46 +34,26 @@ from zetodos_thomas.schemas.source import (
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 MANIFESTS_DIR = REPO_ROOT / "data" / "manifests"
-PILOT_PATH = REPO_ROOT / "data" / "sources" / "pilot" / "horner-wh-nt-pilot.json"
+PILOT_PATH = REPO_ROOT / "data" / "sources" / "pilot" / "horner-vaticanus-nt-pilot.json"
 FIXTURES = Path(__file__).parent / "fixtures"
+NTVMR_FIXTURES = FIXTURES / "ntvmr"
 
 
-def test_beta_to_unicode_john_1_1() -> None:
-    beta = "en arch hn o logov kai o logov hn prov ton yeon kai yeov hn o logov"
-    assert beta_to_unicode(beta) == (
-        "εν αρχη ην ο λογος και ο λογος ην προς τον θεον και θεος ην ο λογος"
-    )
+def test_parse_vaticanus_john_1_firsthand(tmp_path: Path) -> None:
+    src = NTVMR_FIXTURES / "John_1_1-18.teiraw.xml"
+    units = parse_teiraw(src)
+    by_id = {u.unit_id: u for u in units}
+    assert by_id["john.1.1"].original_text.startswith("εν αρχη ην ο λογος")
+    # B*: firsthand omits corrector1 supply των ανθρωπων
+    assert by_id["john.1.4"].original_text == "εν αυτω ζωη ην και η ζωη ην το φως"
+    assert "ανθρωπων" not in by_id["john.1.4"].original_text
+    assert "[η]" in by_id["john.1.15"].original_text
 
 
-def test_parse_wh_textonly_fixture(tmp_path: Path) -> None:
-    sample = tmp_path / "JOH.WH"
-    sample.write_text(
-        "     1:1 en arch hn o logov\n     1:2 outov hn en arch prov ton yeon\n",
-        encoding="utf-8",
-    )
-    units = parse_wh_textonly(sample, book="john")
-    assert len(units) == 2
-    assert units[0].unit_id == "john.1.1"
-    assert "λογος" in units[0].original_text
-    assert units[0].normalized_text == units[0].original_text
-
-
-def test_parse_wh_empty_reference_only_verse(tmp_path: Path) -> None:
-    """Regression: Robinson omits text for some verses (e.g. John 5:4)."""
-    sample = tmp_path / "JOH.WH"
-    sample.write_text(
-        "     5:3 en toutoiv katekeito plhyov\n"
-        "     5:4\n"
-        "     5:5 hn de tiv anyrwpov ekei\n",
-        encoding="utf-8",
-    )
-    units = parse_wh_textonly(sample, book="john")
-    by_verse = {u.verse: u for u in units}
-    assert set(by_verse) == {3, 4, 5}
-    assert by_verse[4].original_text == ""
-    assert "5:4" not in by_verse[3].original_text
-    assert "πληθος" in by_verse[3].original_text
-    assert "ανθρωπος" in by_verse[5].original_text
+def test_parse_vaticanus_empty_pa() -> None:
+    units = parse_teiraw(NTVMR_FIXTURES / "John_8_1-11.teiraw.xml")
+    assert len(units) == 11
+    assert all(not u.original_text for u in units)
 
 
 def test_normalize_coptic_strips_overlines() -> None:
@@ -88,15 +68,16 @@ def test_normalize_coptic_strips_overlines() -> None:
 def test_committed_manifests_validate() -> None:
     manifests = validate_manifests_dir(MANIFESTS_DIR)
     ids = {m.id for m in manifests}
-    assert ids == {"copsahhorner", "westcott-hort"}
+    assert ids == {"copsahhorner", "ntvmr-vaticanus-b"}
     assert ids.isdisjoint(GATED_DEFAULT_SOURCE_IDS)
     horner = load_manifest(MANIFESTS_DIR / "copsahhorner.json")
     assert horner.mode is AvailabilityMode.SETUP_DOWNLOAD
     assert horner.checksum.startswith("sha256:")
-    assert horner.counterpart_source_id == "westcott-hort"
-    wh = load_manifest(MANIFESTS_DIR / "westcott-hort.json")
-    assert wh.counterpart_source_id == "copsahhorner"
-    assert "SBLGNT" not in wh.title
+    assert horner.counterpart_source_id == "ntvmr-vaticanus-b"
+    vat = load_manifest(MANIFESTS_DIR / "ntvmr-vaticanus-b.json")
+    assert vat.counterpart_source_id == "copsahhorner"
+    assert vat.spdx_or_custom == "CC-BY-4.0"
+    assert "westcott" not in vat.id
 
 
 def test_gated_source_rejected_in_default_set() -> None:
@@ -129,12 +110,12 @@ def test_empty_checksum_rejected() -> None:
     problems = validate_default_manifests(
         [
             SourceManifest(
-                id="westcott-hort",
-                title="WH",
+                id="ntvmr-vaticanus-b",
+                title="Vaticanus",
                 version="1",
-                url="https://example.invalid/wh",
-                spdx_or_custom="custom:Public-Domain",
-                attribution="Robinson",
+                url="https://example.invalid/ntvmr",
+                spdx_or_custom="CC-BY-4.0",
+                attribution="INTF",
                 mode=AvailabilityMode.SETUP_DOWNLOAD,
                 checksum="",
             )
@@ -145,15 +126,17 @@ def test_empty_checksum_rejected() -> None:
 
 def test_pilot_corpus_committed() -> None:
     corpus = load_pilot_corpus(PILOT_PATH)
-    assert corpus.greek_source_id == "westcott-hort"
+    assert corpus.greek_source_id == SOURCE_ID
     assert corpus.sahidic_source_id == "copsahhorner"
     assert len(corpus.units) == 37
     john_1_1 = next(u for u in corpus.units if u.unit_id == "john.1.1")
     assert "λογος" in john_1_1.greek.original_text
     assert "ⲡϣⲁϫⲉ" in john_1_1.sahidic.original_text
-    assert john_1_1.sahidic.original_text != john_1_1.sahidic.normalized_text
+    john_1_4 = next(u for u in corpus.units if u.unit_id == "john.1.4")
+    assert "ανθρωπων" not in john_1_4.greek.original_text
     empty = [u for u in corpus.units if not u.sahidic.original_text]
     assert [u.unit_id for u in empty] == [f"john.8.{v}" for v in range(1, 12)]
+    assert all(not u.greek.original_text for u in empty)
     assert all(u.notes for u in empty)
 
 
@@ -162,8 +145,9 @@ def test_cli_sources_validate() -> None:
     result = runner.invoke(app, ["sources", "validate"])
     assert result.exit_code == 0, result.stdout + result.stderr
     assert "copsahhorner" in result.stdout
-    assert "westcott-hort" in result.stdout
+    assert "ntvmr-vaticanus-b" in result.stdout
     assert "Sahidica" in result.stdout
+    assert "westcott" not in result.stdout.lower()
 
 
 def test_cli_help_lists_sources() -> None:
@@ -177,17 +161,17 @@ def test_cli_sources_download_help() -> None:
     runner = CliRunner()
     result = runner.invoke(app, ["sources", "download", "--help"])
     assert result.exit_code == 0
-    assert "CopSahHorner" in result.stdout
+    assert "Vaticanus" in result.stdout or "NTVMR" in result.stdout
 
 
 def test_find_repo_root_from_tests() -> None:
     assert find_repo_root(Path(__file__)) == REPO_ROOT
 
 
-def test_wh_download_pins_match_manifest() -> None:
-    wh = load_manifest(MANIFESTS_DIR / "westcott-hort.json")
-    assert WH_TEXTONLY_FILES["JOH.WH"] == wh.checksum
-    assert "MR.WH" in WH_TEXTONLY_FILES
+def test_ntvmr_download_pins_match_manifest() -> None:
+    vat = load_manifest(MANIFESTS_DIR / "ntvmr-vaticanus-b.json")
+    assert NTVMR_TEIRAW_FILES["John.1.1-18"] == vat.checksum
+    assert "Mark.1.1-8" in NTVMR_TEIRAW_FILES
 
 
 def test_verify_checksum(tmp_path: Path) -> None:
@@ -207,7 +191,7 @@ def test_fixture_manifest_roundtrip() -> None:
 
 
 def test_bundled_resources_match_checkout() -> None:
-    for name in ("copsahhorner.json", "westcott-hort.json"):
+    for name in ("copsahhorner.json", "ntvmr-vaticanus-b.json"):
         checkout = (MANIFESTS_DIR / name).read_text(encoding="utf-8")
         bundled = (bundled_manifests_dir() / name).read_text(encoding="utf-8")
         assert checkout == bundled
@@ -220,19 +204,18 @@ def test_resolve_manifests_prefers_checkout() -> None:
     assert resolve_manifests_dir(REPO_ROOT) == MANIFESTS_DIR
 
 
-def test_verify_rebuild_rejects_missing_zip(tmp_path: Path) -> None:
+def test_verify_rebuild_rejects_bad_inputs(tmp_path: Path) -> None:
     manifests = tmp_path / "manifests"
     manifests.mkdir()
-    for name in ("copsahhorner.json", "westcott-hort.json"):
+    for name in ("copsahhorner.json", "ntvmr-vaticanus-b.json"):
         manifests.joinpath(name).write_text(
             (MANIFESTS_DIR / name).read_text(encoding="utf-8"),
             encoding="utf-8",
         )
-    wh_dir = tmp_path / "wh"
-    wh_dir.mkdir()
-    for name in WH_TEXTONLY_FILES:
-        # Wrong bytes → checksum failure before zip check (still DownloadError).
-        (wh_dir / name).write_bytes(b"not-the-real-file")
+    tei_dir = tmp_path / "tei"
+    tei_dir.mkdir()
+    for osis in NTVMR_TEIRAW_FILES:
+        (tei_dir / f"{osis.replace('.', '_')}.teiraw.xml").write_bytes(b"bad")
     sword = tmp_path / "sword"
     sword.mkdir()
     downloads = tmp_path / "downloads"
@@ -241,6 +224,6 @@ def test_verify_rebuild_rejects_missing_zip(tmp_path: Path) -> None:
         verify_pilot_rebuild_inputs(
             manifests_dir=manifests,
             sword_root=sword,
-            wh_textonly_dir=wh_dir,
+            vaticanus_tei_dir=tei_dir,
             downloads_dir=downloads,
         )

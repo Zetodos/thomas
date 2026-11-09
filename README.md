@@ -3,7 +3,7 @@
 Offline-capable, evidence-based reconstruction and reader for the *Gospel of Thomas*.
 
 **Repository:** <https://github.com/Zetodos/thomas>
-**Status:** Phase 0–1 foundation — licensing, Python toolchain, and a redistributable Horner × Westcott–Hort NT pilot import (JAK-24). Reconstruction feasibility is not yet proven.
+**Status:** Phase 0–1 foundation — licensing, Python toolchain, and a redistributable Horner × Vaticanus B* NT pilot import (JAK-24). Reconstruction feasibility is not yet proven.
 
 ## Objective
 
@@ -29,9 +29,9 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`PLAN.md`](PLAN.md) | Full implementation plan |
 | [`docs/source-licenses.md`](docs/source-licenses.md) | Dual code/data policy, setup modes, never-ship list, manifest schema |
 | [`docs/licensing-provenance-audit.md`](docs/licensing-provenance-audit.md) | 2026-11-09 provenance audit (updated for Horner decision) |
-| [`docs/horner-wh-alignment-notes.md`](docs/horner-wh-alignment-notes.md) | CopSahHorner verify + WH pilot alignment notes (JAK-24) |
-| [`data/manifests/`](data/manifests/) | Per-source JSON manifests (Horner, Westcott–Hort) |
-| [`data/sources/pilot/`](data/sources/pilot/) | Bundled PD Greek–Sahidic pilot excerpt |
+| [`docs/horner-vaticanus-alignment-notes.md`](docs/horner-vaticanus-alignment-notes.md) | CopSahHorner + Vaticanus B* pilot notes (JAK-24) |
+| [`data/manifests/`](data/manifests/) | Per-source JSON manifests (Horner, Vaticanus B*) |
+| [`data/sources/pilot/`](data/sources/pilot/) | Bundled Horner × Vaticanus B* pilot excerpt |
 
 ## Never ship (summary)
 
@@ -43,16 +43,17 @@ Do **not** bundle or redistribute:
 - Crum dictionary OCR dumps
 - Brill / DBG full texts used only as scholarly references
 - Wells **Sahidica**, **NTAEG**, or **Bohairica** (gated; not default)
+- Vatican / NTVMR **manuscript images** of Vat. gr. 1209 (transcription CC BY 4.0 ≠ image rights)
 
 Full list and allowlist: [`docs/source-licenses.md`](docs/source-licenses.md#never-ship).
 
-## Text baselines (Phase 0 decisions)
+## Text baselines (Phase 0–1 decisions)
 
 - **Sahidic NT:** **Horner** via CrossWire **`CopSahHorner`** v1.5 (Public Domain). Do **not** treat Wells Sahidica as the NT baseline. Verified + pilot-imported: JAK-24.
-- **Greek NT:** **Westcott–Hort 1881** (PD Robinson transcription) per JAK-15. SBLGNT (now CC BY 4.0) is a separate revisit — JAK-25; do not flip the default here.
+- **Greek NT:** **INTF/NTVMR Codex Vaticanus GA 03 firsthand (B\*)** (`docID` 20003), CC BY 4.0 transcription (JAK-25 GO; updates the JAK-15 WH default). Do **not** mix Westcott–Hort or SBLGNT into lacunae. Do **not** ship manuscript images.
 - **LXX / lexicon / critical texts:** Swete LXX, CCL TEI, and CC BY 4.0 for project-authored critical Greek/English — see [`docs/source-licenses.md`](docs/source-licenses.md).
 
-Bundled pilot: [`data/sources/pilot/horner-wh-nt-pilot.json`](data/sources/pilot/horner-wh-nt-pilot.json). Full modules download to gitignored `data/downloads/` (see that README).
+Bundled pilot: [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](data/sources/pilot/horner-vaticanus-nt-pilot.json). Full downloads stay under gitignored `data/downloads/` (see that README).
 
 ## Python setup
 

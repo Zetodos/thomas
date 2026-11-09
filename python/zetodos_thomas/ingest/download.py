@@ -1,29 +1,40 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Explicit setup downloads for CopSahHorner and Westcott-Hort textonly files."""
+"""Explicit setup downloads for CopSahHorner and NTVMR Vaticanus B* TEI."""
 
 from __future__ import annotations
 
 import hashlib
+import time
 import zipfile
 from pathlib import Path
 from urllib.error import URLError
+from urllib.parse import urlencode
 from urllib.request import urlopen
 
 from zetodos_thomas.ingest.manifests import load_manifest
+from zetodos_thomas.ingest.ntvmr_vaticanus import DOC_ID, teiraw_filename
 
 COPSAHHORNER_ZIP_URL = (
     "https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/CopSahHorner.zip"
 )
 
-# Pins for Robinson textonly books used by the pilot (must match manifests).
-WH_TEXTONLY_FILES: dict[str, str] = {
-    "JOH.WH": (
-        "sha256:cf8f607b8f7b4c1bc471e211bb51ee86750918485be5a4319b3d8fcda61336d2"
+NTVMR_TRANSCRIPT_GET = "https://ntvmr.uni-muenster.de/community/api/transcript/get/"
+
+# Pilot passage TEI pins (teiraw). Must match data/manifests/ntvmr-vaticanus-b.json.
+NTVMR_TEIRAW_FILES: dict[str, str] = {
+    "John.1.1-18": (
+        "sha256:2153735c61cfec12877dfbda677b3c2269c323fccb9d67c6f70f45a742a725d9"
     ),
-    "MR.WH": (
-        "sha256:8cbc2eeb9d5f4dbadbcd44694ba5f82dc94bc5222b0a6a6e95c9e0b93529f9c2"
+    "Mark.1.1-8": (
+        "sha256:6b863d7ee3f76f9ca2d6f79adbe69a153555109fb4dcc88105df6c85fa10445b"
+    ),
+    "John.8.1-11": (
+        "sha256:8cd9c90bcbed2fee6f7a3241abd79540da712d58db44aa689e7b0c93cf2f6a92"
     ),
 }
+
+# Soft courtesy throttle between large NTVMR pulls (see JAK-25 feasibility).
+NTVMR_THROTTLE_SECONDS = 1.0
 
 
 class DownloadError(RuntimeError):
@@ -94,37 +105,55 @@ def download_copsahhorner(
     return sword_root
 
 
-def download_westcott_hort(
+def ntvmr_teiraw_url(osis_range: str) -> str:
+    """Build the NTVMR teiraw URL for an OSIS indexContent range."""
+    query = urlencode(
+        {
+            "docID": DOC_ID,
+            "indexContent": osis_range,
+            "format": "teiraw",
+            "briefTEIHeader": "true",
+            "joinParts": "true",
+            "includeEmpty": "true",
+        }
+    )
+    return f"{NTVMR_TRANSCRIPT_GET}?{query}"
+
+
+def download_ntvmr_vaticanus(
     downloads_dir: Path,
     *,
     manifests_dir: Path,
     force: bool = False,
+    throttle_seconds: float = NTVMR_THROTTLE_SECONDS,
 ) -> Path:
-    """Download pinned Robinson WH textonly books; return the textonly dir."""
-    manifest = load_manifest(manifests_dir / "westcott-hort.json")
-    if WH_TEXTONLY_FILES["JOH.WH"] != manifest.checksum:
+    """Download pinned Vaticanus B* teiraw passages; return the TEI directory.
+
+    Does **not** download manuscript images.
+    """
+    manifest = load_manifest(manifests_dir / "ntvmr-vaticanus-b.json")
+    primary = NTVMR_TEIRAW_FILES["John.1.1-18"]
+    if primary != manifest.checksum:
         msg = (
-            "WH_TEXTONLY_FILES JOH.WH pin does not match westcott-hort "
-            f"manifest checksum ({manifest.checksum})"
+            "NTVMR_TEIRAW_FILES John.1.1-18 pin does not match "
+            f"ntvmr-vaticanus-b manifest checksum ({manifest.checksum})"
         )
         raise DownloadError(msg)
 
-    commit = manifest.version
-    textonly_dir = downloads_dir / "westcott-hort" / "textonly"
-    textonly_dir.mkdir(parents=True, exist_ok=True)
+    tei_dir = downloads_dir / "ntvmr-vaticanus"
+    tei_dir.mkdir(parents=True, exist_ok=True)
 
-    for filename, expected in WH_TEXTONLY_FILES.items():
-        dest = textonly_dir / filename
+    ranges = list(NTVMR_TEIRAW_FILES.items())
+    for index, (osis_range, expected) in enumerate(ranges):
+        dest = tei_dir / teiraw_filename(osis_range)
         if dest.is_file() and not force:
             verify_checksum(dest, expected)
-            continue
-        url = (
-            "https://raw.githubusercontent.com/byztxt/greektext-westcott-hort/"
-            f"{commit}/textonly/{filename}"
-        )
-        _fetch(url, dest)
-        verify_checksum(dest, expected)
-    return textonly_dir
+        else:
+            if index > 0 and throttle_seconds > 0:
+                time.sleep(throttle_seconds)
+            _fetch(ntvmr_teiraw_url(osis_range), dest)
+            verify_checksum(dest, expected)
+    return tei_dir
 
 
 def download_pilot_sources(
@@ -132,14 +161,14 @@ def download_pilot_sources(
     *,
     force: bool = False,
 ) -> tuple[Path, Path]:
-    """Download CopSahHorner + WH textonly under ``repo_root/data/downloads``."""
+    """Download CopSahHorner + NTVMR Vaticanus TEI under ``data/downloads``."""
     manifests_dir = repo_root / "data" / "manifests"
     downloads_dir = repo_root / "data" / "downloads"
     downloads_dir.mkdir(parents=True, exist_ok=True)
     sword_root = download_copsahhorner(
         downloads_dir, manifests_dir=manifests_dir, force=force
     )
-    wh_dir = download_westcott_hort(
+    tei_dir = download_ntvmr_vaticanus(
         downloads_dir, manifests_dir=manifests_dir, force=force
     )
-    return sword_root, wh_dir
+    return sword_root, tei_dir

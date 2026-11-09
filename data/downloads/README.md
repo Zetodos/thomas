@@ -14,7 +14,7 @@ uv run thomas sources download
 That command:
 
 1. Fetches CrossWire `CopSahHorner.zip`, verifies the sha256 from `data/manifests/copsahhorner.json`, and unpacks to `data/downloads/sword/`
-2. Fetches Robinson Westcott-Hort `textonly/JOH.WH` and `MR.WH` at the commit pinned in `data/manifests/westcott-hort.json`, verifying sha256 pins
+2. Fetches INTF/NTVMR Codex Vaticanus GA 03 (`docID=20003`) **teiraw** for the pilot ranges into `data/downloads/ntvmr-vaticanus/`, verifying sha256 pins from `data/manifests/ntvmr-vaticanus-b.json` (throttled; **no manuscript images**)
 
 Re-fetch even when local files already match:
 

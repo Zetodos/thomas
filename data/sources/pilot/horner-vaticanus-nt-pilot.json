@@ -1,19 +1,19 @@
 {
-  "id": "horner-wh-nt-pilot-v1",
-  "title": "Horner Sahidic NT x Westcott-Hort Greek NT pilot (John 1:1-18, Mark 1:1-8, John 8:1-11)",
-  "greek_source_id": "westcott-hort",
+  "id": "horner-vaticanus-nt-pilot-v1",
+  "title": "Horner Sahidic NT x NTVMR Vaticanus B* Greek NT pilot (John 1:1-18, Mark 1:1-8, John 8:1-11)",
+  "greek_source_id": "ntvmr-vaticanus-b",
   "sahidic_source_id": "copsahhorner",
   "units": [
     {
       "unit_id": "john.1.1",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.1",
         "book": "john",
         "chapter": 1,
         "verse": 1,
-        "original_text": "εν αρχη ην ο λογος και ο λογος ην προς τον θεον και θεος ην ο λογος",
-        "normalized_text": "εν αρχη ην ο λογος και ο λογος ην προς τον θεον και θεος ην ο λογος",
+        "original_text": "εν αρχη ην ο λογος και ο λογος ην προς τον θν και θς ην ο λογος",
+        "normalized_text": "εν αρχη ην ο λογος και ο λογος ην προς τον θν και θς ην ο λογος",
         "sequence": 0
       },
       "sahidic": {
@@ -31,13 +31,13 @@
     {
       "unit_id": "john.1.2",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.2",
         "book": "john",
         "chapter": 1,
         "verse": 2,
-        "original_text": "ουτος ην εν αρχη προς τον θεον",
-        "normalized_text": "ουτος ην εν αρχη προς τον θεον",
+        "original_text": "ουτος ην εν αρχη προς τον θν",
+        "normalized_text": "ουτος ην εν αρχη προς τον θν",
         "sequence": 1
       },
       "sahidic": {
@@ -55,7 +55,7 @@
     {
       "unit_id": "john.1.3",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.3",
         "book": "john",
         "chapter": 1,
@@ -79,13 +79,13 @@
     {
       "unit_id": "john.1.4",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.4",
         "book": "john",
         "chapter": 1,
         "verse": 4,
-        "original_text": "εν αυτω ζωη ην και η ζωη ην το φως των ανθρωπων",
-        "normalized_text": "εν αυτω ζωη ην και η ζωη ην το φως των ανθρωπων",
+        "original_text": "εν αυτω ζωη ην και η ζωη ην το φως",
+        "normalized_text": "εν αυτω ζωη ην και η ζωη ην το φως",
         "sequence": 3
       },
       "sahidic": {
@@ -103,7 +103,7 @@
     {
       "unit_id": "john.1.5",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.5",
         "book": "john",
         "chapter": 1,
@@ -127,13 +127,13 @@
     {
       "unit_id": "john.1.6",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.6",
         "book": "john",
         "chapter": 1,
         "verse": 6,
-        "original_text": "εγενετο ανθρωπος απεσταλμενος παρα θεου ονομα αυτω ιωαννης",
-        "normalized_text": "εγενετο ανθρωπος απεσταλμενος παρα θεου ονομα αυτω ιωαννης",
+        "original_text": "εγενετο ανθρωπος απεσταλμενος παρα θυ ονομα αυτω ιωανης",
+        "normalized_text": "εγενετο ανθρωπος απεσταλμενος παρα θυ ονομα αυτω ιωανης",
         "sequence": 5
       },
       "sahidic": {
@@ -151,7 +151,7 @@
     {
       "unit_id": "john.1.7",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.7",
         "book": "john",
         "chapter": 1,
@@ -175,7 +175,7 @@
     {
       "unit_id": "john.1.8",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.8",
         "book": "john",
         "chapter": 1,
@@ -199,13 +199,13 @@
     {
       "unit_id": "john.1.9",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.9",
         "book": "john",
         "chapter": 1,
         "verse": 9,
-        "original_text": "ην το φως το αληθινον ο φωτιζει παντα ανθρωπον ερχομενον εις τον κοσμον",
-        "normalized_text": "ην το φως το αληθινον ο φωτιζει παντα ανθρωπον ερχομενον εις τον κοσμον",
+        "original_text": "ην το φως το αληθεινον ο φωτιζει παντα ανθρωπον ερχομενον εις τον κοσμον",
+        "normalized_text": "ην το φως το αληθεινον ο φωτιζει παντα ανθρωπον ερχομενον εις τον κοσμον",
         "sequence": 8
       },
       "sahidic": {
@@ -223,7 +223,7 @@
     {
       "unit_id": "john.1.10",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.10",
         "book": "john",
         "chapter": 1,
@@ -247,7 +247,7 @@
     {
       "unit_id": "john.1.11",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.11",
         "book": "john",
         "chapter": 1,
@@ -271,13 +271,13 @@
     {
       "unit_id": "john.1.12",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.12",
         "book": "john",
         "chapter": 1,
         "verse": 12,
-        "original_text": "οσοι δε ελαβον αυτον εδωκεν αυτοις εξουσιαν τεκνα θεου γενεσθαι τοις πιστευουσιν εις το ονομα αυτου",
-        "normalized_text": "οσοι δε ελαβον αυτον εδωκεν αυτοις εξουσιαν τεκνα θεου γενεσθαι τοις πιστευουσιν εις το ονομα αυτου",
+        "original_text": "οσοι δε ελαβαν αυτον εδωκεν αυτοις εξουσιαν τεκνα θυ γενεσθαι τοις πιστευουσιν εις το ονομα αυτου",
+        "normalized_text": "οσοι δε ελαβαν αυτον εδωκεν αυτοις εξουσιαν τεκνα θυ γενεσθαι τοις πιστευουσιν εις το ονομα αυτου",
         "sequence": 11
       },
       "sahidic": {
@@ -295,13 +295,13 @@
     {
       "unit_id": "john.1.13",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.13",
         "book": "john",
         "chapter": 1,
         "verse": 13,
-        "original_text": "οι ουκ εξ αιματων ουδε εκ θεληματος σαρκος ουδε εκ θεληματος ανδρος αλλ εκ θεου εγεννηθησαν",
-        "normalized_text": "οι ουκ εξ αιματων ουδε εκ θεληματος σαρκος ουδε εκ θεληματος ανδρος αλλ εκ θεου εγεννηθησαν",
+        "original_text": "οι ουκ εξ αιματων ουδε εκ θεληματος σαρκος αλλ εκ θυ εγενηθησαν",
+        "normalized_text": "οι ουκ εξ αιματων ουδε εκ θεληματος σαρκος αλλ εκ θυ εγενηθησαν",
         "sequence": 12
       },
       "sahidic": {
@@ -319,13 +319,13 @@
     {
       "unit_id": "john.1.14",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.14",
         "book": "john",
         "chapter": 1,
         "verse": 14,
-        "original_text": "και ο λογος σαρξ εγενετο και εσκηνωσεν εν ημιν και εθεασαμεθα την δοξαν αυτου δοξαν ως μονογενους παρα πατρος πληρης χαριτος και αληθειας",
-        "normalized_text": "και ο λογος σαρξ εγενετο και εσκηνωσεν εν ημιν και εθεασαμεθα την δοξαν αυτου δοξαν ως μονογενους παρα πατρος πληρης χαριτος και αληθειας",
+        "original_text": "και ο λογος σαρξ εγενετο και εσκηνωσεν εν ημιν και εθεασαμεθα την δοξαν αυτου δοξαν ως μονογενους παρα πατρος πληρης χαριτος αληθειας",
+        "normalized_text": "και ο λογος σαρξ εγενετο και εσκηνωσεν εν ημιν και εθεασαμεθα την δοξαν αυτου δοξαν ως μονογενους παρα πατρος πληρης χαριτος αληθειας",
         "sequence": 13
       },
       "sahidic": {
@@ -343,13 +343,13 @@
     {
       "unit_id": "john.1.15",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.15",
         "book": "john",
         "chapter": 1,
         "verse": 15,
-        "original_text": "ιωαννης μαρτυρει περι αυτου και κεκραγεν λεγων ουτος ην ο ειπων ο οπισω μου ερχομενος εμπροσθεν μου γεγονεν οτι πρωτος μου ην",
-        "normalized_text": "ιωαννης μαρτυρει περι αυτου και κεκραγεν λεγων ουτος ην ο ειπων ο οπισω μου ερχομενος εμπροσθεν μου γεγονεν οτι πρωτος μου ην",
+        "original_text": "ιωανης μαρτυρει περι αυτου και κεκραγεν λεγων ουτος ην ο ειπων ο οπισω μου ερχομενος εμπροσθεν μου γεγονεν οτι πρωτος μου [η]ν",
+        "normalized_text": "ιωανης μαρτυρει περι αυτου και κεκραγεν λεγων ουτος ην ο ειπων ο οπισω μου ερχομενος εμπροσθεν μου γεγονεν οτι πρωτος μου ην",
         "sequence": 14
       },
       "sahidic": {
@@ -367,7 +367,7 @@
     {
       "unit_id": "john.1.16",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.16",
         "book": "john",
         "chapter": 1,
@@ -391,13 +391,13 @@
     {
       "unit_id": "john.1.17",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.17",
         "book": "john",
         "chapter": 1,
         "verse": 17,
-        "original_text": "οτι ο νομος δια μωυσεως εδοθη η χαρις και η αληθεια δια ιησου χριστου εγενετο",
-        "normalized_text": "οτι ο νομος δια μωυσεως εδοθη η χαρις και η αληθεια δια ιησου χριστου εγενετο",
+        "original_text": "οτι ο νομος δια μωυσεως εδοθη η χαρις και η αληθεια δια ιυ χυ εγενετο",
+        "normalized_text": "οτι ο νομος δια μωυσεως εδοθη η χαρις και η αληθεια δια ιυ χυ εγενετο",
         "sequence": 16
       },
       "sahidic": {
@@ -415,13 +415,13 @@
     {
       "unit_id": "john.1.18",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.1.18",
         "book": "john",
         "chapter": 1,
         "verse": 18,
-        "original_text": "θεον ουδεις εωρακεν πωποτε μονογενης θεος ο ων εις τον κολπον του πατρος εκεινος εξηγησατο",
-        "normalized_text": "θεον ουδεις εωρακεν πωποτε μονογενης θεος ο ων εις τον κολπον του πατρος εκεινος εξηγησατο",
+        "original_text": "θν ουδεις εορακεν πωποτε μονογενης θς ο ων εις τον κολπον του πατρος εκεινος εξηγησατο",
+        "normalized_text": "θν ουδεις εορακεν πωποτε μονογενης θς ο ων εις τον κολπον του πατρος εκεινος εξηγησατο",
         "sequence": 17
       },
       "sahidic": {
@@ -439,13 +439,13 @@
     {
       "unit_id": "mark.1.1",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "mark.1.1",
         "book": "mark",
         "chapter": 1,
         "verse": 1,
-        "original_text": "αρχη του ευαγγελιου ιησου χριστου",
-        "normalized_text": "αρχη του ευαγγελιου ιησου χριστου",
+        "original_text": "αρχη του ευαγγελιου ιυ χυ υιου θυ",
+        "normalized_text": "αρχη του ευαγγελιου ιυ χυ υιου θυ",
         "sequence": 0
       },
       "sahidic": {
@@ -463,13 +463,13 @@
     {
       "unit_id": "mark.1.2",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "mark.1.2",
         "book": "mark",
         "chapter": 1,
         "verse": 2,
-        "original_text": "καθως γεγραπται εν τω ησαια τω προφητη ιδου αποστελλω τον αγγελον μου προ προσωπου σου ος κατασκευασει την οδον σου",
-        "normalized_text": "καθως γεγραπται εν τω ησαια τω προφητη ιδου αποστελλω τον αγγελον μου προ προσωπου σου ος κατασκευασει την οδον σου",
+        "original_text": "καθως γεγραπται εν τω ησαια τω·· προφητη ιδου αποστελλω τον αγγελον μου προ προσωπου σου ος κατασκευασει την οδον σου",
+        "normalized_text": "καθως γεγραπται εν τω ησαια τω·· προφητη ιδου αποστελλω τον αγγελον μου προ προσωπου σου ος κατασκευασει την οδον σου",
         "sequence": 1
       },
       "sahidic": {
@@ -487,13 +487,13 @@
     {
       "unit_id": "mark.1.3",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "mark.1.3",
         "book": "mark",
         "chapter": 1,
         "verse": 3,
-        "original_text": "φωνη βοωντος εν τη ερημω ετοιμασατε την οδον κυριου ευθειας ποιειτε τας τριβους αυτου",
-        "normalized_text": "φωνη βοωντος εν τη ερημω ετοιμασατε την οδον κυριου ευθειας ποιειτε τας τριβους αυτου",
+        "original_text": "φωνη βοωντος εν τη ερημω ετοιμασατε την οδον κυ ευθειας ποιειτε τας τριβους αυτου",
+        "normalized_text": "φωνη βοωντος εν τη ερημω ετοιμασατε την οδον κυ ευθειας ποιειτε τας τριβους αυτου",
         "sequence": 2
       },
       "sahidic": {
@@ -511,13 +511,13 @@
     {
       "unit_id": "mark.1.4",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "mark.1.4",
         "book": "mark",
         "chapter": 1,
         "verse": 4,
-        "original_text": "εγενετο ιωαννης ο βαπτιζων εν τη ερημω κηρυσσων βαπτισμα μετανοιας εις αφεσιν αμαρτιων",
-        "normalized_text": "εγενετο ιωαννης ο βαπτιζων εν τη ερημω κηρυσσων βαπτισμα μετανοιας εις αφεσιν αμαρτιων",
+        "original_text": "εγενετο ιωανης ο βαπτιζων εν τη ερημω κηρυσσων βαπτισμα μετανοιας εις αφεσιν αμαρτιων",
+        "normalized_text": "εγενετο ιωανης ο βαπτιζων εν τη ερημω κηρυσσων βαπτισμα μετανοιας εις αφεσιν αμαρτιων",
         "sequence": 3
       },
       "sahidic": {
@@ -535,13 +535,13 @@
     {
       "unit_id": "mark.1.5",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "mark.1.5",
         "book": "mark",
         "chapter": 1,
         "verse": 5,
-        "original_text": "και εξεπορευετο προς αυτον πασα η ιουδαια χωρα και οι ιεροσολυμιται παντες και εβαπτιζοντο υπ αυτου εν τω ιορδανη ποταμω εξομολογουμενοι τας αμαρτιας αυτων",
-        "normalized_text": "και εξεπορευετο προς αυτον πασα η ιουδαια χωρα και οι ιεροσολυμιται παντες και εβαπτιζοντο υπ αυτου εν τω ιορδανη ποταμω εξομολογουμενοι τας αμαρτιας αυτων",
+        "original_text": "και εξεπορευετο προς αυτον πασα η ιουδαια χωρα και οι ιεροσολυμειται παντες και εβαπτιζοντο υπ αυτου εν τω ιορδανη ποταμω εξομολογουμενοι τας αμαρτιας αυτων",
+        "normalized_text": "και εξεπορευετο προς αυτον πασα η ιουδαια χωρα και οι ιεροσολυμειται παντες και εβαπτιζοντο υπ αυτου εν τω ιορδανη ποταμω εξομολογουμενοι τας αμαρτιας αυτων",
         "sequence": 4
       },
       "sahidic": {
@@ -559,13 +559,13 @@
     {
       "unit_id": "mark.1.6",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "mark.1.6",
         "book": "mark",
         "chapter": 1,
         "verse": 6,
-        "original_text": "και ην ο ιωαννης ενδεδυμενος τριχας καμηλου και ζωνην δερματινην περι την οσφυν αυτου και εσθων ακριδας και μελι αγριον",
-        "normalized_text": "και ην ο ιωαννης ενδεδυμενος τριχας καμηλου και ζωνην δερματινην περι την οσφυν αυτου και εσθων ακριδας και μελι αγριον",
+        "original_text": "και ην ο ιωανης ενδεδυμενος τριχας καμηλου και ζωνην δερματινην περι την οσφυν αυτου και εσθων ακριδας και μελι αγριον",
+        "normalized_text": "και ην ο ιωανης ενδεδυμενος τριχας καμηλου και ζωνην δερματινην περι την οσφυν αυτου και εσθων ακριδας και μελι αγριον",
         "sequence": 5
       },
       "sahidic": {
@@ -583,13 +583,13 @@
     {
       "unit_id": "mark.1.7",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "mark.1.7",
         "book": "mark",
         "chapter": 1,
         "verse": 7,
-        "original_text": "και εκηρυσσεν λεγων ερχεται ο ισχυροτερος μου οπισω [μου] ου ουκ ειμι ικανος κυψας λυσαι τον ιμαντα των υποδηματων αυτου",
-        "normalized_text": "και εκηρυσσεν λεγων ερχεται ο ισχυροτερος μου οπισω [μου] ου ουκ ειμι ικανος κυψας λυσαι τον ιμαντα των υποδηματων αυτου",
+        "original_text": "και εκηρυσσεν λεγων ερχεται ο ισχυροτερος μου οπισω ου ουκ ειμι ικανος κυψας λυσαι τον ιμαντα των υποδηματων αυτου",
+        "normalized_text": "και εκηρυσσεν λεγων ερχεται ο ισχυροτερος μου οπισω ου ουκ ειμι ικανος κυψας λυσαι τον ιμαντα των υποδηματων αυτου",
         "sequence": 6
       },
       "sahidic": {
@@ -607,13 +607,13 @@
     {
       "unit_id": "mark.1.8",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "mark.1.8",
         "book": "mark",
         "chapter": 1,
         "verse": 8,
-        "original_text": "εγω εβαπτισα υμας υδατι αυτος δε βαπτισει υμας πνευματι αγιω",
-        "normalized_text": "εγω εβαπτισα υμας υδατι αυτος δε βαπτισει υμας πνευματι αγιω",
+        "original_text": "εγω εβαπτισα υμας υδατι αυτος δε βαπτισει υμας πνι αγιω",
+        "normalized_text": "εγω εβαπτισα υμας υδατι αυτος δε βαπτισει υμας πνι αγιω",
         "sequence": 7
       },
       "sahidic": {
@@ -631,14 +631,14 @@
     {
       "unit_id": "john.8.1",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.8.1",
         "book": "john",
         "chapter": 8,
         "verse": 1,
-        "original_text": "ιησους δε επορευθη εις το ορος των ελαιων",
-        "normalized_text": "ιησους δε επορευθη εις το ορος των ελαιων",
-        "sequence": 336
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 0
       },
       "sahidic": {
         "source_id": "copsahhorner",
@@ -650,19 +650,19 @@
         "normalized_text": "",
         "sequence": 0
       },
-      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap)."
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
     },
     {
       "unit_id": "john.8.2",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.8.2",
         "book": "john",
         "chapter": 8,
         "verse": 2,
-        "original_text": "ορθρου δε παλιν παρεγενετο εις το ιερον [και πας ο λαος ηρχετο προς αυτον και καθισας εδιδασκεν αυτους]",
-        "normalized_text": "ορθρου δε παλιν παρεγενετο εις το ιερον [και πας ο λαος ηρχετο προς αυτον και καθισας εδιδασκεν αυτους]",
-        "sequence": 337
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 1
       },
       "sahidic": {
         "source_id": "copsahhorner",
@@ -674,19 +674,19 @@
         "normalized_text": "",
         "sequence": 1
       },
-      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap)."
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
     },
     {
       "unit_id": "john.8.3",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.8.3",
         "book": "john",
         "chapter": 8,
         "verse": 3,
-        "original_text": "αγουσιν δε οι γραμματεις και οι φαρισαιοι γυναικα επι μοιχεια κατειλημμενην και στησαντες αυτην εν μεσω",
-        "normalized_text": "αγουσιν δε οι γραμματεις και οι φαρισαιοι γυναικα επι μοιχεια κατειλημμενην και στησαντες αυτην εν μεσω",
-        "sequence": 338
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 2
       },
       "sahidic": {
         "source_id": "copsahhorner",
@@ -698,19 +698,19 @@
         "normalized_text": "",
         "sequence": 2
       },
-      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap)."
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
     },
     {
       "unit_id": "john.8.4",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.8.4",
         "book": "john",
         "chapter": 8,
         "verse": 4,
-        "original_text": "λεγουσιν αυτω διδασκαλε αυτη η γυνη κατειληπται επ αυτοφωρω μοιχευομενη",
-        "normalized_text": "λεγουσιν αυτω διδασκαλε αυτη η γυνη κατειληπται επ αυτοφωρω μοιχευομενη",
-        "sequence": 339
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 3
       },
       "sahidic": {
         "source_id": "copsahhorner",
@@ -722,19 +722,19 @@
         "normalized_text": "",
         "sequence": 3
       },
-      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap)."
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
     },
     {
       "unit_id": "john.8.5",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.8.5",
         "book": "john",
         "chapter": 8,
         "verse": 5,
-        "original_text": "εν δε τω νομω [ημιν] μωυσης ενετειλατο τας τοιαυτας λιθαζειν συ ουν τι λεγεις",
-        "normalized_text": "εν δε τω νομω [ημιν] μωυσης ενετειλατο τας τοιαυτας λιθαζειν συ ουν τι λεγεις",
-        "sequence": 340
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 4
       },
       "sahidic": {
         "source_id": "copsahhorner",
@@ -746,19 +746,19 @@
         "normalized_text": "",
         "sequence": 4
       },
-      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap)."
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
     },
     {
       "unit_id": "john.8.6",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.8.6",
         "book": "john",
         "chapter": 8,
         "verse": 6,
-        "original_text": "[τουτο δε ελεγον πειραζοντες αυτον ινα εχωσιν κατηγορειν αυτου] ο δε ιησους κατω κυψας τω δακτυλω κατεγραφεν εις την γην",
-        "normalized_text": "[τουτο δε ελεγον πειραζοντες αυτον ινα εχωσιν κατηγορειν αυτου] ο δε ιησους κατω κυψας τω δακτυλω κατεγραφεν εις την γην",
-        "sequence": 341
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 5
       },
       "sahidic": {
         "source_id": "copsahhorner",
@@ -770,19 +770,19 @@
         "normalized_text": "",
         "sequence": 5
       },
-      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap)."
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
     },
     {
       "unit_id": "john.8.7",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.8.7",
         "book": "john",
         "chapter": 8,
         "verse": 7,
-        "original_text": "ως δε επεμενον ερωτωντες [αυτον] ανεκυψεν και ειπεν [αυτοις] ο αναμαρτητος υμων πρωτος επ αυτην βαλετω λιθον",
-        "normalized_text": "ως δε επεμενον ερωτωντες [αυτον] ανεκυψεν και ειπεν [αυτοις] ο αναμαρτητος υμων πρωτος επ αυτην βαλετω λιθον",
-        "sequence": 342
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 6
       },
       "sahidic": {
         "source_id": "copsahhorner",
@@ -794,19 +794,19 @@
         "normalized_text": "",
         "sequence": 6
       },
-      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap)."
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
     },
     {
       "unit_id": "john.8.8",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.8.8",
         "book": "john",
         "chapter": 8,
         "verse": 8,
-        "original_text": "και παλιν κατακυψας εγραφεν εις την γην",
-        "normalized_text": "και παλιν κατακυψας εγραφεν εις την γην",
-        "sequence": 343
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 7
       },
       "sahidic": {
         "source_id": "copsahhorner",
@@ -818,19 +818,19 @@
         "normalized_text": "",
         "sequence": 7
       },
-      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap)."
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
     },
     {
       "unit_id": "john.8.9",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.8.9",
         "book": "john",
         "chapter": 8,
         "verse": 9,
-        "original_text": "οι δε ακουσαντες εξηρχοντο εις καθ εις αρξαμενοι απο των πρεσβυτερων και κατελειφθη μονος και η γυνη εν μεσω ουσα",
-        "normalized_text": "οι δε ακουσαντες εξηρχοντο εις καθ εις αρξαμενοι απο των πρεσβυτερων και κατελειφθη μονος και η γυνη εν μεσω ουσα",
-        "sequence": 344
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 8
       },
       "sahidic": {
         "source_id": "copsahhorner",
@@ -842,19 +842,19 @@
         "normalized_text": "",
         "sequence": 8
       },
-      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap)."
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
     },
     {
       "unit_id": "john.8.10",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.8.10",
         "book": "john",
         "chapter": 8,
         "verse": 10,
-        "original_text": "ανακυψας δε ο ιησους ειπεν αυτη γυναι που εισιν ουδεις σε κατεκρινεν",
-        "normalized_text": "ανακυψας δε ο ιησους ειπεν αυτη γυναι που εισιν ουδεις σε κατεκρινεν",
-        "sequence": 345
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 9
       },
       "sahidic": {
         "source_id": "copsahhorner",
@@ -866,19 +866,19 @@
         "normalized_text": "",
         "sequence": 9
       },
-      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap)."
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
     },
     {
       "unit_id": "john.8.11",
       "greek": {
-        "source_id": "westcott-hort",
+        "source_id": "ntvmr-vaticanus-b",
         "unit_id": "john.8.11",
         "book": "john",
         "chapter": 8,
         "verse": 11,
-        "original_text": "η δε ειπεν ουδεις κυριε ειπεν δε ο ιησους ουδε εγω σε κατακρινω πορευου απο του νυν μηκετι αμαρτανε]]",
-        "normalized_text": "η δε ειπεν ουδεις κυριε ειπεν δε ο ιησους ουδε εγω σε κατακρινω πορευου απο του νυν μηκετι αμαρτανε]]",
-        "sequence": 346
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 10
       },
       "sahidic": {
         "source_id": "copsahhorner",
@@ -890,8 +890,8 @@
         "normalized_text": "",
         "sequence": 10
       },
-      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap)."
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
     }
   ],
-  "notes": "Public-domain pilot excerpt for lexical/phrase alignment experiments. Greek = Westcott-Hort (Robinson transcription), not SBLGNT. Sahidic = CrossWire CopSahHorner v1.5. John 8:1-11 documents empty Sahidic slots vs Greek tradition."
+  "notes": "Public-domain Sahidic (Horner/CrossWire) + CC BY 4.0 INTF/NTVMR Vaticanus GA 03 firsthand (B*) pilot for lexical/phrase alignment. Greek = Vaticanus B* only (JAK-25 / updated JAK-15); Westcott-Hort and SBLGNT are not used. John 8:1-11 is empty on both sides (PA absent in both traditions). Empty firsthand readings are omissions, not corrector fill."
 }

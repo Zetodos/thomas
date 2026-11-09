@@ -11,6 +11,7 @@ Per-source machine-readable **JSON** manifests (stable `id`).
 | File | Source |
 | --- | --- |
 | [`copsahhorner.json`](copsahhorner.json) | CrossWire Horner Sahidic NT (default Sahidic) |
-| [`westcott-hort.json`](westcott-hort.json) | Robinson WH Greek NT (default Greek) |
+| [`ntvmr-vaticanus-b.json`](ntvmr-vaticanus-b.json) | INTF/NTVMR Vaticanus GA 03 B* (default Greek) |
 
 Do **not** add Sahidica, NTAEG, or Bohairica to this default set.
+Westcott–Hort is not part of the default Greek spine (JAK-25).

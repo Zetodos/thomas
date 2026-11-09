@@ -36,16 +36,21 @@ Adopted redistributable core (JAK-15 Done). Pin versions at ingest. Sahidica is 
 | --- | --- | --- |
 | Dilley Thomas (Coptic SCRIPTORIUM) | `bundled` or `setup-download` | CC BY 4.0 |
 | P.Oxy. fragments (verify each transcription) | `bundled` (small) | Prefer DCLP (CC BY 3.0) or PD Grenfell/Hunt; Evelyn-White **1920** original is US PD (see audit §2) |
-| **Horner Sahidic NT** (`CopSahHorner`) | `setup-download` (+ bundled pilot excerpt) | **Default Sahidic NT** (PD module; JAK-14 Done; ingest JAK-24). Manifest: [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json). Alignment notes: [`horner-wh-alignment-notes.md`](horner-wh-alignment-notes.md) |
-| **Westcott–Hort 1881 Greek NT** (PD Robinson transcription) | `setup-download` (+ bundled pilot excerpt) | **Default Greek NT** per JAK-15. Manifest: [`data/manifests/westcott-hort.json`](../data/manifests/westcott-hort.json) |
+| **Horner Sahidic NT** (`CopSahHorner`) | `setup-download` (+ bundled pilot excerpt) | **Default Sahidic NT** (PD module; JAK-14 Done; ingest JAK-24). Manifest: [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json). Alignment notes: [`horner-vaticanus-alignment-notes.md`](horner-vaticanus-alignment-notes.md) |
+| **NTVMR Vaticanus GA 03 B\*** (INTF TEI, `docID` 20003) | `setup-download` (+ bundled pilot excerpt) | **Default Greek NT** (JAK-25 GO; updates JAK-15 WH default). **CC BY 4.0** transcription; attribute INTF/NTVMR. Firsthand only; empty firsthand = omission; **no** corrector fill; **no** WH/SBLGNT lacuna fill; **do not** ship images. Manifest: [`data/manifests/ntvmr-vaticanus-b.json`](../data/manifests/ntvmr-vaticanus-b.json) |
+| Westcott–Hort 1881 (Robinson) | not default | Documented unused fallback only; **not** in default manifests/CLI |
 | SCRIPTORIUM `sahidic.ot` | `setup-download` / `bundled` | CC BY-SA 4.0 (secondary) |
 | **Swete LXX** (First1KGreek / nathans/lxx-swete) | `setup-download` | CC BY-SA 4.0 (JAK-18); not Rahlfs-Hanhart; Rahlfs 1935 not preferred |
 | **CCL / DDGLC TEI** | `setup-download` / `bundled` | CC BY-SA 4.0 (JAK-19); do not wait on DIOSKOROS; no scrape |
 | WEB English passages | `bundled` (passages) | Public domain; trademark care |
 
-### SBLGNT follow-up (do not flip default yet)
+### Attribution — NTVMR / INTF Vaticanus transcription (CC BY 4.0)
 
-Westcott–Hort remains the **current** default Greek NT under JAK-15. SBLGNT’s current **CC BY 4.0** status (since Dec 2022) is tracked separately in JAK-25 (revisit SBLGNT vs WH). Do **not** switch the default mid-stream in this Phase 0 PR.
+Required credit for the Greek TEI and derived pilot Greek: **Institut für neutestamentliche Textforschung (INTF / NTVMR)**; Codex Vaticanus GA 03 / Vat. gr. 1209 transcription; [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Pin retrieval URL, date, and checksums in the source manifest. Site image restrictions are separate — **never** package Vatican/NTVMR manuscript images.
+
+### SBLGNT / Westcott–Hort
+
+Default Greek NT is **Vaticanus B\*** (JAK-25). SBLGNT (CC BY 4.0) and Westcott–Hort remain non-default and must not be mixed into empty B\* slots.
 
 ## ShareAlike policy (JAK-16 Done)
 
@@ -76,6 +81,7 @@ Hard exclusions — do not commit, vendor, or redistribute:
 | **Crum, A Coptic Dictionary** OCR dumps | OUP / not safely redistributable wholesale |
 | Other **Brill / DBG** full texts used only as scholarly references | Copyrighted; cite, do not ship |
 | **Wells Sahidica, NTAEG, Bohairica** | Gated custom/unclear rights — excluded from default artifacts |
+| **Vatican / NTVMR images** of Vat. gr. 1209 | Image rights restricted; CC BY 4.0 covers the **transcription**, not images |
 
 Reference-only citation and short fair-use quotation policy may apply in scholarly notes; that is not permission to package continuous text.
 
@@ -85,13 +91,13 @@ Reference-only citation and short fair-use quotation policy may apply in scholar
 
 Machine-readable manifests live under [`data/manifests/`](../data/manifests/) as **JSON** (one file per source). Typed model: `zetodos_thomas.schemas.source.SourceManifest`. Validate offline with `uv run thomas sources validate`.
 
-Full CrossWire / Robinson downloads stay under gitignored `data/downloads/`. A redistributable PD pilot excerpt is committed at [`data/sources/pilot/horner-wh-nt-pilot.json`](../data/sources/pilot/horner-wh-nt-pilot.json).
+Full CrossWire / NTVMR TEI downloads stay under gitignored `data/downloads/`. A redistributable pilot excerpt is committed at [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](../data/sources/pilot/horner-vaticanus-nt-pilot.json).
 
 ### Required / expected fields
 
 | Field | Type | Description |
 | --- | --- | --- |
-| `id` | string | Stable canonical source ID (e.g. `copsahhorner`, `westcott-hort`) |
+| `id` | string | Stable canonical source ID (e.g. `copsahhorner`, `ntvmr-vaticanus-b`) |
 | `title` | string | Human-readable title / edition name |
 | `version` | string | Edition or module version / date pin |
 | `url` | string | Provenance / download URL |
@@ -115,7 +121,7 @@ Full CrossWire / Robinson downloads stay under gitignored `data/downloads/`. A r
 
 ### Live example
 
-See [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json) (checksum pinned for `CopSahHorner.zip`) and [`data/manifests/westcott-hort.json`](../data/manifests/westcott-hort.json) (git commit + `JOH.WH` checksum).
+See [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json) and [`data/manifests/ntvmr-vaticanus-b.json`](../data/manifests/ntvmr-vaticanus-b.json).
 
 ## Decision status
 
@@ -123,7 +129,7 @@ See [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json) (c
 | --- | --- | --- | --- |
 | JAK-13 | Code license | **Done** | Apache-2.0 for project-owned software only |
 | JAK-14 | Sahidic NT / Wells | **Done** (decision) | Horner/`CopSahHorner` default; do not bundle Sahidica/NTAEG/Bohairica without explicit rights. Implementation: JAK-24 |
-| JAK-15 | Pilot corpus | **Done** | Redistributable stack above; Greek NT = Westcott–Hort (PD Robinson). SBLGNT revisit: JAK-25 |
+| JAK-15 | Pilot corpus | **Done** (Greek default updated by JAK-25) | Redistributable stack; **Greek NT = Vaticanus B\*** (INTF/NTVMR CC BY 4.0). WH no longer default. |
 | JAK-16 | ShareAlike outputs | **Done** | SA only on legal adaptations of BY-SA material; no blanket SA |
 | JAK-17 | Critical Greek/English | **Done** | Project-authored critical Greek + rough English: **CC BY 4.0** |
 | JAK-18 | LXX edition | **Done** | Default Swete via First1KGreek / nathans/lxx-swete (CC BY-SA 4.0) |

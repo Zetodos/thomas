@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Download CopSahHorner + WH textonly into data/downloads/.
+"""Download CopSahHorner + NTVMR Vaticanus B* TEI into data/downloads/.
 
 Prefer the Typer entrypoint:
 
@@ -36,12 +36,12 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         root = find_repo_root(args.repo_root)
-        sword_root, wh_dir = download_pilot_sources(root, force=args.force)
+        sword_root, tei_dir = download_pilot_sources(root, force=args.force)
     except (DownloadError, FileNotFoundError, OSError) as exc:
         print(f"Download failed: {exc}", file=sys.stderr)
         return 1
     print(f"OK: CopSahHorner SWORD tree at {sword_root}")
-    print(f"OK: Westcott-Hort textonly at {wh_dir}")
+    print(f"OK: NTVMR Vaticanus B* TEI at {tei_dir}")
     print("Next (optional): uv run thomas sources build-pilot")
     return 0
 

@@ -7,6 +7,8 @@ from pathlib import Path
 
 from zetodos_thomas.bundled import bundled_manifests_dir, bundled_pilot_path
 
+PILOT_FILENAME = "horner-vaticanus-nt-pilot.json"
+
 
 def find_repo_root(start: Path | None = None) -> Path:
     """Locate the thomas checkout by walking parents for ``pyproject.toml``.
@@ -48,12 +50,12 @@ def resolve_manifests_dir(repo_root: Path | None) -> Path:
 def resolve_pilot_path(repo_root: Path | None) -> Path:
     """Prefer checkout pilot JSON; fall back to the packaged pilot."""
     if repo_root is not None:
-        checkout = repo_root / "data" / "sources" / "pilot" / "horner-wh-nt-pilot.json"
+        checkout = repo_root / "data" / "sources" / "pilot" / PILOT_FILENAME
         if checkout.is_file():
             return checkout
     try:
         root = find_repo_root()
-        checkout = root / "data" / "sources" / "pilot" / "horner-wh-nt-pilot.json"
+        checkout = root / "data" / "sources" / "pilot" / PILOT_FILENAME
         if checkout.is_file():
             return checkout
     except FileNotFoundError:

@@ -12,6 +12,7 @@ from zetodos_thomas.ingest.manifests import (
     ManifestValidationError,
     validate_manifests_dir,
 )
+from zetodos_thomas.ingest.ntvmr_vaticanus import SOURCE_ID as VATICANUS_SOURCE_ID
 from zetodos_thomas.ingest.paths import (
     require_repo_root,
     resolve_manifests_dir,
@@ -79,7 +80,7 @@ def validate_sources(
         typer.echo(f"  - {manifest.id} ({manifest.mode}, {manifest.spdx_or_custom})")
 
     blocked = sorted(GATED_DEFAULT_SOURCE_IDS & {m.id for m in manifests})
-    if blocked:  # defensive; validate_manifests_dir already rejects these
+    if blocked:
         typer.secho(
             f"Gated ids present (forbidden on default path): {blocked}",
             fg=typer.colors.RED,
@@ -95,13 +96,15 @@ def validate_sources(
         empty_sahidic = sum(
             1 for unit in corpus.units if not unit.sahidic.original_text
         )
+        empty_greek = sum(1 for unit in corpus.units if not unit.greek.original_text)
         typer.echo(
             f"OK: pilot {corpus.id} - {len(corpus.units)} units "
-            f"({empty_sahidic} empty Sahidic slots) from {pilot}"
+            f"({empty_sahidic} empty Sahidic, {empty_greek} empty Greek) "
+            f"from {pilot}"
         )
-        if corpus.greek_source_id != "westcott-hort":
+        if corpus.greek_source_id != VATICANUS_SOURCE_ID:
             typer.secho(
-                "Pilot greek_source_id must be westcott-hort (JAK-15)",
+                f"Pilot greek_source_id must be {VATICANUS_SOURCE_ID} (JAK-25)",
                 fg=typer.colors.RED,
             )
             raise typer.Exit(code=1)
@@ -132,19 +135,20 @@ def download_sources(
         help="Re-download even when checksum-verified files already exist",
     ),
 ) -> None:
-    """Download CopSahHorner + Westcott-Hort textonly into data/downloads/.
+    """Download CopSahHorner + NTVMR Vaticanus B* TEI into data/downloads/.
 
     Writes only under the checkout (never into the package install). Requires
-    network. After this, optionally run ``build-pilot``.
+    network. Throttles NTVMR pulls. Does **not** download manuscript images.
+    After this, optionally run ``build-pilot``.
     """
     try:
         root = require_repo_root(repo_root)
-        sword_root, wh_dir = download_pilot_sources(root, force=force)
+        sword_root, tei_dir = download_pilot_sources(root, force=force)
     except (DownloadError, FileNotFoundError, OSError) as exc:
         typer.secho(f"Download failed: {exc}", fg=typer.colors.RED)
         raise typer.Exit(code=1) from exc
     typer.echo(f"OK: CopSahHorner SWORD tree at {sword_root}")
-    typer.echo(f"OK: Westcott-Hort textonly at {wh_dir}")
+    typer.echo(f"OK: NTVMR Vaticanus B* TEI at {tei_dir}")
     typer.echo("Next (optional): uv run thomas sources build-pilot")
 
 
@@ -166,10 +170,10 @@ def build_pilot(
         exists=True,
         file_okay=False,
     ),
-    wh_textonly_dir: Path | None = typer.Option(
+    vaticanus_tei_dir: Path | None = typer.Option(
         None,
-        "--wh-textonly-dir",
-        help="Directory of Robinson WH *.WH textonly files",
+        "--vaticanus-tei-dir",
+        help="Directory of NTVMR Vaticanus teiraw XML files",
         exists=True,
         file_okay=False,
     ),
@@ -190,17 +194,19 @@ def build_pilot(
     manifests_dir = root / "data" / "manifests"
     downloads_dir = root / "data" / "downloads"
     sword = sword_root or downloads_dir / "sword"
-    wh_dir = wh_textonly_dir or downloads_dir / "westcott-hort" / "textonly"
-    dest = output or root / "data" / "sources" / "pilot" / "horner-wh-nt-pilot.json"
+    tei_dir = vaticanus_tei_dir or downloads_dir / "ntvmr-vaticanus"
+    dest = (
+        output or root / "data" / "sources" / "pilot" / "horner-vaticanus-nt-pilot.json"
+    )
 
     try:
         verify_pilot_rebuild_inputs(
             manifests_dir=manifests_dir,
             sword_root=sword,
-            wh_textonly_dir=wh_dir,
+            vaticanus_tei_dir=tei_dir,
             downloads_dir=downloads_dir,
         )
-        corpus = build_pilot_corpus(sword_root=sword, wh_textonly_dir=wh_dir)
+        corpus = build_pilot_corpus(sword_root=sword, vaticanus_tei_dir=tei_dir)
     except (DownloadError, FileNotFoundError, OSError, ValueError) as exc:
         typer.secho(f"build-pilot failed: {exc}", fg=typer.colors.RED)
         raise typer.Exit(code=1) from exc

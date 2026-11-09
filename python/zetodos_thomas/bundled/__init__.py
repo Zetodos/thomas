@@ -13,7 +13,9 @@ def bundled_manifests_dir() -> Path:
 
 
 def bundled_pilot_path() -> Path:
-    """Return the on-disk path to the packaged Horner x WH pilot JSON."""
+    """Return the on-disk path to the packaged Horner x Vaticanus B* pilot JSON."""
     return Path(
-        str(files("zetodos_thomas.bundled") / "pilot" / "horner-wh-nt-pilot.json")
+        str(
+            files("zetodos_thomas.bundled") / "pilot" / "horner-vaticanus-nt-pilot.json"
+        )
     )
