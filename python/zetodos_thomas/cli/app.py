@@ -5,16 +5,19 @@ from __future__ import annotations
 
 import typer
 
+from zetodos_thomas.cli.sources import sources_app
+
 app = typer.Typer(
     name="thomas",
     help="Offline Gospel of Thomas reconstruction tooling.",
     no_args_is_help=True,
 )
+app.add_typer(sources_app, name="sources")
 
 
 @app.callback()
 def main() -> None:
-    """Zetodos Thomas CLI (Phase 0 scaffold; subcommands arrive in later phases)."""
+    """Zetodos Thomas CLI."""
 
 
 if __name__ == "__main__":

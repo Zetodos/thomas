@@ -1,0 +1,13 @@
+{
+  "id": "copsahhorner",
+  "title": "Sahidic Coptic New Testament (Horner) — CrossWire CopSahHorner",
+  "version": "1.5",
+  "url": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=CopSahHorner",
+  "spdx_or_custom": "custom:Public-Domain",
+  "attribution": "G. W. Horner; CrossWire CopSahHorner module",
+  "mode": "setup-download",
+  "checksum": "sha256:4f074891e60cab8e59cb8ebaa64cb207ae990ae78270df5be290fb0a8e7d2132",
+  "notes": "Fixture copy for unit tests",
+  "redistributable": true,
+  "counterpart_source_id": "ntvmr-vaticanus-b"
+}

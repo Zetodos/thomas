@@ -1,9 +1,17 @@
 # Source manifests
 
-Per-source machine-readable manifests will live here once corpora are ingested.
+Per-source machine-readable **JSON** manifests (stable `id`).
 
-- **Schema:** see [`docs/source-licenses.md`](../../docs/source-licenses.md#manifest-schema-draft)
-- **Formats:** YAML or JSON (one file per source, stable `id`)
-- **Phase 0:** no corpus files and no filled manifests yet — only this directory placeholder
+- **Schema / policy:** [`docs/source-licenses.md`](../../docs/source-licenses.md#manifest-schema)
+- **Typed model:** `zetodos_thomas.schemas.source.SourceManifest`
+- **Validate:** `uv run thomas sources validate`
 
-Do not commit copyrighted texts or gated Wells corpora into this tree.
+## Current manifests (JAK-24)
+
+| File | Source |
+| --- | --- |
+| [`copsahhorner.json`](copsahhorner.json) | CrossWire Horner Sahidic NT (default Sahidic) |
+| [`ntvmr-vaticanus-b.json`](ntvmr-vaticanus-b.json) | INTF/NTVMR Vaticanus GA 03 B* (default Greek) |
+
+Do **not** add Sahidica, NTAEG, or Bohairica to this default set.
+Westcott–Hort is not part of the default Greek spine (JAK-25).

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="TEI-NTMSS.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+<text xml:lang="grc"><body>
+<div type="book" n="B04"><div type="chapter" n="B04K8"><ab n="John.8.1" xml:id="_John.8.1.P1300.I1"/><ab n="John.8.2" xml:id="_John.8.2.P1300.I1"/><ab n="John.8.3" xml:id="_John.8.3.P1300.I1"/><ab n="John.8.4" xml:id="_John.8.4.P1300.I1"/><ab n="John.8.5" xml:id="_John.8.5.P1300.I1"/><ab n="John.8.6" xml:id="_John.8.6.P1300.I1"/><ab n="John.8.7" xml:id="_John.8.7.P1300.I1"/><ab n="John.8.8" xml:id="_John.8.8.P1300.I1"/><ab n="John.8.9" xml:id="_John.8.9.P1300.I1"/><ab n="John.8.10" xml:id="_John.8.10.P1300.I1"/><ab n="John.8.11" xml:id="_John.8.11.P1300.I1"><lb/></ab></div></div></body></text></TEI>

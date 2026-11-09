@@ -1,8 +1,5 @@
-# Local / restricted imports
+# Local / restricted imports (gitignored)
 
-This directory is for **machine-local** source imports that must not be committed
-(for example rights-restricted corpora brought in during setup).
+User-supplied or gated corpora (if ever permitted) go here. Contents except this README are **not** committed.
 
-Contents under `data/local/` are gitignored except this README. Tracked,
-redistributable manifests and policy live in [`../manifests/`](../manifests/).
-See [`docs/source-licenses.md`](../../docs/source-licenses.md).
+Wells **Sahidica**, **NTAEG**, and **Bohairica** are **not** part of the default offline path. Do not place them under `data/sources/` or `data/manifests/` without an explicit rights decision and `manual-import` gate. See [`docs/source-licenses.md`](../../docs/source-licenses.md#gated-wells-sahidica--ntaeg--bohairica).

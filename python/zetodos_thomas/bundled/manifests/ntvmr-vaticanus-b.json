@@ -1,0 +1,22 @@
+{
+  "id": "ntvmr-vaticanus-b",
+  "title": "Codex Vaticanus GA 03 (B) firsthand / B* — INTF/NTVMR TEI transcription",
+  "version": "docID-20003-teiraw-2026-11-09",
+  "url": "https://ntvmr.uni-muenster.de/community/api/transcript/get/?docID=20003",
+  "spdx_or_custom": "CC-BY-4.0",
+  "attribution": "Institut für neutestamentliche Textforschung (INTF / NTVMR); Codex Vaticanus GA 03 / Biblioteca Apostolica Vaticana Vat. gr. 1209 transcription; licensed under Creative Commons Attribution 4.0 International. Project extracts firsthand (B*) readings only; empty firsthand = omission (no corrector fill). Manuscript images are not redistributed.",
+  "mode": "setup-download",
+  "checksum": "sha256:2153735c61cfec12877dfbda677b3c2269c323fccb9d67c6f70f45a742a725d9",
+  "notes": "Default Greek NT (JAK-25 GO; supersedes WH default from JAK-15). docID=20003. Checksum is sha256 of teiraw for John.1.1-18 (primary pilot pin). Additional pins: Mark.1.1-8 sha256:6b863d7ee3f76f9ca2d6f79adbe69a153555109fb4dcc88105df6c85fa10445b; John.8.1-11 sha256:8cd9c90bcbed2fee6f7a3241abd79540da712d58db44aa689e7b0c93cf2f6a92. Fetch via transcript/get format=teiraw with briefTEIHeader, joinParts, includeEmpty; throttle ~1s between pulls. Do not download or ship Vatican/NTVMR images. Westcott-Hort and SBLGNT are not used as Greek spine and must not fill lacunae. Local path after setup: data/downloads/ntvmr-vaticanus/.",
+  "editor": "INTF / NTVMR diplomatic transcription (hands: firsthand, correctors)",
+  "language": "grc",
+  "dialect": null,
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "local_path": "data/downloads/ntvmr-vaticanus/",
+  "redistributable": true,
+  "gate": null,
+  "module_name": "NTVMR-GA03",
+  "sword_version_date": null,
+  "text_source": "NTVMR transcript/get teiraw docID=20003",
+  "counterpart_source_id": "copsahhorner"
+}

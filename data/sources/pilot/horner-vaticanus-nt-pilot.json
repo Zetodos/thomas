@@ -1,0 +1,897 @@
+{
+  "id": "horner-vaticanus-nt-pilot-v1",
+  "title": "Horner Sahidic NT x NTVMR Vaticanus B* Greek NT pilot (John 1:1-18, Mark 1:1-8, John 8:1-11)",
+  "greek_source_id": "ntvmr-vaticanus-b",
+  "sahidic_source_id": "copsahhorner",
+  "units": [
+    {
+      "unit_id": "john.1.1",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.1",
+        "book": "john",
+        "chapter": 1,
+        "verse": 1,
+        "original_text": "εν αρχη ην ο λογος και ο λογος ην προς τον θν και θς ην ο λογος",
+        "normalized_text": "εν αρχη ην ο λογος και ο λογος ην προς τον θν και θς ην ο λογος",
+        "sequence": 0
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.1",
+        "book": "john",
+        "chapter": 1,
+        "verse": 1,
+        "original_text": "ϩⲛ̅ⲧⲉϩⲟⲩⲉ͡ⲓⲧⲉ ⲛⲉϥϣⲟⲟⲡ ⲛ̅ϭⲓⲡϣⲁϫⲉ ⲁⲩⲱ ⲡϣⲁϫⲉ ⲛⲉϥϣⲟⲟⲡ ⲛ̅ⲛⲁϩⲣⲛ̅ⲡⲛⲟⲩⲧⲉ ⲁⲩⲱ ⲛⲉⲩⲛⲟⲩⲧⲉ ⲡⲉ ⲡϣⲁϫⲉ.",
+        "normalized_text": "ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ ⲛⲉϥϣⲟⲟⲡ ⲛϭⲓⲡϣⲁϫⲉ ⲁⲩⲱ ⲡϣⲁϫⲉ ⲛⲉϥϣⲟⲟⲡ ⲛⲛⲁϩⲣⲛⲡⲛⲟⲩⲧⲉ ⲁⲩⲱ ⲛⲉⲩⲛⲟⲩⲧⲉ ⲡⲉ ⲡϣⲁϫⲉ.",
+        "sequence": 0
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.2",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.2",
+        "book": "john",
+        "chapter": 1,
+        "verse": 2,
+        "original_text": "ουτος ην εν αρχη προς τον θν",
+        "normalized_text": "ουτος ην εν αρχη προς τον θν",
+        "sequence": 1
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.2",
+        "book": "john",
+        "chapter": 1,
+        "verse": 2,
+        "original_text": "ⲡⲁⲓ ϩⲛ̅ⲧⲉϩⲟⲩⲉ͡ⲓⲧⲉ ⲛⲉϥϣⲟⲟⲡ ϩⲁⲧⲙ̅ⲡⲛⲟⲩⲧⲉ.",
+        "normalized_text": "ⲡⲁⲓ ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ ⲛⲉϥϣⲟⲟⲡ ϩⲁⲧⲙⲡⲛⲟⲩⲧⲉ.",
+        "sequence": 1
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.3",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.3",
+        "book": "john",
+        "chapter": 1,
+        "verse": 3,
+        "original_text": "παντα δι αυτου εγενετο και χωρις αυτου εγενετο ουδε εν ο γεγονεν",
+        "normalized_text": "παντα δι αυτου εγενετο και χωρις αυτου εγενετο ουδε εν ο γεγονεν",
+        "sequence": 2
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.3",
+        "book": "john",
+        "chapter": 1,
+        "verse": 3,
+        "original_text": "ⲛ̅ⲧⲁⲡⲧⲏⲣϥ ϣⲱⲡⲉ ⲉⲃⲟⲗ ϩⲓⲧⲟⲟⲧϥ̅ ⲁⲩⲱ ⲁϫⲛ̅ⲧϥ̅ ⲙ̅ⲡⲉⲗⲁⲁⲩ ϣⲱⲡⲉ. ⲡⲉⲛⲧⲁϥϣⲱⲡⲉ",
+        "normalized_text": "ⲛⲧⲁⲡⲧⲏⲣϥ ϣⲱⲡⲉ ⲉⲃⲟⲗ ϩⲓⲧⲟⲟⲧϥ ⲁⲩⲱ ⲁϫⲛⲧϥ ⲙⲡⲉⲗⲁⲁⲩ ϣⲱⲡⲉ. ⲡⲉⲛⲧⲁϥϣⲱⲡⲉ",
+        "sequence": 2
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.4",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.4",
+        "book": "john",
+        "chapter": 1,
+        "verse": 4,
+        "original_text": "εν αυτω ζωη ην και η ζωη ην το φως",
+        "normalized_text": "εν αυτω ζωη ην και η ζωη ην το φως",
+        "sequence": 3
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.4",
+        "book": "john",
+        "chapter": 1,
+        "verse": 4,
+        "original_text": "ϩⲣⲁⲓ̈ ⲛ̅ϩⲏⲧϥ̅ ⲡⲉ ⲡⲱⲛϩ̅. ⲁⲩⲱ ⲡⲱⲛϩ ⲡⲉ ⲡⲟⲩⲟⲓ̈ⲛ ⲛ̅ⲣ̅ⲣⲱⲙⲉ.",
+        "normalized_text": "ϩⲣⲁⲓ̈ ⲛϩⲏⲧϥ ⲡⲉ ⲡⲱⲛϩ. ⲁⲩⲱ ⲡⲱⲛϩ ⲡⲉ ⲡⲟⲩⲟⲓ̈ⲛ ⲛⲣⲣⲱⲙⲉ.",
+        "sequence": 3
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.5",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.5",
+        "book": "john",
+        "chapter": 1,
+        "verse": 5,
+        "original_text": "και το φως εν τη σκοτια φαινει και η σκοτια αυτο ου κατελαβεν",
+        "normalized_text": "και το φως εν τη σκοτια φαινει και η σκοτια αυτο ου κατελαβεν",
+        "sequence": 4
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.5",
+        "book": "john",
+        "chapter": 1,
+        "verse": 5,
+        "original_text": "ⲁⲩⲱ ⲡⲟⲩⲟⲓ̈ⲛ ϥⲣ̅ⲟⲩⲟⲓ̈ⲛ ϩⲙ̅ⲡⲕⲁⲕⲉ ⲁⲩⲱ ⲙ̅ⲡⲉⲡⲕⲁⲕⲉ ⲧⲁϩⲟϥ·",
+        "normalized_text": "ⲁⲩⲱ ⲡⲟⲩⲟⲓ̈ⲛ ϥⲣⲟⲩⲟⲓ̈ⲛ ϩⲙⲡⲕⲁⲕⲉ ⲁⲩⲱ ⲙⲡⲉⲡⲕⲁⲕⲉ ⲧⲁϩⲟϥ·",
+        "sequence": 4
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.6",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.6",
+        "book": "john",
+        "chapter": 1,
+        "verse": 6,
+        "original_text": "εγενετο ανθρωπος απεσταλμενος παρα θυ ονομα αυτω ιωανης",
+        "normalized_text": "εγενετο ανθρωπος απεσταλμενος παρα θυ ονομα αυτω ιωανης",
+        "sequence": 5
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.6",
+        "book": "john",
+        "chapter": 1,
+        "verse": 6,
+        "original_text": "ⲁϥϣⲱⲡⲉ ⲛ̅ϭⲓⲟⲩⲣⲱⲙⲉ ⲉⲁⲩⲧⲛ̅ⲛⲟⲟⲩϥ ⲉⲃⲟⲗ ϩⲓⲧⲙ̅ⲡⲛⲟⲩⲧⲉ ⲉⲡⲉϥⲣⲁⲛ ⲡⲉ ⲓ̈ⲱϩⲁⲛⲛⲏⲥ.",
+        "normalized_text": "ⲁϥϣⲱⲡⲉ ⲛϭⲓⲟⲩⲣⲱⲙⲉ ⲉⲁⲩⲧⲛⲛⲟⲟⲩϥ ⲉⲃⲟⲗ ϩⲓⲧⲙⲡⲛⲟⲩⲧⲉ ⲉⲡⲉϥⲣⲁⲛ ⲡⲉ ⲓ̈ⲱϩⲁⲛⲛⲏⲥ.",
+        "sequence": 5
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.7",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.7",
+        "book": "john",
+        "chapter": 1,
+        "verse": 7,
+        "original_text": "ουτος ηλθεν εις μαρτυριαν ινα μαρτυρηση περι του φωτος ινα παντες πιστευσωσιν δι αυτου",
+        "normalized_text": "ουτος ηλθεν εις μαρτυριαν ινα μαρτυρηση περι του φωτος ινα παντες πιστευσωσιν δι αυτου",
+        "sequence": 6
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.7",
+        "book": "john",
+        "chapter": 1,
+        "verse": 7,
+        "original_text": "ⲡⲁⲓ̈ ⲁϥⲉ͡ⲓ ⲉⲩⲙⲛ̅ⲧⲙⲛ̅ⲧⲣⲉ ϫⲉ ⲉϥⲉⲣ̅ⲙⲛ̅ⲧⲣⲉ ⲉⲧⲃⲉⲡⲟⲩⲟⲉⲓⲛ ϫⲉⲕⲁⲥ ⲉⲣⲉⲟⲩⲟⲛ ⲛⲓⲙ ⲡⲓⲥⲧⲉⲩⲉ ⲉⲃⲟⲗ ϩⲓⲧⲟⲟⲧϥ.",
+        "normalized_text": "ⲡⲁⲓ̈ ⲁϥⲉⲓ ⲉⲩⲙⲛⲧⲙⲛⲧⲣⲉ ϫⲉ ⲉϥⲉⲣⲙⲛⲧⲣⲉ ⲉⲧⲃⲉⲡⲟⲩⲟⲉⲓⲛ ϫⲉⲕⲁⲥ ⲉⲣⲉⲟⲩⲟⲛ ⲛⲓⲙ ⲡⲓⲥⲧⲉⲩⲉ ⲉⲃⲟⲗ ϩⲓⲧⲟⲟⲧϥ.",
+        "sequence": 6
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.8",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.8",
+        "book": "john",
+        "chapter": 1,
+        "verse": 8,
+        "original_text": "ουκ ην εκεινος το φως αλλ ινα μαρτυρηση περι του φωτος",
+        "normalized_text": "ουκ ην εκεινος το φως αλλ ινα μαρτυρηση περι του φωτος",
+        "sequence": 7
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.8",
+        "book": "john",
+        "chapter": 1,
+        "verse": 8,
+        "original_text": "ⲛⲉⲡⲉⲧⲙ̅ⲙⲁⲩ ⲁⲛ ⲡⲉ ⲡⲟⲩⲟⲓ̈ⲛ. ⲁⲗⲗⲁ ϫⲉⲕⲁⲥ ⲛ̅ⲧⲟϥ ⲉϥⲉⲣ̅ⲙⲛ̅ⲧⲣⲉ ⲉⲧⲃⲉⲡⲟⲩⲟⲓ̈ⲛ.",
+        "normalized_text": "ⲛⲉⲡⲉⲧⲙⲙⲁⲩ ⲁⲛ ⲡⲉ ⲡⲟⲩⲟⲓ̈ⲛ. ⲁⲗⲗⲁ ϫⲉⲕⲁⲥ ⲛⲧⲟϥ ⲉϥⲉⲣⲙⲛⲧⲣⲉ ⲉⲧⲃⲉⲡⲟⲩⲟⲓ̈ⲛ.",
+        "sequence": 7
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.9",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.9",
+        "book": "john",
+        "chapter": 1,
+        "verse": 9,
+        "original_text": "ην το φως το αληθεινον ο φωτιζει παντα ανθρωπον ερχομενον εις τον κοσμον",
+        "normalized_text": "ην το φως το αληθεινον ο φωτιζει παντα ανθρωπον ερχομενον εις τον κοσμον",
+        "sequence": 8
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.9",
+        "book": "john",
+        "chapter": 1,
+        "verse": 9,
+        "original_text": "ⲡⲟⲩⲟⲓ̈ⲛ ⲙ̅ⲙⲉ͡ⲉ ⲉⲧⲣ̅ⲟⲩⲟⲓ̈ⲛ ⲉⲣⲱⲙⲉ ⲛⲓⲙ ⲡⲉ ⲉϥⲛⲏⲩ ⲉⲡⲕⲟⲥⲙⲟⲥ.",
+        "normalized_text": "ⲡⲟⲩⲟⲓ̈ⲛ ⲙⲙⲉⲉ ⲉⲧⲣⲟⲩⲟⲓ̈ⲛ ⲉⲣⲱⲙⲉ ⲛⲓⲙ ⲡⲉ ⲉϥⲛⲏⲩ ⲉⲡⲕⲟⲥⲙⲟⲥ.",
+        "sequence": 8
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.10",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.10",
+        "book": "john",
+        "chapter": 1,
+        "verse": 10,
+        "original_text": "εν τω κοσμω ην και ο κοσμος δι αυτου εγενετο και ο κοσμος αυτον ουκ εγνω",
+        "normalized_text": "εν τω κοσμω ην και ο κοσμος δι αυτου εγενετο και ο κοσμος αυτον ουκ εγνω",
+        "sequence": 9
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.10",
+        "book": "john",
+        "chapter": 1,
+        "verse": 10,
+        "original_text": "ⲛⲉϥϩⲙ̅ⲡⲕⲟⲥⲙⲟⲥ ⲡⲉ ⲁⲩⲱ ⲛ̅ⲧⲁⲡⲕⲟⲥⲙⲟⲥ ϣⲱⲡⲉ ⲉⲃⲟⲗ ϩⲓⲧⲟⲟⲧϥ̅ ⲁⲩⲱ ⲙ̅ⲡⲉⲡⲕⲟⲥⲙⲟⲥ ⲥⲟⲩⲱⲛϥ̅.",
+        "normalized_text": "ⲛⲉϥϩⲙⲡⲕⲟⲥⲙⲟⲥ ⲡⲉ ⲁⲩⲱ ⲛⲧⲁⲡⲕⲟⲥⲙⲟⲥ ϣⲱⲡⲉ ⲉⲃⲟⲗ ϩⲓⲧⲟⲟⲧϥ ⲁⲩⲱ ⲙⲡⲉⲡⲕⲟⲥⲙⲟⲥ ⲥⲟⲩⲱⲛϥ.",
+        "sequence": 9
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.11",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.11",
+        "book": "john",
+        "chapter": 1,
+        "verse": 11,
+        "original_text": "εις τα ιδια ηλθεν και οι ιδιοι αυτον ου παρελαβον",
+        "normalized_text": "εις τα ιδια ηλθεν και οι ιδιοι αυτον ου παρελαβον",
+        "sequence": 10
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.11",
+        "book": "john",
+        "chapter": 1,
+        "verse": 11,
+        "original_text": "ⲁϥⲓ̈ ϣⲁⲛⲉⲧⲉⲛⲟⲩϥ ⲛⲉ ⲁⲩⲱ ⲙ̅ⲡⲉⲛⲉⲧⲉⲛⲟⲩϥ ⲛⲉ ϫⲓⲧϥ̅.",
+        "normalized_text": "ⲁϥⲓ̈ ϣⲁⲛⲉⲧⲉⲛⲟⲩϥ ⲛⲉ ⲁⲩⲱ ⲙⲡⲉⲛⲉⲧⲉⲛⲟⲩϥ ⲛⲉ ϫⲓⲧϥ.",
+        "sequence": 10
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.12",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.12",
+        "book": "john",
+        "chapter": 1,
+        "verse": 12,
+        "original_text": "οσοι δε ελαβαν αυτον εδωκεν αυτοις εξουσιαν τεκνα θυ γενεσθαι τοις πιστευουσιν εις το ονομα αυτου",
+        "normalized_text": "οσοι δε ελαβαν αυτον εδωκεν αυτοις εξουσιαν τεκνα θυ γενεσθαι τοις πιστευουσιν εις το ονομα αυτου",
+        "sequence": 11
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.12",
+        "book": "john",
+        "chapter": 1,
+        "verse": 12,
+        "original_text": "ⲛⲉⲛⲧⲁⲩϫⲓⲧϥ̅ ⲇⲉ ⲁϥϯ ⲛⲁⲩ ⲛ̅ⲧⲉⲝⲟⲩⲥⲓⲁ ⲉⲧⲣⲉⲩϣⲱⲡⲉ ⲛ̅ϣⲏⲣⲉ ⲛ̅ⲧⲉⲡⲛⲟⲩⲧⲉ ⲛⲉⲧⲡⲓⲥⲧⲉⲩⲉ ⲉⲡⲉϥⲣⲁⲛ.",
+        "normalized_text": "ⲛⲉⲛⲧⲁⲩϫⲓⲧϥ ⲇⲉ ⲁϥϯ ⲛⲁⲩ ⲛⲧⲉⲝⲟⲩⲥⲓⲁ ⲉⲧⲣⲉⲩϣⲱⲡⲉ ⲛϣⲏⲣⲉ ⲛⲧⲉⲡⲛⲟⲩⲧⲉ ⲛⲉⲧⲡⲓⲥⲧⲉⲩⲉ ⲉⲡⲉϥⲣⲁⲛ.",
+        "sequence": 11
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.13",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.13",
+        "book": "john",
+        "chapter": 1,
+        "verse": 13,
+        "original_text": "οι ουκ εξ αιματων ουδε εκ θεληματος σαρκος αλλ εκ θυ εγενηθησαν",
+        "normalized_text": "οι ουκ εξ αιματων ουδε εκ θεληματος σαρκος αλλ εκ θυ εγενηθησαν",
+        "sequence": 12
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.13",
+        "book": "john",
+        "chapter": 1,
+        "verse": 13,
+        "original_text": "ⲛⲁⲓ̈ ⲉⲛϩⲉⲛⲉⲃⲟⲗ ⲁⲛ ⲛⲉ ⲛ̅ⲟⲩⲱϣ ⲛ̅ⲥⲛⲟϥ ϩⲓⲥⲁⲣⲝ̅ ⲟⲩⲇⲉ ⲉⲃⲟⲗ ϩⲙ̅ⲡⲟⲩⲱϣ ⲛ̅ⲣ̅ⲣⲱⲙⲉ ⲁⲗⲗⲁ ⲛ̅ⲧⲁⲩϫⲡⲟⲟⲩ ⲉⲃⲟⲗ ϩⲙ̅ⲡⲛⲟⲩⲧⲉ.",
+        "normalized_text": "ⲛⲁⲓ̈ ⲉⲛϩⲉⲛⲉⲃⲟⲗ ⲁⲛ ⲛⲉ ⲛⲟⲩⲱϣ ⲛⲥⲛⲟϥ ϩⲓⲥⲁⲣⲝ ⲟⲩⲇⲉ ⲉⲃⲟⲗ ϩⲙⲡⲟⲩⲱϣ ⲛⲣⲣⲱⲙⲉ ⲁⲗⲗⲁ ⲛⲧⲁⲩϫⲡⲟⲟⲩ ⲉⲃⲟⲗ ϩⲙⲡⲛⲟⲩⲧⲉ.",
+        "sequence": 12
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.14",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.14",
+        "book": "john",
+        "chapter": 1,
+        "verse": 14,
+        "original_text": "και ο λογος σαρξ εγενετο και εσκηνωσεν εν ημιν και εθεασαμεθα την δοξαν αυτου δοξαν ως μονογενους παρα πατρος πληρης χαριτος αληθειας",
+        "normalized_text": "και ο λογος σαρξ εγενετο και εσκηνωσεν εν ημιν και εθεασαμεθα την δοξαν αυτου δοξαν ως μονογενους παρα πατρος πληρης χαριτος αληθειας",
+        "sequence": 13
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.14",
+        "book": "john",
+        "chapter": 1,
+        "verse": 14,
+        "original_text": "ⲁⲩⲱ ⲡϣⲁϫⲉ ⲁϥⲣ̅ⲥⲁⲣⲝ̅ ⲁϥⲟⲩⲱϩ ⲛⲙ̅ⲙⲁⲛ ⲁⲩⲱ ⲁⲛⲛⲁⲩ ⲉⲡⲉϥⲉⲟⲟⲩ ⲛ̅ⲑⲉ ⲙ̅ⲡⲉⲟⲟⲩ ⲛ̅ⲟⲩϣⲏⲣⲉ ⲛ̅ⲟⲩⲱⲧ ⲉⲃⲟⲗ ϩⲓⲧⲙ̅ⲡⲉϥⲉ͡ⲓⲱⲧ ⲉϥϫⲏⲕ ⲉⲃⲟⲗ ⲛ̅ⲭⲁⲣⲓⲥ ϩⲓⲙⲉ.",
+        "normalized_text": "ⲁⲩⲱ ⲡϣⲁϫⲉ ⲁϥⲣⲥⲁⲣⲝ ⲁϥⲟⲩⲱϩ ⲛⲙⲙⲁⲛ ⲁⲩⲱ ⲁⲛⲛⲁⲩ ⲉⲡⲉϥⲉⲟⲟⲩ ⲛⲑⲉ ⲙⲡⲉⲟⲟⲩ ⲛⲟⲩϣⲏⲣⲉ ⲛⲟⲩⲱⲧ ⲉⲃⲟⲗ ϩⲓⲧⲙⲡⲉϥⲉⲓⲱⲧ ⲉϥϫⲏⲕ ⲉⲃⲟⲗ ⲛⲭⲁⲣⲓⲥ ϩⲓⲙⲉ.",
+        "sequence": 13
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.15",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.15",
+        "book": "john",
+        "chapter": 1,
+        "verse": 15,
+        "original_text": "ιωανης μαρτυρει περι αυτου και κεκραγεν λεγων ουτος ην ο ειπων ο οπισω μου ερχομενος εμπροσθεν μου γεγονεν οτι πρωτος μου [η]ν",
+        "normalized_text": "ιωανης μαρτυρει περι αυτου και κεκραγεν λεγων ουτος ην ο ειπων ο οπισω μου ερχομενος εμπροσθεν μου γεγονεν οτι πρωτος μου ην",
+        "sequence": 14
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.15",
+        "book": "john",
+        "chapter": 1,
+        "verse": 15,
+        "original_text": "ⲓ̈ⲱϩⲁⲛⲛⲏⲥ ϥⲣ̅ⲙⲛ̅ⲧⲣⲉ ⲉⲧⲃⲏⲏⲧϥ̅ ⲁⲩⲱ ϥⲁϣⲕⲁⲕ ⲉⲃⲟⲗ ⲉϥϫⲱ ⲙ̅ⲙⲟⲥ ϫⲉ ⲡⲁⲓ̈ ⲡⲉ ⲛ̅ⲧⲁⲓ̈ϫⲟⲟⲥ ⲉⲧⲃⲏⲏⲧϥ̅ ϫⲉ ⲡⲉⲧⲛⲏⲩ ⲙⲛ̅ⲛ̅ⲥⲱⲉ͡ⲓ ⲁϥϣⲱⲡⲉ ϩⲁⲧⲁϩⲏ ϫⲉ ⲛⲉϥⲟ ⲛ̅ϣⲟⲣⲡ̅ ⲉⲣⲟⲓ̈ ⲡⲉ",
+        "normalized_text": "ⲓ̈ⲱϩⲁⲛⲛⲏⲥ ϥⲣⲙⲛⲧⲣⲉ ⲉⲧⲃⲏⲏⲧϥ ⲁⲩⲱ ϥⲁϣⲕⲁⲕ ⲉⲃⲟⲗ ⲉϥϫⲱ ⲙⲙⲟⲥ ϫⲉ ⲡⲁⲓ̈ ⲡⲉ ⲛⲧⲁⲓ̈ϫⲟⲟⲥ ⲉⲧⲃⲏⲏⲧϥ ϫⲉ ⲡⲉⲧⲛⲏⲩ ⲙⲛⲛⲥⲱⲉⲓ ⲁϥϣⲱⲡⲉ ϩⲁⲧⲁϩⲏ ϫⲉ ⲛⲉϥⲟ ⲛϣⲟⲣⲡ ⲉⲣⲟⲓ̈ ⲡⲉ",
+        "sequence": 14
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.16",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.16",
+        "book": "john",
+        "chapter": 1,
+        "verse": 16,
+        "original_text": "οτι εκ του πληρωματος αυτου ημεις παντες ελαβομεν και χαριν αντι χαριτος",
+        "normalized_text": "οτι εκ του πληρωματος αυτου ημεις παντες ελαβομεν και χαριν αντι χαριτος",
+        "sequence": 15
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.16",
+        "book": "john",
+        "chapter": 1,
+        "verse": 16,
+        "original_text": "ϫⲉ ⲉⲃⲟⲗ ϩⲙ̅ⲡⲉϥϫⲱⲕ ⲁⲛⲟⲛ ⲧⲏⲣⲛ̅ ⲛ̅ⲧⲁⲛϫⲓ ⲛ̅ⲟⲩⲱⲛϩ̅ ⲁⲩⲱ ⲟⲩⲭⲁⲣⲓⲥ ⲉⲡⲙⲁ ⲛ̅ⲟⲩⲭⲁⲣⲓⲥ.",
+        "normalized_text": "ϫⲉ ⲉⲃⲟⲗ ϩⲙⲡⲉϥϫⲱⲕ ⲁⲛⲟⲛ ⲧⲏⲣⲛ ⲛⲧⲁⲛϫⲓ ⲛⲟⲩⲱⲛϩ ⲁⲩⲱ ⲟⲩⲭⲁⲣⲓⲥ ⲉⲡⲙⲁ ⲛⲟⲩⲭⲁⲣⲓⲥ.",
+        "sequence": 15
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.17",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.17",
+        "book": "john",
+        "chapter": 1,
+        "verse": 17,
+        "original_text": "οτι ο νομος δια μωυσεως εδοθη η χαρις και η αληθεια δια ιυ χυ εγενετο",
+        "normalized_text": "οτι ο νομος δια μωυσεως εδοθη η χαρις και η αληθεια δια ιυ χυ εγενετο",
+        "sequence": 16
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.17",
+        "book": "john",
+        "chapter": 1,
+        "verse": 17,
+        "original_text": "ϫⲉ ⲡⲛⲟⲙⲟⲥ ⲛ̅ⲧⲁⲩⲧⲁⲁϥ ⲉⲃⲟⲗ ϩⲓⲧⲙ̅ⲙⲱⲩ̈ⲥⲏⲥ. ⲧⲉⲭⲁⲣⲓⲥ ϩⲱⲱⲥ ⲁⲩⲱ ⲧⲙⲉ ⲛ̅ⲧⲁⲥϣⲱⲡⲉ ⲉⲃⲟⲗ ϩⲓⲧⲛ̅ⲓ̅ⲥ̅ ⲡⲉⲭ̅ⲥ̅.",
+        "normalized_text": "ϫⲉ ⲡⲛⲟⲙⲟⲥ ⲛⲧⲁⲩⲧⲁⲁϥ ⲉⲃⲟⲗ ϩⲓⲧⲙⲙⲱⲩ̈ⲥⲏⲥ. ⲧⲉⲭⲁⲣⲓⲥ ϩⲱⲱⲥ ⲁⲩⲱ ⲧⲙⲉ ⲛⲧⲁⲥϣⲱⲡⲉ ⲉⲃⲟⲗ ϩⲓⲧⲛⲓⲥ ⲡⲉⲭⲥ.",
+        "sequence": 16
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.1.18",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.1.18",
+        "book": "john",
+        "chapter": 1,
+        "verse": 18,
+        "original_text": "θν ουδεις εορακεν πωποτε μονογενης θς ο ων εις τον κολπον του πατρος εκεινος εξηγησατο",
+        "normalized_text": "θν ουδεις εορακεν πωποτε μονογενης θς ο ων εις τον κολπον του πατρος εκεινος εξηγησατο",
+        "sequence": 17
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.1.18",
+        "book": "john",
+        "chapter": 1,
+        "verse": 18,
+        "original_text": "ⲡⲛⲟⲩⲧⲉ ⲙ̅ⲡⲉⲗⲁⲁⲩ ⲛⲁⲩ ⲉⲣⲟϥ ⲉⲛⲉϩ. ⲡⲛⲟⲩⲧⲉ ⲡϣⲏⲣⲉ ⲛ̅ⲟⲩⲱⲧ ⲡⲉⲧϣⲟⲟⲡ ϩⲛ̅ⲕⲟⲩⲛϥ̅ ⲙ̅ⲡⲉϥⲉ͡ⲓⲱⲧ ⲡⲉⲧⲙ̅ⲙⲁⲩ ⲡⲉ ⲛ̅ⲧⲁϥϣⲁϫⲉ ⲉⲣⲟϥ.",
+        "normalized_text": "ⲡⲛⲟⲩⲧⲉ ⲙⲡⲉⲗⲁⲁⲩ ⲛⲁⲩ ⲉⲣⲟϥ ⲉⲛⲉϩ. ⲡⲛⲟⲩⲧⲉ ⲡϣⲏⲣⲉ ⲛⲟⲩⲱⲧ ⲡⲉⲧϣⲟⲟⲡ ϩⲛⲕⲟⲩⲛϥ ⲙⲡⲉϥⲉⲓⲱⲧ ⲡⲉⲧⲙⲙⲁⲩ ⲡⲉ ⲛⲧⲁϥϣⲁϫⲉ ⲉⲣⲟϥ.",
+        "sequence": 17
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "mark.1.1",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "mark.1.1",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 1,
+        "original_text": "αρχη του ευαγγελιου ιυ χυ υιου θυ",
+        "normalized_text": "αρχη του ευαγγελιου ιυ χυ υιου θυ",
+        "sequence": 0
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "mark.1.1",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 1,
+        "original_text": "ⲙⲁⲣⲕⲟⲥ ⲧⲁⲣⲭⲏ ⲙ̅ⲡⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ ⲛ̅ⲓ̅ⲥ̅ ⲡⲉⲭ̅ⲥ̅",
+        "normalized_text": "ⲙⲁⲣⲕⲟⲥ ⲧⲁⲣⲭⲏ ⲙⲡⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ ⲛⲓⲥ ⲡⲉⲭⲥ",
+        "sequence": 0
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "mark.1.2",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "mark.1.2",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 2,
+        "original_text": "καθως γεγραπται εν τω ησαια τω·· προφητη ιδου αποστελλω τον αγγελον μου προ προσωπου σου ος κατασκευασει την οδον σου",
+        "normalized_text": "καθως γεγραπται εν τω ησαια τω·· προφητη ιδου αποστελλω τον αγγελον μου προ προσωπου σου ος κατασκευασει την οδον σου",
+        "sequence": 1
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "mark.1.2",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 2,
+        "original_text": "ⲕⲁⲧⲁⲡⲉⲧⲥⲏϩ ϩⲛ̅ⲏⲥⲁⲓ̈ⲁⲥ ⲡⲉⲡⲣⲟⲫⲏⲧⲏⲥ. ϫⲉ ⲉⲓⲥϩⲏⲏⲧⲉ ϯⲛⲁϫⲉⲩⲡⲁⲁⲅⲅⲉⲗⲟⲥ ϩⲓϩⲏ ⲙⲙⲟⲕ ⲛϥ̅ⲥⲃ̅ⲧⲉⲧⲉⲕϩⲓⲏ.",
+        "normalized_text": "ⲕⲁⲧⲁⲡⲉⲧⲥⲏϩ ϩⲛⲏⲥⲁⲓ̈ⲁⲥ ⲡⲉⲡⲣⲟⲫⲏⲧⲏⲥ. ϫⲉ ⲉⲓⲥϩⲏⲏⲧⲉ ϯⲛⲁϫⲉⲩⲡⲁⲁⲅⲅⲉⲗⲟⲥ ϩⲓϩⲏ ⲙⲙⲟⲕ ⲛϥⲥⲃⲧⲉⲧⲉⲕϩⲓⲏ.",
+        "sequence": 1
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "mark.1.3",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "mark.1.3",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 3,
+        "original_text": "φωνη βοωντος εν τη ερημω ετοιμασατε την οδον κυ ευθειας ποιειτε τας τριβους αυτου",
+        "normalized_text": "φωνη βοωντος εν τη ερημω ετοιμασατε την οδον κυ ευθειας ποιειτε τας τριβους αυτου",
+        "sequence": 2
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "mark.1.3",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 3,
+        "original_text": "ⲡⲉϩⲣⲟⲟⲩ ⲙ̅ⲡⲉⲧⲱϣ ⲉⲃⲟⲗ ϩⲛ̅ⲧⲉⲣⲏⲙⲟⲥ ϫⲉ ⲥⲟⲩⲧⲛ̅ⲧⲉϩⲓⲏ ⲙ̅ⲡϫⲟⲉⲓⲥ ⲛ̅ⲧⲉⲧⲛ̅ⲥⲟⲩⲧⲛ̅ⲛⲉϥⲙⲟⲓ̈ⲧ.",
+        "normalized_text": "ⲡⲉϩⲣⲟⲟⲩ ⲙⲡⲉⲧⲱϣ ⲉⲃⲟⲗ ϩⲛⲧⲉⲣⲏⲙⲟⲥ ϫⲉ ⲥⲟⲩⲧⲛⲧⲉϩⲓⲏ ⲙⲡϫⲟⲉⲓⲥ ⲛⲧⲉⲧⲛⲥⲟⲩⲧⲛⲛⲉϥⲙⲟⲓ̈ⲧ.",
+        "sequence": 2
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "mark.1.4",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "mark.1.4",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 4,
+        "original_text": "εγενετο ιωανης ο βαπτιζων εν τη ερημω κηρυσσων βαπτισμα μετανοιας εις αφεσιν αμαρτιων",
+        "normalized_text": "εγενετο ιωανης ο βαπτιζων εν τη ερημω κηρυσσων βαπτισμα μετανοιας εις αφεσιν αμαρτιων",
+        "sequence": 3
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "mark.1.4",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 4,
+        "original_text": "ⲁϥϣⲱⲡⲉ ⲇⲉ ⲛ̅ϭⲓⲓ̈ⲱϩⲁⲛⲛⲏⲥ ⲉϥϯⲃⲁⲡⲧⲓⲥⲙⲁ ⲙⲡϫⲁⲓ̈ⲉ ⲉϥⲕⲏⲣⲩⲥⲥⲉ ⲛ̅ⲟⲩⲃⲁⲡⲧⲓⲥⲙⲁ ⲙ̅ⲙⲉⲧⲁⲛⲟⲓⲁ ⲉⲡⲕⲱ ⲉⲃⲟⲗ ⲛ̅ⲛ̅ⲛⲟⲃⲉ.",
+        "normalized_text": "ⲁϥϣⲱⲡⲉ ⲇⲉ ⲛϭⲓⲓ̈ⲱϩⲁⲛⲛⲏⲥ ⲉϥϯⲃⲁⲡⲧⲓⲥⲙⲁ ⲙⲡϫⲁⲓ̈ⲉ ⲉϥⲕⲏⲣⲩⲥⲥⲉ ⲛⲟⲩⲃⲁⲡⲧⲓⲥⲙⲁ ⲙⲙⲉⲧⲁⲛⲟⲓⲁ ⲉⲡⲕⲱ ⲉⲃⲟⲗ ⲛⲛⲛⲟⲃⲉ.",
+        "sequence": 3
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "mark.1.5",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "mark.1.5",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 5,
+        "original_text": "και εξεπορευετο προς αυτον πασα η ιουδαια χωρα και οι ιεροσολυμειται παντες και εβαπτιζοντο υπ αυτου εν τω ιορδανη ποταμω εξομολογουμενοι τας αμαρτιας αυτων",
+        "normalized_text": "και εξεπορευετο προς αυτον πασα η ιουδαια χωρα και οι ιεροσολυμειται παντες και εβαπτιζοντο υπ αυτου εν τω ιορδανη ποταμω εξομολογουμενοι τας αμαρτιας αυτων",
+        "sequence": 4
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "mark.1.5",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 5,
+        "original_text": "ⲁⲩⲱ ⲁⲥⲃⲱⲕ ⲛⲁϥ ⲛ̅ϭⲓⲧⲉⲭⲱⲣⲁ ⲧⲏⲣⲥ̅ ⲛ̅ϯⲟⲩⲇⲁⲓⲁ ⲛⲙ̅ⲛⲁⲑⲓⲉⲣⲟⲥⲟⲗⲩⲙⲁ ⲧⲏⲣⲟⲩ ⲁⲩϫⲓⲃⲁⲡⲧⲓⲥⲙⲁ ⲛ̅ⲧⲟⲟⲧϥ̅ ϩⲙ̅ⲡⲓⲟⲣⲇⲁⲛⲏⲥ ⲡⲓⲉⲣⲟ ⲉⲩⲉⲝⲟⲙⲟⲗⲟⲅⲓ ⲛ̅ⲛⲉⲩⲛⲟⲃⲉ.",
+        "normalized_text": "ⲁⲩⲱ ⲁⲥⲃⲱⲕ ⲛⲁϥ ⲛϭⲓⲧⲉⲭⲱⲣⲁ ⲧⲏⲣⲥ ⲛϯⲟⲩⲇⲁⲓⲁ ⲛⲙⲛⲁⲑⲓⲉⲣⲟⲥⲟⲗⲩⲙⲁ ⲧⲏⲣⲟⲩ ⲁⲩϫⲓⲃⲁⲡⲧⲓⲥⲙⲁ ⲛⲧⲟⲟⲧϥ ϩⲙⲡⲓⲟⲣⲇⲁⲛⲏⲥ ⲡⲓⲉⲣⲟ ⲉⲩⲉⲝⲟⲙⲟⲗⲟⲅⲓ ⲛⲛⲉⲩⲛⲟⲃⲉ.",
+        "sequence": 4
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "mark.1.6",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "mark.1.6",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 6,
+        "original_text": "και ην ο ιωανης ενδεδυμενος τριχας καμηλου και ζωνην δερματινην περι την οσφυν αυτου και εσθων ακριδας και μελι αγριον",
+        "normalized_text": "και ην ο ιωανης ενδεδυμενος τριχας καμηλου και ζωνην δερματινην περι την οσφυν αυτου και εσθων ακριδας και μελι αγριον",
+        "sequence": 5
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "mark.1.6",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 6,
+        "original_text": "ⲁⲩⲱ ⲓ̈ⲱϩⲁⲛⲛⲏⲥ ⲛⲉⲣⲉϩⲉⲛϥⲱ ⲛ̅ϭⲁⲙⲟⲩⲗ ⲧⲟ ϩⲓⲱⲱϥ ⲉⲣⲉⲟⲩⲙⲟϫ ⲛ̅ϣⲁⲁⲣ ⲙⲏⲣ ⲉⲧⲉϥϯⲡⲉ. ⲉϥⲟⲩⲉⲙϣϫⲉ ϩⲓⲉⲃⲓⲱ ⲛ̅ϩⲟⲟⲩⲧ.",
+        "normalized_text": "ⲁⲩⲱ ⲓ̈ⲱϩⲁⲛⲛⲏⲥ ⲛⲉⲣⲉϩⲉⲛϥⲱ ⲛϭⲁⲙⲟⲩⲗ ⲧⲟ ϩⲓⲱⲱϥ ⲉⲣⲉⲟⲩⲙⲟϫ ⲛϣⲁⲁⲣ ⲙⲏⲣ ⲉⲧⲉϥϯⲡⲉ. ⲉϥⲟⲩⲉⲙϣϫⲉ ϩⲓⲉⲃⲓⲱ ⲛϩⲟⲟⲩⲧ.",
+        "sequence": 5
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "mark.1.7",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "mark.1.7",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 7,
+        "original_text": "και εκηρυσσεν λεγων ερχεται ο ισχυροτερος μου οπισω ου ουκ ειμι ικανος κυψας λυσαι τον ιμαντα των υποδηματων αυτου",
+        "normalized_text": "και εκηρυσσεν λεγων ερχεται ο ισχυροτερος μου οπισω ου ουκ ειμι ικανος κυψας λυσαι τον ιμαντα των υποδηματων αυτου",
+        "sequence": 6
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "mark.1.7",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 7,
+        "original_text": "ⲁⲩⲱ ⲛⲉϥⲧⲁϣⲉⲟⲓ̈ϣ ⲉϥϫⲱ ⲙ̅ⲙⲟⲥ ϫⲉ ϥⲛⲏⲩ ⲙⲛ̅ⲛ̅ⲥⲱⲉⲓ ⲛ̅ϭⲓⲡⲉⲧϫⲟⲟⲣ ⲉⲣⲟⲉ͡ⲓ ⲉⲁⲛⲅ̅ⲟⲩϩⲓⲕⲁⲛⲟⲥ ⲁⲛ ⲉⲡⲁϩⲧ ⲉⲃⲱⲗ ⲉⲃⲟⲗ ⲙ̅ⲡⲙⲟⲩⲥ ⲙ̅ⲡⲉϥⲧⲟⲟⲩⲉ.",
+        "normalized_text": "ⲁⲩⲱ ⲛⲉϥⲧⲁϣⲉⲟⲓ̈ϣ ⲉϥϫⲱ ⲙⲙⲟⲥ ϫⲉ ϥⲛⲏⲩ ⲙⲛⲛⲥⲱⲉⲓ ⲛϭⲓⲡⲉⲧϫⲟⲟⲣ ⲉⲣⲟⲉⲓ ⲉⲁⲛⲅⲟⲩϩⲓⲕⲁⲛⲟⲥ ⲁⲛ ⲉⲡⲁϩⲧ ⲉⲃⲱⲗ ⲉⲃⲟⲗ ⲙⲡⲙⲟⲩⲥ ⲙⲡⲉϥⲧⲟⲟⲩⲉ.",
+        "sequence": 6
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "mark.1.8",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "mark.1.8",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 8,
+        "original_text": "εγω εβαπτισα υμας υδατι αυτος δε βαπτισει υμας πνι αγιω",
+        "normalized_text": "εγω εβαπτισα υμας υδατι αυτος δε βαπτισει υμας πνι αγιω",
+        "sequence": 7
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "mark.1.8",
+        "book": "mark",
+        "chapter": 1,
+        "verse": 8,
+        "original_text": "ⲁⲛⲟⲕ ⲁⲉ͡ⲓϯⲃⲁⲡⲧⲓⲥⲙⲁ ⲛⲏⲧⲛ̅ ϩⲛ̅ⲟⲩⲙⲟⲟⲩ. ⲛ̅ⲧⲟϥ ⲇⲉ ⲉϥⲛⲁⲃⲁⲡⲧⲓⲍⲉ ⲙ̅ⲙⲱⲧⲛ̅ ϩⲛ̅ⲟⲩⲡ̅ⲛ̅ⲁ̅ ⲉϥⲟⲩⲁⲁⲃ.",
+        "normalized_text": "ⲁⲛⲟⲕ ⲁⲉⲓϯⲃⲁⲡⲧⲓⲥⲙⲁ ⲛⲏⲧⲛ ϩⲛⲟⲩⲙⲟⲟⲩ. ⲛⲧⲟϥ ⲇⲉ ⲉϥⲛⲁⲃⲁⲡⲧⲓⲍⲉ ⲙⲙⲱⲧⲛ ϩⲛⲟⲩⲡⲛⲁ ⲉϥⲟⲩⲁⲁⲃ.",
+        "sequence": 7
+      },
+      "notes": ""
+    },
+    {
+      "unit_id": "john.8.1",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.8.1",
+        "book": "john",
+        "chapter": 8,
+        "verse": 1,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 0
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.8.1",
+        "book": "john",
+        "chapter": 8,
+        "verse": 1,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 0
+      },
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
+    },
+    {
+      "unit_id": "john.8.2",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.8.2",
+        "book": "john",
+        "chapter": 8,
+        "verse": 2,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 1
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.8.2",
+        "book": "john",
+        "chapter": 8,
+        "verse": 2,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 1
+      },
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
+    },
+    {
+      "unit_id": "john.8.3",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.8.3",
+        "book": "john",
+        "chapter": 8,
+        "verse": 3,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 2
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.8.3",
+        "book": "john",
+        "chapter": 8,
+        "verse": 3,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 2
+      },
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
+    },
+    {
+      "unit_id": "john.8.4",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.8.4",
+        "book": "john",
+        "chapter": 8,
+        "verse": 4,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 3
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.8.4",
+        "book": "john",
+        "chapter": 8,
+        "verse": 4,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 3
+      },
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
+    },
+    {
+      "unit_id": "john.8.5",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.8.5",
+        "book": "john",
+        "chapter": 8,
+        "verse": 5,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 4
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.8.5",
+        "book": "john",
+        "chapter": 8,
+        "verse": 5,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 4
+      },
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
+    },
+    {
+      "unit_id": "john.8.6",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.8.6",
+        "book": "john",
+        "chapter": 8,
+        "verse": 6,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 5
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.8.6",
+        "book": "john",
+        "chapter": 8,
+        "verse": 6,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 5
+      },
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
+    },
+    {
+      "unit_id": "john.8.7",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.8.7",
+        "book": "john",
+        "chapter": 8,
+        "verse": 7,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 6
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.8.7",
+        "book": "john",
+        "chapter": 8,
+        "verse": 7,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 6
+      },
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
+    },
+    {
+      "unit_id": "john.8.8",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.8.8",
+        "book": "john",
+        "chapter": 8,
+        "verse": 8,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 7
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.8.8",
+        "book": "john",
+        "chapter": 8,
+        "verse": 8,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 7
+      },
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
+    },
+    {
+      "unit_id": "john.8.9",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.8.9",
+        "book": "john",
+        "chapter": 8,
+        "verse": 9,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 8
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.8.9",
+        "book": "john",
+        "chapter": 8,
+        "verse": 9,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 8
+      },
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
+    },
+    {
+      "unit_id": "john.8.10",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.8.10",
+        "book": "john",
+        "chapter": 8,
+        "verse": 10,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 9
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.8.10",
+        "book": "john",
+        "chapter": 8,
+        "verse": 10,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 9
+      },
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
+    },
+    {
+      "unit_id": "john.8.11",
+      "greek": {
+        "source_id": "ntvmr-vaticanus-b",
+        "unit_id": "john.8.11",
+        "book": "john",
+        "chapter": 8,
+        "verse": 11,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 10
+      },
+      "sahidic": {
+        "source_id": "copsahhorner",
+        "unit_id": "john.8.11",
+        "book": "john",
+        "chapter": 8,
+        "verse": 11,
+        "original_text": "",
+        "normalized_text": "",
+        "sequence": 10
+      },
+      "notes": "Sahidic module has empty text for this NRSV verse slot (likely tradition omission or versification gap). Vaticanus B* (firsthand) has empty text for this verse (lacuna / absent passage; not filled from WH or any other Greek edition)."
+    }
+  ],
+  "notes": "Public-domain Sahidic (Horner/CrossWire) + CC BY 4.0 INTF/NTVMR Vaticanus GA 03 firsthand (B*) pilot for lexical/phrase alignment. Greek = Vaticanus B* only (JAK-25 / updated JAK-15); Westcott-Hort and SBLGNT are not used. John 8:1-11 is empty on both sides (PA absent in both traditions). Empty firsthand readings are omissions, not corrector fill."
+}
