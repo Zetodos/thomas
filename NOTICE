@@ -1,0 +1,12 @@
+Thomas
+Copyright 2026 Zetodos contributors
+
+This product includes software developed for the Zetodos Thomas project.
+Project-owned source code is licensed under the Apache License, Version 2.0.
+See the LICENSE file and README for scope.
+
+Third-party source texts, linguistic datasets, and editorial outputs are not
+covered by that Apache-2.0 grant. Their terms are recorded in per-source
+manifests under data/manifests/ once imported (see docs/source-licenses.md).
+
+No third-party NOTICE excerpts are required yet; none are vendored in Phase 0.
