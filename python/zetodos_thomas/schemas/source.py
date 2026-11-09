@@ -94,17 +94,44 @@ class SourceManifest(BaseModel):
         return value
 
 
+class UnitKind(StrEnum):
+    """What a ``TextUnit.unit_id`` denotes."""
+
+    VERSE = "verse"
+    LOGION = "logion"
+    PROLOGUE = "prologue"
+    SECTION = "section"
+
+
 class TextUnit(BaseModel):
-    """One verse/section with original and normalized surface forms."""
+    """One verse/logion/section with original and normalized surface forms.
+
+    ``unit_id`` is the stable handle for alignments (JAK-32). Optional token
+    layers live in ``AlignmentDocument`` / ``ThomasCorpus`` (shared ``Token`` /
+    ``Span`` in ``schemas.alignment``) rather than inline here so existing
+    ``PilotCorpus`` JSON stays unchanged.
+
+    Thomas prologue is ``unit_id=thomas.0``, ``chapter=0``, ``kind=prologue``.
+    Logia use ``thomas.N`` with ``chapter=N`` (N ≥ 1) and ``kind=logion``.
+    """
 
     source_id: str
-    unit_id: str = Field(description="Stable unit id, e.g. john.1.1")
+    unit_id: str = Field(
+        description="Stable unit id, e.g. john.1.1, thomas.0 (prologue), thomas.7",
+    )
     book: str
-    chapter: int = Field(ge=1)
+    chapter: int = Field(
+        ge=0,
+        description="Chapter/logion number; 0 reserved for Thomas prologue",
+    )
     verse: int = Field(ge=0)
     original_text: str
     normalized_text: str
     sequence: int = Field(default=0, ge=0)
+    kind: UnitKind = Field(
+        default=UnitKind.VERSE,
+        description="Structural kind; default verse keeps JAK-24 pilot valid",
+    )
 
 
 class ParallelUnit(BaseModel):
