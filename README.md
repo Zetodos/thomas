@@ -3,7 +3,7 @@
 Offline-capable, evidence-based reconstruction and reader for the *Gospel of Thomas*.
 
 **Repository:** <https://github.com/Zetodos/thomas>
-**Status:** Phase 0–1 foundation — licensing, Python toolchain, Horner × Vaticanus B* NT pilot (JAK-24), and Dilley SCRIPTORIUM Coptic Thomas ingest (JAK-30). Reconstruction feasibility is not yet proven.
+**Status:** Phase 0–1 foundation — licensing, Python toolchain, Horner × Vaticanus B* NT pilot (JAK-24), Dilley SCRIPTORIUM Coptic Thomas (JAK-30), and Greek Thomas P.Oxy. fragments (JAK-31). Reconstruction feasibility is not yet proven.
 
 ## Objective
 
@@ -31,9 +31,11 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`docs/licensing-provenance-audit.md`](docs/licensing-provenance-audit.md) | 2026-11-09 provenance audit (updated for Horner decision) |
 | [`docs/horner-vaticanus-alignment-notes.md`](docs/horner-vaticanus-alignment-notes.md) | CopSahHorner + Vaticanus B* pilot notes (JAK-24) |
 | [`docs/id-scheme.md`](docs/id-scheme.md) | Stable unit/token/span IDs + retokenization rule (JAK-32) |
-| [`data/manifests/`](data/manifests/) | Per-source JSON manifests (Horner, Vaticanus B*, Dilley Thomas) |
+| [`docs/greek-thomas-fragments.md`](docs/greek-thomas-fragments.md) | P.Oxy. 1/654/655 DCLP ingest notes (JAK-31) |
+| [`data/manifests/`](data/manifests/) | Per-source JSON manifests (Horner, Vaticanus B*, Dilley, DCLP fragments) |
 | [`data/sources/pilot/`](data/sources/pilot/) | Bundled Horner × Vaticanus B* pilot excerpt |
 | [`data/sources/thomas/`](data/sources/thomas/) | Unit-level Dilley / SCRIPTORIUM Coptic Thomas import (JAK-30; not alignment-ready) |
+| [`data/sources/fragments/`](data/sources/fragments/) | Bundled Greek Thomas fragments (evaluation-witness) |
 
 ## Never ship (summary)
 
@@ -56,7 +58,7 @@ Full list and allowlist: [`docs/source-licenses.md`](docs/source-licenses.md#nev
 - **Greek NT:** **INTF/NTVMR Codex Vaticanus GA 03 firsthand (B\*)** (`docID` 20003), CC BY 4.0 transcription (JAK-25 GO; updates the JAK-15 WH default). Do **not** mix Westcott–Hort or SBLGNT into lacunae. Do **not** ship manuscript images. Do **not** change this Greek spine in Coptic Thomas ingest work.
 - **LXX / lexicon / critical texts:** Swete LXX, CCL TEI, and CC BY 4.0 for project-authored critical Greek/English — see [`docs/source-licenses.md`](docs/source-licenses.md).
 
-Bundled corpora: [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](data/sources/pilot/horner-vaticanus-nt-pilot.json) (NT pilot) and [`data/sources/thomas/dilley-thomas-v6.2.0.json`](data/sources/thomas/dilley-thomas-v6.2.0.json) (Thomas). Full downloads stay under gitignored `data/downloads/` (see that README).
+Bundled corpora: [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](data/sources/pilot/horner-vaticanus-nt-pilot.json) (NT pilot), [`data/sources/thomas/dilley-thomas-v6.2.0.json`](data/sources/thomas/dilley-thomas-v6.2.0.json) (Dilley Thomas), and [`data/sources/fragments/`](data/sources/fragments/) (Greek Thomas fragments, evidence type G / `evaluation-witness`). Full downloads stay under gitignored `data/downloads/` (see that README).
 
 ## Python setup
 
@@ -89,7 +91,7 @@ uv run ty check
 uv run pytest
 ```
 
-The `thomas` console script currently exposes `sources validate` (offline), `sources download` (explicit setup fetch into `data/downloads/`), `sources build-pilot`, and `sources build-thomas`. Further subcommands live in [`PLAN.md`](PLAN.md).
+The `thomas` console script currently exposes `sources validate` (offline), `sources download` (explicit setup fetch into `data/downloads/`), `sources build-pilot`, `sources build-thomas`, and `sources build-fragments` (layered P.Oxy. corpus from bundled DCLP TEI). Further subcommands live in [`PLAN.md`](PLAN.md).
 
 Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web/` only (not started yet).
 

@@ -21,4 +21,10 @@ Bundled Coptic Thomas import (data/sources/thomas/):
     contributions by Caroline T. Schroeder, Lydia Bremer-McCollum, and
     Amir Zeldes. See https://creativecommons.org/licenses/by/4.0/
 
-See data/manifests/*.json and docs/horner-vaticanus-alignment-notes.md.
+Bundled Greek Thomas fragments (data/sources/fragments/):
+  - DCLP / papyri.info EpiDoc TEI for P.Oxy. 1, 654, 655 (CC BY 3.0).
+    Attribution: Digital Corpus of Literary Papyri and LDAB (Trismegistos).
+    Papyrus images are not included. Labeled evaluation-witness (evidence type G).
+
+See data/manifests/*.json, docs/horner-vaticanus-alignment-notes.md,
+docs/id-scheme.md, and docs/greek-thomas-fragments.md.

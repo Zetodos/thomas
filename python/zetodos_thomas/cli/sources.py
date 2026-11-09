@@ -27,6 +27,15 @@ from zetodos_thomas.ingest.download import (
     download_pilot_sources,
     verify_checksum,
 )
+from zetodos_thomas.ingest.fragments import (
+    FragmentValidationError,
+    build_fragment_corpus,
+    fragments_corpus_path,
+    fragments_tei_dir,
+    load_fragment_corpus,
+    validate_fragment_corpus_or_raise,
+    write_fragment_corpus,
+)
 from zetodos_thomas.ingest.manifests import (
     ManifestValidationError,
     load_manifest,
@@ -35,6 +44,7 @@ from zetodos_thomas.ingest.manifests import (
 from zetodos_thomas.ingest.ntvmr_vaticanus import SOURCE_ID as VATICANUS_SOURCE_ID
 from zetodos_thomas.ingest.paths import (
     require_repo_root,
+    resolve_fragments_corpus_path,
     resolve_manifests_dir,
     resolve_pilot_path,
     resolve_thomas_path,
@@ -88,6 +98,13 @@ def validate_sources(
         exists=False,
         dir_okay=False,
     ),
+    fragments_path: Path | None = typer.Option(
+        None,
+        "--fragments",
+        help="Optional Greek Thomas fragment corpus JSON (omit file to skip)",
+        exists=False,
+        dir_okay=False,
+    ),
 ) -> None:
     """Validate default manifests (and optional corpora) without network access.
 
@@ -97,6 +114,7 @@ def validate_sources(
     manifests_path = manifests_dir or resolve_manifests_dir(repo_root)
     pilot = pilot_path or resolve_pilot_path(repo_root)
     thomas = thomas_path or resolve_thomas_path(repo_root)
+    fragments = fragments_path or resolve_fragments_corpus_path(repo_root)
 
     try:
         manifests = validate_manifests_dir(manifests_path)
@@ -193,6 +211,23 @@ def validate_sources(
         )
     else:
         typer.echo(f"Note: thomas corpus not found at {thomas} (skipped)")
+
+    if fragments.is_file():
+        try:
+            frag = validate_fragment_corpus_or_raise(
+                load_fragment_corpus(fragments),
+                manifests,
+            )
+        except FragmentValidationError as exc:
+            typer.secho(f"Fragment validation failed: {exc}", fg=typer.colors.RED)
+            raise typer.Exit(code=1) from exc
+        line_count = sum(len(tx.lines) for tx in frag.transcriptions)
+        typer.echo(
+            f"OK: fragments {frag.id} - {len(frag.transcriptions)} transcription(s), "
+            f"{line_count} lines, role={frag.corpus_role} from {fragments}"
+        )
+    else:
+        typer.echo(f"Note: fragment corpus not found at {fragments} (skipped)")
 
 
 @sources_app.command("download")
@@ -357,4 +392,61 @@ def build_thomas(
     write_thomas_corpus(corpus, dest)
     typer.echo(
         f"Wrote {len(corpus.units)} units ({EXPECTED_LOGIA} logia + prologue) to {dest}"
+    )
+
+
+@sources_app.command("build-fragments")
+def build_fragments(
+    repo_root: Path | None = typer.Option(
+        None,
+        "--repo-root",
+        help="Writable checkout root (default: auto-detect from cwd)",
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+    ),
+    tei_dir: Path | None = typer.Option(
+        None,
+        "--tei-dir",
+        help="Directory of bundled DCLP TEI XML files",
+        exists=True,
+        file_okay=False,
+    ),
+    output: Path | None = typer.Option(
+        None,
+        "--output",
+        "-o",
+        help="Destination JSON for the layered fragment corpus",
+    ),
+) -> None:
+    """Build layered Greek Thomas fragment corpus from local DCLP TEI (offline)."""
+    try:
+        root = require_repo_root(repo_root)
+    except FileNotFoundError as exc:
+        typer.secho(f"build-fragments requires a checkout: {exc}", fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+
+    source_tei = tei_dir or fragments_tei_dir(root)
+    dest = output or fragments_corpus_path(root)
+    manifests_path = root / "data" / "manifests"
+
+    try:
+        manifests = validate_manifests_dir(manifests_path)
+        corpus = build_fragment_corpus(source_tei)
+        validate_fragment_corpus_or_raise(corpus, manifests)
+    except (
+        FragmentValidationError,
+        ManifestValidationError,
+        FileNotFoundError,
+        OSError,
+        ValueError,
+    ) as exc:
+        typer.secho(f"build-fragments failed: {exc}", fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+
+    write_fragment_corpus(corpus, dest)
+    typer.echo(
+        f"Wrote {len(corpus.transcriptions)} transcription(s) "
+        f"({sum(len(t.lines) for t in corpus.transcriptions)} lines) to {dest}"
     )

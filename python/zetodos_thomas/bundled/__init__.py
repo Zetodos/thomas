@@ -26,3 +26,19 @@ def bundled_thomas_path() -> Path:
     return Path(
         str(files("zetodos_thomas.bundled") / "thomas" / "dilley-thomas-v6.2.0.json")
     )
+
+
+def bundled_fragments_corpus_path() -> Path:
+    """Return the on-disk path to the packaged Greek Thomas fragment corpus."""
+    return Path(
+        str(
+            files("zetodos_thomas.bundled")
+            / "fragments"
+            / "greek-thomas-fragments.json"
+        )
+    )
+
+
+def bundled_fragments_tei_dir() -> Path:
+    """Return the on-disk path to packaged DCLP TEI fragment sources."""
+    return Path(str(files("zetodos_thomas.bundled") / "fragments" / "dclp"))

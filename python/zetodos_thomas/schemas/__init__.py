@@ -11,6 +11,15 @@ from zetodos_thomas.schemas.alignment import (
     ThomasCorpus,
     Token,
 )
+from zetodos_thomas.schemas.fragment import (
+    CorpusRole,
+    EvidenceType,
+    FragmentCorpus,
+    FragmentLayerKind,
+    FragmentLine,
+    FragmentToken,
+    FragmentTranscription,
+)
 from zetodos_thomas.schemas.ids import (
     ID_SCHEME_VERSION,
     ParsedParallelId,
@@ -41,6 +50,13 @@ __all__ = [
     "AgreementDegree",
     "AlignmentDocument",
     "AvailabilityMode",
+    "CorpusRole",
+    "EvidenceType",
+    "FragmentCorpus",
+    "FragmentLayerKind",
+    "FragmentLine",
+    "FragmentToken",
+    "FragmentTranscription",
     "PackageInfo",
     "Parallel",
     "ParallelRelation",

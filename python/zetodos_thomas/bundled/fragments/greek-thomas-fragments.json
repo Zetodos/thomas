@@ -1,0 +1,4515 @@
+{
+  "id": "greek-thomas-fragments-v1",
+  "title": "Greek Gospel of Thomas fragments — P.Oxy. 1, 654, 655 (DCLP / papyri.info, CC BY 3.0)",
+  "evidence_type": "G",
+  "corpus_role": "evaluation-witness",
+  "transcriptions": [
+    {
+      "id": "poxy-1-dclp",
+      "source_id": "dclp-poxy-1",
+      "manuscript_id": "P.Oxy. 1",
+      "tm_id": "62838",
+      "dclp_id": "62838",
+      "evidence_type": "G",
+      "corpus_role": "evaluation-witness",
+      "language": "grc",
+      "logia_coverage": "26–30, 77b, 31–33",
+      "lines": [
+        {
+          "line_id": "v.1",
+          "n": "1",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "καὶ τότε διαβλέψεις",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.2",
+          "n": "2",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ἐκβαλεῖν τὸ κάρφος",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.3",
+          "n": "3",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τὸ ἐν τῷ ὀφθαλμῷ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.4",
+          "n": "4",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τοῦ ἀδελφοῦ σου λέγει",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.5",
+          "n": "5",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "Ἰ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ησοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ς· ἐὰν μὴ νηστεύση",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.6",
+          "n": "6",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ται τὸν κόσμον οὐ μὴ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.7",
+          "n": "7",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "εὕρηται τὴν βασιλεί",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.8",
+          "n": "8",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "αν τοῦ θ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "εο",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ῦ· καὶ ἐὰν μὴ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.9",
+          "n": "9",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "σαββατίσητε τὸ σάβ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.10",
+          "n": "10",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "βατον οὐκ ὄψεσθε το",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ν",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.11",
+          "n": "11",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "π",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ατέ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ρα λέγει Ἰ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ησοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ς· ἔ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "την",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.12",
+          "n": "12",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ἐν μέσῳ τοῦ κόσμου",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.13",
+          "n": "13",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "καὶ ἐν σαρκὶ ὤφθην",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.14",
+          "n": "14",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "αὐτοῖς· καὶ εὗρον πάν",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.15",
+          "n": "15",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τας μεθύοντας καὶ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.16",
+          "n": "16",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "οὐδένα εὗρον δειψῶ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ν",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.17",
+          "n": "17",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τα ἐν αὐτοῖς· καὶ πο",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.18",
+          "n": "18",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "νεῖ ἡ ψυχή μου ἐπὶ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.19",
+          "n": "19",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τοῖς υἱοῖς τῶν ἀν",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "θρώπ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ων",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.20",
+          "n": "20",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ὅτι τυφλοί εἰσιν τῇ καρ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "v.21",
+          "n": "21",
+          "side_or_column": "v",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "δίᾳ αὐτῶ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ν",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " κ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "αὶ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "lost",
+              "quantity": "2",
+              "unit": "character",
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " β",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "λ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ε",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ισ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "lost",
+              "quantity": null,
+              "unit": "line",
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.1",
+          "n": "1",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "lost",
+              "quantity": null,
+              "unit": "character",
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἐνοι",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "κ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "εῖ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ταύτ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "η",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ν τ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ὴν πτωχεία",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ν",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.2",
+          "n": "2",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "λέγ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ει ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "Ἰησοῦς· ὃπ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ου ἐὰν ὦσιν",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.3",
+          "n": "3",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "τρ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ε",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ῖς",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ε",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἰσὶ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ν ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ἄ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "θεοι καὶ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.4",
+          "n": "4",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "lost",
+              "quantity": "2",
+              "unit": "character",
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "σο",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "illegible",
+              "quantity": "1",
+              "unit": "character",
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ε",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "lost",
+              "quantity": "2",
+              "unit": "character",
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ἐστιν μόνος",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.5",
+          "n": "5",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "lost",
+              "quantity": "2",
+              "unit": "character",
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "τ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ω ἐγώ εἰμι μετ’ αὐ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.6",
+          "n": "6",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "οῦ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "· ἔγει",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ρ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ον τὸν λίθο",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ν",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.7",
+          "n": "7",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "κἀκεῖ εὑρήσεις με·",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.8",
+          "n": "8",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "σχίσον τὸ ξύλον κἀγὼ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.9",
+          "n": "9",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ἐκεῖ εἰμι λέγει Ἰ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ησοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ς· οὐ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.10",
+          "n": "10",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "κ ἔστιν δεκτὸς προ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.11",
+          "n": "11",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "φήτης ἐν τῇ π",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ατ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ρίδι αὐ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.12",
+          "n": "12",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ο",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ῦ οὐδὲ ἰατρὸς ποιεῖ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.13",
+          "n": "13",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "θεραπείας εἰς τοὺς",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.14",
+          "n": "14",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "γεινώσκοντας αὐτό",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ν",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.15",
+          "n": "15",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "λέγει Ἰ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ησοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ς· πόλις οἰκοδο",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.16",
+          "n": "16",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "μημένη ἐπ’ ἄκρον",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.17",
+          "n": "17",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "ὄ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ρους ὑψηλοῦς καὶ ἐσ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.18",
+          "n": "18",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τηριγμένη οὔτε πε",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.19",
+          "n": "19",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "σ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "εῖν δύναται οὔτε κρυ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.20",
+          "n": "20",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "β",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ῆναι λέγει Ἰ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ησοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ς· ἀκούεις",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "r.21",
+          "n": "21",
+          "side_or_column": "r",
+          "tokens": [
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "lost",
+              "quantity": "1",
+              "unit": "character",
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ι",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ς ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "τ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ὸ ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ε",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "lost",
+              "quantity": "2",
+              "unit": "character",
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "τ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ίον σου ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "το",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "lost",
+              "quantity": null,
+              "unit": "line",
+              "certainty": null
+            }
+          ]
+        }
+      ],
+      "notes": "Layers: surviving (incl. unclear), lacuna (tei:gap), restoration (tei:supplied + abbreviation expansions in tei:ex). Editorial apparatus uses lem only; rdg (Attridge/Fitzmyer/etc.) are not promoted into layers. Corpus role=evaluation-witness — do not feed into Greek–Sahidic alignment training (JAK-28) without an explicit holdout decision."
+    },
+    {
+      "id": "poxy-654-dclp",
+      "source_id": "dclp-poxy-654",
+      "manuscript_id": "P.Oxy. 654",
+      "tm_id": "62840",
+      "dclp_id": "62840",
+      "evidence_type": "G",
+      "corpus_role": "evaluation-witness",
+      "language": "grc",
+      "logia_coverage": "incipit, 1–7",
+      "lines": [
+        {
+          "line_id": "main.1",
+          "n": "1",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "οὗτοι οἱ οἱ λόγοι οἱ ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἀπόκρυφοι οὓς ἐλά",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.2",
+          "n": "2",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "λησεν Ἰη",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ς ὁ ζῶν κ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "αὶ ἔγραψεν Ἰούδας ὁ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.3",
+          "n": "3",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "καὶ Θωμᾶ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ς",
+              "reason": "omitted",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " καὶ εἶπεν· ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ὅστις ἂν τὴν ἑρμηνεί",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.4",
+          "n": "4",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "αν τῶν λόγων τούτ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ων εὑρίσκῃ, θανάτου",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.5",
+          "n": "5",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "οὐ μὴ γεύσηται. ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "λέγει Ἰησοῦς·",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.6",
+          "n": "6",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "μὴ παυσάσθω ὁ ζη",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "τῶν τοῦ ζητεῖν ἕως ἂν",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.7",
+          "n": "7",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "εὕρη, καὶ ὅταν εὕρῃ ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "θαμβηθήσεται καὶ θαμ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.8",
+          "n": "8",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "βηθεὶς βασιλεύση κα",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ὶ βασιλεύσας",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἀναπα",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.9",
+          "n": "9",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ήσεται. λέγει Ἰ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ησοῦς",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "· ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἐὰν",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.10",
+          "n": "10",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "οἱ ἕλκοντες ἡμᾶς ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "εἴπωσιν ὑμῖν· ἰδοὺ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.11",
+          "n": "11",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ἡ βασιλεία ἐν οὐρα",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "νῷ, ὑμᾶς φθήσεται",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.12",
+          "n": "12",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τὰ πετεινὰ τοῦ οὐρ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ανοῦ. ἐὰν δ’ εἴπωσιν ὅ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.13",
+          "n": "13",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τι ὑπὸ τὴν γήν ἐστ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ιν, εἰσελεύσονται",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.14",
+          "n": "14",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "οἱ ἰχθύες τῆς θαλά",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σσης",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "προφθάσαν",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.15",
+          "n": "15",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τες ὑμᾶς· καὶ ἡ βασ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ιλεία τοῦ θεοῦ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.16",
+          "n": "16",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ἐντὸς ὑμῶν ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἐστι κἀκτός·",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ὃς ἂν ἑαυτὸν",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.17",
+          "n": "17",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "γνῷ, ταύτην εὑρή",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σει, καὶ ὅτε ὑμεῖς",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.18",
+          "n": "18",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ἑαυτοὺς γνώσεσθαι, ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "εἴσεσθε ὅτι υἱοί",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.19",
+          "n": "19",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ἐστε ὑμεῖς τοῦ πατρὸς τοῦ ζ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ῶντος· εἰ δὲ μὴ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.20",
+          "n": "20",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "γνώσ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "εσ",
+              "reason": "omitted",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "θε ἑαυτοὺς, ἐν ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "τῇ πτωχείᾳ ἐστὲ,",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.21",
+          "n": "21",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "καὶ ὑμεῖς ἐστε ἡ πτ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ω",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "χεία. λέγει Ἰησοῦς·",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.22",
+          "n": "22",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "οὐκ ἀποκνήσει ἄνθ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ρωπος",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "πλήρης ἡμε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.23",
+          "n": "23",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ρῶν ἐπερωτῆσε πα",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ιδίον",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἑπτὰ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἡμε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.24",
+          "n": "24",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ρῶν περὶ τοῦ τόπου τ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ῆ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ς ζωῆς, καὶ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ζή",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.25",
+          "n": "25",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "σετε· ὃτι πολλοὶ ἔσονται ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "π",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ρῶτοι ἔσχατοι, καὶ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.26",
+          "n": "26",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "οἱ ἔσχατοι πρῶτοι, καὶ ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "εἰς ἓν καταντήσου",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.27",
+          "n": "27",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "σιν. λέγει Ἰη",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ς· γ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "νῶθι τὸ ὃν ἔμπροσ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.28",
+          "n": "28",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "θεν τῆς ὄψεώς σου, καὶ ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "τὸ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "κεκαλυμμένον",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.29",
+          "n": "29",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ἀπό σου ἀποκαλυφ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "θ",
+              "reason": "omitted",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ήσετ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "αί",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": " σοι· οὐ γάρ ἐσ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.30",
+          "n": "30",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τιν κρυπτὸν ὃ οὐ φαν",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ερὸν γενήσεται,",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.31",
+          "n": "31",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "καὶ θεθαμμένον ὃ ο",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ὐκ ἐγερθήσεται.",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.32",
+          "n": "32",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "ἐξ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ετάζουσιν αὐτὸν οἱ ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "μαθηταὶ αὐτοῦ καὶ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.33",
+          "n": "33",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "λέ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "γ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ουσιν",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "· πῶς νηστεύ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σομεν; καὶ πῶς προσ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.34",
+          "n": "34",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "ευξόμ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "εθα; καὶ πῶς ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἐλεημοσύνην ποιή",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.35",
+          "n": "35",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "σομεν; κ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "α",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ὶ τί παρατηρή",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "σ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ομεν",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "περὶ τῶν βρω",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.36",
+          "n": "36",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "μάτω",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ν; λέγει Ἰη",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "σοῦ",
+              "reason": "abbreviation",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ς· ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "μὴ ψεύδεσθε καὶ ὃ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.37",
+          "n": "37",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "τι",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "μισ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "εῖται μὴ ποιεῖ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "τ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ε, πάντα γὰρ ἔμπρο",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.38",
+          "n": "38",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "σθεν τ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ῆς ἀληθ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ίας ἀν",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "αφαίνεται· οὐδὲν",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.39",
+          "n": "39",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "γάρ ἐστι",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ν ἀ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "π",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "οκεκ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ρ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "υμμένον ὃ οὐ φανερὸν",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.40",
+          "n": "40",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "ἔσται. μα",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "κ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "άρι",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ός",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ἐστιν ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ὁ λέων ὃν φάγεται",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.41",
+          "n": "41",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "ἄνθρωπος",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "καὶ ὁ λέ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ων ἔστ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "α",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ι ἄνθρωπος· καὶ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "main.42",
+          "n": "42",
+          "side_or_column": null,
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "οὐαὶ τῷ ἄνθρώπῳ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ὃν",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "φάγεται λέων.",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        }
+      ],
+      "notes": "Layers: surviving (incl. unclear), lacuna (tei:gap), restoration (tei:supplied + abbreviation expansions in tei:ex). Editorial apparatus uses lem only; rdg (Attridge/Fitzmyer/etc.) are not promoted into layers. Corpus role=evaluation-witness — do not feed into Greek–Sahidic alignment training (JAK-28) without an explicit holdout decision."
+    },
+    {
+      "id": "poxy-655-dclp",
+      "source_id": "dclp-poxy-655",
+      "manuscript_id": "P.Oxy. 655",
+      "tm_id": "62839",
+      "dclp_id": "62839",
+      "evidence_type": "G",
+      "corpus_role": "evaluation-witness",
+      "language": "grc",
+      "logia_coverage": "24(?), 36–39",
+      "lines": [
+        {
+          "line_id": "column-i.1",
+          "n": "1",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "λέγει Ἰησοῦς· μὴ μεριμνᾶ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "τε ἀπ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ὸ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": " πρωὶ ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἕως ὀψὲ,",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.2",
+          "n": "2",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "μήτ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ε ἀ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "φ’",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ἑσπ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "έρας",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.3",
+          "n": "3",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "ἕως π",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ρ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ωὶ, μήτε ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "τῇ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.4",
+          "n": "4",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "τροφῇ ὑμῶ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ν ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "τ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ί φά",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.5",
+          "n": "5",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "γητε, μήτε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " τῇ στ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ο",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.6",
+          "n": "6",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "λῇ ὑμῶν",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "τ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ί ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ἐ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "νδύ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.7",
+          "n": "7",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "ση",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "σθε",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": ". ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "πολ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "λῷ κρ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "εισ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.8",
+          "n": "8",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "σον",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ές",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": " ἐ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "στε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "τ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ῶν ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "κρί",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.9",
+          "n": "9",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "νων",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ἅτι",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "να",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ο",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ὐ ξ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "α",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ί",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.10",
+          "n": "10",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "νει ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "οὐδὲ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ν",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ήθ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ει",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": ". ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "μ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ηδ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.11",
+          "n": "11",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ὲν ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ἔχοντ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "α",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἔ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "νδ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "υ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.12",
+          "n": "12",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "μα. ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "τί",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ἐ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ν",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "δεῖτε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "κ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "αὶ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.13",
+          "n": "13",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ὑ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "μεῖς; τίς ἂν ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "προσ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "θ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "εί",
+              "reason": "omitted",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "η",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.14",
+          "n": "14",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ἐπὶ τὴν εἰλικίαν",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.15",
+          "n": "15",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ὑμῶν; αὐτὸ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ς δ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ώ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "σε",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": "ι",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.16",
+          "n": "16",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ὑμεῖν τὸ ἔνδυμα ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ὑ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.17",
+          "n": "17",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "μῶν. λέγουσιν αὐ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.18",
+          "n": "18",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τῷ οἱ μαθηταὶ αὐτοῦ·",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.19",
+          "n": "19",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "πότε ὑμεῖν ἐμφα",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.20",
+          "n": "20",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "νὴς ἔσει, καὶ πότε",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.21",
+          "n": "21",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "σε ὀψόμεθα; λέγει·",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.22",
+          "n": "22",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ὅταν ἐκδύσησθε ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "καί",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.23",
+          "n": "23",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "μ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ὴ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "surviving",
+              "text": " αἰσχυνθῆτε.",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-i.24",
+          "n": "24",
+          "side_or_column": "column-i",
+          "tokens": [
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "lost",
+              "quantity": null,
+              "unit": "line",
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.1",
+          "n": "1",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "θ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "lacuna",
+              "text": "",
+              "reason": "lost",
+              "quantity": null,
+              "unit": "character",
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.2",
+          "n": "2",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "λέ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "γει Ἰησοῦς· πολλάκις",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.3",
+          "n": "3",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ο",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ὖν ἐπεθυμεῖτε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.4",
+          "n": "4",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ούτους τοὺς",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "λό",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.5",
+          "n": "5",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "γ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ους",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "μου ἀκοῦσαι",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.6",
+          "n": "6",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "κ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "α",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ὶ ἔχετε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "οὐδε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.7",
+          "n": "7",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ν",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ὸς",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ἄλλου ἀκοῦσαι",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.8",
+          "n": "8",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "κ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "α",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ὶ ἐλεύσονται",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.9",
+          "n": "9",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ἡ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "μ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "έραι ὅτε ζητή",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.10",
+          "n": "10",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "σ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": "ε",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "τέ με καὶ οὐ μὴ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.11",
+          "n": "11",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "εὑρήσετέ με. λέγει",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.12",
+          "n": "12",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "Ἰησοῦς· οἱ Φαρισαῖοι",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.13",
+          "n": "13",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "restoration",
+              "text": "καὶ οἱ γραμματεῖς",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.14",
+          "n": "14",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ἔλ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "αβον",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "τὰς κλεῖδας",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.15",
+          "n": "15",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "τῆς ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "γνώσεως",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "καὶ ἔ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.16",
+          "n": "16",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "κρυψ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "αν",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "αὐτάς·ὄυτε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.17",
+          "n": "17",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "εἰσῆ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "λθον ὄυτε τοὺς",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.18",
+          "n": "18",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "εἰσερ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "χομένους ἀφῆ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.19",
+          "n": "19",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "καν ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "εἰσελθεῖν. ὑμεῖς",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.20",
+          "n": "20",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "δὲ γεί",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "νεσθε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "φρόνι",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.21",
+          "n": "21",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "μοι ὡ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ς",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "ὄφεις",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "καὶ ἀ",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.22",
+          "n": "22",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "κέραι",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "οι ὡς",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "surviving",
+              "text": " ",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            },
+            {
+              "kind": "restoration",
+              "text": "περιστε",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        },
+        {
+          "line_id": "column-ii.23",
+          "n": "23",
+          "side_or_column": "column-ii",
+          "tokens": [
+            {
+              "kind": "surviving",
+              "text": "ρα",
+              "reason": null,
+              "quantity": null,
+              "unit": null,
+              "certainty": "unclear"
+            },
+            {
+              "kind": "restoration",
+              "text": "ί",
+              "reason": "lost",
+              "quantity": null,
+              "unit": null,
+              "certainty": null
+            }
+          ]
+        }
+      ],
+      "notes": "Layers: surviving (incl. unclear), lacuna (tei:gap), restoration (tei:supplied + abbreviation expansions in tei:ex). Editorial apparatus uses lem only; rdg (Attridge/Fitzmyer/etc.) are not promoted into layers. Corpus role=evaluation-witness — do not feed into Greek–Sahidic alignment training (JAK-28) without an explicit holdout decision."
+    }
+  ],
+  "excluded_witnesses": [
+    "P.Oxy. 5575 (TM 989105) — independent sayings parallel; not a Thomas manuscript"
+  ],
+  "notes": "Evidence type G (direct Greek Thomas manuscripts). Labeled evaluation-witness so JAK-28 Greek–Sahidic alignment training must not consume these texts as training pairs without an explicit holdout waiver. P.Oxy. 5575 is excluded (independent parallel, not a Thomas manuscript). Never-ship: Layton/Attridge continuous critical Greek; manuscript images."
+}
