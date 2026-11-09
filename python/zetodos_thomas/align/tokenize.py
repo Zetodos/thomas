@@ -35,11 +35,7 @@ def whitespace_tokens(
     tokens: list[Token] = []
     for sequence, match in enumerate(_TOKEN_RE.finditer(text)):
         surface = match.group(0)
-        normalized = (
-            norm_parts[sequence]
-            if sequence < len(norm_parts)
-            else surface
-        )
+        normalized = norm_parts[sequence] if sequence < len(norm_parts) else surface
         tokens.append(
             Token(
                 id=token_id(unit.source_id, unit.unit_id, sequence),

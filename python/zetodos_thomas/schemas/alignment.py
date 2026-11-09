@@ -228,10 +228,7 @@ class AlignmentDocument(BaseModel):
                 if token is None:
                     msg = f"dangling token id {tid} in span {span.id}"
                     raise ValueError(msg)
-                if (
-                    token.source_id != span.source_id
-                    or token.unit_id != span.unit_id
-                ):
+                if token.source_id != span.source_id or token.unit_id != span.unit_id:
                     msg = (
                         f"token {tid} in span {span.id} belongs to "
                         f"{token.source_id}/{token.unit_id}, not "
@@ -253,8 +250,7 @@ class AlignmentDocument(BaseModel):
                 lo, hi = min(sequences), max(sequences)
                 if sorted(sequences) == list(range(lo, hi + 1)):
                     msg = (
-                        f"discontinuous span {span.id} has no gap; "
-                        "use kind=contiguous"
+                        f"discontinuous span {span.id} has no gap; use kind=contiguous"
                     )
                     raise ValueError(msg)
 
@@ -286,10 +282,7 @@ class AlignmentDocument(BaseModel):
             ):
                 for sid in ids:
                     if sid not in span_by_id:
-                        msg = (
-                            f"dangling {side} span id {sid} in parallel "
-                            f"{parallel.id}"
-                        )
+                        msg = f"dangling {side} span id {sid} in parallel {parallel.id}"
                         raise ValueError(msg)
 
         return self
