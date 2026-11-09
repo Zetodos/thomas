@@ -71,6 +71,8 @@ uv run pre-commit install
 
 That installs the same suite CI runs (`uv run pre-commit run --all-files`): `uv lock --check`, ruff format/check, `ty`, pytest (fast suite), trailing whitespace / EOF / YAML / TOML checks, large-file guard, and SPDX headers on `python/` and `tests/`. Hook revisions are pinned in [`.pre-commit-config.yaml`](.pre-commit-config.yaml); Dependabot (and a weekly autoupdate workflow) keep them current.
 
+The weekly autoupdate workflow opens a PR only when repository secret `PRE_COMMIT_AUTOUPDATE_TOKEN` is set to a fine-grained PAT or GitHub App token with `contents` + `pull-requests` write (so the PR can trigger CI). Without that secret it still runs `pre-commit autoupdate` and skips PR creation; Dependabot remains the primary update path.
+
 Manual equivalents without hooks:
 
 ```bash

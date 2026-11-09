@@ -3,11 +3,24 @@
 
 from __future__ import annotations
 
+import re
 import sys
 from pathlib import Path
 
-MARKER = "SPDX-License-Identifier:"
 HEAD_LINES = 12
+# Comment-header form only (e.g. ``# SPDX-License-Identifier: Apache-2.0``).
+# Rejects empty identifiers and non-comment occurrences of the marker text.
+SPDX_HEADER_RE = re.compile(
+    r"^#\s*SPDX-License-Identifier:\s*(?P<id>\S+)\s*$",
+)
+
+
+def has_spdx_header(text: str) -> bool:
+    for line in text.splitlines()[:HEAD_LINES]:
+        match = SPDX_HEADER_RE.match(line)
+        if match is not None and match.group("id"):
+            return True
+    return False
 
 
 def main(argv: list[str]) -> int:
@@ -22,12 +35,11 @@ def main(argv: list[str]) -> int:
         except OSError as exc:
             print(f"error reading {path}: {exc}", file=sys.stderr)
             return 2
-        head = "\n".join(text.splitlines()[:HEAD_LINES])
-        if MARKER not in head:
+        if not has_spdx_header(text):
             missing.append(raw)
 
     if missing:
-        print("Missing SPDX-License-Identifier header in:")
+        print("Missing SPDX-License-Identifier comment header in:")
         for path in missing:
             print(f"  {path}")
         return 1
