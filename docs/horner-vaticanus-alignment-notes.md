@@ -47,3 +47,10 @@
 1. `uv run thomas sources download` → gitignored `data/downloads/` (Horner zip + NTVMR teiraw; throttled; **no images**).
 2. Optional: `uv run thomas sources build-pilot`.
 3. Offline: `uv run thomas sources validate`.
+
+## Token / span IDs (JAK-32)
+
+Verse pairs above remain `PilotCorpus` / `ParallelUnit`. Phrase-level stubs that
+mint stable token/span/parallel ids (including discontinuous ⲡϣⲁϫⲉ ↔ λογος and
+empty John 8:1 spans) are under `tests/fixtures/alignment/`. See
+[`id-scheme.md`](id-scheme.md).

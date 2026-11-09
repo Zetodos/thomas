@@ -30,6 +30,7 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`docs/source-licenses.md`](docs/source-licenses.md) | Dual code/data policy, setup modes, never-ship list, manifest schema |
 | [`docs/licensing-provenance-audit.md`](docs/licensing-provenance-audit.md) | 2026-11-09 provenance audit (updated for Horner decision) |
 | [`docs/horner-vaticanus-alignment-notes.md`](docs/horner-vaticanus-alignment-notes.md) | CopSahHorner + Vaticanus B* pilot notes (JAK-24) |
+| [`docs/id-scheme.md`](docs/id-scheme.md) | Stable unit/token/span IDs + retokenization rule (JAK-32) |
 | [`data/manifests/`](data/manifests/) | Per-source JSON manifests (Horner, Vaticanus B*) |
 | [`data/sources/pilot/`](data/sources/pilot/) | Bundled Horner × Vaticanus B* pilot excerpt |
 

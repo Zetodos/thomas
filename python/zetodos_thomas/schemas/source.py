@@ -94,17 +94,34 @@ class SourceManifest(BaseModel):
         return value
 
 
+class UnitKind(StrEnum):
+    """What a ``TextUnit.unit_id`` denotes (verse, logion, or free section)."""
+
+    VERSE = "verse"
+    LOGION = "logion"
+    SECTION = "section"
+
+
 class TextUnit(BaseModel):
-    """One verse/section with original and normalized surface forms."""
+    """One verse/section with original and normalized surface forms.
+
+    ``unit_id`` is the stable handle for alignments (JAK-32). Optional token
+    layers live in ``AlignmentDocument`` rather than inline here so existing
+    ``PilotCorpus`` JSON stays unchanged.
+    """
 
     source_id: str
-    unit_id: str = Field(description="Stable unit id, e.g. john.1.1")
+    unit_id: str = Field(description="Stable unit id, e.g. john.1.1 or thomas.7")
     book: str
     chapter: int = Field(ge=1)
     verse: int = Field(ge=0)
     original_text: str
     normalized_text: str
     sequence: int = Field(default=0, ge=0)
+    kind: UnitKind = Field(
+        default=UnitKind.VERSE,
+        description="Structural kind; default verse keeps JAK-24 pilot valid",
+    )
 
 
 class ParallelUnit(BaseModel):

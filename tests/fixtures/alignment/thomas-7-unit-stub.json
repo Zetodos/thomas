@@ -1,0 +1,191 @@
+{
+  "id": "thomas-7-unit-stub-v1",
+  "title": "Thomas logion 7 unit stub (Coptic + Greek fragment placeholder)",
+  "id_scheme_version": "1",
+  "text_units": [
+    {
+      "source_id": "scriptorium-thomas-dilley-stub",
+      "unit_id": "thomas.7",
+      "book": "thomas",
+      "chapter": 7,
+      "verse": 0,
+      "original_text": "ⲡⲉϫⲉ ⲓ̅ⲥ̅ ϫⲉ ⲟⲩⲙⲁⲕⲁⲣⲓⲟⲥ ⲡⲉ ⲡⲙⲟⲩⲓ̈",
+      "normalized_text": "ⲡⲉϫⲉ ⲓⲥ ϫⲉ ⲟⲩⲙⲁⲕⲁⲣⲓⲟⲥ ⲡⲉ ⲡⲙⲟⲩⲓ̈",
+      "sequence": 0,
+      "kind": "logion"
+    },
+    {
+      "source_id": "poxy-thomas-frag-stub",
+      "unit_id": "thomas.7",
+      "book": "thomas",
+      "chapter": 7,
+      "verse": 0,
+      "original_text": "μακαριος",
+      "normalized_text": "μακαριος",
+      "sequence": 0,
+      "kind": "logion"
+    }
+  ],
+  "tokens": [
+    {
+      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/0",
+      "source_id": "scriptorium-thomas-dilley-stub",
+      "unit_id": "thomas.7",
+      "sequence": 0,
+      "surface": "ⲡⲉϫⲉ",
+      "normalized": "ⲡⲉϫⲉ",
+      "char_start": 0,
+      "char_end": 4,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/1",
+      "source_id": "scriptorium-thomas-dilley-stub",
+      "unit_id": "thomas.7",
+      "sequence": 1,
+      "surface": "ⲓ̅ⲥ̅",
+      "normalized": "ⲓⲥ",
+      "char_start": 5,
+      "char_end": 9,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/2",
+      "source_id": "scriptorium-thomas-dilley-stub",
+      "unit_id": "thomas.7",
+      "sequence": 2,
+      "surface": "ϫⲉ",
+      "normalized": "ϫⲉ",
+      "char_start": 10,
+      "char_end": 12,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/3",
+      "source_id": "scriptorium-thomas-dilley-stub",
+      "unit_id": "thomas.7",
+      "sequence": 3,
+      "surface": "ⲟⲩⲙⲁⲕⲁⲣⲓⲟⲥ",
+      "normalized": "ⲟⲩⲙⲁⲕⲁⲣⲓⲟⲥ",
+      "char_start": 13,
+      "char_end": 23,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/4",
+      "source_id": "scriptorium-thomas-dilley-stub",
+      "unit_id": "thomas.7",
+      "sequence": 4,
+      "surface": "ⲡⲉ",
+      "normalized": "ⲡⲉ",
+      "char_start": 24,
+      "char_end": 26,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/5",
+      "source_id": "scriptorium-thomas-dilley-stub",
+      "unit_id": "thomas.7",
+      "sequence": 5,
+      "surface": "ⲡⲙⲟⲩⲓ̈",
+      "normalized": "ⲡⲙⲟⲩⲓ̈",
+      "char_start": 27,
+      "char_end": 33,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:poxy-thomas-frag-stub/thomas.7/t/0",
+      "source_id": "poxy-thomas-frag-stub",
+      "unit_id": "thomas.7",
+      "sequence": 0,
+      "surface": "μακαριος",
+      "normalized": "μακαριος",
+      "char_start": 0,
+      "char_end": 8,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    }
+  ],
+  "spans": [
+    {
+      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/s/makarios",
+      "source_id": "scriptorium-thomas-dilley-stub",
+      "unit_id": "thomas.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/3"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:poxy-thomas-frag-stub/thomas.7/s/makarios",
+      "source_id": "poxy-thomas-frag-stub",
+      "unit_id": "thomas.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:poxy-thomas-frag-stub/thomas.7/t/0"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/s/whole",
+      "source_id": "scriptorium-thomas-dilley-stub",
+      "unit_id": "thomas.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/0",
+        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/1",
+        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/2",
+        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/3",
+        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/4",
+        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/5"
+      ],
+      "exclusive_group": "logion-cover",
+      "notes": ""
+    }
+  ],
+  "parallels": [
+    {
+      "id": "v1:parallel/thomas.7-makarios",
+      "left_span_ids": [
+        "v1:scriptorium-thomas-dilley-stub/thomas.7/s/makarios"
+      ],
+      "right_span_ids": [
+        "v1:poxy-thomas-frag-stub/thomas.7/s/makarios"
+      ],
+      "relation": "loanword",
+      "agreement": "lexical",
+      "provenance": "JAK-32 illustrative stub only — not SCRIPTORIUM/P.Oxy ingest (JAK-30/31)",
+      "notes": "Placeholder surfaces for schema tests; replace under JAK-30/31"
+    },
+    {
+      "id": "v1:parallel/thomas.7-partial-frag",
+      "left_span_ids": [
+        "v1:scriptorium-thomas-dilley-stub/thomas.7/s/whole"
+      ],
+      "right_span_ids": [
+        "v1:poxy-thomas-frag-stub/thomas.7/s/makarios"
+      ],
+      "relation": "phrase",
+      "agreement": "uncertain",
+      "provenance": "JAK-32 stub demonstrating many-to-one Coptic↔Greek mapping",
+      "notes": "Whole Coptic logion linked to sparse Greek fragment span"
+    }
+  ],
+  "notes": "Stub only. Real Dilley SCRIPTORIUM / P.Oxy ingest is JAK-30/31."
+}
