@@ -1,0 +1,3383 @@
+{
+  "id": "horner-vaticanus-gold-sample-v1",
+  "title": "Human-checked Greek–Sahidic token/phrase reference sample (JAK-28)",
+  "id_scheme_version": "1",
+  "text_units": [
+    {
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "book": "john",
+      "chapter": 1,
+      "verse": 1,
+      "original_text": "εν αρχη ην ο λογος και ο λογος ην προς τον θν και θς ην ο λογος",
+      "normalized_text": "εν αρχη ην ο λογος και ο λογος ην προς τον θν και θς ην ο λογος",
+      "sequence": 0,
+      "kind": "verse"
+    },
+    {
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "book": "john",
+      "chapter": 1,
+      "verse": 1,
+      "original_text": "ϩⲛ̅ⲧⲉϩⲟⲩⲉ͡ⲓⲧⲉ ⲛⲉϥϣⲟⲟⲡ ⲛ̅ϭⲓⲡϣⲁϫⲉ ⲁⲩⲱ ⲡϣⲁϫⲉ ⲛⲉϥϣⲟⲟⲡ ⲛ̅ⲛⲁϩⲣⲛ̅ⲡⲛⲟⲩⲧⲉ ⲁⲩⲱ ⲛⲉⲩⲛⲟⲩⲧⲉ ⲡⲉ ⲡϣⲁϫⲉ.",
+      "normalized_text": "ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ ⲛⲉϥϣⲟⲟⲡ ⲛϭⲓⲡϣⲁϫⲉ ⲁⲩⲱ ⲡϣⲁϫⲉ ⲛⲉϥϣⲟⲟⲡ ⲛⲛⲁϩⲣⲛⲡⲛⲟⲩⲧⲉ ⲁⲩⲱ ⲛⲉⲩⲛⲟⲩⲧⲉ ⲡⲉ ⲡϣⲁϫⲉ.",
+      "sequence": 0,
+      "kind": "verse"
+    },
+    {
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "book": "john",
+      "chapter": 1,
+      "verse": 2,
+      "original_text": "ουτος ην εν αρχη προς τον θν",
+      "normalized_text": "ουτος ην εν αρχη προς τον θν",
+      "sequence": 1,
+      "kind": "verse"
+    },
+    {
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.2",
+      "book": "john",
+      "chapter": 1,
+      "verse": 2,
+      "original_text": "ⲡⲁⲓ ϩⲛ̅ⲧⲉϩⲟⲩⲉ͡ⲓⲧⲉ ⲛⲉϥϣⲟⲟⲡ ϩⲁⲧⲙ̅ⲡⲛⲟⲩⲧⲉ.",
+      "normalized_text": "ⲡⲁⲓ ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ ⲛⲉϥϣⲟⲟⲡ ϩⲁⲧⲙⲡⲛⲟⲩⲧⲉ.",
+      "sequence": 1,
+      "kind": "verse"
+    },
+    {
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "book": "mark",
+      "chapter": 1,
+      "verse": 1,
+      "original_text": "αρχη του ευαγγελιου ιυ χυ υιου θυ",
+      "normalized_text": "αρχη του ευαγγελιου ιυ χυ υιου θυ",
+      "sequence": 0,
+      "kind": "verse"
+    },
+    {
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "book": "mark",
+      "chapter": 1,
+      "verse": 1,
+      "original_text": "ⲙⲁⲣⲕⲟⲥ ⲧⲁⲣⲭⲏ ⲙ̅ⲡⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ ⲛ̅ⲓ̅ⲥ̅ ⲡⲉⲭ̅ⲥ̅",
+      "normalized_text": "ⲙⲁⲣⲕⲟⲥ ⲧⲁⲣⲭⲏ ⲙⲡⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ ⲛⲓⲥ ⲡⲉⲭⲥ",
+      "sequence": 0,
+      "kind": "verse"
+    },
+    {
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "book": "matthew",
+      "chapter": 7,
+      "verse": 7,
+      "original_text": "αιτειτε και δοθησεται υμιν ζητειτε και ευρησετε κρουετε και ανοιγησεται υμιν",
+      "normalized_text": "αιτειτε και δοθησεται υμιν ζητειτε και ευρησετε κρουετε και ανοιγησεται υμιν",
+      "sequence": 0,
+      "kind": "verse"
+    },
+    {
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "book": "matthew",
+      "chapter": 7,
+      "verse": 7,
+      "original_text": "ⲁⲓⲧⲉⲓ ⲧⲁⲣⲟⲩϯ ⲛⲏⲧⲛ. ϣⲓⲛⲉ ⲧⲁⲣⲉⲧⲉⲧⲛϭⲓⲛⲉ. ⲧⲱϩⲙ ⲧⲁⲣ<ⲟⲩ>ⲟⲩⲱⲛ ⲛⲏⲧⲛ.",
+      "normalized_text": "ⲁⲓⲧⲉⲓ ⲧⲁⲣⲟⲩϯ ⲛⲏⲧⲛ. ϣⲓⲛⲉ ⲧⲁⲣⲉⲧⲉⲧⲛϭⲓⲛⲉ. ⲧⲱϩⲙ ⲧⲁⲣⲟⲩⲟⲩⲱⲛ ⲛⲏⲧⲛ.",
+      "sequence": 0,
+      "kind": "verse"
+    },
+    {
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "book": "luke",
+      "chapter": 6,
+      "verse": 20,
+      "original_text": "και αυτος επαρας τους οφθαλμουςαυτου εις τους μαθητας αυτου ελεγεν μακαριοι οι πτωχοι οτι υμετερα εστιν η βασιλεια του θυ",
+      "normalized_text": "και αυτος επαρας τους οφθαλμουςαυτου εις τους μαθητας αυτου ελεγεν μακαριοι οι πτωχοι οτι υμετερα εστιν η βασιλεια του θυ",
+      "sequence": 0,
+      "kind": "verse"
+    },
+    {
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "book": "luke",
+      "chapter": 6,
+      "verse": 20,
+      "original_text": "ⲛ̅ⲧⲟϥ ⲇⲉ ⲁϥϥⲓⲁⲧϥ̅ ⲉϩⲣⲁⲓ̈ ⲉⲛⲉϥⲙⲁⲑⲏⲧⲏⲥ ⲡⲉϫⲁϥ ϫⲉ. ⲛⲁⲓ̈ⲁⲧⲟⲩ ⲛⲛ̅ϩⲏⲕⲉ ϫⲉ ⲧⲱⲟⲩ ⲧⲉ ⲧⲙⲛ̅ⲧⲉⲣⲟ ⲛⲙ̅ⲡⲏⲩⲉ·",
+      "normalized_text": "ⲛⲧⲟϥ ⲇⲉ ⲁϥϥⲓⲁⲧϥ ⲉϩⲣⲁⲓ̈ ⲉⲛⲉϥⲙⲁⲑⲏⲧⲏⲥ ⲡⲉϫⲁϥ ϫⲉ. ⲛⲁⲓ̈ⲁⲧⲟⲩ ⲛⲛϩⲏⲕⲉ ϫⲉ ⲧⲱⲟⲩ ⲧⲉ ⲧⲙⲛⲧⲉⲣⲟ ⲛⲙⲡⲏⲩⲉ·",
+      "sequence": 0,
+      "kind": "verse"
+    },
+    {
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "book": "matthew",
+      "chapter": 13,
+      "verse": 31,
+      "original_text": "αλλην παραβολην παρεθηκεν αυτοις λεγων ομοια εστιν η βασιλεια των ουρανων κοκκω σιναπεως ον λαβων ανθρωπος εσπειρεν εν τω αγρω αυτου",
+      "normalized_text": "αλλην παραβολην παρεθηκεν αυτοις λεγων ομοια εστιν η βασιλεια των ουρανων κοκκω σιναπεως ον λαβων ανθρωπος εσπειρεν εν τω αγρω αυτου",
+      "sequence": 0,
+      "kind": "verse"
+    },
+    {
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "book": "matthew",
+      "chapter": 13,
+      "verse": 31,
+      "original_text": "ⲁϥⲕⲱ ⲛⲁⲩ ⲟⲛ ⲉϩⲣⲁⲓ ⲛⲕⲉⲡⲁⲣⲁⲃⲟⲗⲏ ⲉϥϫⲱ ⲙⲙⲟⲥ. ϫⲉ ⲉⲥⲧⲛⲧⲱⲛ ⲛϭⲓⲧⲙⲛⲧⲣⲣⲟ ⲛⲙⲡⲏⲩⲉ ⲉⲩⲃⲗⲃⲓⲗⲉ ⲛϣⲗⲧⲏⲙ. ⲧⲁⲓ ⲉⲁⲩⲣⲱⲙⲉ ϫⲓⲧⲥ ⲁϥϫⲟ ⲙⲙⲟⲥ ϩⲣⲁⲓ ϩⲛⲧⲉϥⲥⲱϣⲉ.",
+      "normalized_text": "ⲁϥⲕⲱ ⲛⲁⲩ ⲟⲛ ⲉϩⲣⲁⲓ ⲛⲕⲉⲡⲁⲣⲁⲃⲟⲗⲏ ⲉϥϫⲱ ⲙⲙⲟⲥ. ϫⲉ ⲉⲥⲧⲛⲧⲱⲛ ⲛϭⲓⲧⲙⲛⲧⲣⲣⲟ ⲛⲙⲡⲏⲩⲉ ⲉⲩⲃⲗⲃⲓⲗⲉ ⲛϣⲗⲧⲏⲙ. ⲧⲁⲓ ⲉⲁⲩⲣⲱⲙⲉ ϫⲓⲧⲥ ⲁϥϫⲟ ⲙⲙⲟⲥ ϩⲣⲁⲓ ϩⲛⲧⲉϥⲥⲱϣⲉ.",
+      "sequence": 0,
+      "kind": "verse"
+    },
+    {
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.8.1",
+      "book": "john",
+      "chapter": 8,
+      "verse": 1,
+      "original_text": "",
+      "normalized_text": "",
+      "sequence": 0,
+      "kind": "verse"
+    },
+    {
+      "source_id": "copsahhorner",
+      "unit_id": "john.8.1",
+      "book": "john",
+      "chapter": 8,
+      "verse": 1,
+      "original_text": "",
+      "normalized_text": "",
+      "sequence": 0,
+      "kind": "verse"
+    }
+  ],
+  "tokens": [
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/0",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 0,
+      "surface": "εν",
+      "normalized": "εν",
+      "char_start": 0,
+      "char_end": 2,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/1",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 1,
+      "surface": "αρχη",
+      "normalized": "αρχη",
+      "char_start": 3,
+      "char_end": 7,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/2",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 2,
+      "surface": "ην",
+      "normalized": "ην",
+      "char_start": 8,
+      "char_end": 10,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/3",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 3,
+      "surface": "ο",
+      "normalized": "ο",
+      "char_start": 11,
+      "char_end": 12,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/4",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 4,
+      "surface": "λογος",
+      "normalized": "λογος",
+      "char_start": 13,
+      "char_end": 18,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/5",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 5,
+      "surface": "και",
+      "normalized": "και",
+      "char_start": 19,
+      "char_end": 22,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/6",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 6,
+      "surface": "ο",
+      "normalized": "ο",
+      "char_start": 23,
+      "char_end": 24,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/7",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 7,
+      "surface": "λογος",
+      "normalized": "λογος",
+      "char_start": 25,
+      "char_end": 30,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/8",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 8,
+      "surface": "ην",
+      "normalized": "ην",
+      "char_start": 31,
+      "char_end": 33,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/9",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 9,
+      "surface": "προς",
+      "normalized": "προς",
+      "char_start": 34,
+      "char_end": 38,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/10",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 10,
+      "surface": "τον",
+      "normalized": "τον",
+      "char_start": 39,
+      "char_end": 42,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/11",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 11,
+      "surface": "θν",
+      "normalized": "θν",
+      "char_start": 43,
+      "char_end": 45,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/12",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 12,
+      "surface": "και",
+      "normalized": "και",
+      "char_start": 46,
+      "char_end": 49,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/13",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 13,
+      "surface": "θς",
+      "normalized": "θς",
+      "char_start": 50,
+      "char_end": 52,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/14",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 14,
+      "surface": "ην",
+      "normalized": "ην",
+      "char_start": 53,
+      "char_end": 55,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/15",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 15,
+      "surface": "ο",
+      "normalized": "ο",
+      "char_start": 56,
+      "char_end": 57,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/t/16",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "sequence": 16,
+      "surface": "λογος",
+      "normalized": "λογος",
+      "char_start": 58,
+      "char_end": 63,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/t/0",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "sequence": 0,
+      "surface": "ϩⲛ̅ⲧⲉϩⲟⲩⲉ͡ⲓⲧⲉ",
+      "normalized": "ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ",
+      "char_start": 0,
+      "char_end": 13,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/t/1",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "sequence": 1,
+      "surface": "ⲛⲉϥϣⲟⲟⲡ",
+      "normalized": "ⲛⲉϥϣⲟⲟⲡ",
+      "char_start": 14,
+      "char_end": 21,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/t/2",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "sequence": 2,
+      "surface": "ⲛ̅ϭⲓⲡϣⲁϫⲉ",
+      "normalized": "ⲛϭⲓⲡϣⲁϫⲉ",
+      "char_start": 22,
+      "char_end": 31,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/t/3",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "sequence": 3,
+      "surface": "ⲁⲩⲱ",
+      "normalized": "ⲁⲩⲱ",
+      "char_start": 32,
+      "char_end": 35,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/t/4",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "sequence": 4,
+      "surface": "ⲡϣⲁϫⲉ",
+      "normalized": "ⲡϣⲁϫⲉ",
+      "char_start": 36,
+      "char_end": 41,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/t/5",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "sequence": 5,
+      "surface": "ⲛⲉϥϣⲟⲟⲡ",
+      "normalized": "ⲛⲉϥϣⲟⲟⲡ",
+      "char_start": 42,
+      "char_end": 49,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/t/6",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "sequence": 6,
+      "surface": "ⲛ̅ⲛⲁϩⲣⲛ̅ⲡⲛⲟⲩⲧⲉ",
+      "normalized": "ⲛⲛⲁϩⲣⲛⲡⲛⲟⲩⲧⲉ",
+      "char_start": 50,
+      "char_end": 64,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/t/7",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "sequence": 7,
+      "surface": "ⲁⲩⲱ",
+      "normalized": "ⲁⲩⲱ",
+      "char_start": 65,
+      "char_end": 68,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/t/8",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "sequence": 8,
+      "surface": "ⲛⲉⲩⲛⲟⲩⲧⲉ",
+      "normalized": "ⲛⲉⲩⲛⲟⲩⲧⲉ",
+      "char_start": 69,
+      "char_end": 77,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/t/9",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "sequence": 9,
+      "surface": "ⲡⲉ",
+      "normalized": "ⲡⲉ",
+      "char_start": 78,
+      "char_end": 80,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/t/10",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "sequence": 10,
+      "surface": "ⲡϣⲁϫⲉ.",
+      "normalized": "ⲡϣⲁϫⲉ.",
+      "char_start": 81,
+      "char_end": 87,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.2/t/0",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "sequence": 0,
+      "surface": "ουτος",
+      "normalized": "ουτος",
+      "char_start": 0,
+      "char_end": 5,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.2/t/1",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "sequence": 1,
+      "surface": "ην",
+      "normalized": "ην",
+      "char_start": 6,
+      "char_end": 8,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.2/t/2",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "sequence": 2,
+      "surface": "εν",
+      "normalized": "εν",
+      "char_start": 9,
+      "char_end": 11,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.2/t/3",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "sequence": 3,
+      "surface": "αρχη",
+      "normalized": "αρχη",
+      "char_start": 12,
+      "char_end": 16,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.2/t/4",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "sequence": 4,
+      "surface": "προς",
+      "normalized": "προς",
+      "char_start": 17,
+      "char_end": 21,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.2/t/5",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "sequence": 5,
+      "surface": "τον",
+      "normalized": "τον",
+      "char_start": 22,
+      "char_end": 25,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.2/t/6",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "sequence": 6,
+      "surface": "θν",
+      "normalized": "θν",
+      "char_start": 26,
+      "char_end": 28,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.2/t/0",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.2",
+      "sequence": 0,
+      "surface": "ⲡⲁⲓ",
+      "normalized": "ⲡⲁⲓ",
+      "char_start": 0,
+      "char_end": 3,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.2/t/1",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.2",
+      "sequence": 1,
+      "surface": "ϩⲛ̅ⲧⲉϩⲟⲩⲉ͡ⲓⲧⲉ",
+      "normalized": "ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ",
+      "char_start": 4,
+      "char_end": 17,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.2/t/2",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.2",
+      "sequence": 2,
+      "surface": "ⲛⲉϥϣⲟⲟⲡ",
+      "normalized": "ⲛⲉϥϣⲟⲟⲡ",
+      "char_start": 18,
+      "char_end": 25,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/john.1.2/t/3",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.2",
+      "sequence": 3,
+      "surface": "ϩⲁⲧⲙ̅ⲡⲛⲟⲩⲧⲉ.",
+      "normalized": "ϩⲁⲧⲙⲡⲛⲟⲩⲧⲉ.",
+      "char_start": 26,
+      "char_end": 38,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/t/0",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "sequence": 0,
+      "surface": "αρχη",
+      "normalized": "αρχη",
+      "char_start": 0,
+      "char_end": 4,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/t/1",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "sequence": 1,
+      "surface": "του",
+      "normalized": "του",
+      "char_start": 5,
+      "char_end": 8,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/t/2",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "sequence": 2,
+      "surface": "ευαγγελιου",
+      "normalized": "ευαγγελιου",
+      "char_start": 9,
+      "char_end": 19,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/t/3",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "sequence": 3,
+      "surface": "ιυ",
+      "normalized": "ιυ",
+      "char_start": 20,
+      "char_end": 22,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/t/4",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "sequence": 4,
+      "surface": "χυ",
+      "normalized": "χυ",
+      "char_start": 23,
+      "char_end": 25,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/t/5",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "sequence": 5,
+      "surface": "υιου",
+      "normalized": "υιου",
+      "char_start": 26,
+      "char_end": 30,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/t/6",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "sequence": 6,
+      "surface": "θυ",
+      "normalized": "θυ",
+      "char_start": 31,
+      "char_end": 33,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/mark.1.1/t/0",
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "sequence": 0,
+      "surface": "ⲙⲁⲣⲕⲟⲥ",
+      "normalized": "ⲙⲁⲣⲕⲟⲥ",
+      "char_start": 0,
+      "char_end": 6,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/mark.1.1/t/1",
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "sequence": 1,
+      "surface": "ⲧⲁⲣⲭⲏ",
+      "normalized": "ⲧⲁⲣⲭⲏ",
+      "char_start": 7,
+      "char_end": 12,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/mark.1.1/t/2",
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "sequence": 2,
+      "surface": "ⲙ̅ⲡⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ",
+      "normalized": "ⲙⲡⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ",
+      "char_start": 13,
+      "char_end": 26,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/mark.1.1/t/3",
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "sequence": 3,
+      "surface": "ⲛ̅ⲓ̅ⲥ̅",
+      "normalized": "ⲛⲓⲥ",
+      "char_start": 27,
+      "char_end": 33,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/mark.1.1/t/4",
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "sequence": 4,
+      "surface": "ⲡⲉⲭ̅ⲥ̅",
+      "normalized": "ⲡⲉⲭⲥ",
+      "char_start": 34,
+      "char_end": 40,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/t/0",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "sequence": 0,
+      "surface": "αιτειτε",
+      "normalized": "αιτειτε",
+      "char_start": 0,
+      "char_end": 7,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/t/1",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "sequence": 1,
+      "surface": "και",
+      "normalized": "και",
+      "char_start": 8,
+      "char_end": 11,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/t/2",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "sequence": 2,
+      "surface": "δοθησεται",
+      "normalized": "δοθησεται",
+      "char_start": 12,
+      "char_end": 21,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/t/3",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "sequence": 3,
+      "surface": "υμιν",
+      "normalized": "υμιν",
+      "char_start": 22,
+      "char_end": 26,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/t/4",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "sequence": 4,
+      "surface": "ζητειτε",
+      "normalized": "ζητειτε",
+      "char_start": 27,
+      "char_end": 34,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/t/5",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "sequence": 5,
+      "surface": "και",
+      "normalized": "και",
+      "char_start": 35,
+      "char_end": 38,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/t/6",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "sequence": 6,
+      "surface": "ευρησετε",
+      "normalized": "ευρησετε",
+      "char_start": 39,
+      "char_end": 47,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/t/7",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "sequence": 7,
+      "surface": "κρουετε",
+      "normalized": "κρουετε",
+      "char_start": 48,
+      "char_end": 55,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/t/8",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "sequence": 8,
+      "surface": "και",
+      "normalized": "και",
+      "char_start": 56,
+      "char_end": 59,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/t/9",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "sequence": 9,
+      "surface": "ανοιγησεται",
+      "normalized": "ανοιγησεται",
+      "char_start": 60,
+      "char_end": 71,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/t/10",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "sequence": 10,
+      "surface": "υμιν",
+      "normalized": "υμιν",
+      "char_start": 72,
+      "char_end": 76,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/t/0",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "sequence": 0,
+      "surface": "ⲁⲓⲧⲉⲓ",
+      "normalized": "ⲁⲓⲧⲉⲓ",
+      "char_start": 0,
+      "char_end": 5,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/t/1",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "sequence": 1,
+      "surface": "ⲧⲁⲣⲟⲩϯ",
+      "normalized": "ⲧⲁⲣⲟⲩϯ",
+      "char_start": 6,
+      "char_end": 12,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/t/2",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "sequence": 2,
+      "surface": "ⲛⲏⲧⲛ.",
+      "normalized": "ⲛⲏⲧⲛ.",
+      "char_start": 13,
+      "char_end": 18,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/t/3",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "sequence": 3,
+      "surface": "ϣⲓⲛⲉ",
+      "normalized": "ϣⲓⲛⲉ",
+      "char_start": 19,
+      "char_end": 23,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/t/4",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "sequence": 4,
+      "surface": "ⲧⲁⲣⲉⲧⲉⲧⲛϭⲓⲛⲉ.",
+      "normalized": "ⲧⲁⲣⲉⲧⲉⲧⲛϭⲓⲛⲉ.",
+      "char_start": 24,
+      "char_end": 37,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/t/5",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "sequence": 5,
+      "surface": "ⲧⲱϩⲙ",
+      "normalized": "ⲧⲱϩⲙ",
+      "char_start": 38,
+      "char_end": 42,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/t/6",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "sequence": 6,
+      "surface": "ⲧⲁⲣ<ⲟⲩ>ⲟⲩⲱⲛ",
+      "normalized": "ⲧⲁⲣⲟⲩⲟⲩⲱⲛ",
+      "char_start": 43,
+      "char_end": 54,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/t/7",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "sequence": 7,
+      "surface": "ⲛⲏⲧⲛ.",
+      "normalized": "ⲛⲏⲧⲛ.",
+      "char_start": 55,
+      "char_end": 60,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/0",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 0,
+      "surface": "και",
+      "normalized": "και",
+      "char_start": 0,
+      "char_end": 3,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/1",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 1,
+      "surface": "αυτος",
+      "normalized": "αυτος",
+      "char_start": 4,
+      "char_end": 9,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/2",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 2,
+      "surface": "επαρας",
+      "normalized": "επαρας",
+      "char_start": 10,
+      "char_end": 16,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/3",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 3,
+      "surface": "τους",
+      "normalized": "τους",
+      "char_start": 17,
+      "char_end": 21,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/4",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 4,
+      "surface": "οφθαλμουςαυτου",
+      "normalized": "οφθαλμουςαυτου",
+      "char_start": 22,
+      "char_end": 36,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/5",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 5,
+      "surface": "εις",
+      "normalized": "εις",
+      "char_start": 37,
+      "char_end": 40,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/6",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 6,
+      "surface": "τους",
+      "normalized": "τους",
+      "char_start": 41,
+      "char_end": 45,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/7",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 7,
+      "surface": "μαθητας",
+      "normalized": "μαθητας",
+      "char_start": 46,
+      "char_end": 53,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/8",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 8,
+      "surface": "αυτου",
+      "normalized": "αυτου",
+      "char_start": 54,
+      "char_end": 59,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/9",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 9,
+      "surface": "ελεγεν",
+      "normalized": "ελεγεν",
+      "char_start": 60,
+      "char_end": 66,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/10",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 10,
+      "surface": "μακαριοι",
+      "normalized": "μακαριοι",
+      "char_start": 67,
+      "char_end": 75,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/11",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 11,
+      "surface": "οι",
+      "normalized": "οι",
+      "char_start": 76,
+      "char_end": 78,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/12",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 12,
+      "surface": "πτωχοι",
+      "normalized": "πτωχοι",
+      "char_start": 79,
+      "char_end": 85,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/13",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 13,
+      "surface": "οτι",
+      "normalized": "οτι",
+      "char_start": 86,
+      "char_end": 89,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/14",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 14,
+      "surface": "υμετερα",
+      "normalized": "υμετερα",
+      "char_start": 90,
+      "char_end": 97,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/15",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 15,
+      "surface": "εστιν",
+      "normalized": "εστιν",
+      "char_start": 98,
+      "char_end": 103,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/16",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 16,
+      "surface": "η",
+      "normalized": "η",
+      "char_start": 104,
+      "char_end": 105,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/17",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 17,
+      "surface": "βασιλεια",
+      "normalized": "βασιλεια",
+      "char_start": 106,
+      "char_end": 114,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/18",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 18,
+      "surface": "του",
+      "normalized": "του",
+      "char_start": 115,
+      "char_end": 118,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/t/19",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "sequence": 19,
+      "surface": "θυ",
+      "normalized": "θυ",
+      "char_start": 119,
+      "char_end": 121,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/0",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 0,
+      "surface": "ⲛ̅ⲧⲟϥ",
+      "normalized": "ⲛⲧⲟϥ",
+      "char_start": 0,
+      "char_end": 5,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/1",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 1,
+      "surface": "ⲇⲉ",
+      "normalized": "ⲇⲉ",
+      "char_start": 6,
+      "char_end": 8,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/2",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 2,
+      "surface": "ⲁϥϥⲓⲁⲧϥ̅",
+      "normalized": "ⲁϥϥⲓⲁⲧϥ",
+      "char_start": 9,
+      "char_end": 17,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/3",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 3,
+      "surface": "ⲉϩⲣⲁⲓ̈",
+      "normalized": "ⲉϩⲣⲁⲓ̈",
+      "char_start": 18,
+      "char_end": 24,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/4",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 4,
+      "surface": "ⲉⲛⲉϥⲙⲁⲑⲏⲧⲏⲥ",
+      "normalized": "ⲉⲛⲉϥⲙⲁⲑⲏⲧⲏⲥ",
+      "char_start": 25,
+      "char_end": 36,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/5",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 5,
+      "surface": "ⲡⲉϫⲁϥ",
+      "normalized": "ⲡⲉϫⲁϥ",
+      "char_start": 37,
+      "char_end": 42,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/6",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 6,
+      "surface": "ϫⲉ.",
+      "normalized": "ϫⲉ.",
+      "char_start": 43,
+      "char_end": 46,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/7",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 7,
+      "surface": "ⲛⲁⲓ̈ⲁⲧⲟⲩ",
+      "normalized": "ⲛⲁⲓ̈ⲁⲧⲟⲩ",
+      "char_start": 47,
+      "char_end": 55,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/8",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 8,
+      "surface": "ⲛⲛ̅ϩⲏⲕⲉ",
+      "normalized": "ⲛⲛϩⲏⲕⲉ",
+      "char_start": 56,
+      "char_end": 63,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/9",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 9,
+      "surface": "ϫⲉ",
+      "normalized": "ϫⲉ",
+      "char_start": 64,
+      "char_end": 66,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/10",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 10,
+      "surface": "ⲧⲱⲟⲩ",
+      "normalized": "ⲧⲱⲟⲩ",
+      "char_start": 67,
+      "char_end": 71,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/11",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 11,
+      "surface": "ⲧⲉ",
+      "normalized": "ⲧⲉ",
+      "char_start": 72,
+      "char_end": 74,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/12",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 12,
+      "surface": "ⲧⲙⲛ̅ⲧⲉⲣⲟ",
+      "normalized": "ⲧⲙⲛⲧⲉⲣⲟ",
+      "char_start": 75,
+      "char_end": 83,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/t/13",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "sequence": 13,
+      "surface": "ⲛⲙ̅ⲡⲏⲩⲉ·",
+      "normalized": "ⲛⲙⲡⲏⲩⲉ·",
+      "char_start": 84,
+      "char_end": 92,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/0",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 0,
+      "surface": "αλλην",
+      "normalized": "αλλην",
+      "char_start": 0,
+      "char_end": 5,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/1",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 1,
+      "surface": "παραβολην",
+      "normalized": "παραβολην",
+      "char_start": 6,
+      "char_end": 15,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/2",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 2,
+      "surface": "παρεθηκεν",
+      "normalized": "παρεθηκεν",
+      "char_start": 16,
+      "char_end": 25,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/3",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 3,
+      "surface": "αυτοις",
+      "normalized": "αυτοις",
+      "char_start": 26,
+      "char_end": 32,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/4",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 4,
+      "surface": "λεγων",
+      "normalized": "λεγων",
+      "char_start": 33,
+      "char_end": 38,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/5",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 5,
+      "surface": "ομοια",
+      "normalized": "ομοια",
+      "char_start": 39,
+      "char_end": 44,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/6",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 6,
+      "surface": "εστιν",
+      "normalized": "εστιν",
+      "char_start": 45,
+      "char_end": 50,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/7",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 7,
+      "surface": "η",
+      "normalized": "η",
+      "char_start": 51,
+      "char_end": 52,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/8",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 8,
+      "surface": "βασιλεια",
+      "normalized": "βασιλεια",
+      "char_start": 53,
+      "char_end": 61,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/9",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 9,
+      "surface": "των",
+      "normalized": "των",
+      "char_start": 62,
+      "char_end": 65,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/10",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 10,
+      "surface": "ουρανων",
+      "normalized": "ουρανων",
+      "char_start": 66,
+      "char_end": 73,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/11",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 11,
+      "surface": "κοκκω",
+      "normalized": "κοκκω",
+      "char_start": 74,
+      "char_end": 79,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/12",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 12,
+      "surface": "σιναπεως",
+      "normalized": "σιναπεως",
+      "char_start": 80,
+      "char_end": 88,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/13",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 13,
+      "surface": "ον",
+      "normalized": "ον",
+      "char_start": 89,
+      "char_end": 91,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/14",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 14,
+      "surface": "λαβων",
+      "normalized": "λαβων",
+      "char_start": 92,
+      "char_end": 97,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/15",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 15,
+      "surface": "ανθρωπος",
+      "normalized": "ανθρωπος",
+      "char_start": 98,
+      "char_end": 106,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/16",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 16,
+      "surface": "εσπειρεν",
+      "normalized": "εσπειρεν",
+      "char_start": 107,
+      "char_end": 115,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/17",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 17,
+      "surface": "εν",
+      "normalized": "εν",
+      "char_start": 116,
+      "char_end": 118,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/18",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 18,
+      "surface": "τω",
+      "normalized": "τω",
+      "char_start": 119,
+      "char_end": 121,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/19",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 19,
+      "surface": "αγρω",
+      "normalized": "αγρω",
+      "char_start": 122,
+      "char_end": 126,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/t/20",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "sequence": 20,
+      "surface": "αυτου",
+      "normalized": "αυτου",
+      "char_start": 127,
+      "char_end": 132,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/0",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 0,
+      "surface": "ⲁϥⲕⲱ",
+      "normalized": "ⲁϥⲕⲱ",
+      "char_start": 0,
+      "char_end": 4,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/1",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 1,
+      "surface": "ⲛⲁⲩ",
+      "normalized": "ⲛⲁⲩ",
+      "char_start": 5,
+      "char_end": 8,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/2",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 2,
+      "surface": "ⲟⲛ",
+      "normalized": "ⲟⲛ",
+      "char_start": 9,
+      "char_end": 11,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/3",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 3,
+      "surface": "ⲉϩⲣⲁⲓ",
+      "normalized": "ⲉϩⲣⲁⲓ",
+      "char_start": 12,
+      "char_end": 17,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/4",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 4,
+      "surface": "ⲛⲕⲉⲡⲁⲣⲁⲃⲟⲗⲏ",
+      "normalized": "ⲛⲕⲉⲡⲁⲣⲁⲃⲟⲗⲏ",
+      "char_start": 18,
+      "char_end": 29,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/5",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 5,
+      "surface": "ⲉϥϫⲱ",
+      "normalized": "ⲉϥϫⲱ",
+      "char_start": 30,
+      "char_end": 34,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/6",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 6,
+      "surface": "ⲙⲙⲟⲥ.",
+      "normalized": "ⲙⲙⲟⲥ.",
+      "char_start": 35,
+      "char_end": 40,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/7",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 7,
+      "surface": "ϫⲉ",
+      "normalized": "ϫⲉ",
+      "char_start": 41,
+      "char_end": 43,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/8",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 8,
+      "surface": "ⲉⲥⲧⲛⲧⲱⲛ",
+      "normalized": "ⲉⲥⲧⲛⲧⲱⲛ",
+      "char_start": 44,
+      "char_end": 51,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/9",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 9,
+      "surface": "ⲛϭⲓⲧⲙⲛⲧⲣⲣⲟ",
+      "normalized": "ⲛϭⲓⲧⲙⲛⲧⲣⲣⲟ",
+      "char_start": 52,
+      "char_end": 62,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/10",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 10,
+      "surface": "ⲛⲙⲡⲏⲩⲉ",
+      "normalized": "ⲛⲙⲡⲏⲩⲉ",
+      "char_start": 63,
+      "char_end": 69,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/11",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 11,
+      "surface": "ⲉⲩⲃⲗⲃⲓⲗⲉ",
+      "normalized": "ⲉⲩⲃⲗⲃⲓⲗⲉ",
+      "char_start": 70,
+      "char_end": 78,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/12",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 12,
+      "surface": "ⲛϣⲗⲧⲏⲙ.",
+      "normalized": "ⲛϣⲗⲧⲏⲙ.",
+      "char_start": 79,
+      "char_end": 86,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/13",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 13,
+      "surface": "ⲧⲁⲓ",
+      "normalized": "ⲧⲁⲓ",
+      "char_start": 87,
+      "char_end": 90,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/14",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 14,
+      "surface": "ⲉⲁⲩⲣⲱⲙⲉ",
+      "normalized": "ⲉⲁⲩⲣⲱⲙⲉ",
+      "char_start": 91,
+      "char_end": 98,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/15",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 15,
+      "surface": "ϫⲓⲧⲥ",
+      "normalized": "ϫⲓⲧⲥ",
+      "char_start": 99,
+      "char_end": 103,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/16",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 16,
+      "surface": "ⲁϥϫⲟ",
+      "normalized": "ⲁϥϫⲟ",
+      "char_start": 104,
+      "char_end": 108,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/17",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 17,
+      "surface": "ⲙⲙⲟⲥ",
+      "normalized": "ⲙⲙⲟⲥ",
+      "char_start": 109,
+      "char_end": 113,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/18",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 18,
+      "surface": "ϩⲣⲁⲓ",
+      "normalized": "ϩⲣⲁⲓ",
+      "char_start": 114,
+      "char_end": 118,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/t/19",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "sequence": 19,
+      "surface": "ϩⲛⲧⲉϥⲥⲱϣⲉ.",
+      "normalized": "ϩⲛⲧⲉϥⲥⲱϣⲉ.",
+      "char_start": 119,
+      "char_end": 129,
+      "lemma": null,
+      "pos": null,
+      "grammatical_group_id": null
+    }
+  ],
+  "spans": [
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/s/whole",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/t/0",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/1",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/2",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/3",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/4",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/5",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/6",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/7",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/8",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/9",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/10",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/11",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/12",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/13",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/14",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/15",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/16"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/s/whole",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/john.1.1/t/0",
+        "v1:copsahhorner/john.1.1/t/1",
+        "v1:copsahhorner/john.1.1/t/2",
+        "v1:copsahhorner/john.1.1/t/3",
+        "v1:copsahhorner/john.1.1/t/4",
+        "v1:copsahhorner/john.1.1/t/5",
+        "v1:copsahhorner/john.1.1/t/6",
+        "v1:copsahhorner/john.1.1/t/7",
+        "v1:copsahhorner/john.1.1/t/8",
+        "v1:copsahhorner/john.1.1/t/9",
+        "v1:copsahhorner/john.1.1/t/10"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/s/en-arche",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/john.1.1/t/0"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/s/en-arche",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/t/0",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/1"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/s/nefsnoop-1",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/john.1.1/t/1"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/s/en-1",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/t/2"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/s/pshaje-all",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "kind": "discontinuous",
+      "token_ids": [
+        "v1:copsahhorner/john.1.1/t/2",
+        "v1:copsahhorner/john.1.1/t/4",
+        "v1:copsahhorner/john.1.1/t/10"
+      ],
+      "exclusive_group": null,
+      "notes": "ϣⲁϫⲉ occurrences"
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/s/logos-all",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "kind": "discontinuous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/t/4",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/7",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/16"
+      ],
+      "exclusive_group": null,
+      "notes": "λογος occurrences"
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/s/auo-1",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/john.1.1/t/3"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/s/kai-1",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/t/5"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/s/nahrm-pnoute",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/john.1.1/t/6"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/s/pros-ton-thn",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/t/9",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/10",
+        "v1:ntvmr-vaticanus-b/john.1.1/t/11"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/john.1.1/s/neunoute",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/john.1.1/t/8"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.1/s/ths",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/t/13"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.2/s/whole",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.2/t/0",
+        "v1:ntvmr-vaticanus-b/john.1.2/t/1",
+        "v1:ntvmr-vaticanus-b/john.1.2/t/2",
+        "v1:ntvmr-vaticanus-b/john.1.2/t/3",
+        "v1:ntvmr-vaticanus-b/john.1.2/t/4",
+        "v1:ntvmr-vaticanus-b/john.1.2/t/5",
+        "v1:ntvmr-vaticanus-b/john.1.2/t/6"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/john.1.2/s/whole",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.2",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/john.1.2/t/0",
+        "v1:copsahhorner/john.1.2/t/1",
+        "v1:copsahhorner/john.1.2/t/2",
+        "v1:copsahhorner/john.1.2/t/3"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/john.1.2/s/pai",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.2",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/john.1.2/t/0"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.2/s/outos",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.2/t/0"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/john.1.2/s/en-arche",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.2",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/john.1.2/t/1"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.2/s/en-arche",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.2/t/2",
+        "v1:ntvmr-vaticanus-b/john.1.2/t/3"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/john.1.2/s/hatm-pnoute",
+      "source_id": "copsahhorner",
+      "unit_id": "john.1.2",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/john.1.2/t/3"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.1.2/s/pros-ton-thn",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.1.2",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.2/t/4",
+        "v1:ntvmr-vaticanus-b/john.1.2/t/5",
+        "v1:ntvmr-vaticanus-b/john.1.2/t/6"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/s/whole",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/0",
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/1",
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/2",
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/3",
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/4",
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/5",
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/6"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/mark.1.1/s/whole",
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/mark.1.1/t/0",
+        "v1:copsahhorner/mark.1.1/t/1",
+        "v1:copsahhorner/mark.1.1/t/2",
+        "v1:copsahhorner/mark.1.1/t/3",
+        "v1:copsahhorner/mark.1.1/t/4"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/mark.1.1/s/book-heading",
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/mark.1.1/t/0"
+      ],
+      "exclusive_group": null,
+      "notes": "paratext book heading; do not align to Greek"
+    },
+    {
+      "id": "v1:copsahhorner/mark.1.1/s/tarche",
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/mark.1.1/t/1"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/s/arche",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/0"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/mark.1.1/s/euaggelion",
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/mark.1.1/t/2"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/s/euaggeliou",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/2"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/mark.1.1/s/is",
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/mark.1.1/t/3"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/s/iu",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/3"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/mark.1.1/s/pekhs",
+      "source_id": "copsahhorner",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/mark.1.1/t/4"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/s/chu",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/4"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/mark.1.1/s/uiou-thy",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "mark.1.1",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/5",
+        "v1:ntvmr-vaticanus-b/mark.1.1/t/6"
+      ],
+      "exclusive_group": null,
+      "notes": "Greek plus vs Horner; null on Sahidic"
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/s/whole",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/0",
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/1",
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/2",
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/3",
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/4",
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/5",
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/6",
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/7",
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/8",
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/9",
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/10"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/s/whole",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/matthew.7.7/t/0",
+        "v1:copsahhorner/matthew.7.7/t/1",
+        "v1:copsahhorner/matthew.7.7/t/2",
+        "v1:copsahhorner/matthew.7.7/t/3",
+        "v1:copsahhorner/matthew.7.7/t/4",
+        "v1:copsahhorner/matthew.7.7/t/5",
+        "v1:copsahhorner/matthew.7.7/t/6",
+        "v1:copsahhorner/matthew.7.7/t/7"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/s/aitei",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/matthew.7.7/t/0"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/s/aiteite",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/0"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/s/shine",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/matthew.7.7/t/3"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/s/zeteite",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/4"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/s/tohm",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/matthew.7.7/t/5"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/s/krouete",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/7"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/s/open",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/matthew.7.7/t/6"
+      ],
+      "exclusive_group": null,
+      "notes": "contains Horner <ⲟⲩ> editorial restoration"
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/s/anoigesetai",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/9"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/matthew.7.7/s/netn-1",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/matthew.7.7/t/2"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.7.7/s/umin-1",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.7.7",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/t/3"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/s/whole",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/0",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/1",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/2",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/3",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/4",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/5",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/6",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/7",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/8",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/9",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/10",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/11",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/12",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/13",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/14",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/15",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/16",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/17",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/18",
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/19"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/s/whole",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/luke.6.20/t/0",
+        "v1:copsahhorner/luke.6.20/t/1",
+        "v1:copsahhorner/luke.6.20/t/2",
+        "v1:copsahhorner/luke.6.20/t/3",
+        "v1:copsahhorner/luke.6.20/t/4",
+        "v1:copsahhorner/luke.6.20/t/5",
+        "v1:copsahhorner/luke.6.20/t/6",
+        "v1:copsahhorner/luke.6.20/t/7",
+        "v1:copsahhorner/luke.6.20/t/8",
+        "v1:copsahhorner/luke.6.20/t/9",
+        "v1:copsahhorner/luke.6.20/t/10",
+        "v1:copsahhorner/luke.6.20/t/11",
+        "v1:copsahhorner/luke.6.20/t/12",
+        "v1:copsahhorner/luke.6.20/t/13"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/s/mathetes",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/luke.6.20/t/4"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/s/mathetas",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/7"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/s/naiatou",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/luke.6.20/t/7"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/s/makarioi",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/10"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/s/poor",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/luke.6.20/t/8"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/s/ptochioi",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/12"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/luke.6.20/s/kingdom",
+      "source_id": "copsahhorner",
+      "unit_id": "luke.6.20",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/luke.6.20/t/12"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/luke.6.20/s/basileia",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "luke.6.20",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/luke.6.20/t/17"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/s/whole",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/0",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/1",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/2",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/3",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/4",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/5",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/6",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/7",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/8",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/9",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/10",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/11",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/12",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/13",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/14",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/15",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/16",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/17",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/18",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/19",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/20"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/s/whole",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/matthew.13.31/t/0",
+        "v1:copsahhorner/matthew.13.31/t/1",
+        "v1:copsahhorner/matthew.13.31/t/2",
+        "v1:copsahhorner/matthew.13.31/t/3",
+        "v1:copsahhorner/matthew.13.31/t/4",
+        "v1:copsahhorner/matthew.13.31/t/5",
+        "v1:copsahhorner/matthew.13.31/t/6",
+        "v1:copsahhorner/matthew.13.31/t/7",
+        "v1:copsahhorner/matthew.13.31/t/8",
+        "v1:copsahhorner/matthew.13.31/t/9",
+        "v1:copsahhorner/matthew.13.31/t/10",
+        "v1:copsahhorner/matthew.13.31/t/11",
+        "v1:copsahhorner/matthew.13.31/t/12",
+        "v1:copsahhorner/matthew.13.31/t/13",
+        "v1:copsahhorner/matthew.13.31/t/14",
+        "v1:copsahhorner/matthew.13.31/t/15",
+        "v1:copsahhorner/matthew.13.31/t/16",
+        "v1:copsahhorner/matthew.13.31/t/17",
+        "v1:copsahhorner/matthew.13.31/t/18",
+        "v1:copsahhorner/matthew.13.31/t/19"
+      ],
+      "exclusive_group": "verse-cover",
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/s/parabole",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/matthew.13.31/t/4"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/s/parabolen",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/1"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/s/kingdom",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/matthew.13.31/t/9"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/s/basileia",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/8"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/s/mustard",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/matthew.13.31/t/11",
+        "v1:copsahhorner/matthew.13.31/t/12"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/s/mustard",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/11",
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/12"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/matthew.13.31/s/man",
+      "source_id": "copsahhorner",
+      "unit_id": "matthew.13.31",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:copsahhorner/matthew.13.31/t/14"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/matthew.13.31/s/anthropos",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "matthew.13.31",
+      "kind": "contiguous",
+      "token_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.13.31/t/15"
+      ],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:ntvmr-vaticanus-b/john.8.1/s/whole",
+      "source_id": "ntvmr-vaticanus-b",
+      "unit_id": "john.8.1",
+      "kind": "empty",
+      "token_ids": [],
+      "exclusive_group": null,
+      "notes": ""
+    },
+    {
+      "id": "v1:copsahhorner/john.8.1/s/whole",
+      "source_id": "copsahhorner",
+      "unit_id": "john.8.1",
+      "kind": "empty",
+      "token_ids": [],
+      "exclusive_group": null,
+      "notes": ""
+    }
+  ],
+  "parallels": [
+    {
+      "id": "v1:parallel/john.1.1-verse",
+      "left_span_ids": [
+        "v1:copsahhorner/john.1.1/s/whole"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/s/whole"
+      ],
+      "relation": "verse-pair",
+      "agreement": "verbal",
+      "provenance": "human-gold-jak28",
+      "notes": "verse pair"
+    },
+    {
+      "id": "v1:parallel/john.1.1-en-arche",
+      "left_span_ids": [
+        "v1:copsahhorner/john.1.1/s/en-arche"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/s/en-arche"
+      ],
+      "relation": "phrase",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "in the beginning"
+    },
+    {
+      "id": "v1:parallel/john.1.1-was-1",
+      "left_span_ids": [
+        "v1:copsahhorner/john.1.1/s/nefsnoop-1"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/s/en-1"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "existed / was"
+    },
+    {
+      "id": "v1:parallel/john.1.1-logos",
+      "left_span_ids": [
+        "v1:copsahhorner/john.1.1/s/pshaje-all"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/s/logos-all"
+      ],
+      "relation": "phrase",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "the Word / ⲡϣⲁϫⲉ"
+    },
+    {
+      "id": "v1:parallel/john.1.1-kai-1",
+      "left_span_ids": [
+        "v1:copsahhorner/john.1.1/s/auo-1"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/s/kai-1"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/john.1.1-with-god",
+      "left_span_ids": [
+        "v1:copsahhorner/john.1.1/s/nahrm-pnoute"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/s/pros-ton-thn"
+      ],
+      "relation": "phrase",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/john.1.1-god-was",
+      "left_span_ids": [
+        "v1:copsahhorner/john.1.1/s/neunoute"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.1/s/ths"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "nomina sacra θς"
+    },
+    {
+      "id": "v1:parallel/john.1.2-verse",
+      "left_span_ids": [
+        "v1:copsahhorner/john.1.2/s/whole"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.2/s/whole"
+      ],
+      "relation": "verse-pair",
+      "agreement": "verbal",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/john.1.2-this",
+      "left_span_ids": [
+        "v1:copsahhorner/john.1.2/s/pai"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.2/s/outos"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/john.1.2-en-arche",
+      "left_span_ids": [
+        "v1:copsahhorner/john.1.2/s/en-arche"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.2/s/en-arche"
+      ],
+      "relation": "phrase",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/john.1.2-with-god",
+      "left_span_ids": [
+        "v1:copsahhorner/john.1.2/s/hatm-pnoute"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.1.2/s/pros-ton-thn"
+      ],
+      "relation": "phrase",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/mark.1.1-verse",
+      "left_span_ids": [
+        "v1:copsahhorner/mark.1.1/s/whole"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/s/whole"
+      ],
+      "relation": "verse-pair",
+      "agreement": "verbal",
+      "provenance": "human-gold-jak28",
+      "notes": "Sahidic heading ⲙⲁⲣⲕⲟⲥ is paratext; excluded from lexical scoring"
+    },
+    {
+      "id": "v1:parallel/mark.1.1-arche",
+      "left_span_ids": [
+        "v1:copsahhorner/mark.1.1/s/tarche"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/s/arche"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "beginning"
+    },
+    {
+      "id": "v1:parallel/mark.1.1-gospel",
+      "left_span_ids": [
+        "v1:copsahhorner/mark.1.1/s/euaggelion"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/s/euaggeliou"
+      ],
+      "relation": "loanword",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "ευαγγελιον loanword"
+    },
+    {
+      "id": "v1:parallel/mark.1.1-jesus",
+      "left_span_ids": [
+        "v1:copsahhorner/mark.1.1/s/is"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/s/iu"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "nomina sacra ΙΣ / ΙΥ"
+    },
+    {
+      "id": "v1:parallel/mark.1.1-christ",
+      "left_span_ids": [
+        "v1:copsahhorner/mark.1.1/s/pekhs"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/s/chu"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "nomina sacra ΧΣ / ΧΥ"
+    },
+    {
+      "id": "v1:parallel/mark.1.1-son-of-god-null",
+      "left_span_ids": [],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/mark.1.1/s/uiou-thy"
+      ],
+      "relation": "lexical",
+      "agreement": "none",
+      "provenance": "human-gold-jak28",
+      "notes": "Vaticanus has υιου θυ; Horner Mark 1:1 omits — null alignment / textual mismatch"
+    },
+    {
+      "id": "v1:parallel/matthew.7.7-verse",
+      "left_span_ids": [
+        "v1:copsahhorner/matthew.7.7/s/whole"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/s/whole"
+      ],
+      "relation": "verse-pair",
+      "agreement": "verbal",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/matthew.7.7-ask",
+      "left_span_ids": [
+        "v1:copsahhorner/matthew.7.7/s/aitei"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/s/aiteite"
+      ],
+      "relation": "loanword",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "αιτει loan / αιτειτε"
+    },
+    {
+      "id": "v1:parallel/matthew.7.7-seek",
+      "left_span_ids": [
+        "v1:copsahhorner/matthew.7.7/s/shine"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/s/zeteite"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "seek"
+    },
+    {
+      "id": "v1:parallel/matthew.7.7-knock",
+      "left_span_ids": [
+        "v1:copsahhorner/matthew.7.7/s/tohm"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/s/krouete"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "knock"
+    },
+    {
+      "id": "v1:parallel/matthew.7.7-open",
+      "left_span_ids": [
+        "v1:copsahhorner/matthew.7.7/s/open"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/s/anoigesetai"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "open; editorial marks stripped in normalized"
+    },
+    {
+      "id": "v1:parallel/matthew.7.7-umin-1",
+      "left_span_ids": [
+        "v1:copsahhorner/matthew.7.7/s/netn-1"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.7.7/s/umin-1"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "to you"
+    },
+    {
+      "id": "v1:parallel/luke.6.20-verse",
+      "left_span_ids": [
+        "v1:copsahhorner/luke.6.20/s/whole"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/luke.6.20/s/whole"
+      ],
+      "relation": "verse-pair",
+      "agreement": "verbal",
+      "provenance": "human-gold-jak28",
+      "notes": "Beatitude; Sahidic kingdom of heavens vs Greek kingdom of God (θυ)"
+    },
+    {
+      "id": "v1:parallel/luke.6.20-disciples",
+      "left_span_ids": [
+        "v1:copsahhorner/luke.6.20/s/mathetes"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/luke.6.20/s/mathetas"
+      ],
+      "relation": "loanword",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/luke.6.20-blessed",
+      "left_span_ids": [
+        "v1:copsahhorner/luke.6.20/s/naiatou"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/luke.6.20/s/makarioi"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/luke.6.20-poor",
+      "left_span_ids": [
+        "v1:copsahhorner/luke.6.20/s/poor"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/luke.6.20/s/ptochioi"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/luke.6.20-kingdom",
+      "left_span_ids": [
+        "v1:copsahhorner/luke.6.20/s/kingdom"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/luke.6.20/s/basileia"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "kingdom; heavens vs θυ textual difference"
+    },
+    {
+      "id": "v1:parallel/matthew.13.31-verse",
+      "left_span_ids": [
+        "v1:copsahhorner/matthew.13.31/s/whole"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.13.31/s/whole"
+      ],
+      "relation": "verse-pair",
+      "agreement": "verbal",
+      "provenance": "human-gold-jak28",
+      "notes": "HOLDOUT passage gold for evaluation only; never fit baseline on this unit"
+    },
+    {
+      "id": "v1:parallel/matthew.13.31-parable",
+      "left_span_ids": [
+        "v1:copsahhorner/matthew.13.31/s/parabole"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.13.31/s/parabolen"
+      ],
+      "relation": "loanword",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/matthew.13.31-kingdom",
+      "left_span_ids": [
+        "v1:copsahhorner/matthew.13.31/s/kingdom"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.13.31/s/basileia"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/matthew.13.31-mustard",
+      "left_span_ids": [
+        "v1:copsahhorner/matthew.13.31/s/mustard"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.13.31/s/mustard"
+      ],
+      "relation": "phrase",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": "mustard seed"
+    },
+    {
+      "id": "v1:parallel/matthew.13.31-man",
+      "left_span_ids": [
+        "v1:copsahhorner/matthew.13.31/s/man"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/matthew.13.31/s/anthropos"
+      ],
+      "relation": "lexical",
+      "agreement": "lexical",
+      "provenance": "human-gold-jak28",
+      "notes": ""
+    },
+    {
+      "id": "v1:parallel/john.8.1-shared-absence",
+      "left_span_ids": [
+        "v1:copsahhorner/john.8.1/s/whole"
+      ],
+      "right_span_ids": [
+        "v1:ntvmr-vaticanus-b/john.8.1/s/whole"
+      ],
+      "relation": "other",
+      "agreement": "shared-absence",
+      "provenance": "human-gold-jak28",
+      "notes": "PA empty both sides; omission fixture, not positive lexical gold"
+    }
+  ],
+  "notes": "Human-verified sample for pilot evaluation. Qualitative examples such as ⲡϣⲁϫⲉ↔λογος are encoded as gold links here — do not cite them alone as experimental results. Mark 1:1 heading is paratext. Matthew 13:31 is holdout gold only. John 8:1 is shared-absence. Provenance: human-gold-jak28."
+}

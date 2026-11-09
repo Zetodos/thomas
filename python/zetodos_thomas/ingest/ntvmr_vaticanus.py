@@ -147,10 +147,8 @@ def parse_teiraw(
             continue
         book, chapter, verse = parsed
         original = extract_ab_text(ab, mark_unclear=True)
-        # Normalized: drop uncertainty brackets but keep letters; NFC/ws.
-        normalized = normalize_greek(
-            original.replace("[", "").replace("]", "").replace("⟨", "").replace("⟩", "")
-        )
+        # Normalized: drop uncertainty/restoration wrappers; keep letters.
+        normalized = normalize_greek(original)
         units.append(
             TextUnit(
                 source_id=source_id,

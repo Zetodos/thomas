@@ -5,6 +5,7 @@
 **Sahidic:** CrossWire `CopSahHorner` v1.5 (Public Domain) per JAK-14.
 **Pilot file:** [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](../data/sources/pilot/horner-vaticanus-nt-pilot.json) (`horner-vaticanus-nt-pilot-v2`)
 **Canonical splits (JAK-33):** [`benchmark-holdouts.md`](benchmark-holdouts.md) · [`data/training/splits/horner-vaticanus-nt-split-v2.json`](../data/training/splits/horner-vaticanus-nt-split-v2.json)
+**Consumer notes / benchmark:** [`alignment-pilot-splits.md`](alignment-pilot-splits.md) · [`alignment-pilot-benchmark.md`](alignment-pilot-benchmark.md)
 **Manifests:** [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json), [`data/manifests/ntvmr-vaticanus-b.json`](../data/manifests/ntvmr-vaticanus-b.json)
 
 ## What was verified
@@ -55,4 +56,4 @@
 
 1. `uv run thomas sources download` → gitignored `data/downloads/` (Horner zip + NTVMR teiraw; throttled; **no images**).
 2. Optional: `uv run thomas sources build-pilot`.
-3. Offline: `uv run thomas sources validate` (holdout artifacts + pilot). Alignment benchmark CLI lands with JAK-28 / #13 against the canonical split path above.
+3. Offline: `uv run thomas sources validate` · `uv run thomas align validate` · `uv run thomas align benchmark` (all against the canonical JAK-33 split).

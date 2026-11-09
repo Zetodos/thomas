@@ -122,8 +122,9 @@ optional mapping file if editorial cost justifies it.
 
 | Path | Role |
 | --- | --- |
-| `data/sources/pilot/horner-vaticanus-nt-pilot.json` | Verse-level Horner × Vaticanus B\* pairs (JAK-24) |
+| `data/sources/pilot/horner-vaticanus-nt-pilot.json` | Verse-level Horner × Vaticanus B\* pairs (JAK-24/28) |
 | `data/sources/thomas/dilley-thomas-v6.2.0.json` | **Unit-level** Dilley SCRIPTORIUM Coptic Thomas (JAK-30; not token-complete / not alignment-ready) |
+| `data/sources/alignment/reference/horner-vaticanus-gold-sample-v1.json` | Human-checked lexical/phrase gold (JAK-28) |
 | `tests/fixtures/alignment/horner-vaticanus-john1.1-phrase.json` | Phrase-level stub from that pilot |
 | `tests/fixtures/alignment/thomas-7-unit-stub.json` | Phrase-alignment stub using `dilley-thomas` source id |
 | `data/evidence/pilot/thomas-7-17-30-77.json` | Phase 1 evidence pilot with real Dilley / DCLP ids (JAK-34) |

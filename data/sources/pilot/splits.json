@@ -1,0 +1,69 @@
+{
+  "id": "horner-vaticanus-pilot-splits-v1",
+  "title": "Horner x Vaticanus B* alignment pilot passage splits (JAK-28)",
+  "greek_source_id": "ntvmr-vaticanus-b",
+  "sahidic_source_id": "copsahhorner",
+  "passages": [
+    {
+      "book": "john",
+      "chapter": 1,
+      "verse_from": 1,
+      "verse_to": 18,
+      "role": "train",
+      "rationale": "Prologue; loanwords/nomina sacra; sayings-like density"
+    },
+    {
+      "book": "mark",
+      "chapter": 1,
+      "verse_from": 1,
+      "verse_to": 8,
+      "role": "train",
+      "rationale": "Gospel opening; Greek loanwords; Mark 1:1 heading paratext"
+    },
+    {
+      "book": "matthew",
+      "chapter": 5,
+      "verse_from": 14,
+      "verse_to": 16,
+      "role": "train",
+      "rationale": "Light / city sayings (Thomas-adjacent imagery); loanwords"
+    },
+    {
+      "book": "matthew",
+      "chapter": 7,
+      "verse_from": 7,
+      "verse_to": 8,
+      "role": "train",
+      "rationale": "Imperatives ask/seek/knock (Thomas 2/92/94 parallel zone)"
+    },
+    {
+      "book": "luke",
+      "chapter": 6,
+      "verse_from": 20,
+      "verse_to": 21,
+      "role": "dev",
+      "rationale": "Beatitudes; pronouns; clause variation (Thomas 54 zone)"
+    },
+    {
+      "book": "matthew",
+      "chapter": 13,
+      "verse_from": 31,
+      "verse_to": 32,
+      "role": "holdout",
+      "rationale": "Mustard-seed parable whole-passage holdout (Thomas 20 zone)"
+    },
+    {
+      "book": "john",
+      "chapter": 8,
+      "verse_from": 1,
+      "verse_to": 11,
+      "role": "omission",
+      "rationale": "PA dual-empty omission fixture; never positive lexical scores"
+    }
+  ],
+  "notes": "Splits are whole passages/books, never random words. Omission units stay in the corpus for negative tests but are excluded from positive lexical/phrase denominators. Greek Thomas fragment witnesses (notably logia 7/17/30/77) are not part of this NT stack.",
+  "excluded_from_training_stack": [
+    "thomas-greek-fragments-poxy (JAK-31; logia 7/17/30/77 holdouts)",
+    "coptic-thomas-dilley (JAK-30; reconstruction target, not NT train)"
+  ]
+}

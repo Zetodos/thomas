@@ -1,0 +1,224 @@
+{
+  "id": "horner-vaticanus-alignment-benchmark-v1",
+  "title": "Greek-Sahidic alignment pilot benchmark (JAK-28)",
+  "greek_source_id": "ntvmr-vaticanus-b",
+  "sahidic_source_id": "copsahhorner",
+  "pilot_id": "horner-vaticanus-nt-pilot-v2",
+  "pilot_units": 46,
+  "nonempty_positive_units": 35,
+  "omission_units": 11,
+  "validation_ok": true,
+  "validation_issues": [],
+  "splits": {
+    "train_units": 31,
+    "dev_units": 2,
+    "holdout_units": 2,
+    "omission_units": 11,
+    "train_nonempty": 31,
+    "dev_nonempty": 2,
+    "holdout_nonempty": 2,
+    "excluded_from_training_stack": [
+      "thomas-greek-fragments-poxy (JAK-31; logia 7/17/30/77 holdouts)",
+      "coptic-thomas-dilley (JAK-30; reconstruction target, not NT train)"
+    ]
+  },
+  "lexical_baseline": {
+    "algorithm": "verse-bag co-occurrence Dice + mild positional prior",
+    "train_units_fit": [
+      "john.1.1",
+      "john.1.2",
+      "john.1.3",
+      "john.1.4",
+      "john.1.5",
+      "john.1.6",
+      "john.1.7",
+      "john.1.8",
+      "john.1.9",
+      "john.1.10",
+      "john.1.11",
+      "john.1.12",
+      "john.1.13",
+      "john.1.14",
+      "john.1.15",
+      "john.1.16",
+      "john.1.17",
+      "john.1.18",
+      "mark.1.1",
+      "mark.1.2",
+      "mark.1.3",
+      "mark.1.4",
+      "mark.1.5",
+      "mark.1.6",
+      "mark.1.7",
+      "mark.1.8",
+      "matthew.5.14",
+      "matthew.5.15",
+      "matthew.5.16",
+      "matthew.7.7",
+      "matthew.7.8"
+    ],
+    "pair_types": 4292,
+    "overall": {
+      "precision": 0.25,
+      "recall": 0.20930232558139536,
+      "f1": 0.22784810126582278,
+      "true_positives": 9,
+      "predicted_denominator": 36,
+      "gold_denominator": 43,
+      "unit_ids_scored": [
+        "john.1.1",
+        "john.1.2",
+        "luke.6.20",
+        "mark.1.1",
+        "matthew.13.31",
+        "matthew.7.7"
+      ],
+      "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Omission fixtures must not appear in these denominators."
+    },
+    "by_split": {
+      "train": {
+        "precision": 0.3333333333333333,
+        "recall": 0.28125,
+        "f1": 0.3050847457627119,
+        "true_positives": 9,
+        "predicted_denominator": 27,
+        "gold_denominator": 32,
+        "unit_ids_scored": [
+          "john.1.1",
+          "john.1.2",
+          "mark.1.1",
+          "matthew.7.7"
+        ],
+        "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Omission fixtures must not appear in these denominators."
+      },
+      "dev": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": null,
+        "true_positives": 0,
+        "predicted_denominator": 4,
+        "gold_denominator": 4,
+        "unit_ids_scored": [
+          "luke.6.20"
+        ],
+        "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Omission fixtures must not appear in these denominators."
+      },
+      "holdout": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": null,
+        "true_positives": 0,
+        "predicted_denominator": 5,
+        "gold_denominator": 7,
+        "unit_ids_scored": [
+          "matthew.13.31"
+        ],
+        "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Omission fixtures must not appear in these denominators."
+      }
+    },
+    "null_alignments": {
+      "alignable_sahidic_tokens": 61,
+      "null_sahidic_tokens": 25,
+      "null_rate": 0.4098360655737705
+    },
+    "failure_examples": [
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ",
+        "gold_right": "εν",
+        "predicted_right": "λογος",
+        "predicted_score": 1.0076470588235293
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ",
+        "gold_right": "αρχη",
+        "predicted_right": "λογος",
+        "predicted_score": 1.0076470588235293
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲛⲉϥϣⲟⲟⲡ",
+        "gold_right": "ην",
+        "predicted_right": "λογος",
+        "predicted_score": 1.7210771581359816
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲛϭⲓⲡϣⲁϫⲉ",
+        "gold_right": "λογος",
+        "predicted_right": "λογος",
+        "predicted_score": 1.2024064171122995
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲛϭⲓⲡϣⲁϫⲉ",
+        "gold_right": "λογος",
+        "predicted_right": "λογος",
+        "predicted_score": 1.2024064171122995
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲡϣⲁϫⲉ",
+        "gold_right": "λογος",
+        "predicted_right": "θς",
+        "predicted_score": 0.5059893048128342
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲡϣⲁϫⲉ",
+        "gold_right": "λογος",
+        "predicted_right": "θς",
+        "predicted_score": 0.5059893048128342
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲡϣⲁϫⲉ",
+        "gold_right": "λογος",
+        "predicted_right": "θς",
+        "predicted_score": 0.5059893048128342
+      }
+    ]
+  },
+  "human_reference": {
+    "documents": [
+      "horner-vaticanus-gold-sample-v1.json"
+    ],
+    "gold_link_count": 43,
+    "parallel_inventory": {
+      "horner-vaticanus-gold-sample-v1.json": {
+        "verse-pair": 6,
+        "phrase": 6,
+        "lexical": 17,
+        "loanword": 4,
+        "other": 1
+      }
+    }
+  },
+  "eflomal": {
+    "available": false,
+    "selected_for_default_path": false,
+    "detail": "eflomal import failed (ModuleNotFoundError: No module named 'eflomal'). PyPI eflomal 2.0.0 requires compiling src/ via make; no wheel was available here. Lexical Dice baseline remains the deterministic offline path. Jake decision: whether to add a native eflomal toolchain pin later (still no LLM)."
+  },
+  "limitations": [
+    "No numeric pass threshold - baseline only (PLAN.md Phase 2).",
+    "Whitespace tokenization is not morphology; Coptic groups stay fused.",
+    "Verse-bag Dice over-generates co-occurrence mass; phrase order is weak.",
+    "Human gold is a small sample, not exhaustive verse annotation.",
+    "John 8:1-11 omission fixtures excluded from positive denominators.",
+    "Matthew 13:31-32 holdout scored only when present in gold fixtures.",
+    "Greek = NTVMR Vaticanus B* (GA 03 / docID 20003) only; no WH/SBLGNT mix.",
+    "eflomal unavailable without native build; not on default path.",
+    "Thomas Greek fragments (7/17/30/77) are outside this NT training stack."
+  ],
+  "omission_leak_problems": [],
+  "pass_threshold": null
+}
