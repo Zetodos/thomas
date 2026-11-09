@@ -36,3 +36,15 @@ jobs:
 
       - name: Tests
         run: uv run pytest
+
+      - name: Build wheel
+        run: uv build
+
+      - name: Smoke-test wheel entrypoint
+        run: |
+          set -euo pipefail
+          WHEEL="$(ls -1 dist/zetodos_thomas-*.whl | head -n 1)"
+          test -n "${WHEEL}"
+          uv venv .venv-wheel
+          uv pip install --python .venv-wheel "${WHEEL}"
+          .venv-wheel/bin/thomas --help

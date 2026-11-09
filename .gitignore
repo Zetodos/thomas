@@ -28,3 +28,9 @@ htmlcov/
 .env
 .env.*
 !.env.example
+
+# Local / restricted data (keep README stubs tracked; do not ignore all of data/)
+data/local/**
+!data/local/README.md
+data/downloads/**
+!data/downloads/README.md
