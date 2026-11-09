@@ -11,6 +11,14 @@ from zetodos_thomas.schemas.alignment import (
     ThomasCorpus,
     Token,
 )
+from zetodos_thomas.schemas.evidence import (
+    EvidenceRecord,
+    EvidenceStatus,
+    PilotEvidenceSet,
+    PilotSaying,
+    WitnessAlignment,
+    WitnessAlignmentKind,
+)
 from zetodos_thomas.schemas.fragment import (
     CorpusRole,
     EvidenceType,
@@ -51,6 +59,8 @@ __all__ = [
     "AlignmentDocument",
     "AvailabilityMode",
     "CorpusRole",
+    "EvidenceRecord",
+    "EvidenceStatus",
     "EvidenceType",
     "FragmentCorpus",
     "FragmentLayerKind",
@@ -65,6 +75,8 @@ __all__ = [
     "ParsedSpanId",
     "ParsedTokenId",
     "PilotCorpus",
+    "PilotEvidenceSet",
+    "PilotSaying",
     "SourceManifest",
     "Span",
     "SpanKind",
@@ -72,6 +84,8 @@ __all__ = [
     "ThomasCorpus",
     "Token",
     "UnitKind",
+    "WitnessAlignment",
+    "WitnessAlignmentKind",
     "parallel_id",
     "parse_parallel_id",
     "parse_span_id",

@@ -6,12 +6,14 @@ from __future__ import annotations
 from pathlib import Path
 
 from zetodos_thomas.bundled import (
+    bundled_evidence_pilot_path,
     bundled_fragments_corpus_path,
     bundled_manifests_dir,
     bundled_pilot_path,
     bundled_thomas_path,
 )
 from zetodos_thomas.ingest.dilley_thomas import CORPUS_ID as THOMAS_CORPUS_ID
+from zetodos_thomas.ingest.evidence_pilot import DEFAULT_EVIDENCE_PILOT_FILENAME
 from zetodos_thomas.ingest.fragments import DEFAULT_FRAGMENT_CORPUS_FILENAME
 
 PILOT_FILENAME = "horner-vaticanus-nt-pilot.json"
@@ -102,6 +104,23 @@ def resolve_fragments_corpus_path(repo_root: Path | None) -> Path:
     except FileNotFoundError:
         pass
     return bundled_fragments_corpus_path()
+
+
+def resolve_evidence_pilot_path(repo_root: Path | None) -> Path:
+    """Prefer checkout evidence pilot JSON; fall back to packaged resource."""
+    relative = Path("data") / "evidence" / "pilot" / DEFAULT_EVIDENCE_PILOT_FILENAME
+    if repo_root is not None:
+        checkout = repo_root / relative
+        if checkout.is_file():
+            return checkout
+    try:
+        root = find_repo_root()
+        checkout = root / relative
+        if checkout.is_file():
+            return checkout
+    except FileNotFoundError:
+        pass
+    return bundled_evidence_pilot_path()
 
 
 def require_repo_root(explicit: Path | None = None) -> Path:

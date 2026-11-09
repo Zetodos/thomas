@@ -268,6 +268,8 @@ def test_cli_sources_validate() -> None:
     assert "thomas.0..thomas.114" in result.stdout
     assert "unit-level" in result.stdout
     assert "not alignment-ready" in result.stdout
+    assert "fragments" in result.stdout.lower() or "poxy" in result.stdout.lower()
+    assert "evidence pilot" in result.stdout.lower()
     assert "Sahidica" in result.stdout
     assert "westcott" not in result.stdout.lower()
 

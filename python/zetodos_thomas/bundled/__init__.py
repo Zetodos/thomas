@@ -42,3 +42,15 @@ def bundled_fragments_corpus_path() -> Path:
 def bundled_fragments_tei_dir() -> Path:
     """Return the on-disk path to packaged DCLP TEI fragment sources."""
     return Path(str(files("zetodos_thomas.bundled") / "fragments" / "dclp"))
+
+
+def bundled_evidence_pilot_path() -> Path:
+    """Return the on-disk path to the packaged Phase 1 evidence pilot JSON."""
+    return Path(
+        str(
+            files("zetodos_thomas.bundled")
+            / "evidence"
+            / "pilot"
+            / "thomas-7-17-30-77.json"
+        )
+    )

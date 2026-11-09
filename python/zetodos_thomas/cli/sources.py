@@ -27,6 +27,11 @@ from zetodos_thomas.ingest.download import (
     download_pilot_sources,
     verify_checksum,
 )
+from zetodos_thomas.ingest.evidence_pilot import (
+    EvidencePilotValidationError,
+    load_evidence_pilot,
+    validate_evidence_pilot_or_raise,
+)
 from zetodos_thomas.ingest.fragments import (
     FragmentValidationError,
     build_fragment_corpus,
@@ -44,6 +49,7 @@ from zetodos_thomas.ingest.manifests import (
 from zetodos_thomas.ingest.ntvmr_vaticanus import SOURCE_ID as VATICANUS_SOURCE_ID
 from zetodos_thomas.ingest.paths import (
     require_repo_root,
+    resolve_evidence_pilot_path,
     resolve_fragments_corpus_path,
     resolve_manifests_dir,
     resolve_pilot_path,
@@ -108,6 +114,13 @@ def validate_sources(
         exists=False,
         dir_okay=False,
     ),
+    evidence_pilot_path: Path | None = typer.Option(
+        None,
+        "--evidence-pilot",
+        help="Optional Phase 1 Thomas 7/17/30/77 evidence pilot JSON",
+        exists=False,
+        dir_okay=False,
+    ),
 ) -> None:
     """Validate default manifests (and optional corpora) without network access.
 
@@ -118,6 +131,7 @@ def validate_sources(
     pilot = pilot_path or resolve_pilot_path(repo_root)
     thomas = thomas_path or resolve_thomas_path(repo_root)
     fragments = fragments_path or resolve_fragments_corpus_path(repo_root)
+    evidence_pilot = evidence_pilot_path or resolve_evidence_pilot_path(repo_root)
 
     try:
         manifests = validate_manifests_dir(manifests_path)
@@ -231,6 +245,34 @@ def validate_sources(
         )
     else:
         typer.echo(f"Note: fragment corpus not found at {fragments} (skipped)")
+
+    if evidence_pilot.is_file():
+        if not thomas.is_file() or not fragments.is_file():
+            typer.secho(
+                "Evidence pilot requires Dilley Thomas + fragment corpora on disk",
+                fg=typer.colors.RED,
+            )
+            raise typer.Exit(code=1)
+        try:
+            package = validate_evidence_pilot_or_raise(
+                load_evidence_pilot(evidence_pilot),
+                manifests=manifests,
+                thomas_corpus_path=thomas,
+                fragments_corpus_path=fragments,
+            )
+        except EvidencePilotValidationError as exc:
+            typer.secho(
+                f"Evidence pilot validation failed: {exc}",
+                fg=typer.colors.RED,
+            )
+            raise typer.Exit(code=1) from exc
+        typer.echo(
+            f"OK: evidence pilot {package.id} - {len(package.sayings)} sayings, "
+            f"{len(package.witness_alignments)} witness alignment(s) "
+            f"from {evidence_pilot}"
+        )
+    else:
+        typer.echo(f"Note: evidence pilot not found at {evidence_pilot} (skipped)")
 
 
 @sources_app.command("download")
