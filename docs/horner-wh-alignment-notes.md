@@ -1,8 +1,8 @@
 # Horner × Westcott–Hort pilot alignment notes (JAK-24)
 
 **Status:** Lightweight Phase 1 lexical/phrase pilot — not a neural aligner.
-**Greek spine:** Westcott–Hort 1881 (Robinson PD transcription) per [JAK-15](https://linear.app/jake-danton/issue/JAK-15) — **not** SBLGNT.
-**Sahidic:** CrossWire `CopSahHorner` v1.5 (Public Domain) per [JAK-14](https://linear.app/jake-danton/issue/JAK-14).
+**Greek spine:** Westcott–Hort 1881 (Robinson PD transcription) per JAK-15 — **not** SBLGNT.
+**Sahidic:** CrossWire `CopSahHorner` v1.5 (Public Domain) per JAK-14.
 **Pilot file:** [`data/sources/pilot/horner-wh-nt-pilot.json`](../data/sources/pilot/horner-wh-nt-pilot.json)
 **Manifests:** [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json), [`data/manifests/westcott-hort.json`](../data/manifests/westcott-hort.json)
 **Audit:** [`licensing-provenance-audit.md`](licensing-provenance-audit.md) §4 · Policy: [`source-licenses.md`](source-licenses.md)
@@ -54,7 +54,6 @@ Sahidica / NTAEG / Bohairica remain **out of default CLI/CI**. `thomas sources v
 
 ## Offline after setup
 
-1. Download `CopSahHorner.zip` into `data/downloads/` and unpack to `data/downloads/sword/` (gitignored).
-2. Fetch Robinson WH `textonly/` books into `data/downloads/westcott-hort/textonly/` (gitignored).
-3. Optional regenerate: `uv run thomas sources build-pilot` (requires `pysword`, via `--extra sword` or the dev group).
-4. Offline validate: `uv run thomas sources validate` — uses committed manifests + pilot only; **no network**.
+1. Explicit download (network once): `uv run thomas sources download` → gitignored `data/downloads/`.
+2. Optional regenerate: `uv run thomas sources build-pilot` (requires `pysword`, via `--extra sword` or the dev group).
+3. Offline validate: `uv run thomas sources validate` — uses committed manifests + pilot only; **no network**.

@@ -3,7 +3,7 @@
 Offline-capable, evidence-based reconstruction and reader for the *Gospel of Thomas*.
 
 **Repository:** <https://github.com/Zetodos/thomas>
-**Status:** Phase 0–1 foundation — licensing, Python toolchain, and a redistributable Horner × Westcott–Hort NT pilot import ([JAK-24](https://linear.app/jake-danton/issue/JAK-24)). Reconstruction feasibility is not yet proven.
+**Status:** Phase 0–1 foundation — licensing, Python toolchain, and a redistributable Horner × Westcott–Hort NT pilot import (JAK-24). Reconstruction feasibility is not yet proven.
 
 ## Objective
 
@@ -48,8 +48,8 @@ Full list and allowlist: [`docs/source-licenses.md`](docs/source-licenses.md#nev
 
 ## Text baselines (Phase 0 decisions)
 
-- **Sahidic NT:** **Horner** via CrossWire **`CopSahHorner`** v1.5 (Public Domain). Do **not** treat Wells Sahidica as the NT baseline. Verified + pilot-imported: [JAK-24](https://linear.app/jake-danton/issue/JAK-24).
-- **Greek NT:** **Westcott–Hort 1881** (PD Robinson transcription) per [JAK-15](https://linear.app/jake-danton/issue/JAK-15). SBLGNT (now CC BY 4.0) is a separate revisit — [JAK-25](https://linear.app/jake-danton/issue/JAK-25); do not flip the default here.
+- **Sahidic NT:** **Horner** via CrossWire **`CopSahHorner`** v1.5 (Public Domain). Do **not** treat Wells Sahidica as the NT baseline. Verified + pilot-imported: JAK-24.
+- **Greek NT:** **Westcott–Hort 1881** (PD Robinson transcription) per JAK-15. SBLGNT (now CC BY 4.0) is a separate revisit — JAK-25; do not flip the default here.
 - **LXX / lexicon / critical texts:** Swete LXX, CCL TEI, and CC BY 4.0 for project-authored critical Greek/English — see [`docs/source-licenses.md`](docs/source-licenses.md).
 
 Bundled pilot: [`data/sources/pilot/horner-wh-nt-pilot.json`](data/sources/pilot/horner-wh-nt-pilot.json). Full modules download to gitignored `data/downloads/` (see that README).
@@ -85,7 +85,7 @@ uv run ty check
 uv run pytest
 ```
 
-The `thomas` console script currently exposes `sources validate` (offline) and `sources build-pilot` (explicit local rebuild from downloads). Further subcommands live in [`PLAN.md`](PLAN.md).
+The `thomas` console script currently exposes `sources validate` (offline), `sources download` (explicit setup fetch into `data/downloads/`), and `sources build-pilot` (local rebuild from downloads). Further subcommands live in [`PLAN.md`](PLAN.md).
 
 Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web/` only (not started yet).
 
@@ -94,7 +94,7 @@ Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web
 After clone and `uv sync --locked`:
 
 1. **Offline immediately:** `uv run thomas sources validate` uses committed manifests + the PD pilot only (no network).
-2. **Optional setup downloads** (gitignored): follow [`data/downloads/README.md`](data/downloads/README.md) for full `CopSahHorner` + Robinson WH textonly files; then `uv run thomas sources build-pilot` to regenerate the pilot.
+2. **Optional setup downloads** (gitignored): `uv run thomas sources download` (see [`data/downloads/README.md`](data/downloads/README.md)); then `uv run thomas sources build-pilot` to regenerate the pilot.
 3. After setup, CLI work must remain offline (no cloud APIs, CDNs, or hidden network fetches).
 
 Default CLI/CI never fetches Sahidica, NTAEG, or Bohairica.

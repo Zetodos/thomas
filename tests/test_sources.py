@@ -9,12 +9,14 @@ from pathlib import Path
 from typer.testing import CliRunner
 
 from zetodos_thomas.cli.app import app
+from zetodos_thomas.ingest.download import WH_TEXTONLY_FILES, verify_checksum
 from zetodos_thomas.ingest.manifests import (
     load_manifest,
     validate_default_manifests,
     validate_manifests_dir,
 )
 from zetodos_thomas.ingest.normalize import normalize_coptic, normalize_greek
+from zetodos_thomas.ingest.paths import find_repo_root
 from zetodos_thomas.ingest.pilot import load_pilot_corpus
 from zetodos_thomas.ingest.westcott_hort import beta_to_unicode, parse_wh_textonly
 from zetodos_thomas.schemas.source import (
@@ -144,6 +146,32 @@ def test_cli_help_lists_sources() -> None:
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
     assert "sources" in result.stdout
+
+
+def test_cli_sources_download_help() -> None:
+    runner = CliRunner()
+    result = runner.invoke(app, ["sources", "download", "--help"])
+    assert result.exit_code == 0
+    assert "CopSahHorner" in result.stdout
+
+
+def test_find_repo_root_from_tests() -> None:
+    assert find_repo_root(Path(__file__)) == REPO_ROOT
+
+
+def test_wh_download_pins_match_manifest() -> None:
+    wh = load_manifest(MANIFESTS_DIR / "westcott-hort.json")
+    assert WH_TEXTONLY_FILES["JOH.WH"] == wh.checksum
+    assert "MR.WH" in WH_TEXTONLY_FILES
+
+
+def test_verify_checksum(tmp_path: Path) -> None:
+    path = tmp_path / "blob.bin"
+    path.write_bytes(b"abc")
+    verify_checksum(
+        path,
+        "sha256:ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+    )
 
 
 def test_fixture_manifest_roundtrip() -> None:
