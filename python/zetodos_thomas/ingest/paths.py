@@ -5,9 +5,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from zetodos_thomas.bundled import bundled_manifests_dir, bundled_pilot_path
+from zetodos_thomas.bundled import (
+    bundled_manifests_dir,
+    bundled_pilot_path,
+    bundled_thomas_path,
+)
+from zetodos_thomas.ingest.dilley_thomas import CORPUS_ID as THOMAS_CORPUS_ID
 
 PILOT_FILENAME = "horner-vaticanus-nt-pilot.json"
+THOMAS_FILENAME = f"{THOMAS_CORPUS_ID}.json"
 
 
 def find_repo_root(start: Path | None = None) -> Path:
@@ -61,6 +67,22 @@ def resolve_pilot_path(repo_root: Path | None) -> Path:
     except FileNotFoundError:
         pass
     return bundled_pilot_path()
+
+
+def resolve_thomas_path(repo_root: Path | None) -> Path:
+    """Prefer checkout Dilley Thomas JSON; fall back to the packaged corpus."""
+    if repo_root is not None:
+        checkout = repo_root / "data" / "sources" / "thomas" / THOMAS_FILENAME
+        if checkout.is_file():
+            return checkout
+    try:
+        root = find_repo_root()
+        checkout = root / "data" / "sources" / "thomas" / THOMAS_FILENAME
+        if checkout.is_file():
+            return checkout
+    except FileNotFoundError:
+        pass
+    return bundled_thomas_path()
 
 
 def require_repo_root(explicit: Path | None = None) -> Path:

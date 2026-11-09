@@ -24,13 +24,14 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 | **License status** | Document/corpus metadata and SCRIPTORIUM practice: **CC BY 4.0** for `thomas.gospel` (Dilley edition). SCRIPTORIUM corpora README: default **CC BY 3.0 or 4.0** unless excepted; Thomas is not listed among exceptions. |
 | **Redistributable** | **Yes** (under CC BY) |
 | **Attribution** | Credit Coptic SCRIPTORIUM; Paul C. Dilley (edition/primary annotations); note contributors (Schroeder, Bremer-McCollum, Zeldes); version (e.g. v6.2.0); link license; mark modifications. Cite Dilley’s editorial note that restorations consult Layton 1989 and Bethge et al. 1996 **without redistributing those copyrighted editions**. |
-| **Setup mode** | **bundled** (preferred for core Coptic) or **setup-download** from GitHub/Zenodo (`doi:10.5281/zenodo.17917497`) |
+| **Setup mode** | **setup-download** of SCRIPTORIUM corpora **v6.2.0** TreeTagger SGML (`thomas_gospel.tt`) + **bundled** import under `data/sources/thomas/` (JAK-30) |
 | **Blocking risks** | Low for Dilley open text. Do **not** substitute Layton (Brill) or Bethge (DBG *Synopsis*) full texts. Dilley uses Nag Hammadi facsimile images as sources — images themselves are not the license grant. |
 | **Confidence** | **High** for CC BY on Thomas corpus metadata / SCRIPTORIUM README defaults |
+| **Ingest pin** | Manifest [`dilley-thomas.json`](../data/manifests/dilley-thomas.json): `sha256:59a9f10437d5a059fe62249b83d3bf0ae078a40c4fd511094cf419bb7adf3403` |
 
 **Primary refs:**
-- https://github.com/CopticScriptorium/corpora (README “Sources and licenses”)
-- Thomas ANNIS metadata: `license CC-BY 4.0`, `Coptic_edition Paul Dilley`, `project Coptic SCRIPTORIUM, Dilley`
+- https://github.com/CopticScriptorium/corpora (README “Sources and licenses”); release tag `v6.2.0`; Zenodo `doi:10.5281/zenodo.17917497`
+- Thomas ANNIS / TT metadata: `license CC-BY 4.0`, `Coptic_edition Paul Dilley`, `project Coptic SCRIPTORIUM, Dilley`, `version_n 6.2.0`
 - https://data.copticscriptorium.org/texts/thomasgospel/gospel-of-thomas/
 
 ---

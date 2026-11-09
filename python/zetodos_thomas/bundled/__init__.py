@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Packaged redistributable manifests and pilot excerpt for wheel installs."""
+"""Packaged redistributable manifests and corpora for wheel installs."""
 
 from __future__ import annotations
 
@@ -18,4 +18,11 @@ def bundled_pilot_path() -> Path:
         str(
             files("zetodos_thomas.bundled") / "pilot" / "horner-vaticanus-nt-pilot.json"
         )
+    )
+
+
+def bundled_thomas_path() -> Path:
+    """Return the on-disk path to the packaged Dilley Thomas corpus JSON."""
+    return Path(
+        str(files("zetodos_thomas.bundled") / "thomas" / "dilley-thomas-v6.2.0.json")
     )

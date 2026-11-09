@@ -1,6 +1,11 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Source ingestion: manifests, CopSahHorner, Vaticanus B*, pilot corpus."""
+"""Source ingestion: manifests, CopSahHorner, Vaticanus B*, Dilley Thomas, pilots."""
 
+from zetodos_thomas.ingest.dilley_thomas import (
+    load_thomas_corpus,
+    parse_tt,
+    write_thomas_corpus,
+)
 from zetodos_thomas.ingest.manifests import (
     ManifestValidationError,
     load_all_manifests,
@@ -19,6 +24,9 @@ __all__ = [
     "load_all_manifests",
     "load_manifest",
     "load_pilot_corpus",
+    "load_thomas_corpus",
+    "parse_tt",
     "validate_manifests_dir",
     "write_pilot_corpus",
+    "write_thomas_corpus",
 ]

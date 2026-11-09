@@ -34,7 +34,7 @@ Adopted redistributable core (JAK-15 Done). Pin versions at ingest. Sahidica is 
 
 | Family | Typical mode | Notes |
 | --- | --- | --- |
-| Dilley Thomas (Coptic SCRIPTORIUM) | `bundled` or `setup-download` | CC BY 4.0 |
+| **Dilley Thomas (Coptic SCRIPTORIUM)** | `setup-download` (+ bundled **unit-level** import) | **Primary Coptic Thomas target** (JAK-30). **CC BY 4.0**; attribute Dilley / SCRIPTORIUM. Manifest: [`data/manifests/dilley-thomas.json`](../data/manifests/dilley-thomas.json). Import: [`data/sources/thomas/dilley-thomas-v6.2.0.json`](../data/sources/thomas/dilley-thomas-v6.2.0.json) — **unit-level only** (orig+norm TextUnits); **not** token-complete / **not** alignment-ready. Full SCRIPTORIUM token/group data deferred; use JAK-32 ID grammar when it lands. |
 | P.Oxy. fragments (verify each transcription) | `bundled` (small) | Prefer DCLP (CC BY 3.0) or PD Grenfell/Hunt; Evelyn-White **1920** original is US PD (see audit §2) |
 | **Horner Sahidic NT** (`CopSahHorner`) | `setup-download` (+ bundled pilot excerpt) | **Default Sahidic NT** (PD module; JAK-14 Done; ingest JAK-24). Manifest: [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json). Alignment notes: [`horner-vaticanus-alignment-notes.md`](horner-vaticanus-alignment-notes.md) |
 | **NTVMR Vaticanus GA 03 B\*** (INTF TEI, `docID` 20003) | `setup-download` (+ bundled pilot excerpt) | **Default Greek NT** (JAK-25 GO; updates JAK-15 WH default). **CC BY 4.0** transcription; attribute INTF/NTVMR. Firsthand only; empty firsthand = omission; **no** corrector fill; **no** WH/SBLGNT lacuna fill; **do not** ship images. Manifest: [`data/manifests/ntvmr-vaticanus-b.json`](../data/manifests/ntvmr-vaticanus-b.json) |
@@ -43,6 +43,10 @@ Adopted redistributable core (JAK-15 Done). Pin versions at ingest. Sahidica is 
 | **Swete LXX** (First1KGreek / nathans/lxx-swete) | `setup-download` | CC BY-SA 4.0 (JAK-18); not Rahlfs-Hanhart; Rahlfs 1935 not preferred |
 | **CCL / DDGLC TEI** | `setup-download` / `bundled` | CC BY-SA 4.0 (JAK-19); do not wait on DIOSKOROS; no scrape |
 | WEB English passages | `bundled` (passages) | Public domain; trademark care |
+
+### Attribution — Dilley / SCRIPTORIUM Coptic Thomas (CC BY 4.0)
+
+Required credit for the Coptic Thomas import: **Paul C. Dilley** (edition and primary annotations); **Coptic SCRIPTORIUM**; annotation/metadata contributions by Caroline T. Schroeder, Lydia Bremer-McCollum, and Amir Zeldes; [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Pin release **v6.2.0**, URL, and checksum in [`data/manifests/dilley-thomas.json`](../data/manifests/dilley-thomas.json). Original (manuscript-oriented) and normalized analysis layers are separate recoverable representations of one edition — not competing Coptic texts. Do **not** substitute Layton/Attridge or Bethge continuous critical Greek. Facsimile images are not part of this grant.
 
 ### Attribution — NTVMR / INTF Vaticanus transcription (CC BY 4.0)
 
@@ -91,7 +95,7 @@ Reference-only citation and short fair-use quotation policy may apply in scholar
 
 Machine-readable manifests live under [`data/manifests/`](../data/manifests/) as **JSON** (one file per source). Typed model: `zetodos_thomas.schemas.source.SourceManifest`. Validate offline with `uv run thomas sources validate`.
 
-Full CrossWire / NTVMR TEI downloads stay under gitignored `data/downloads/`. A redistributable pilot excerpt is committed at [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](../data/sources/pilot/horner-vaticanus-nt-pilot.json).
+Full CrossWire / NTVMR TEI / Dilley TT downloads stay under gitignored `data/downloads/`. Redistributable imports are committed at [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](../data/sources/pilot/horner-vaticanus-nt-pilot.json) and [`data/sources/thomas/dilley-thomas-v6.2.0.json`](../data/sources/thomas/dilley-thomas-v6.2.0.json).
 
 ### Required / expected fields
 
@@ -121,7 +125,7 @@ Full CrossWire / NTVMR TEI downloads stay under gitignored `data/downloads/`. A 
 
 ### Live example
 
-See [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json) and [`data/manifests/ntvmr-vaticanus-b.json`](../data/manifests/ntvmr-vaticanus-b.json).
+See [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json), [`data/manifests/ntvmr-vaticanus-b.json`](../data/manifests/ntvmr-vaticanus-b.json), and [`data/manifests/dilley-thomas.json`](../data/manifests/dilley-thomas.json).
 
 ## Decision status
 
@@ -134,3 +138,4 @@ See [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json) an
 | JAK-17 | Critical Greek/English | **Done** | Project-authored critical Greek + rough English: **CC BY 4.0** |
 | JAK-18 | LXX edition | **Done** | Default Swete via First1KGreek / nathans/lxx-swete (CC BY-SA 4.0) |
 | JAK-19 | Lexicon / loanwords | **Done** | Default CCL TEI incl. DDGLC (CC BY-SA 4.0); not DIOSKOROS scrape |
+| JAK-30 | Dilley Coptic Thomas ingest | **In progress** | SCRIPTORIUM Dilley v6.2.0 CC BY 4.0; orig+norm layers; 114 logia |

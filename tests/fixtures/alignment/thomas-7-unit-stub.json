@@ -4,7 +4,7 @@
   "id_scheme_version": "1",
   "text_units": [
     {
-      "source_id": "scriptorium-thomas-dilley-stub",
+      "source_id": "dilley-thomas",
       "unit_id": "thomas.7",
       "book": "thomas",
       "chapter": 7,
@@ -28,8 +28,8 @@
   ],
   "tokens": [
     {
-      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/0",
-      "source_id": "scriptorium-thomas-dilley-stub",
+      "id": "v1:dilley-thomas/thomas.7/t/0",
+      "source_id": "dilley-thomas",
       "unit_id": "thomas.7",
       "sequence": 0,
       "surface": "ⲡⲉϫⲉ",
@@ -41,8 +41,8 @@
       "grammatical_group_id": null
     },
     {
-      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/1",
-      "source_id": "scriptorium-thomas-dilley-stub",
+      "id": "v1:dilley-thomas/thomas.7/t/1",
+      "source_id": "dilley-thomas",
       "unit_id": "thomas.7",
       "sequence": 1,
       "surface": "ⲓ̅ⲥ̅",
@@ -54,8 +54,8 @@
       "grammatical_group_id": null
     },
     {
-      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/2",
-      "source_id": "scriptorium-thomas-dilley-stub",
+      "id": "v1:dilley-thomas/thomas.7/t/2",
+      "source_id": "dilley-thomas",
       "unit_id": "thomas.7",
       "sequence": 2,
       "surface": "ϫⲉ",
@@ -67,8 +67,8 @@
       "grammatical_group_id": null
     },
     {
-      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/3",
-      "source_id": "scriptorium-thomas-dilley-stub",
+      "id": "v1:dilley-thomas/thomas.7/t/3",
+      "source_id": "dilley-thomas",
       "unit_id": "thomas.7",
       "sequence": 3,
       "surface": "ⲟⲩⲙⲁⲕⲁⲣⲓⲟⲥ",
@@ -80,8 +80,8 @@
       "grammatical_group_id": null
     },
     {
-      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/4",
-      "source_id": "scriptorium-thomas-dilley-stub",
+      "id": "v1:dilley-thomas/thomas.7/t/4",
+      "source_id": "dilley-thomas",
       "unit_id": "thomas.7",
       "sequence": 4,
       "surface": "ⲡⲉ",
@@ -93,8 +93,8 @@
       "grammatical_group_id": null
     },
     {
-      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/t/5",
-      "source_id": "scriptorium-thomas-dilley-stub",
+      "id": "v1:dilley-thomas/thomas.7/t/5",
+      "source_id": "dilley-thomas",
       "unit_id": "thomas.7",
       "sequence": 5,
       "surface": "ⲡⲙⲟⲩⲓ̈",
@@ -121,12 +121,12 @@
   ],
   "spans": [
     {
-      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/s/makarios",
-      "source_id": "scriptorium-thomas-dilley-stub",
+      "id": "v1:dilley-thomas/thomas.7/s/makarios",
+      "source_id": "dilley-thomas",
       "unit_id": "thomas.7",
       "kind": "contiguous",
       "token_ids": [
-        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/3"
+        "v1:dilley-thomas/thomas.7/t/3"
       ],
       "exclusive_group": null,
       "notes": ""
@@ -143,17 +143,17 @@
       "notes": ""
     },
     {
-      "id": "v1:scriptorium-thomas-dilley-stub/thomas.7/s/whole",
-      "source_id": "scriptorium-thomas-dilley-stub",
+      "id": "v1:dilley-thomas/thomas.7/s/whole",
+      "source_id": "dilley-thomas",
       "unit_id": "thomas.7",
       "kind": "contiguous",
       "token_ids": [
-        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/0",
-        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/1",
-        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/2",
-        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/3",
-        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/4",
-        "v1:scriptorium-thomas-dilley-stub/thomas.7/t/5"
+        "v1:dilley-thomas/thomas.7/t/0",
+        "v1:dilley-thomas/thomas.7/t/1",
+        "v1:dilley-thomas/thomas.7/t/2",
+        "v1:dilley-thomas/thomas.7/t/3",
+        "v1:dilley-thomas/thomas.7/t/4",
+        "v1:dilley-thomas/thomas.7/t/5"
       ],
       "exclusive_group": "logion-cover",
       "notes": ""
@@ -163,7 +163,7 @@
     {
       "id": "v1:parallel/thomas.7-makarios",
       "left_span_ids": [
-        "v1:scriptorium-thomas-dilley-stub/thomas.7/s/makarios"
+        "v1:dilley-thomas/thomas.7/s/makarios"
       ],
       "right_span_ids": [
         "v1:poxy-thomas-frag-stub/thomas.7/s/makarios"
@@ -176,7 +176,7 @@
     {
       "id": "v1:parallel/thomas.7-partial-frag",
       "left_span_ids": [
-        "v1:scriptorium-thomas-dilley-stub/thomas.7/s/whole"
+        "v1:dilley-thomas/thomas.7/s/whole"
       ],
       "right_span_ids": [
         "v1:poxy-thomas-frag-stub/thomas.7/s/makarios"
