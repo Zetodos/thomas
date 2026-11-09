@@ -12,12 +12,17 @@ from zetodos_thomas.ingest.manifests import (
     ManifestValidationError,
     validate_manifests_dir,
 )
-from zetodos_thomas.ingest.paths import find_repo_root
+from zetodos_thomas.ingest.paths import (
+    require_repo_root,
+    resolve_manifests_dir,
+    resolve_pilot_path,
+)
 from zetodos_thomas.ingest.pilot import (
     build_pilot_corpus,
     load_pilot_corpus,
     write_pilot_corpus,
 )
+from zetodos_thomas.ingest.verify_inputs import verify_pilot_rebuild_inputs
 from zetodos_thomas.schemas.source import GATED_DEFAULT_SOURCE_IDS
 
 sources_app = typer.Typer(
@@ -27,29 +32,12 @@ sources_app = typer.Typer(
 )
 
 
-def _default_repo_root() -> Path:
-    try:
-        return find_repo_root()
-    except FileNotFoundError:
-        # Fallback for tests / unusual layouts; prefer find_repo_root in practice.
-        return Path.cwd()
-
-
-def _paths(repo_root: Path) -> dict[str, Path]:
-    return {
-        "manifests": repo_root / "data" / "manifests",
-        "pilot": repo_root / "data" / "sources" / "pilot" / "horner-wh-nt-pilot.json",
-        "sword": repo_root / "data" / "downloads" / "sword",
-        "wh": repo_root / "data" / "downloads" / "westcott-hort" / "textonly",
-    }
-
-
 @sources_app.command("validate")
 def validate_sources(
     repo_root: Path | None = typer.Option(
         None,
         "--repo-root",
-        help="Checkout root containing data/manifests (default: auto-detect)",
+        help="Checkout root (optional; packaged manifests used if absent)",
         exists=True,
         file_okay=False,
         dir_okay=True,
@@ -72,11 +60,13 @@ def validate_sources(
         dir_okay=False,
     ),
 ) -> None:
-    """Validate default manifests (and optional pilot) without network access."""
-    root = repo_root or _default_repo_root()
-    paths = _paths(root)
-    manifests_path = manifests_dir or paths["manifests"]
-    pilot = pilot_path or paths["pilot"]
+    """Validate default manifests (and optional pilot) without network access.
+
+    Manifests/pilot resolve from the checkout when present; otherwise from
+    packaged wheel resources under ``zetodos_thomas.bundled``.
+    """
+    manifests_path = manifests_dir or resolve_manifests_dir(repo_root)
+    pilot = pilot_path or resolve_pilot_path(repo_root)
 
     try:
         manifests = validate_manifests_dir(manifests_path)
@@ -130,7 +120,7 @@ def download_sources(
     repo_root: Path | None = typer.Option(
         None,
         "--repo-root",
-        help="Checkout root (default: auto-detect from cwd)",
+        help="Writable checkout root (default: auto-detect from cwd)",
         exists=True,
         file_okay=False,
         dir_okay=True,
@@ -144,11 +134,11 @@ def download_sources(
 ) -> None:
     """Download CopSahHorner + Westcott-Hort textonly into data/downloads/.
 
-    Reads pins from data/manifests/, verifies sha256, and unpacks the SWORD
-    module. Requires network. After this, optionally run ``build-pilot``.
+    Writes only under the checkout (never into the package install). Requires
+    network. After this, optionally run ``build-pilot``.
     """
-    root = repo_root or _default_repo_root()
     try:
+        root = require_repo_root(repo_root)
         sword_root, wh_dir = download_pilot_sources(root, force=force)
     except (DownloadError, FileNotFoundError, OSError) as exc:
         typer.secho(f"Download failed: {exc}", fg=typer.colors.RED)
@@ -163,7 +153,7 @@ def build_pilot(
     repo_root: Path | None = typer.Option(
         None,
         "--repo-root",
-        help="Checkout root (default: auto-detect from cwd)",
+        help="Writable checkout root (default: auto-detect from cwd)",
         exists=True,
         file_okay=False,
         dir_okay=True,
@@ -190,13 +180,30 @@ def build_pilot(
         help="Destination JSON for the redistributable pilot excerpt",
     ),
 ) -> None:
-    """Build the committed pilot excerpt from local downloads (explicit setup)."""
-    root = repo_root or _default_repo_root()
-    paths = _paths(root)
-    corpus = build_pilot_corpus(
-        sword_root=sword_root or paths["sword"],
-        wh_textonly_dir=wh_textonly_dir or paths["wh"],
-    )
-    dest = output or paths["pilot"]
+    """Build the pilot excerpt from local downloads after checksum verification."""
+    try:
+        root = require_repo_root(repo_root)
+    except FileNotFoundError as exc:
+        typer.secho(f"build-pilot requires a checkout: {exc}", fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+
+    manifests_dir = root / "data" / "manifests"
+    downloads_dir = root / "data" / "downloads"
+    sword = sword_root or downloads_dir / "sword"
+    wh_dir = wh_textonly_dir or downloads_dir / "westcott-hort" / "textonly"
+    dest = output or root / "data" / "sources" / "pilot" / "horner-wh-nt-pilot.json"
+
+    try:
+        verify_pilot_rebuild_inputs(
+            manifests_dir=manifests_dir,
+            sword_root=sword,
+            wh_textonly_dir=wh_dir,
+            downloads_dir=downloads_dir,
+        )
+        corpus = build_pilot_corpus(sword_root=sword, wh_textonly_dir=wh_dir)
+    except (DownloadError, FileNotFoundError, OSError, ValueError) as exc:
+        typer.secho(f"build-pilot failed: {exc}", fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+
     write_pilot_corpus(corpus, dest)
     typer.echo(f"Wrote {len(corpus.units)} parallel units to {dest}")

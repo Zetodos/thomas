@@ -6,18 +6,25 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
+from zetodos_thomas.bundled import bundled_manifests_dir, bundled_pilot_path
 from zetodos_thomas.cli.app import app
-from zetodos_thomas.ingest.download import WH_TEXTONLY_FILES, verify_checksum
+from zetodos_thomas.ingest.download import (
+    WH_TEXTONLY_FILES,
+    DownloadError,
+    verify_checksum,
+)
 from zetodos_thomas.ingest.manifests import (
     load_manifest,
     validate_default_manifests,
     validate_manifests_dir,
 )
 from zetodos_thomas.ingest.normalize import normalize_coptic, normalize_greek
-from zetodos_thomas.ingest.paths import find_repo_root
+from zetodos_thomas.ingest.paths import find_repo_root, resolve_manifests_dir
 from zetodos_thomas.ingest.pilot import load_pilot_corpus
+from zetodos_thomas.ingest.verify_inputs import verify_pilot_rebuild_inputs
 from zetodos_thomas.ingest.westcott_hort import beta_to_unicode, parse_wh_textonly
 from zetodos_thomas.schemas.source import (
     GATED_DEFAULT_SOURCE_IDS,
@@ -49,6 +56,24 @@ def test_parse_wh_textonly_fixture(tmp_path: Path) -> None:
     assert units[0].unit_id == "john.1.1"
     assert "λογος" in units[0].original_text
     assert units[0].normalized_text == units[0].original_text
+
+
+def test_parse_wh_empty_reference_only_verse(tmp_path: Path) -> None:
+    """Regression: Robinson omits text for some verses (e.g. John 5:4)."""
+    sample = tmp_path / "JOH.WH"
+    sample.write_text(
+        "     5:3 en toutoiv katekeito plhyov\n"
+        "     5:4\n"
+        "     5:5 hn de tiv anyrwpov ekei\n",
+        encoding="utf-8",
+    )
+    units = parse_wh_textonly(sample, book="john")
+    by_verse = {u.verse: u for u in units}
+    assert set(by_verse) == {3, 4, 5}
+    assert by_verse[4].original_text == ""
+    assert "5:4" not in by_verse[3].original_text
+    assert "πληθος" in by_verse[3].original_text
+    assert "ανθρωπος" in by_verse[5].original_text
 
 
 def test_normalize_coptic_strips_overlines() -> None:
@@ -179,3 +204,43 @@ def test_fixture_manifest_roundtrip() -> None:
     data = json.loads(path.read_text(encoding="utf-8"))
     manifest = SourceManifest.model_validate(data)
     assert manifest.id == "copsahhorner"
+
+
+def test_bundled_resources_match_checkout() -> None:
+    for name in ("copsahhorner.json", "westcott-hort.json"):
+        checkout = (MANIFESTS_DIR / name).read_text(encoding="utf-8")
+        bundled = (bundled_manifests_dir() / name).read_text(encoding="utf-8")
+        assert checkout == bundled
+    assert PILOT_PATH.read_text(encoding="utf-8") == bundled_pilot_path().read_text(
+        encoding="utf-8"
+    )
+
+
+def test_resolve_manifests_prefers_checkout() -> None:
+    assert resolve_manifests_dir(REPO_ROOT) == MANIFESTS_DIR
+
+
+def test_verify_rebuild_rejects_missing_zip(tmp_path: Path) -> None:
+    manifests = tmp_path / "manifests"
+    manifests.mkdir()
+    for name in ("copsahhorner.json", "westcott-hort.json"):
+        manifests.joinpath(name).write_text(
+            (MANIFESTS_DIR / name).read_text(encoding="utf-8"),
+            encoding="utf-8",
+        )
+    wh_dir = tmp_path / "wh"
+    wh_dir.mkdir()
+    for name in WH_TEXTONLY_FILES:
+        # Wrong bytes → checksum failure before zip check (still DownloadError).
+        (wh_dir / name).write_bytes(b"not-the-real-file")
+    sword = tmp_path / "sword"
+    sword.mkdir()
+    downloads = tmp_path / "downloads"
+    downloads.mkdir()
+    with pytest.raises(DownloadError):
+        verify_pilot_rebuild_inputs(
+            manifests_dir=manifests,
+            sword_root=sword,
+            wh_textonly_dir=wh_dir,
+            downloads_dir=downloads,
+        )

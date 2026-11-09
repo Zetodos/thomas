@@ -1,0 +1,22 @@
+{
+  "id": "copsahhorner",
+  "title": "Sahidic Coptic New Testament (Horner) — CrossWire CopSahHorner",
+  "version": "1.5",
+  "url": "https://www.crosswire.org/sword/modules/ModInfo.jsp?modName=CopSahHorner",
+  "spdx_or_custom": "custom:Public-Domain",
+  "attribution": "G. W. Horner, The Coptic version of the New Testament in the Southern dialect (1911–1924); CrossWire CopSahHorner module v1.5",
+  "mode": "setup-download",
+  "checksum": "sha256:4f074891e60cab8e59cb8ebaa64cb207ae990ae78270df5be290fb0a8e7d2132",
+  "notes": "Default Sahidic NT baseline (JAK-14 / JAK-24). DistributionLicense=Public Domain on CrossWire ModInfo, copyright page, and copsahhorner.conf. TextSource=Slavic Bible for Windows → CrossWire Unicode/OSIS packaging. Versification=NRSV; Feature=NoParagraphs. History 1.5 corrected misnumbered verses. Full NT book list present in module; John 7:53–8:11 and Mark 16:9–20 empty (tradition omissions). Eclectic MSS base — not a single-manuscript diplomatic text. Do not substitute SCRIPTORIUM Bohairic Horner-derived texts. Full module zip URL: https://www.crosswire.org/ftpmirror/pub/sword/packages/rawzip/CopSahHorner.zip (checksum above). Local unpack path after setup: data/downloads/sword/. Redistributable pilot excerpt under data/sources/pilot/.",
+  "editor": "George William Horner (1849–1930); CrossWire module packaging",
+  "language": "cop",
+  "dialect": "Sahidic",
+  "license_url": "https://www.crosswire.org/sword/copyright/ModInfoCopyright.jsp?modName=CopSahHorner",
+  "local_path": "data/downloads/sword/",
+  "redistributable": true,
+  "gate": null,
+  "module_name": "CopSahHorner",
+  "sword_version_date": "2009-11-01",
+  "text_source": "Slavic Bible for Windows",
+  "counterpart_source_id": "westcott-hort"
+}

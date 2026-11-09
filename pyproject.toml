@@ -38,6 +38,11 @@ packages = ["python/zetodos_thomas"]
 [tool.hatch.build.targets.wheel.sources]
 "python" = ""
 
+# Ship redistributable JSON (non-.py) inside the wheel for offline validate.
+[tool.hatch.build.targets.wheel.force-include]
+"python/zetodos_thomas/bundled/manifests/copsahhorner.json" = "zetodos_thomas/bundled/manifests/copsahhorner.json"
+"python/zetodos_thomas/bundled/manifests/westcott-hort.json" = "zetodos_thomas/bundled/manifests/westcott-hort.json"
+"python/zetodos_thomas/bundled/pilot/horner-wh-nt-pilot.json" = "zetodos_thomas/bundled/pilot/horner-wh-nt-pilot.json"
 [tool.uv]
 package = true
 default-groups = ["dev"]

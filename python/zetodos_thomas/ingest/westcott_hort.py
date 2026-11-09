@@ -40,7 +40,8 @@ _BETA_MAP = str.maketrans(
     }
 )
 
-_VERSE_START_RE = re.compile(r"^\s*(\d+):(\d+)\s+(.*)$")
+# Allow reference-only empty verses (e.g. "     5:4" with no trailing text).
+_VERSE_START_RE = re.compile(r"^\s*(\d+):(\d+)(?:\s+(.*))?$")
 
 # Map project book ids → Robinson textonly filenames (stem).
 WH_BOOK_FILES: dict[str, str] = {
@@ -94,7 +95,8 @@ def parse_wh_textonly(
             flush()
             current_chapter = int(match.group(1))
             current_verse = int(match.group(2))
-            chunks = [match.group(3)]
+            rest = match.group(3)
+            chunks = [rest] if rest else []
         elif current_verse is not None:
             chunks.append(line)
     flush()
