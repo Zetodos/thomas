@@ -49,8 +49,8 @@ def verify_pilot_rebuild_inputs(
     copsah = load_manifest(manifests_dir / "copsahhorner.json")
     vaticanus = load_manifest(manifests_dir / "ntvmr-vaticanus-b.json")
 
-    if NTVMR_TEIRAW_FILES["John.1.1-18"] != vaticanus.checksum:
-        msg = "internal NTVMR John.1.1-18 pin disagrees with manifest"
+    if NTVMR_TEIRAW_FILES["John.1.1-51"] != vaticanus.checksum:
+        msg = "internal NTVMR John.1.1-51 pin disagrees with manifest"
         raise DownloadError(msg)
 
     for osis_range, expected in NTVMR_TEIRAW_FILES.items():

@@ -2,10 +2,12 @@
 """JAK-28 consumer of the JAK-33 canonical NT train/dev/holdout split.
 
 The authoritative artifact lives at
-``data/training/splits/horner-vaticanus-nt-split-v2.json`` (plus the John 8
+``data/training/splits/horner-vaticanus-nt-split-v3.json`` (plus the John 8
 omission fixture catalog). This module adapts those schemas into the runtime
 ``PilotSplits`` view used by validate/benchmark — it does **not** define a
 second competing split policy under ``data/sources/pilot/``.
+The archival JAK-33 v2 split remains at
+``data/training/splits/horner-vaticanus-nt-split-v2.json``.
 """
 
 from __future__ import annotations

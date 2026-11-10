@@ -1,0 +1,50 @@
+{
+  "id": "horner-vaticanus-nt-v3-inventory",
+  "schema_version": "1",
+  "owned_by": "JAK-43",
+  "pilot_corpus_id": "horner-vaticanus-nt-pilot-v3",
+  "split_id": "horner-vaticanus-nt-split-v3",
+  "greek_source_id": "ntvmr-vaticanus-b",
+  "sahidic_source_id": "copsahhorner",
+  "unit_slots": 407,
+  "nonempty_positive_pairs": 396,
+  "dual_empty_omission_slots": 11,
+  "greek_only_empty_sahidic": 0,
+  "sahidic_only_empty_greek": 0,
+  "split_unit_counts": {
+    "train": 323,
+    "dev": 51,
+    "holdout": 22,
+    "omission": 11
+  },
+  "split_nonempty_counts": {
+    "train": 323,
+    "dev": 51,
+    "holdout": 22
+  },
+  "phase1_comparison": {
+    "pilot_v2_units": 46,
+    "pilot_v2_nonempty": 35,
+    "pilot_v2_train_nonempty_approx": 31,
+    "pilot_v2_holdout_nonempty": 2,
+    "expansion_factor_nonempty": 11.31
+  },
+  "adequacy_for_jak36": "396 nonempty Gospel-first pairs (~11× Phase 1) are adequate to begin eflomal / alternative aligner learning curves on identical splits. Full-NT scale and sufficiency plateaus remain JAK-36 measurement work — not claimed here.",
+  "tei_pins": {
+    "John.1.1-51": "sha256:e9e36dc3a09394741c4902a2b0927bf642629c086809959c289612acea39307d",
+    "John.3.1-21": "sha256:10b669cf7a9234afee857e88d455222d23867676363e63e5396bb4bdfd02b6b1",
+    "John.8.1-11": "sha256:8cd9c90bcbed2fee6f7a3241abd79540da712d58db44aa689e7b0c93cf2f6a92",
+    "Mark.1.1-45": "sha256:eb68d9535b02cb8a933460a4ebdcd0b3d7ad39d78d9b1a9192f194404cc9aa71",
+    "Mark.4.1-34": "sha256:18323b2afd9cd3a38c05861f41ef1dcdc13a96235016bd7d92a717b60c2d4453",
+    "Matt.5.1-48": "sha256:d2495062b9cb671dc0cdeda987ff0284bbdaa734b360fbfb7aed58537c166fd0",
+    "Matt.6.1-34": "sha256:2971d526e68409a9cec734178b1328e24054c9ae6c799c13b39fec13ce9c296c",
+    "Matt.7.1-29": "sha256:9e7e3b25684cdfdd69a83e9ababd32a37f40615b9a85613ba539f558d2bcbbe2",
+    "Matt.10.26-33": "sha256:3a6613b51693bc8505373c9430edcd90ce20c30192b2bda3dd0cbf37d3802eea",
+    "Matt.13.1-58": "sha256:3463691f554ce2898f3d7a0edd0b7250210ab83d8385a66957746f32f0a933c9",
+    "Luke.6.1-49": "sha256:e80f93e3e845b480d2e190b90339457b067418d416ef83821ca3a49c36ab9baf",
+    "Luke.8.4-15": "sha256:14d22e28f5700f8cfd45e5ab27e3e76d9bc03cd7c74788cc1a59dbc63cdd20c2",
+    "Luke.11.9-13": "sha256:75a3f46672cd664344f2b43608d2bf753aad64ce61e0d9d19747b482fc08f635",
+    "Luke.12.2-3": "sha256:1685af9116faa06c113710936225ebf3b8e246e70ac4f75d5fb159382d41587f"
+  },
+  "notes": "Vaticanus B* only; no WH/SBLGNT lacuna fill. Thomas Greek fragments excluded."
+}

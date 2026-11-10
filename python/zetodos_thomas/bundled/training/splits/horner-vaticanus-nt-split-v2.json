@@ -6,7 +6,9 @@
   "sahidic_source_id": "copsahhorner",
   "pilot_corpus_id": "horner-vaticanus-nt-pilot-v2",
   "owned_by": "JAK-33",
-  "consumed_by": ["JAK-28"],
+  "consumed_by": [
+    "JAK-28"
+  ],
   "passages": [
     {
       "book": "john",
@@ -62,7 +64,11 @@
       "verse_from": 14,
       "chapter_to": 5,
       "verse_to": 16,
-      "unit_ids": ["matthew.5.14", "matthew.5.15", "matthew.5.16"],
+      "unit_ids": [
+        "matthew.5.14",
+        "matthew.5.15",
+        "matthew.5.16"
+      ],
       "role": "train",
       "notes": "Light/city sayings (Thomas-adjacent imagery)."
     },
@@ -72,7 +78,10 @@
       "verse_from": 7,
       "chapter_to": 7,
       "verse_to": 8,
-      "unit_ids": ["matthew.7.7", "matthew.7.8"],
+      "unit_ids": [
+        "matthew.7.7",
+        "matthew.7.8"
+      ],
       "role": "train",
       "notes": "Imperatives ask/seek/knock (Thomas 2/92/94 zone)."
     },
@@ -82,7 +91,10 @@
       "verse_from": 20,
       "chapter_to": 6,
       "verse_to": 21,
-      "unit_ids": ["luke.6.20", "luke.6.21"],
+      "unit_ids": [
+        "luke.6.20",
+        "luke.6.21"
+      ],
       "role": "dev",
       "notes": "Beatitudes; pronouns; clause variation (Thomas 54 zone)."
     },
@@ -92,7 +104,10 @@
       "verse_from": 31,
       "chapter_to": 13,
       "verse_to": 32,
-      "unit_ids": ["matthew.13.31", "matthew.13.32"],
+      "unit_ids": [
+        "matthew.13.31",
+        "matthew.13.32"
+      ],
       "role": "holdout",
       "notes": "Mustard-seed parable whole-passage holdout (Thomas 20 zone)."
     }
@@ -103,7 +118,15 @@
       "source_id": "dclp-poxy-654",
       "manuscript_id": "P.Oxy. 654",
       "corpus_role": "evaluation-witness",
-      "unit_ids": ["thomas.1", "thomas.2", "thomas.3", "thomas.4", "thomas.5", "thomas.6", "thomas.7"],
+      "unit_ids": [
+        "thomas.1",
+        "thomas.2",
+        "thomas.3",
+        "thomas.4",
+        "thomas.5",
+        "thomas.6",
+        "thomas.7"
+      ],
       "notes": "Greek Thomas fragment (incipit + logia 1–7). Hold out from Greek–Sahidic training mappings; JAK-34 pilot includes thomas.7."
     },
     {
@@ -129,11 +152,17 @@
       "source_id": "dclp-poxy-655",
       "manuscript_id": "P.Oxy. 655",
       "corpus_role": "evaluation-witness",
-      "unit_ids": ["thomas.24", "thomas.36", "thomas.37", "thomas.38", "thomas.39"],
+      "unit_ids": [
+        "thomas.24",
+        "thomas.36",
+        "thomas.37",
+        "thomas.38",
+        "thomas.39"
+      ],
       "notes": "Greek Thomas fragment (logia ~36–39; possible 24). Hold out from training mappings."
     }
   ],
   "secondary_ot_used": false,
   "secondary_ot_notes": "Secondary OT parallels are not part of this v2 split.",
-  "notes": "Canonical JAK-33 split for horner-vaticanus-nt-pilot-v2 (46 units). Path: data/training/splits/horner-vaticanus-nt-split-v2.json. JAK-28 (#13) must consume this artifact and must not maintain a second policy file under data/sources/pilot/splits.json. John 8:1–11 lives only in data/evidence/omissions/john-8-pa-omission-fixture-v1.json (not train/dev/holdout). Greek NT edition is Vaticanus B* only."
+  "notes": "Canonical JAK-33 split for horner-vaticanus-nt-pilot-v2 (46 units). Path: data/training/splits/horner-vaticanus-nt-split-v2.json. JAK-28 (#13) must consume this artifact and must not maintain a second policy file under data/sources/pilot/splits.json. John 8:1–11 lives only in data/evidence/omissions/john-8-pa-omission-fixture-v1.json (not train/dev/holdout). Greek NT edition is Vaticanus B* only. Archival after JAK-43: paired pilot snapshot is data/sources/pilot/horner-vaticanus-nt-pilot-v2.json; active default is split v3 / pilot-v3."
 }

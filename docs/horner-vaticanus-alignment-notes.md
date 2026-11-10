@@ -3,8 +3,9 @@
 **Status:** Phase 1–2 lexical/phrase alignment pilot with quantified baseline (JAK-28).
 **Greek spine:** INTF/NTVMR Codex Vaticanus GA 03 (`docID` 20003) **firsthand / B\*** only (JAK-25 GO). Westcott–Hort and SBLGNT are **not** used and must not fill lacunae.
 **Sahidic:** CrossWire `CopSahHorner` v1.5 (Public Domain) per JAK-14.
-**Pilot file:** [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](../data/sources/pilot/horner-vaticanus-nt-pilot.json) (`horner-vaticanus-nt-pilot-v2`)
-**Canonical splits (JAK-33):** [`benchmark-holdouts.md`](benchmark-holdouts.md) · [`data/training/splits/horner-vaticanus-nt-split-v2.json`](../data/training/splits/horner-vaticanus-nt-split-v2.json)
+**Corpus file:** [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](../data/sources/pilot/horner-vaticanus-nt-pilot.json) (`horner-vaticanus-nt-pilot-v3`; JAK-43)
+**Canonical splits (JAK-43):** [`eval-data-readiness.md`](eval-data-readiness.md) · [`data/training/splits/horner-vaticanus-nt-split-v3.json`](../data/training/splits/horner-vaticanus-nt-split-v3.json)
+**Archival Phase 1:** [`horner-vaticanus-nt-pilot-v2.json`](../data/sources/pilot/horner-vaticanus-nt-pilot-v2.json) · [`horner-vaticanus-nt-split-v2.json`](../data/training/splits/horner-vaticanus-nt-split-v2.json)
 **Consumer notes / benchmark:** [`alignment-pilot-splits.md`](alignment-pilot-splits.md) · [`alignment-pilot-benchmark.md`](alignment-pilot-benchmark.md)
 **Manifests:** [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json), [`data/manifests/ntvmr-vaticanus-b.json`](../data/manifests/ntvmr-vaticanus-b.json)
 
@@ -32,7 +33,8 @@
 | Matthew 13:31–32 | 2 | **holdout** — mustard-seed parable |
 | John 8:1–11 | 11 | **omission** fixture (empty both sides) |
 
-**46 units total · 35 nonempty positive · 11 omission.**
+**v3 (JAK-43):** 407 units · 396 nonempty positive · 11 omission.  
+**v2 archival:** 46 units · 35 nonempty · 11 omission.
 
 ## Lexical / phrase observations (illustrative — not scores)
 

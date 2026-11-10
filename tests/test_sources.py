@@ -185,13 +185,13 @@ def test_pilot_corpus_committed() -> None:
     corpus = load_pilot_corpus(PILOT_PATH)
     assert corpus.greek_source_id == SOURCE_ID
     assert corpus.sahidic_source_id == "copsahhorner"
-    assert len(corpus.units) == 46
+    assert len(corpus.units) == 407
     john_1_1 = next(u for u in corpus.units if u.unit_id == "john.1.1")
     assert "λογος" in john_1_1.greek.original_text
     assert "ⲡϣⲁϫⲉ" in john_1_1.sahidic.original_text
     john_1_4 = next(u for u in corpus.units if u.unit_id == "john.1.4")
     assert "ανθρωπων" not in john_1_4.greek.original_text
-    assert corpus.id == "horner-vaticanus-nt-pilot-v2"
+    assert corpus.id == "horner-vaticanus-nt-pilot-v3"
     assert any(u.unit_id == "matthew.13.31" for u in corpus.units)
     assert any(u.unit_id == "matthew.7.7" for u in corpus.units)
     empty = [u for u in corpus.units if not u.sahidic.original_text]
@@ -297,8 +297,8 @@ def test_find_repo_root_from_tests() -> None:
 
 def test_ntvmr_download_pins_match_manifest() -> None:
     vat = load_manifest(MANIFESTS_DIR / "ntvmr-vaticanus-b.json")
-    assert NTVMR_TEIRAW_FILES["John.1.1-18"] == vat.checksum
-    assert "Mark.1.1-8" in NTVMR_TEIRAW_FILES
+    assert NTVMR_TEIRAW_FILES["John.1.1-51"] == vat.checksum
+    assert "Mark.1.1-45" in NTVMR_TEIRAW_FILES
 
 
 def test_verify_checksum(tmp_path: Path) -> None:

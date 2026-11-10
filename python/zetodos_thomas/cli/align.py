@@ -69,8 +69,8 @@ def validate_align(
         None,
         "--splits",
         help=(
-            "JAK-33 NtCorpusSplit JSON (must exist when provided; "
-            "default: data/training/splits/horner-vaticanus-nt-split-v2.json)"
+            "NtCorpusSplit JSON (must exist when provided; "
+            "default: data/training/splits/horner-vaticanus-nt-split-v3.json)"
         ),
         exists=True,
         dir_okay=False,
@@ -127,8 +127,8 @@ def benchmark_align(
         None,
         "--splits",
         help=(
-            "JAK-33 NtCorpusSplit JSON (must exist when provided; "
-            "default: data/training/splits/horner-vaticanus-nt-split-v2.json)"
+            "NtCorpusSplit JSON (must exist when provided; "
+            "default: data/training/splits/horner-vaticanus-nt-split-v3.json)"
         ),
         exists=True,
         dir_okay=False,

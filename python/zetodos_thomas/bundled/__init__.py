@@ -57,13 +57,13 @@ def bundled_evidence_pilot_path() -> Path:
 
 
 def bundled_nt_split_path() -> Path:
-    """Packaged Horner x Vaticanus B* train/dev/holdout split v2 (JAK-33)."""
+    """Packaged Horner x Vaticanus B* train/dev/holdout split v3 (JAK-43)."""
     return Path(
         str(
             files("zetodos_thomas.bundled")
             / "training"
             / "splits"
-            / "horner-vaticanus-nt-split-v2.json"
+            / "horner-vaticanus-nt-split-v3.json"
         )
     )
 

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Build and load the Horner x Vaticanus B* pilot parallel excerpt."""
+"""Build and load the Horner x Vaticanus B* parallel corpus (Phase 2 v3)."""
 
 from __future__ import annotations
 
@@ -17,23 +17,30 @@ from zetodos_thomas.ingest.ntvmr_vaticanus import (
 )
 from zetodos_thomas.schemas.source import ParallelUnit, PilotCorpus
 
-# JAK-28 expanded sample: prior prologue/opening/PA + Thomas-relevant nonempty
-# pairs (light sayings, imperatives, beatitudes, mustard-seed parable holdout).
+# JAK-43 Gospel-first expansion beyond the Phase 1 46-unit pilot.
+# Whole same-chapter blocks only (JAK-28 runtime adapter constraint).
 PILOT_RANGES: tuple[tuple[str, int, int, int], ...] = (
-    ("john", 1, 1, 18),
-    ("mark", 1, 1, 8),
-    ("matthew", 5, 14, 16),
-    ("matthew", 7, 7, 8),
-    ("luke", 6, 20, 21),
-    ("matthew", 13, 31, 32),
+    ("john", 1, 1, 51),
+    ("john", 3, 1, 21),
     ("john", 8, 1, 11),
+    ("mark", 1, 1, 45),
+    ("mark", 4, 1, 34),
+    ("matthew", 5, 1, 48),
+    ("matthew", 6, 1, 34),
+    ("matthew", 7, 1, 29),
+    ("matthew", 10, 26, 33),
+    ("matthew", 13, 1, 58),
+    ("luke", 6, 1, 49),
+    ("luke", 8, 4, 15),
+    ("luke", 11, 9, 13),
+    ("luke", 12, 2, 3),
 )
 
-DEFAULT_PILOT_ID = "horner-vaticanus-nt-pilot-v2"
+DEFAULT_PILOT_ID = "horner-vaticanus-nt-pilot-v3"
 
-# Expected counts after JAK-28 expansion (regression anchors).
-EXPECTED_UNIT_COUNT = 46
-EXPECTED_NONEMPTY_POSITIVE = 35
+# Expected counts after JAK-43 expansion (regression anchors).
+EXPECTED_UNIT_COUNT = 407
+EXPECTED_NONEMPTY_POSITIVE = 396
 EXPECTED_OMISSION_UNITS = 11
 
 
@@ -48,7 +55,7 @@ def build_pilot_corpus(
     greek_source_id: str = VATICANUS_SOURCE_ID,
     sahidic_source_id: str = "copsahhorner",
 ) -> PilotCorpus:
-    """Extract the pilot ranges from local CopSahHorner + Vaticanus B* TEI."""
+    """Extract the corpus ranges from local CopSahHorner + Vaticanus B* TEI."""
     tei_paths = _tei_paths_for_pilot(vaticanus_tei_dir)
     units: list[ParallelUnit] = []
     for book, chapter, verse_from, verse_to in PILOT_RANGES:
@@ -112,22 +119,23 @@ def build_pilot_corpus(
     return PilotCorpus(
         id=DEFAULT_PILOT_ID,
         title=(
-            "Horner Sahidic NT x NTVMR Vaticanus B* Greek NT pilot "
-            "(John 1:1-18, Mark 1:1-8, Matt 5:14-16, Matt 7:7-8, "
-            "Luke 6:20-21, Matt 13:31-32 holdout, John 8:1-11 omission)"
+            "Horner Sahidic NT x NTVMR Vaticanus B* Greek NT corpus v3 "
+            "(Gospel-first expansion; JAK-43)"
         ),
         greek_source_id=greek_source_id,
         sahidic_source_id=sahidic_source_id,
         units=units,
         notes=(
             "Public-domain Sahidic (Horner/CrossWire) + CC BY 4.0 INTF/NTVMR "
-            "Vaticanus GA 03 firsthand (B*) pilot for lexical/phrase alignment "
-            "(JAK-28). Greek = Vaticanus B* only (JAK-25 / updated JAK-15); "
-            "Westcott-Hort and SBLGNT are not used. John 8:1-11 is an omission "
-            "fixture (empty on both sides; not positive training). "
-            "Matthew 13:31-32 is a whole-passage holdout. Empty firsthand "
-            "readings are omissions, not corrector fill. See "
-            "docs/benchmark-holdouts.md."
+            "Vaticanus GA 03 firsthand (B*) parallel corpus for Phase 2 "
+            "statistical alignment (JAK-43). Greek = Vaticanus B* only "
+            "(JAK-25); Westcott-Hort and SBLGNT are not used. Expands the "
+            "Phase 1 46-unit pilot (JAK-28/33) to Gospel blocks suitable to "
+            "begin JAK-36 learning curves. John 8:1-11 remains an omission "
+            "fixture (empty both sides). Evaluation-witness Greek Thomas "
+            "fragments (P.Oxy. 654/1/655) are not part of this NT stack. "
+            "See data/training/splits/horner-vaticanus-nt-split-v3.json and "
+            "docs/eval-data-readiness.md."
         ),
     )
 

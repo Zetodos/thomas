@@ -1,15 +1,20 @@
-# Benchmark holdouts and leakage policy (JAK-33)
+# Benchmark holdouts and leakage policy
 
-**Status:** Canonical train / dev / holdout policy for the Horner × Vaticanus B\* **v2** pilot (46 units).
+**Active (JAK-43):** Canonical train / dev / holdout for Horner × Vaticanus B\* **v3**
+(407 units / 396 nonempty). See [`docs/eval-data-readiness.md`](eval-data-readiness.md)
+and [`horner-vaticanus-nt-split-v3.json`](../data/training/splits/horner-vaticanus-nt-split-v3.json).
+
+**Archival (JAK-33):** Phase 1 **v2** pilot (46 units) remains below for history.
 **Greek NT:** Vaticanus B\* (`ntvmr-vaticanus-b`) only — no Westcott–Hort / SBLGNT lacuna fill.
 **Sahidic NT:** `copsahhorner`.
-**Consumers:** JAK-28 (alignment benchmarks on PR #13). **JAK-33 owns this file**; JAK-28 must not keep a second policy under `data/sources/pilot/splits.json`.
+**Consumers:** JAK-36+ (v3); JAK-28 historical benchmarks (v2). Do not keep a second policy under `data/sources/pilot/splits.json`.
 
 ## Canonical artifact (offline)
 
 | Path | Role |
 | --- | --- |
-| [`data/training/splits/horner-vaticanus-nt-split-v2.json`](../data/training/splits/horner-vaticanus-nt-split-v2.json) | **Authoritative** whole-passage train / dev / holdout + evaluation-witness exclusions |
+| [`data/training/splits/horner-vaticanus-nt-split-v3.json`](../data/training/splits/horner-vaticanus-nt-split-v3.json) | **Authoritative (JAK-43)** whole-passage train / dev / holdout + evaluation-witness exclusions |
+| [`data/training/splits/horner-vaticanus-nt-split-v2.json`](../data/training/splits/horner-vaticanus-nt-split-v2.json) | Archival Phase 1 split (JAK-33) |
 | [`data/evidence/omissions/john-8-pa-omission-fixture-v1.json`](../data/evidence/omissions/john-8-pa-omission-fixture-v1.json) | Empty/omission fixtures **separate** from positive lexical pairs |
 | [`data/evidence/divergences/greek-thomas-fragment-divergences-v1.json`](../data/evidence/divergences/greek-thomas-fragment-divergences-v1.json) | Greek Thomas fragment vs Coptic sequence/edition divergences |
 | [`docs/greek-thomas-fragment-divergences.md`](greek-thomas-fragment-divergences.md) | Human-readable divergence notes |

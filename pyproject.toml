@@ -53,9 +53,11 @@ packages = ["python/zetodos_thomas"]
 "python/zetodos_thomas/bundled/fragments/dclp/poxy-654-tm62840.xml" = "zetodos_thomas/bundled/fragments/dclp/poxy-654-tm62840.xml"
 "python/zetodos_thomas/bundled/fragments/dclp/poxy-655-tm62839.xml" = "zetodos_thomas/bundled/fragments/dclp/poxy-655-tm62839.xml"
 "python/zetodos_thomas/bundled/evidence/pilot/thomas-7-17-30-77.json" = "zetodos_thomas/bundled/evidence/pilot/thomas-7-17-30-77.json"
+"python/zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v3.json" = "zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v3.json"
 "python/zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v2.json" = "zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v2.json"
 "python/zetodos_thomas/bundled/evidence/omissions/john-8-pa-omission-fixture-v1.json" = "zetodos_thomas/bundled/evidence/omissions/john-8-pa-omission-fixture-v1.json"
 "python/zetodos_thomas/bundled/evidence/divergences/greek-thomas-fragment-divergences-v1.json" = "zetodos_thomas/bundled/evidence/divergences/greek-thomas-fragment-divergences-v1.json"
+"python/zetodos_thomas/bundled/evidence/eval/thomas-7-blinded-v1.json" = "zetodos_thomas/bundled/evidence/eval/thomas-7-blinded-v1.json"
 [tool.uv]
 package = true
 default-groups = ["dev"]
