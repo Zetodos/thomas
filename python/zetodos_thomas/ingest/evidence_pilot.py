@@ -135,6 +135,35 @@ def validate_evidence_pilot_or_raise(
                 )
                 raise EvidencePilotValidationError(msg)
 
+    # Every witness alignment: source/transcription consistency + Coptic units.
+    for w in package.witness_alignments:
+        if w.greek_source_id not in manifest_ids:
+            msg = (
+                f"{w.id}: greek_source_id {w.greek_source_id!r} "
+                "not present in manifests"
+            )
+            raise EvidencePilotValidationError(msg)
+        if w.greek_transcription_id not in transcriptions:
+            msg = (
+                f"{w.id}: greek_transcription_id "
+                f"{w.greek_transcription_id!r} missing from fragment corpus"
+            )
+            raise EvidencePilotValidationError(msg)
+        tx = transcriptions[w.greek_transcription_id]
+        if tx.source_id != w.greek_source_id:
+            msg = (
+                f"{w.id}: transcription source_id {tx.source_id!r} "
+                f"!= greek_source_id {w.greek_source_id!r}"
+            )
+            raise EvidencePilotValidationError(msg)
+        for unit_id in w.coptic_unit_ids:
+            if unit_id not in thomas_units:
+                msg = (
+                    f"{w.id}: coptic_unit_id {unit_id!r} "
+                    f"missing from Dilley corpus {thomas_corpus_path}"
+                )
+                raise EvidencePilotValidationError(msg)
+
     # 30/77 divergence must be an explicit witness alignment (not silent merge).
     div = [
         w
@@ -149,12 +178,6 @@ def validate_evidence_pilot_or_raise(
         )
         raise EvidencePilotValidationError(msg)
     for w in div:
-        if w.greek_transcription_id not in transcriptions:
-            msg = (
-                f"{w.id}: greek_transcription_id "
-                f"{w.greek_transcription_id!r} missing from fragment corpus"
-            )
-            raise EvidencePilotValidationError(msg)
         notes_l = w.notes.lower()
         if "silent merge" not in notes_l and "silently merge" not in notes_l:
             msg = f"{w.id}: notes must forbid silent merge of P.Oxy. 1 vs Coptic 30/77"

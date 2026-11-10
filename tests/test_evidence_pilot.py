@@ -144,3 +144,86 @@ def test_cross_ref_rejects_unknown_transcription(tmp_path: Path) -> None:
     except EvidencePilotValidationError:
         ok = False
     assert ok is False
+
+
+def _coverage_alignment(package: PilotEvidenceSet) -> dict:
+    data = json.loads(package.model_dump_json())
+    coverage = next(w for w in data["witness_alignments"] if w["kind"] == "coverage")
+    return coverage
+
+
+def test_witness_alignment_rejects_unknown_transcription() -> None:
+    package = load_evidence_pilot(EVIDENCE_PATH)
+    data = json.loads(package.model_dump_json())
+    coverage = _coverage_alignment(package)
+    coverage["greek_transcription_id"] = "missing-tx"
+    for i, row in enumerate(data["witness_alignments"]):
+        if row["id"] == coverage["id"]:
+            data["witness_alignments"][i] = coverage
+            break
+    bad = PilotEvidenceSet.model_validate(data)
+    manifests = validate_manifests_dir(MANIFESTS_DIR)
+    try:
+        validate_evidence_pilot_or_raise(
+            bad,
+            manifests=manifests,
+            thomas_corpus_path=THOMAS_PATH,
+            fragments_corpus_path=FRAGMENTS_PATH,
+        )
+        ok = True
+    except EvidencePilotValidationError as exc:
+        ok = False
+        assert "greek_transcription_id" in str(exc)
+    assert ok is False
+
+
+def test_witness_alignment_rejects_source_transcription_mismatch() -> None:
+    package = load_evidence_pilot(EVIDENCE_PATH)
+    data = json.loads(package.model_dump_json())
+    coverage = _coverage_alignment(package)
+    # Keep a real transcription id but point greek_source_id at a different DCLP.
+    coverage["greek_source_id"] = "dclp-poxy-1"
+    assert coverage["greek_transcription_id"] == "poxy-654-dclp"
+    for i, row in enumerate(data["witness_alignments"]):
+        if row["id"] == coverage["id"]:
+            data["witness_alignments"][i] = coverage
+            break
+    bad = PilotEvidenceSet.model_validate(data)
+    manifests = validate_manifests_dir(MANIFESTS_DIR)
+    try:
+        validate_evidence_pilot_or_raise(
+            bad,
+            manifests=manifests,
+            thomas_corpus_path=THOMAS_PATH,
+            fragments_corpus_path=FRAGMENTS_PATH,
+        )
+        ok = True
+    except EvidencePilotValidationError as exc:
+        ok = False
+        assert "greek_source_id" in str(exc)
+    assert ok is False
+
+
+def test_witness_alignment_rejects_missing_coptic_unit() -> None:
+    package = load_evidence_pilot(EVIDENCE_PATH)
+    data = json.loads(package.model_dump_json())
+    coverage = _coverage_alignment(package)
+    coverage["coptic_unit_ids"] = ["thomas.999"]
+    for i, row in enumerate(data["witness_alignments"]):
+        if row["id"] == coverage["id"]:
+            data["witness_alignments"][i] = coverage
+            break
+    bad = PilotEvidenceSet.model_validate(data)
+    manifests = validate_manifests_dir(MANIFESTS_DIR)
+    try:
+        validate_evidence_pilot_or_raise(
+            bad,
+            manifests=manifests,
+            thomas_corpus_path=THOMAS_PATH,
+            fragments_corpus_path=FRAGMENTS_PATH,
+        )
+        ok = True
+    except EvidencePilotValidationError as exc:
+        ok = False
+        assert "coptic_unit_id" in str(exc)
+    assert ok is False
