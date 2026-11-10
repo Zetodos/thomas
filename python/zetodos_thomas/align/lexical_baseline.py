@@ -168,8 +168,9 @@ def gold_links_from_reference(doc: AlignmentDocument) -> list[TokenLink]:
     """Extract token-level gold links from lexical/phrase parallels.
 
     For phrase parallels, expands to the Cartesian product of left/right span
-    tokens (conservative gold for scoring phrase fidelity separately).
-    Lexical parallels with single-token spans become 1:1 links.
+    tokens. The resulting scores are a **link-expansion** metric, not an
+    independent phrase-fidelity F1 — report that limitation before any Phase 2
+    gate. Lexical parallels with single-token spans become 1:1 links.
     """
     tokens = {t.id: t for t in doc.tokens}
     spans = {s.id: s for s in doc.spans}
@@ -286,14 +287,30 @@ def score_links(
 
 
 def null_alignment_rate(
-    units: list[ParallelUnit], links: list[TokenLink]
+    units: list[ParallelUnit],
+    links: list[TokenLink],
+    *,
+    scoring_min_dice: float | None = None,
+    abstention_threshold: float = 0.05,
 ) -> dict[str, object]:
-    """Share of alignable Sahidic tokens left without a predicted link."""
-    by_unit: dict[str, set[str]] = defaultdict(set)
+    """Report forced prediction coverage vs abstention-threshold nulls.
+
+    When scoring uses ``min_dice=0`` + forced 1-best, every alignable left token
+    has a link, so an unlabelled ``null_rate`` of 0.0 is *not* evidence the
+    model learned null alignments. Callers should treat
+    ``forced_prediction_coverage`` as coverage of the scoring regime and
+    ``null_rate_at_abstention_threshold`` as the empirical null share when
+    links scoring below ``abstention_threshold`` are treated as abstentions.
+    """
+    by_unit_all: dict[str, set[str]] = defaultdict(set)
+    by_unit_kept: dict[str, set[str]] = defaultdict(set)
     for link in links:
-        by_unit[link.unit_id].add(link.left_token_id)
+        by_unit_all[link.unit_id].add(link.left_token_id)
+        if link.score >= abstention_threshold:
+            by_unit_kept[link.unit_id].add(link.left_token_id)
     total = 0
-    nulls = 0
+    missing = 0
+    abstained = 0
     for unit in units:
         if not (
             unit.greek.original_text.strip() and unit.sahidic.original_text.strip()
@@ -301,12 +318,27 @@ def null_alignment_rate(
             continue
         left, _right = _norm_tokens(unit)
         total += len(left)
-        linked = by_unit.get(unit.unit_id, set())
-        nulls += sum(1 for t in left if t.id not in linked)
+        linked = by_unit_all.get(unit.unit_id, set())
+        kept = by_unit_kept.get(unit.unit_id, set())
+        missing += sum(1 for t in left if t.id not in linked)
+        abstained += sum(1 for t in left if t.id not in kept)
+    forced_coverage = ((total - missing) / total) if total else None
+    null_at_threshold = (abstained / total) if total else None
     return {
         "alignable_sahidic_tokens": total,
-        "null_sahidic_tokens": nulls,
-        "null_rate": (nulls / total) if total else None,
+        "links_emitted": total - missing,
+        "missing_predictions": missing,
+        "forced_prediction_coverage": forced_coverage,
+        "scoring_min_dice": scoring_min_dice,
+        "abstention_threshold": abstention_threshold,
+        "null_sahidic_tokens_at_abstention_threshold": abstained,
+        "null_rate_at_abstention_threshold": null_at_threshold,
+        "note": (
+            "forced_prediction_coverage reflects the scoring emission policy "
+            "(e.g. min_dice=0 1-best), not learned null alignments. "
+            "null_rate_at_abstention_threshold treats links below "
+            f"{abstention_threshold} as abstentions."
+        ),
     }
 
 

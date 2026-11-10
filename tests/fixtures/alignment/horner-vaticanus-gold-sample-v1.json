@@ -1,6 +1,6 @@
 {
   "id": "horner-vaticanus-gold-sample-v1",
-  "title": "Human-checked Greek–Sahidic token/phrase reference sample (JAK-28)",
+  "title": "Provisional Greek–Sahidic token/phrase reference sample (JAK-28)",
   "id_scheme_version": "1",
   "text_units": [
     {
@@ -2948,7 +2948,7 @@
       ],
       "relation": "verse-pair",
       "agreement": "verbal",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "verse pair"
     },
     {
@@ -2961,7 +2961,7 @@
       ],
       "relation": "phrase",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "in the beginning"
     },
     {
@@ -2974,7 +2974,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "existed / was"
     },
     {
@@ -2987,7 +2987,7 @@
       ],
       "relation": "phrase",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "the Word / ⲡϣⲁϫⲉ"
     },
     {
@@ -3000,7 +3000,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3013,7 +3013,7 @@
       ],
       "relation": "phrase",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3026,7 +3026,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "nomina sacra θς"
     },
     {
@@ -3039,7 +3039,7 @@
       ],
       "relation": "verse-pair",
       "agreement": "verbal",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3052,7 +3052,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3065,7 +3065,7 @@
       ],
       "relation": "phrase",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3078,7 +3078,7 @@
       ],
       "relation": "phrase",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3091,7 +3091,7 @@
       ],
       "relation": "verse-pair",
       "agreement": "verbal",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "Sahidic heading ⲙⲁⲣⲕⲟⲥ is paratext; excluded from lexical scoring"
     },
     {
@@ -3104,7 +3104,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "beginning"
     },
     {
@@ -3117,7 +3117,7 @@
       ],
       "relation": "loanword",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "ευαγγελιον loanword"
     },
     {
@@ -3130,7 +3130,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "nomina sacra ΙΣ / ΙΥ"
     },
     {
@@ -3143,7 +3143,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "nomina sacra ΧΣ / ΧΥ"
     },
     {
@@ -3154,7 +3154,7 @@
       ],
       "relation": "lexical",
       "agreement": "none",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "Vaticanus has υιου θυ; Horner Mark 1:1 omits — null alignment / textual mismatch"
     },
     {
@@ -3167,7 +3167,7 @@
       ],
       "relation": "verse-pair",
       "agreement": "verbal",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3180,7 +3180,7 @@
       ],
       "relation": "loanword",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "αιτει loan / αιτειτε"
     },
     {
@@ -3193,7 +3193,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "seek"
     },
     {
@@ -3206,7 +3206,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "knock"
     },
     {
@@ -3219,7 +3219,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "open; editorial marks stripped in normalized"
     },
     {
@@ -3232,7 +3232,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "to you"
     },
     {
@@ -3245,7 +3245,7 @@
       ],
       "relation": "verse-pair",
       "agreement": "verbal",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "Beatitude; Sahidic kingdom of heavens vs Greek kingdom of God (θυ)"
     },
     {
@@ -3258,7 +3258,7 @@
       ],
       "relation": "loanword",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3271,7 +3271,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3284,7 +3284,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3297,7 +3297,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "kingdom; heavens vs θυ textual difference"
     },
     {
@@ -3310,7 +3310,7 @@
       ],
       "relation": "verse-pair",
       "agreement": "verbal",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "HOLDOUT passage gold for evaluation only; never fit baseline on this unit"
     },
     {
@@ -3323,7 +3323,7 @@
       ],
       "relation": "loanword",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3336,7 +3336,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3349,7 +3349,7 @@
       ],
       "relation": "phrase",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "mustard seed"
     },
     {
@@ -3362,7 +3362,7 @@
       ],
       "relation": "lexical",
       "agreement": "lexical",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": ""
     },
     {
@@ -3375,9 +3375,9 @@
       ],
       "relation": "other",
       "agreement": "shared-absence",
-      "provenance": "human-gold-jak28",
+      "provenance": "provisional-draft-jak28-unreviewed",
       "notes": "PA empty both sides; omission fixture, not positive lexical gold"
     }
   ],
-  "notes": "Human-verified sample for pilot evaluation. Qualitative examples such as ⲡϣⲁϫⲉ↔λογος are encoded as gold links here — do not cite them alone as experimental results. Mark 1:1 heading is paratext. Matthew 13:31 is holdout gold only. John 8:1 is shared-absence. Provenance: human-gold-jak28."
+  "notes": "PROVISIONAL reference sample for pilot evaluation — not an adjudicated human gold set. No named human reviewer or adjudication record is attached; do not cite as Human-checked/Human-verified. Annotation rules (draft): (1) whitespace tokenize Sahidic/Greek as in zetodos_thomas.align.tokenize; (2) lexical/loanword parallels are 1:1 token spans when lengths match; (3) multi-token phrase parallels may be recorded as spans and are scored via Cartesian link expansion (link-expansion metric, not independent phrase fidelity); (4) Mark 1:1 ⲙⲁⲣⲕⲟⲥ heading is paratext (no lexical gold); (5) dual-empty John 8:1 is shared-absence; (6) Matthew 13:31 is holdout smoke-test gold only (7 links — not a generalizable F1). Source versions: greek_source_id=ntvmr-vaticanus-b (GA 03 / docID 20003 Vaticanus B*); sahidic_source_id=copsahhorner (CopSahHorner v1.5); pilot_corpus_id=horner-vaticanus-nt-pilot-v2. Annotator/provenance tag: provisional-draft-jak28-unreviewed (agent-authored draft pending Jake human review). Qualitative examples such as ⲡϣⲁϫⲉ↔λογος are encoded as links here — do not cite them alone as experimental results."
 }

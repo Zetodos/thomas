@@ -15,6 +15,7 @@ from zetodos_thomas.align.lexical_baseline import (
     TokenLink,
     fit_lexical_baseline,
     gold_links_from_reference,
+    null_alignment_rate,
     predict_links,
     score_links,
 )
@@ -147,7 +148,14 @@ def test_new_tei_fixtures_parse_nonempty() -> None:
 def test_gold_reference_valid_and_omission_shared_absence() -> None:
     doc = AlignmentDocument.model_validate_json(GOLD_PATH.read_text(encoding="utf-8"))
     assert doc.tokens
+    assert "Provisional" in doc.title
+    assert "provisional" in doc.notes.lower()
+    assert not doc.title.startswith("Human-")
+    assert "do not cite as Human-checked/Human-verified" in doc.notes
     assert any(p.relation is ParallelRelation.PHRASE for p in doc.parallels)
+    assert any(
+        p.provenance == "provisional-draft-jak28-unreviewed" for p in doc.parallels
+    )
     assert any(p.agreement.value == "shared-absence" for p in doc.parallels)
     # Heading span exists and is not lexically parallelled to a Greek content span
     heading = next(s for s in doc.spans if s.id.endswith("/mark.1.1/s/book-heading"))
@@ -155,6 +163,8 @@ def test_gold_reference_valid_and_omission_shared_absence() -> None:
     gold = gold_links_from_reference(doc)
     assert not any(g.unit_id == "john.8.1" for g in gold)
     assert any(g.unit_id == "matthew.13.31" for g in gold)
+    # Holdout smoke-test scale (not a generalizable F1 sample).
+    assert sum(1 for g in gold if g.unit_id == "matthew.13.31") == 7
 
 
 def test_lexical_baseline_fit_excludes_holdout_and_omission() -> None:
@@ -193,6 +203,38 @@ def test_benchmark_report_has_denominators_no_threshold() -> None:
     assert not report["omission_leak_problems"]
     # Holdout must not appear in train fit list
     assert "matthew.13.31" not in report["lexical_baseline"]["train_units_fit"]
+    ref = report["human_reference"]
+    assert ref["status"] == "provisional"
+    assert ref["provenance_tag"] == "provisional-draft-jak28-unreviewed"
+    assert (
+        "Cartesian" in ref["phrase_scoring"]
+        or "link-expansion" in ref["phrase_scoring"]
+    )
+    assert "7 links" in ref["holdout_scale"]
+    nulls = report["lexical_baseline"]["null_alignments"]
+    assert nulls["scoring_min_dice"] == 0.0
+    assert nulls["forced_prediction_coverage"] == 1.0
+    assert "null_rate" not in nulls  # do not present forced coverage as empirical nulls
+    assert nulls["null_rate_at_abstention_threshold"] is not None
+    assert any(
+        "Cartesian" in lim or "phrase" in lim.lower() for lim in report["limitations"]
+    )
+    assert any(
+        "smoke" in lim.lower() or "7 links" in lim for lim in report["limitations"]
+    )
+
+
+def test_null_alignment_rate_distinguishes_forced_vs_abstention() -> None:
+    corpus = load_pilot_corpus(PILOT_PATH)
+    unit = next(u for u in corpus.units if u.unit_id == "john.1.1")
+    model = fit_lexical_baseline([unit])
+    forced = predict_links(model, [unit], min_dice=0.0)
+    stats = null_alignment_rate(
+        [unit], forced, scoring_min_dice=0.0, abstention_threshold=0.05
+    )
+    assert stats["forced_prediction_coverage"] == 1.0
+    assert stats["missing_predictions"] == 0
+    assert 0.0 <= float(stats["null_rate_at_abstention_threshold"] or 0.0) <= 1.0
 
 
 def test_eflomal_probe_does_not_raise() -> None:

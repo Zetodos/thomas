@@ -123,8 +123,14 @@
     },
     "null_alignments": {
       "alignable_sahidic_tokens": 61,
-      "null_sahidic_tokens": 0,
-      "null_rate": 0.0
+      "links_emitted": 61,
+      "missing_predictions": 0,
+      "forced_prediction_coverage": 1.0,
+      "scoring_min_dice": 0.0,
+      "abstention_threshold": 0.05,
+      "null_sahidic_tokens_at_abstention_threshold": 26,
+      "null_rate_at_abstention_threshold": 0.4262295081967213,
+      "note": "forced_prediction_coverage reflects the scoring emission policy (e.g. min_dice=0 1-best), not learned null alignments. null_rate_at_abstention_threshold treats links below 0.05 as abstentions."
     },
     "failure_examples": [
       {
@@ -197,7 +203,13 @@
     "documents": [
       "horner-vaticanus-gold-sample-v1.json"
     ],
+    "status": "provisional",
+    "adjudication": "No named human reviewer or adjudication record; do not treat as Human-checked/Human-verified.",
+    "provenance_tag": "provisional-draft-jak28-unreviewed",
     "gold_link_count": 43,
+    "titles": [
+      "Provisional Greek–Sahidic token/phrase reference sample (JAK-28)"
+    ],
     "parallel_inventory": {
       "horner-vaticanus-gold-sample-v1.json": {
         "verse-pair": 6,
@@ -206,7 +218,9 @@
         "loanword": 4,
         "other": 1
       }
-    }
+    },
+    "phrase_scoring": "Multi-token phrase parallels expand to Cartesian token links; reported F1 is a link-expansion metric, not independent phrase fidelity.",
+    "holdout_scale": "Matthew 13:31 gold is smoke-test scale (7 links); holdout F1 is not generalizable."
   },
   "eflomal": {
     "available": false,
@@ -217,12 +231,15 @@
     "No numeric pass threshold - baseline only (PLAN.md Phase 2).",
     "Whitespace tokenization is not morphology; Coptic groups stay fused.",
     "Verse-level type Dice still over-generates co-occurrence; order is weak.",
-    "Human gold is a small sample; scoring uses annotated-left coverage only.",
+    "Reference gold is provisional (unreviewed draft); scoring uses annotated-left coverage only.",
+    "Phrase parallels use Cartesian link expansion — not phrase-level F1.",
+    "Matthew 13:31 holdout gold is 7 links (smoke test, not generalizable).",
+    "null_alignments.forced_prediction_coverage reflects min_dice=0 scoring emission, not learned nulls; use null_rate_at_abstention_threshold for abstention-style nulls.",
     "John 8:1-11 omission fixtures excluded from positive denominators.",
-    "Matthew 13:31-32 holdout scored only when present in gold fixtures.",
     "Greek = NTVMR Vaticanus B* (GA 03 / docID 20003) only; no WH/SBLGNT mix.",
-    "eflomal unavailable without native build; not on default path.",
-    "Thomas Greek fragments (7/17/30/77) are outside this NT training stack."
+    "eflomal unavailable without native build; not on default path (not implemented in this PR).",
+    "Thomas Greek fragments (7/17/30/77) are outside this NT training stack.",
+    "Canonical train/dev/holdout policy is owned by JAK-33 (data/training/splits/); this PR must not keep a competing splits file."
   ],
   "omission_leak_problems": [],
   "pass_threshold": null
