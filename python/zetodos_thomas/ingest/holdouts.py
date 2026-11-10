@@ -52,6 +52,61 @@ def _unit_ids_by_role(split: NtCorpusSplit, role: PassageRole) -> set[str]:
     return ids
 
 
+def _pilot_units_in_passage_range(
+    pilot: PilotCorpus,
+    *,
+    book: str,
+    chapter_from: int,
+    verse_from: int,
+    chapter_to: int,
+    verse_to: int,
+) -> set[str]:
+    """Return pilot unit_ids whose Greek side falls in the passage range."""
+    start = (chapter_from, verse_from)
+    end = (chapter_to, verse_to)
+    matched: set[str] = set()
+    for unit in pilot.units:
+        side = unit.greek
+        if side.book != book:
+            continue
+        if start <= (side.chapter, side.verse) <= end:
+            matched.add(unit.unit_id)
+    return matched
+
+
+def _assert_passage_unit_ids_match_range(
+    split: NtCorpusSplit,
+    pilot: PilotCorpus,
+) -> None:
+    """Reject nonempty passages whose unit_ids disagree with the declared range.
+
+    Prevents moving e.g. ``mark.1.1`` into a John train ``unit_ids`` list while
+    the passage still advertises John 1:1-18 as its book/verse range.
+    """
+    for passage in split.passages:
+        if not passage.unit_ids:
+            continue
+        declared = set(passage.unit_ids)
+        expected = _pilot_units_in_passage_range(
+            pilot,
+            book=passage.book,
+            chapter_from=passage.chapter_from,
+            verse_from=passage.verse_from,
+            chapter_to=passage.chapter_to,
+            verse_to=passage.verse_to,
+        )
+        if declared != expected:
+            msg = (
+                f"passage role={passage.role.value} book={passage.book} "
+                f"{passage.chapter_from}:{passage.verse_from}-"
+                f"{passage.chapter_to}:{passage.verse_to} unit_ids "
+                f"must equal pilot units in that range; "
+                f"extra={sorted(declared - expected)}, "
+                f"missing={sorted(expected - declared)}"
+            )
+            raise HoldoutValidationError(msg)
+
+
 def crosscheck_against_pilot(
     split: NtCorpusSplit,
     omissions: OmissionFixtureSet,
@@ -88,6 +143,8 @@ def crosscheck_against_pilot(
         msg = f"holdout artifacts reference unknown pilot unit_ids: {sorted(unknown)}"
         raise HoldoutValidationError(msg)
 
+    _assert_passage_unit_ids_match_range(split, pilot)
+
     if train_ids & holdout_ids:
         msg = f"train/holdout overlap: {sorted(train_ids & holdout_ids)}"
         raise HoldoutValidationError(msg)
@@ -98,6 +155,9 @@ def crosscheck_against_pilot(
         msg = (
             f"holdout overlaps omission fixtures: {sorted(holdout_ids & omission_ids)}"
         )
+        raise HoldoutValidationError(msg)
+    if dev_ids & omission_ids:
+        msg = f"dev overlaps omission fixtures: {sorted(dev_ids & omission_ids)}"
         raise HoldoutValidationError(msg)
     if omission_ids != empty_pilot_ids:
         msg = (

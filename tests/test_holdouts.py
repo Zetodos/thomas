@@ -19,6 +19,7 @@ from zetodos_thomas.bundled import (
 from zetodos_thomas.cli.app import app
 from zetodos_thomas.ingest.holdouts import (
     HoldoutValidationError,
+    crosscheck_against_pilot,
     load_fragment_divergences,
     load_nt_split,
     load_omission_fixtures,
@@ -132,3 +133,46 @@ def test_loaders_round_trip_types() -> None:
     assert isinstance(load_nt_split(SPLIT_PATH), NtCorpusSplit)
     assert isinstance(load_omission_fixtures(OMISSION_PATH), OmissionFixtureSet)
     assert load_fragment_divergences(DIVERGENCE_PATH).schema_version == "1"
+
+
+def test_crosscheck_rejects_unit_outside_declared_passage_range(
+    tmp_path: Path,
+) -> None:
+    """Moving Mark holdout ids into John train while ranges stay John fails."""
+    split = load_nt_split(SPLIT_PATH)
+    payload = split.model_dump(mode="json")
+    for passage in payload["passages"]:
+        if passage["role"] == "train":
+            # Keep John 1:1-18 range advertisement; sneak mark.1.1 into unit_ids.
+            passage["unit_ids"] = [*passage["unit_ids"], "mark.1.1"]
+        if passage["role"] == "holdout":
+            passage["unit_ids"] = [
+                uid for uid in passage["unit_ids"] if uid != "mark.1.1"
+            ]
+    bad = tmp_path / "split.json"
+    bad.write_text(json.dumps(payload), encoding="utf-8")
+    with pytest.raises(HoldoutValidationError, match="must equal pilot units"):
+        validate_holdout_artifacts(
+            split_path=bad,
+            omission_path=OMISSION_PATH,
+            divergence_path=DIVERGENCE_PATH,
+            pilot=load_pilot_corpus(PILOT_PATH),
+        )
+
+
+def test_crosscheck_rejects_dev_omission_overlap() -> None:
+    """John 8 PA omission fixtures must not enter the dev role."""
+    split = load_nt_split(SPLIT_PATH)
+    omissions = load_omission_fixtures(OMISSION_PATH)
+    payload = split.model_dump(mode="json")
+    for passage in payload["passages"]:
+        if passage["role"] == "dev":
+            passage["book"] = "john"
+            passage["chapter_from"] = 8
+            passage["verse_from"] = 1
+            passage["chapter_to"] = 8
+            passage["verse_to"] = 1
+            passage["unit_ids"] = ["john.8.1"]
+    mutated = NtCorpusSplit.model_validate(payload)
+    with pytest.raises(HoldoutValidationError, match="dev overlaps omission"):
+        crosscheck_against_pilot(mutated, omissions, load_pilot_corpus(PILOT_PATH))
