@@ -10,9 +10,18 @@ import typer
 
 from zetodos_thomas.align.benchmark import run_benchmark, write_benchmark_json
 from zetodos_thomas.align.eflomal_probe import probe_eflomal
-from zetodos_thomas.align.splits import DEFAULT_SPLITS, load_splits
+from zetodos_thomas.align.splits import (
+    PilotSplits,
+    load_canonical_splits,
+    load_splits,
+)
 from zetodos_thomas.align.validate import validate_pilot_corpus
-from zetodos_thomas.ingest.paths import require_repo_root, resolve_pilot_path
+from zetodos_thomas.ingest.paths import (
+    require_repo_root,
+    resolve_nt_split_path,
+    resolve_omission_fixtures_path,
+    resolve_pilot_path,
+)
 from zetodos_thomas.ingest.pilot import load_pilot_corpus
 
 align_app = typer.Typer(
@@ -22,8 +31,12 @@ align_app = typer.Typer(
 )
 
 
-def _default_splits_path(repo_root: Path) -> Path:
-    return repo_root / "data" / "sources" / "pilot" / "splits.json"
+def _resolve_runtime_splits(root: Path, splits_path: Path | None) -> PilotSplits:
+    """Load JAK-33 canonical split (+ omission catalog). Explicit path must exist."""
+    omission = resolve_omission_fixtures_path(root)
+    if splits_path is not None:
+        return load_splits(splits_path, omission_path=omission)
+    return load_canonical_splits(resolve_nt_split_path(root), omission)
 
 
 def _default_reference_dir(repo_root: Path) -> Path:
@@ -55,7 +68,10 @@ def validate_align(
     splits_path: Path | None = typer.Option(
         None,
         "--splits",
-        help="Passage splits JSON (must exist when provided)",
+        help=(
+            "JAK-33 NtCorpusSplit JSON (must exist when provided; "
+            "default: data/training/splits/horner-vaticanus-nt-split-v2.json)"
+        ),
         exists=True,
         dir_okay=False,
         readable=True,
@@ -74,13 +90,7 @@ def validate_align(
         raise typer.Exit(code=1)
 
     corpus = load_pilot_corpus(pilot)
-    if splits_path is not None:
-        splits = load_splits(splits_path)
-    else:
-        default_splits = _default_splits_path(root)
-        splits = (
-            load_splits(default_splits) if default_splits.is_file() else DEFAULT_SPLITS
-        )
+    splits = _resolve_runtime_splits(root, splits_path)
     report = validate_pilot_corpus(corpus, splits=splits)
     typer.echo(
         f"pilot {corpus.id}: {report.unit_count} units "
@@ -116,7 +126,10 @@ def benchmark_align(
     splits_path: Path | None = typer.Option(
         None,
         "--splits",
-        help="Passage splits JSON (must exist when provided)",
+        help=(
+            "JAK-33 NtCorpusSplit JSON (must exist when provided; "
+            "default: data/training/splits/horner-vaticanus-nt-split-v2.json)"
+        ),
         exists=True,
         dir_okay=False,
         readable=True,
@@ -124,7 +137,7 @@ def benchmark_align(
     reference_dir: Path | None = typer.Option(
         None,
         "--reference-dir",
-        help="Directory of human gold AlignmentDocument JSON files",
+        help="Directory of provisional gold AlignmentDocument JSON files",
         exists=False,
         file_okay=False,
     ),
@@ -135,7 +148,7 @@ def benchmark_align(
         help="Write machine-readable benchmark JSON",
     ),
 ) -> None:
-    """Run lexical baseline vs human gold; print summary (no pass threshold)."""
+    """Run lexical baseline vs provisional gold; print summary (no pass threshold)."""
     try:
         root = require_repo_root(repo_root)
     except FileNotFoundError as exc:
@@ -149,13 +162,7 @@ def benchmark_align(
     if not pilot.is_file():
         typer.secho(f"pilot not found: {pilot}", fg=typer.colors.RED)
         raise typer.Exit(code=1)
-    if splits_path is not None:
-        splits = load_splits(splits_path)
-    else:
-        default_splits = _default_splits_path(root)
-        splits = (
-            load_splits(default_splits) if default_splits.is_file() else DEFAULT_SPLITS
-        )
+    splits = _resolve_runtime_splits(root, splits_path)
     refs = sorted(ref_dir.glob("*.json")) if ref_dir.is_dir() else []
     if not refs:
         typer.secho(f"no reference JSON under {ref_dir}", fg=typer.colors.RED)

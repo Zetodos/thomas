@@ -7,7 +7,7 @@ from pathlib import Path
 
 import typer
 
-from zetodos_thomas.align.splits import DEFAULT_SPLITS, load_splits
+from zetodos_thomas.align.splits import load_canonical_splits
 from zetodos_thomas.align.validate import validate_pilot_corpus
 from zetodos_thomas.ingest.dilley_thomas import (
     EXPECTED_LOGIA,
@@ -188,9 +188,12 @@ def validate_sources(
                 fg=typer.colors.RED,
             )
             raise typer.Exit(code=1)
-        # Structural / normalization / omission checks (JAK-28).
-        splits_path = pilot.parent / "splits.json"
-        splits = load_splits(splits_path) if splits_path.is_file() else DEFAULT_SPLITS
+        # Structural / normalization / omission checks (JAK-28) against
+        # the single JAK-33 canonical training split.
+        splits = load_canonical_splits(
+            resolve_nt_split_path(repo_root),
+            resolve_omission_fixtures_path(repo_root),
+        )
         report = validate_pilot_corpus(corpus, splits=splits)
         for issue in report.issues:
             if issue.severity == "error":

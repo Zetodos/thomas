@@ -10,6 +10,10 @@
   "validation_ok": true,
   "validation_issues": [],
   "splits": {
+    "id": "horner-vaticanus-nt-split-v2",
+    "owned_by": "JAK-33",
+    "pilot_corpus_id": "horner-vaticanus-nt-pilot-v2",
+    "source_split_path": "data/training/splits/horner-vaticanus-nt-split-v2.json",
     "train_units": 31,
     "dev_units": 2,
     "holdout_units": 2,
@@ -18,8 +22,10 @@
     "dev_nonempty": 2,
     "holdout_nonempty": 2,
     "excluded_from_training_stack": [
-      "thomas-greek-fragments-poxy (JAK-31; logia 7/17/30/77 holdouts)",
-      "coptic-thomas-dilley (JAK-30; reconstruction target, not NT train)"
+      "poxy-654-dclp (P.Oxy. 654; evaluation-witness)",
+      "poxy-1-dclp (P.Oxy. 1; evaluation-witness)",
+      "poxy-655-dclp (P.Oxy. 655; evaluation-witness)",
+      "thomas-greek-fragments-poxy (JAK-31; logia 7/17/30/77 holdouts)"
     ]
   },
   "lexical_baseline": {

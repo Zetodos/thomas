@@ -107,6 +107,10 @@ def run_benchmark(
             for i in validation.issues
         ],
         "splits": {
+            "id": splits.id,
+            "owned_by": splits.owned_by,
+            "pilot_corpus_id": splits.pilot_corpus_id,
+            "source_split_path": splits.source_split_path,
             "train_units": len(buckets[SplitRole.TRAIN]),
             "dev_units": len(buckets[SplitRole.DEV]),
             "holdout_units": len(buckets[SplitRole.HOLDOUT]),

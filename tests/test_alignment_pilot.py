@@ -29,6 +29,7 @@ from zetodos_thomas.align.splits import (
     PassageRange,
     PilotSplits,
     SplitRole,
+    load_canonical_splits,
     load_splits,
     nonempty_positive_units,
     partition_corpus,
@@ -53,7 +54,12 @@ from zetodos_thomas.schemas.alignment import AlignmentDocument, ParallelRelation
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PILOT_PATH = REPO_ROOT / "data" / "sources" / "pilot" / "horner-vaticanus-nt-pilot.json"
-SPLITS_PATH = REPO_ROOT / "data" / "sources" / "pilot" / "splits.json"
+SPLITS_PATH = (
+    REPO_ROOT / "data" / "training" / "splits" / "horner-vaticanus-nt-split-v2.json"
+)
+OMISSION_PATH = (
+    REPO_ROOT / "data" / "evidence" / "omissions" / "john-8-pa-omission-fixture-v1.json"
+)
 GOLD_PATH = (
     REPO_ROOT
     / "data"
@@ -65,22 +71,30 @@ GOLD_PATH = (
 NTVMR_FIXTURES = Path(__file__).parent / "fixtures" / "ntvmr"
 
 
+def _canonical_splits() -> PilotSplits:
+    return load_canonical_splits(SPLITS_PATH, OMISSION_PATH)
+
+
 def test_pilot_expanded_counts_and_sources() -> None:
     corpus = load_pilot_corpus(PILOT_PATH)
     assert corpus.id == "horner-vaticanus-nt-pilot-v2"
     assert corpus.greek_source_id == "ntvmr-vaticanus-b"
     assert corpus.sahidic_source_id == "copsahhorner"
     assert len(corpus.units) == EXPECTED_UNIT_COUNT
-    splits = load_splits(SPLITS_PATH)
+    splits = _canonical_splits()
     report = validate_pilot_corpus(corpus, splits=splits)
     assert report.ok, report.errors
     assert report.nonempty_positive == EXPECTED_NONEMPTY_POSITIVE
     assert report.omission_units == EXPECTED_OMISSION_UNITS
+    assert splits.id == "horner-vaticanus-nt-split-v2"
+    assert splits.pilot_corpus_id == corpus.id
+    assert splits.owned_by == "JAK-33"
+    assert not (REPO_ROOT / "data" / "sources" / "pilot" / "splits.json").exists()
 
 
 def test_splits_cover_every_unit_without_overlap() -> None:
     corpus = load_pilot_corpus(PILOT_PATH)
-    splits = load_splits(SPLITS_PATH)
+    splits = _canonical_splits()
     buckets = partition_corpus(corpus, splits)
     seen: list[str] = []
     for role, units in buckets.items():
@@ -169,7 +183,7 @@ def test_gold_reference_valid_and_omission_shared_absence() -> None:
 
 def test_lexical_baseline_fit_excludes_holdout_and_omission() -> None:
     corpus = load_pilot_corpus(PILOT_PATH)
-    splits = load_splits(SPLITS_PATH)
+    splits = _canonical_splits()
     buckets = partition_corpus(corpus, splits)
     train = nonempty_positive_units(buckets[SplitRole.TRAIN])
     holdout_ids = {u.unit_id for u in buckets[SplitRole.HOLDOUT]}
@@ -189,7 +203,7 @@ def test_lexical_baseline_fit_excludes_holdout_and_omission() -> None:
 def test_benchmark_report_has_denominators_no_threshold() -> None:
     report = run_benchmark(
         pilot_path=PILOT_PATH,
-        splits=load_splits(SPLITS_PATH),
+        splits=_canonical_splits(),
         reference_paths=[GOLD_PATH],
     )
     assert report["pass_threshold"] is None
@@ -234,7 +248,9 @@ def test_null_alignment_rate_distinguishes_forced_vs_abstention() -> None:
     )
     assert stats["forced_prediction_coverage"] == 1.0
     assert stats["missing_predictions"] == 0
-    assert 0.0 <= float(stats["null_rate_at_abstention_threshold"] or 0.0) <= 1.0
+    rate = stats["null_rate_at_abstention_threshold"]
+    assert isinstance(rate, float)
+    assert 0.0 <= rate <= 1.0
 
 
 def test_eflomal_probe_does_not_raise() -> None:
@@ -265,10 +281,27 @@ def test_cli_align_validate_and_benchmark() -> None:
     assert data["greek_source_id"] == "ntvmr-vaticanus-b"
 
 
-def test_default_splits_match_committed_file() -> None:
-    committed = load_splits(SPLITS_PATH)
-    assert committed.id == DEFAULT_SPLITS.id
-    assert committed.model_dump() == DEFAULT_SPLITS.model_dump()
+def test_default_splits_match_committed_canonical_artifact() -> None:
+    committed = _canonical_splits()
+    packaged = DEFAULT_SPLITS
+    assert committed.id == packaged.id == "horner-vaticanus-nt-split-v2"
+    assert committed.pilot_corpus_id == packaged.pilot_corpus_id
+    assert committed.unit_ids_for(SplitRole.TRAIN) == packaged.unit_ids_for(
+        SplitRole.TRAIN
+    )
+    assert committed.unit_ids_for(SplitRole.DEV) == [
+        "luke.6.20",
+        "luke.6.21",
+    ]
+    assert committed.unit_ids_for(SplitRole.HOLDOUT) == [
+        "matthew.13.31",
+        "matthew.13.32",
+    ]
+    # load_splits also accepts the NtCorpusSplit path directly.
+    via_load = load_splits(SPLITS_PATH, omission_path=OMISSION_PATH)
+    assert via_load.unit_ids_for(SplitRole.OMISSION) == [
+        f"john.8.{v}" for v in range(1, 12)
+    ]
 
 
 def test_dice_counts_each_type_once_per_verse() -> None:
