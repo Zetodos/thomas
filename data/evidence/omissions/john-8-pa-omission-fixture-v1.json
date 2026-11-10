@@ -4,11 +4,10 @@
   "schema_version": "1",
   "greek_source_id": "ntvmr-vaticanus-b",
   "sahidic_source_id": "copsahhorner",
-  "pilot_corpus_id": "horner-vaticanus-nt-pilot-v3",
+  "pilot_corpus_id": "horner-vaticanus-nt-pilot-v2",
   "owned_by": "JAK-33",
   "consumed_by": [
-    "JAK-28",
-    "JAK-43"
+    "JAK-28"
   ],
   "units": [
     {
@@ -122,5 +121,5 @@
       "notes": ""
     }
   ],
-  "notes": "Listed separately from positive lexical/phrase pairs. Do not count toward usable training pairs or positive alignment precision/recall denominators. Do not fill empty firsthand with Westcott–Hort or SBLGNT. Useful as a shared-absence / omission regression fixture only. Pins pilot_corpus_id=horner-vaticanus-nt-pilot-v3 (JAK-43 corpus / split v3)."
+  "notes": "Listed separately from positive lexical/phrase pairs. Do not count toward usable training pairs or positive alignment precision/recall denominators. Do not fill empty firsthand with Westcott–Hort or SBLGNT. Useful as a shared-absence / omission regression fixture only. Pins pilot_corpus_id=horner-vaticanus-nt-pilot-v2 (JAK-33 canonical split v2). Archival after JAK-43: pairs with horner-vaticanus-nt-split-v2 / horner-vaticanus-nt-pilot-v2. Active default omission catalog is john-8-pa-omission-fixture-v3.json."
 }

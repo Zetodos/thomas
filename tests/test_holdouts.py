@@ -35,7 +35,12 @@ from zetodos_thomas.schemas.holdout import (
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SPLIT_PATH = REPO_ROOT / "data/training/splits/horner-vaticanus-nt-split-v3.json"
-OMISSION_PATH = REPO_ROOT / "data/evidence/omissions/john-8-pa-omission-fixture-v1.json"
+OMISSION_PATH = REPO_ROOT / "data/evidence/omissions/john-8-pa-omission-fixture-v3.json"
+OMISSION_PATH_V2 = (
+    REPO_ROOT / "data/evidence/omissions/john-8-pa-omission-fixture-v1.json"
+)
+SPLIT_PATH_V2 = REPO_ROOT / "data/training/splits/horner-vaticanus-nt-split-v2.json"
+PILOT_PATH_V2 = REPO_ROOT / "data/sources/pilot/horner-vaticanus-nt-pilot-v2.json"
 DIVERGENCE_PATH = (
     REPO_ROOT / "data/evidence/divergences/greek-thomas-fragment-divergences-v1.json"
 )
@@ -84,13 +89,35 @@ def test_committed_holdout_artifacts_validate() -> None:
 
 
 def test_bundled_holdouts_match_checkout() -> None:
+    from zetodos_thomas.bundled import bundled_omission_fixtures_for_pilot
+
     for checkout, bundled in (
         (SPLIT_PATH, bundled_nt_split_path()),
         (OMISSION_PATH, bundled_omission_fixtures_path()),
         (DIVERGENCE_PATH, bundled_fragment_divergences_path()),
+        (
+            OMISSION_PATH_V2,
+            bundled_omission_fixtures_for_pilot("horner-vaticanus-nt-pilot-v2"),
+        ),
     ):
         assert checkout.read_bytes() == bundled.read_bytes()
     assert PILOT_PATH.read_bytes() == bundled_pilot_path().read_bytes()
+
+
+def test_archival_v2_split_loads_with_matching_omission() -> None:
+    """load_splits(v2) must pair the v2-compatible omission catalog."""
+    from zetodos_thomas.align.splits import load_splits
+
+    splits = load_splits(SPLIT_PATH_V2)
+    assert splits.pilot_corpus_id == "horner-vaticanus-nt-pilot-v2"
+    assert splits.id == "horner-vaticanus-nt-split-v2"
+    pilot = load_pilot_corpus(PILOT_PATH_V2)
+    validate_holdout_artifacts(
+        split_path=SPLIT_PATH_V2,
+        omission_path=OMISSION_PATH_V2,
+        divergence_path=DIVERGENCE_PATH,
+        pilot=pilot,
+    )
 
 
 def test_split_rejects_unit_role_overlap() -> None:

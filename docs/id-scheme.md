@@ -15,11 +15,19 @@ and the retokenization migration rule.
 
 | Constant | Value | Meaning |
 | --- | --- | --- |
-| `ID_SCHEME_VERSION` | `1` | Current minting grammar in `zetodos_thomas.schemas.ids` |
+| `ID_SCHEME_VERSION` | `1` | Whitespace / diplomatic minting grammar in `zetodos_thomas.schemas.ids` |
+| `SEGMENTED_ID_SCHEME_VERSION` | `2` | Horner bound-group segmentation layer (`align/segment_coptic.py`) |
 
-Every minted token, span, and parallel id is prefixed with `v1:`.
-`AlignmentDocument.id_scheme_version` / `ThomasCorpus.id_scheme_version` must
-equal the code constant or validation fails (forces an explicit migration).
+Every gold / AlignmentDocument token, span, and parallel id is prefixed with
+`v1:`. `AlignmentDocument.id_scheme_version` / `ThomasCorpus.id_scheme_version`
+must equal `ID_SCHEME_VERSION` or validation fails (forces an explicit
+migration).
+
+**Bound-group retokenization (JAK-43):** tokens from
+`segmented_coptic_tokens` are minted as `v2:{source}/{unit}/t/{sequence}` so
+they never collide with whitespace `v1:…/t/N` ids that provisional gold and
+phrase fixtures already cite. Do not rewrite v1 gold onto v2 sequences; treat
+v2 as a parallel aligner-prep layer until a deliberate scheme migration.
 
 Validation also parses each token/span/parallel id and rejects:
 

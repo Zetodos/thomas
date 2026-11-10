@@ -11,10 +11,12 @@ import pytest
 from zetodos_thomas.align.lexical_baseline import fit_lexical_baseline
 from zetodos_thomas.align.segment_coptic import (
     SEGMENTATION_VERSION,
+    SEGMENTED_ID_SCHEME_VERSION,
     peel_bound_group,
     segment_normalized_coptic,
     segmentation_stats,
     segmented_coptic_tokens,
+    segmented_token_id,
 )
 from zetodos_thomas.ingest.pilot import load_pilot_corpus
 from zetodos_thomas.schemas.source import TextUnit
@@ -30,8 +32,12 @@ INVENTORY_PATH = (
 def test_peel_common_horner_bound_groups() -> None:
     assert peel_bound_group("ⲛϭⲓⲡϣⲁϫⲉ") == ["ⲛϭⲓ", "ⲡ", "ϣⲁϫⲉ"]
     assert peel_bound_group("ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ")[0] in {"ϩⲛⲧⲉ", "ϩⲛ"}
-    assert peel_bound_group("ⲁⲩⲱ") == ["ⲁⲩⲱ"]  # no empty remainder peel
+    assert peel_bound_group("ⲁⲩⲱ") == ["ⲁⲩⲱ"]
+    # Exact closed forms stay atomic (no fall-through to shorter prefixes).
+    assert peel_bound_group("ⲡⲉ") == ["ⲡⲉ"]
+    assert peel_bound_group("ⲛϭⲓ") == ["ⲛϭⲓ"]
     assert SEGMENTATION_VERSION == "bound-group-v1"
+    assert SEGMENTED_ID_SCHEME_VERSION == "2"
 
 
 def test_segment_normalized_splits_john_1_1() -> None:
@@ -46,15 +52,23 @@ def test_segment_normalized_splits_john_1_1() -> None:
     assert stats["extra_segments"] > 0
 
 
-def test_segmented_tokens_mint_contiguous_offsets() -> None:
+def test_segmented_tokens_use_v2_ids_and_original_offsets() -> None:
     corpus = load_pilot_corpus(PILOT_PATH)
     unit = next(u for u in corpus.units if u.unit_id == "john.1.1")
     tokens = segmented_coptic_tokens(unit.sahidic)
     assert tokens
-    assert tokens[0].id.startswith("v1:") and "/t/" in tokens[0].id
-    text = unit.sahidic.normalized_text
+    assert tokens[0].id == segmented_token_id("copsahhorner", "john.1.1", 0)
+    assert tokens[0].id.startswith("v2:")
+    assert "/t/0" in tokens[0].id
+    # Must not collide with whitespace v1 id for sequence 0.
+    assert not tokens[0].id.startswith("v1:")
+    original = unit.sahidic.original_text
     for tok in tokens:
-        assert text[tok.char_start : tok.char_end] == tok.normalized == tok.surface
+        assert tok.char_start is not None and tok.char_end is not None
+        assert original[tok.char_start : tok.char_end] == tok.surface
+        assert tok.normalized
+        # Surface may include combining marks stripped from normalized.
+        assert len(tok.surface) >= len(tok.normalized) or tok.surface == tok.normalized
 
 
 def test_segmented_tokens_reject_dilley() -> None:
@@ -76,7 +90,6 @@ def test_lexical_baseline_accepts_bound_group_mode() -> None:
     unit = next(u for u in corpus.units if u.unit_id == "john.1.1")
     model = fit_lexical_baseline([unit], coptic_segmentation="bound-group-v1")
     assert model.train_unit_ids == ["john.1.1"]
-    # Bound-group peel should observe ⲛϭⲓ as its own type.
     assert model.left_counts["ⲛϭⲓ"] == 1
 
 
@@ -88,8 +101,7 @@ def test_blinded_thomas7_package_seals_greek() -> None:
     assert payload["seal"]["greek_witness_id"] == "poxy-654-dclp"
     assert payload["seal"]["corpus_role"] == "evaluation-witness"
     blob = BLIND_PATH.read_text(encoding="utf-8")
-    # No inline P.Oxy. Greek diplomatic dump (seal).
-    assert "μακάριος" in blob  # loanword clue lemma hint OK
+    assert "μακάριος" in blob
     assert "poxy-654" in blob.lower()
     assert "surviving-letter-agreement" in payload["scoring_rubric"]["levels"]
     assert "thomas.7" == payload["input"]["coptic_unit"]["unit_id"]

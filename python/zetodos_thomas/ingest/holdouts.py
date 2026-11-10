@@ -20,7 +20,7 @@ class HoldoutValidationError(ValueError):
 
 
 SPLIT_REL = Path("data/training/splits/horner-vaticanus-nt-split-v3.json")
-OMISSION_REL = Path("data/evidence/omissions/john-8-pa-omission-fixture-v1.json")
+OMISSION_REL = Path("data/evidence/omissions/john-8-pa-omission-fixture-v3.json")
 DIVERGENCE_REL = Path(
     "data/evidence/divergences/greek-thomas-fragment-divergences-v1.json"
 )

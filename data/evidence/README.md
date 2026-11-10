@@ -6,7 +6,8 @@ Thomas-specific evidence inventories and policy catalogs (PLAN.md `data/evidence
 | --- | --- | --- |
 | [`pilot/thomas-7-17-30-77.json`](pilot/thomas-7-17-30-77.json) | Phase 1 pilot set for Thomas **7, 17, 30, 77** | JAK-34 |
 | [`pilot/thomas-7-17-30-77.jsonl`](pilot/thomas-7-17-30-77.jsonl) | Same sayings, one JSON object per line | JAK-34 |
-| [`omissions/john-8-pa-omission-fixture-v1.json`](omissions/john-8-pa-omission-fixture-v1.json) | John 8:1–11 dual-empty omission fixtures | JAK-33 / JAK-43 |
+| [`omissions/john-8-pa-omission-fixture-v3.json`](omissions/john-8-pa-omission-fixture-v3.json) | John 8:1–11 dual-empty omission fixtures (pilot v3 default) | JAK-43 |
+| [`omissions/john-8-pa-omission-fixture-v1.json`](omissions/john-8-pa-omission-fixture-v1.json) | Archival v2-compatible omission catalog (pilot v2 / split v2) | JAK-33 |
 | [`divergences/greek-thomas-fragment-divergences-v1.json`](divergences/greek-thomas-fragment-divergences-v1.json) | Greek fragment vs Coptic sequence/edition divergences | JAK-33 |
 | [`eval/thomas-7-blinded-v1.json`](eval/thomas-7-blinded-v1.json) | Blinded Thomas 7 reconstruction eval package (Greek sealed) | JAK-43 |
 

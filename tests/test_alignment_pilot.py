@@ -58,7 +58,7 @@ SPLITS_PATH = (
     REPO_ROOT / "data" / "training" / "splits" / "horner-vaticanus-nt-split-v3.json"
 )
 OMISSION_PATH = (
-    REPO_ROOT / "data" / "evidence" / "omissions" / "john-8-pa-omission-fixture-v1.json"
+    REPO_ROOT / "data" / "evidence" / "omissions" / "john-8-pa-omission-fixture-v3.json"
 )
 GOLD_PATH = (
     REPO_ROOT

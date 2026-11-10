@@ -1,0 +1,127 @@
+{
+  "id": "john-8-pa-omission-fixture-v3",
+  "title": "John 8:1–11 pericope adulterae — dual-empty omission fixture",
+  "schema_version": "1",
+  "greek_source_id": "ntvmr-vaticanus-b",
+  "sahidic_source_id": "copsahhorner",
+  "pilot_corpus_id": "horner-vaticanus-nt-pilot-v3",
+  "owned_by": "JAK-43",
+  "consumed_by": [
+    "JAK-36",
+    "JAK-28",
+    "JAK-43"
+  ],
+  "units": [
+    {
+      "unit_id": "john.8.1",
+      "book": "john",
+      "chapter": 8,
+      "verse": 1,
+      "kind": "shared-absence",
+      "greek_empty": true,
+      "sahidic_empty": true,
+      "notes": "PA absent in Vaticanus B* firsthand and empty Horner NRSV slot."
+    },
+    {
+      "unit_id": "john.8.2",
+      "book": "john",
+      "chapter": 8,
+      "verse": 2,
+      "kind": "shared-absence",
+      "greek_empty": true,
+      "sahidic_empty": true,
+      "notes": ""
+    },
+    {
+      "unit_id": "john.8.3",
+      "book": "john",
+      "chapter": 8,
+      "verse": 3,
+      "kind": "shared-absence",
+      "greek_empty": true,
+      "sahidic_empty": true,
+      "notes": ""
+    },
+    {
+      "unit_id": "john.8.4",
+      "book": "john",
+      "chapter": 8,
+      "verse": 4,
+      "kind": "shared-absence",
+      "greek_empty": true,
+      "sahidic_empty": true,
+      "notes": ""
+    },
+    {
+      "unit_id": "john.8.5",
+      "book": "john",
+      "chapter": 8,
+      "verse": 5,
+      "kind": "shared-absence",
+      "greek_empty": true,
+      "sahidic_empty": true,
+      "notes": ""
+    },
+    {
+      "unit_id": "john.8.6",
+      "book": "john",
+      "chapter": 8,
+      "verse": 6,
+      "kind": "shared-absence",
+      "greek_empty": true,
+      "sahidic_empty": true,
+      "notes": ""
+    },
+    {
+      "unit_id": "john.8.7",
+      "book": "john",
+      "chapter": 8,
+      "verse": 7,
+      "kind": "shared-absence",
+      "greek_empty": true,
+      "sahidic_empty": true,
+      "notes": ""
+    },
+    {
+      "unit_id": "john.8.8",
+      "book": "john",
+      "chapter": 8,
+      "verse": 8,
+      "kind": "shared-absence",
+      "greek_empty": true,
+      "sahidic_empty": true,
+      "notes": ""
+    },
+    {
+      "unit_id": "john.8.9",
+      "book": "john",
+      "chapter": 8,
+      "verse": 9,
+      "kind": "shared-absence",
+      "greek_empty": true,
+      "sahidic_empty": true,
+      "notes": ""
+    },
+    {
+      "unit_id": "john.8.10",
+      "book": "john",
+      "chapter": 8,
+      "verse": 10,
+      "kind": "shared-absence",
+      "greek_empty": true,
+      "sahidic_empty": true,
+      "notes": ""
+    },
+    {
+      "unit_id": "john.8.11",
+      "book": "john",
+      "chapter": 8,
+      "verse": 11,
+      "kind": "shared-absence",
+      "greek_empty": true,
+      "sahidic_empty": true,
+      "notes": ""
+    }
+  ],
+  "notes": "Listed separately from positive lexical/phrase pairs. Do not count toward usable training pairs or positive alignment precision/recall denominators. Do not fill empty firsthand with Westcott–Hort or SBLGNT. Useful as a shared-absence / omission regression fixture only. Pins pilot_corpus_id=horner-vaticanus-nt-pilot-v3 (JAK-43 corpus / split v3). Archival v2-compatible catalog: john-8-pa-omission-fixture-v1.json."
+}

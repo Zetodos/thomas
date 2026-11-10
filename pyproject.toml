@@ -55,6 +55,7 @@ packages = ["python/zetodos_thomas"]
 "python/zetodos_thomas/bundled/evidence/pilot/thomas-7-17-30-77.json" = "zetodos_thomas/bundled/evidence/pilot/thomas-7-17-30-77.json"
 "python/zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v3.json" = "zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v3.json"
 "python/zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v2.json" = "zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v2.json"
+"python/zetodos_thomas/bundled/evidence/omissions/john-8-pa-omission-fixture-v3.json" = "zetodos_thomas/bundled/evidence/omissions/john-8-pa-omission-fixture-v3.json"
 "python/zetodos_thomas/bundled/evidence/omissions/john-8-pa-omission-fixture-v1.json" = "zetodos_thomas/bundled/evidence/omissions/john-8-pa-omission-fixture-v1.json"
 "python/zetodos_thomas/bundled/evidence/divergences/greek-thomas-fragment-divergences-v1.json" = "zetodos_thomas/bundled/evidence/divergences/greek-thomas-fragment-divergences-v1.json"
 "python/zetodos_thomas/bundled/evidence/eval/thomas-7-blinded-v1.json" = "zetodos_thomas/bundled/evidence/eval/thomas-7-blinded-v1.json"

@@ -15,7 +15,8 @@ and [`horner-vaticanus-nt-split-v3.json`](../data/training/splits/horner-vatican
 | --- | --- |
 | [`data/training/splits/horner-vaticanus-nt-split-v3.json`](../data/training/splits/horner-vaticanus-nt-split-v3.json) | **Authoritative (JAK-43)** whole-passage train / dev / holdout + evaluation-witness exclusions |
 | [`data/training/splits/horner-vaticanus-nt-split-v2.json`](../data/training/splits/horner-vaticanus-nt-split-v2.json) | Archival Phase 1 split (JAK-33) |
-| [`data/evidence/omissions/john-8-pa-omission-fixture-v1.json`](../data/evidence/omissions/john-8-pa-omission-fixture-v1.json) | Empty/omission fixtures **separate** from positive lexical pairs |
+| [`data/evidence/omissions/john-8-pa-omission-fixture-v3.json`](../data/evidence/omissions/john-8-pa-omission-fixture-v3.json) | Empty/omission fixtures for pilot **v3** (default) |
+| [`data/evidence/omissions/john-8-pa-omission-fixture-v1.json`](../data/evidence/omissions/john-8-pa-omission-fixture-v1.json) | Archival omission fixtures for pilot **v2** / split v2 |
 | [`data/evidence/divergences/greek-thomas-fragment-divergences-v1.json`](../data/evidence/divergences/greek-thomas-fragment-divergences-v1.json) | Greek Thomas fragment vs Coptic sequence/edition divergences |
 | [`docs/greek-thomas-fragment-divergences.md`](greek-thomas-fragment-divergences.md) | Human-readable divergence notes |
 

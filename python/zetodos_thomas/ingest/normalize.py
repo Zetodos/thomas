@@ -66,3 +66,78 @@ def recompute_normalized(*, language: str, original_text: str) -> str:
         return normalize_greek(original_text)
     msg = f"unsupported language for normalization: {language!r}"
     raise ValueError(msg)
+
+
+def map_coptic_normalized_span_to_original(
+    original: str, norm_start: int, norm_end: int
+) -> tuple[int, int]:
+    """Map a ``normalize_coptic`` exclusive span back onto ``original``.
+
+    Returns ``(char_start, char_end)`` exclusive offsets into ``original``
+    suitable for ``Token.char_start`` / ``Token.char_end``. Combining
+    overlines and editorial wrappers stripped by normalization are skipped
+    in the normalized index but still owned by neighboring kept letters when
+    they sit inside a peeled piece's original span.
+    """
+    orig_chars = list(original)
+    kept: list[tuple[str, int, int]] = []
+    i = 0
+    while i < len(orig_chars):
+        j = i + 1
+        while j < len(orig_chars) and unicodedata.combining(orig_chars[j]):
+            j += 1
+        cluster = "".join(orig_chars[i:j])
+        nfc_cluster = unicodedata.normalize("NFC", cluster)
+        for k, nfc_ch in enumerate(nfc_cluster):
+            if len(nfc_cluster) == 1:
+                o_start, o_end = i, j
+            else:
+                o_start = i + k
+                o_end = min(j, o_start + 1)
+            if _COPTIC_STRIP_RE.match(nfc_ch) or _EDITORIAL_WRAP_RE.match(nfc_ch):
+                continue
+            kept.append((nfc_ch, o_start, o_end))
+        i = j
+
+    spans: list[tuple[int, int]] = []
+    chars: list[str] = []
+    pending_ws: tuple[int, int] | None = None
+    for ch, o_start, o_end in kept:
+        if ch.isspace():
+            if pending_ws is None:
+                pending_ws = (o_start, o_end)
+            else:
+                pending_ws = (pending_ws[0], o_end)
+            continue
+        if pending_ws is not None:
+            if chars:
+                chars.append(" ")
+                spans.append(pending_ws)
+            pending_ws = None
+        chars.append(ch)
+        spans.append((o_start, o_end))
+    normalized = "".join(chars).strip()
+    expected = normalize_coptic(original)
+    if normalized != expected:
+        msg = (
+            f"normalize alignment mismatch: built={normalized!r} expected={expected!r}"
+        )
+        raise ValueError(msg)
+    if len(spans) != len(normalized):
+        msg = (
+            f"span/char length mismatch: spans={len(spans)} "
+            f"normalized={len(normalized)}"
+        )
+        raise ValueError(msg)
+    if norm_start < 0 or norm_end < norm_start or norm_end > len(spans):
+        msg = f"normalized span [{norm_start}:{norm_end}] out of range"
+        raise ValueError(msg)
+    if norm_start == norm_end:
+        if norm_start < len(spans):
+            pin = spans[norm_start][0]
+            return pin, pin
+        if spans:
+            pin = spans[-1][1]
+            return pin, pin
+        return 0, 0
+    return spans[norm_start][0], spans[norm_end - 1][1]

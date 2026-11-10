@@ -69,15 +69,24 @@ def bundled_nt_split_path() -> Path:
 
 
 def bundled_omission_fixtures_path() -> Path:
-    """Packaged John 8 PA omission fixture catalog (JAK-33)."""
+    """Packaged John 8 PA omission fixture catalog (v3 default, JAK-43)."""
     return Path(
         str(
             files("zetodos_thomas.bundled")
             / "evidence"
             / "omissions"
-            / "john-8-pa-omission-fixture-v1.json"
+            / "john-8-pa-omission-fixture-v3.json"
         )
     )
+
+
+def bundled_omission_fixtures_for_pilot(pilot_corpus_id: str) -> Path:
+    """Packaged omission catalog matching a pilot corpus id."""
+    if pilot_corpus_id == "horner-vaticanus-nt-pilot-v2":
+        name = "john-8-pa-omission-fixture-v1.json"
+    else:
+        name = "john-8-pa-omission-fixture-v3.json"
+    return Path(str(files("zetodos_thomas.bundled") / "evidence" / "omissions" / name))
 
 
 def bundled_fragment_divergences_path() -> Path:

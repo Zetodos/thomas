@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import hashlib
-import ssl
 import time
 import zipfile
 from pathlib import Path
@@ -105,13 +104,17 @@ def verify_checksum(path: Path, expected: str) -> None:
 
 
 def _fetch(url: str, dest: Path) -> None:
+    """Download ``url`` to ``dest`` with TLS certificate verification always on.
+
+    Retries transient transport failures only. Certificate / hostname
+    verification is never disabled (no ``ssl._create_unverified_context``).
+    """
     dest.parent.mkdir(parents=True, exist_ok=True)
     req = Request(url, headers={"User-Agent": "zetodos-thomas/0.1 (setup-download)"})
-    contexts: list[ssl.SSLContext | None] = [None, ssl._create_unverified_context()]
     errors: list[Exception] = []
-    for context in contexts:
+    for attempt in range(NTVMR_FETCH_RETRIES):
         try:
-            with urlopen(req, timeout=180, context=context) as response:
+            with urlopen(req, timeout=180) as response:
                 data = response.read()
             if len(data) < 64:
                 msg = f"download too small from {url}: {len(data)} bytes"
@@ -120,6 +123,18 @@ def _fetch(url: str, dest: Path) -> None:
             return
         except (URLError, TimeoutError, DownloadError, OSError) as exc:
             errors.append(exc)
+            # Do not retry pure certificate/hostname failures as "soft" TLS
+            # downgrades — only retry transport-class errors.
+            reason = getattr(exc, "reason", None)
+            cert_markers = ("CERTIFICATE", "SSL", "certificate", "hostname")
+            reason_text = str(reason or exc)
+            if any(marker in reason_text for marker in cert_markers):
+                # SSL handshake / cert problems: still allow a few retries on
+                # flaky IncompleteRead-style EOF, but never disable verify.
+                if "CERTIFICATE_VERIFY_FAILED" in reason_text:
+                    break
+            if attempt + 1 < NTVMR_FETCH_RETRIES:
+                time.sleep(1.5 * (attempt + 1))
     msg = f"failed to download {url}: {errors[-1] if errors else 'unknown error'}"
     raise DownloadError(msg) from (errors[-1] if errors else None)
 
