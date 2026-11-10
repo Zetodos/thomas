@@ -33,11 +33,14 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`docs/id-scheme.md`](docs/id-scheme.md) | Stable unit/token/span IDs + retokenization rule (JAK-32) |
 | [`docs/greek-thomas-fragments.md`](docs/greek-thomas-fragments.md) | P.Oxy. 1/654/655 DCLP ingest notes (JAK-31) |
 | [`docs/pilot-evidence-set.md`](docs/pilot-evidence-set.md) | Phase 1 Thomas 7/17/30/77 evidence pilot (JAK-34) |
+| [`docs/benchmark-holdouts.md`](docs/benchmark-holdouts.md) | Train/dev/holdout + omission/leakage policy (JAK-33) |
+| [`docs/greek-thomas-fragment-divergences.md`](docs/greek-thomas-fragment-divergences.md) | Greek fragment vs Coptic divergences (JAK-33) |
 | [`data/manifests/`](data/manifests/) | Per-source JSON manifests (Horner, Vaticanus B*, Dilley, DCLP fragments) |
 | [`data/sources/pilot/`](data/sources/pilot/) | Bundled Horner × Vaticanus B* pilot excerpt |
 | [`data/sources/thomas/`](data/sources/thomas/) | Unit-level Dilley / SCRIPTORIUM Coptic Thomas import (JAK-30; not alignment-ready) |
 | [`data/sources/fragments/`](data/sources/fragments/) | Bundled Greek Thomas fragments (evaluation-witness) |
 | [`data/evidence/pilot/`](data/evidence/pilot/) | Thomas 7/17/30/77 evidence inventory (JSON + JSONL) |
+| [`data/training/splits/`](data/training/splits/) | Canonical NT train/dev/holdout split v2 (JAK-33; consumed by JAK-28) |
 
 ## Never ship (summary)
 

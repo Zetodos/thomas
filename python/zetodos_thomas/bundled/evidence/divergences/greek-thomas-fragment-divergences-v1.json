@@ -1,0 +1,91 @@
+{
+  "id": "greek-thomas-fragment-divergences-v1",
+  "title": "Greek Thomas fragment divergences from Coptic sequence/edition",
+  "schema_version": "1",
+  "owned_by": "JAK-33",
+  "consumed_by": ["JAK-28", "JAK-34"],
+  "coptic_source_id": "dilley-thomas",
+  "fragment_corpus_id": "greek-thomas-fragments-v1",
+  "divergences": [
+    {
+      "id": "poxy1-coptic-30-77-division",
+      "kind": "division",
+      "greek_witness_id": "poxy-1-dclp",
+      "greek_source_id": "dclp-poxy-1",
+      "manuscript_id": "P.Oxy. 1",
+      "coptic_unit_ids": ["thomas.30", "thomas.77"],
+      "greek_coverage_note": "P.Oxy. 1 preserves material corresponding to Coptic logion 30 and the stone/wood clause of Coptic logion 77 in a contiguous Greek sequence on the papyrus (PLAN.md primary-edition rule).",
+      "summary": "P.Oxy. 1 joins material that Coptic Thomas divides as separate sayings 30 and 77.",
+      "handling": "Treat P.Oxy. 1 Greek as its own witness sequence. Do not silently merge Coptic thomas.30 and thomas.77 into one Greek unit, and do not force the Greek lines into Coptic saying boundaries for scoring.",
+      "notes": "Primary edition follows Coptic NHC II sequence/division. Critical apparatus / evaluation compare witnesses; they do not rewrite Coptic unit ids."
+    },
+    {
+      "id": "poxy1-coptic-sequence-26-33",
+      "kind": "sequence",
+      "greek_witness_id": "poxy-1-dclp",
+      "greek_source_id": "dclp-poxy-1",
+      "manuscript_id": "P.Oxy. 1",
+      "coptic_unit_ids": [
+        "thomas.26",
+        "thomas.27",
+        "thomas.28",
+        "thomas.29",
+        "thomas.30",
+        "thomas.77",
+        "thomas.31",
+        "thomas.32",
+        "thomas.33"
+      ],
+      "greek_coverage_note": "Papyrus order ≈ logia 26–30, then 77b material, then 31–33 — not the Coptic NHC II order where 77 is far later.",
+      "summary": "P.Oxy. 1 saying order diverges from the Coptic manuscript sequence around 30/77/31.",
+      "handling": "Align and score by explicit witness-local spans against named Coptic unit ids; never assume Coptic order on the Greek fragment.",
+      "notes": "Coverage string on the JAK-31 corpus: 26–30, 77b, 31–33."
+    },
+    {
+      "id": "poxy654-coverage-incipit-1-7",
+      "kind": "coverage",
+      "greek_witness_id": "poxy-654-dclp",
+      "greek_source_id": "dclp-poxy-654",
+      "manuscript_id": "P.Oxy. 654",
+      "coptic_unit_ids": [
+        "thomas.1",
+        "thomas.2",
+        "thomas.3",
+        "thomas.4",
+        "thomas.5",
+        "thomas.6",
+        "thomas.7"
+      ],
+      "greek_coverage_note": "Incipit + logia 1–7 on P.Oxy. 654; lacunae and restorations must stay layered (surviving ≠ restoration).",
+      "summary": "P.Oxy. 654 is a partial Greek witness to early Coptic logia, not a full Thomas edition.",
+      "handling": "Evaluate only overlapping Coptic units; do not impute missing Greek from Coptic or from modern continuous critical editions.",
+      "notes": "JAK-34 pilot includes thomas.7 against this witness among others."
+    },
+    {
+      "id": "poxy655-coverage-36-39",
+      "kind": "coverage",
+      "greek_witness_id": "poxy-655-dclp",
+      "greek_source_id": "dclp-poxy-655",
+      "manuscript_id": "P.Oxy. 655",
+      "coptic_unit_ids": ["thomas.24", "thomas.36", "thomas.37", "thomas.38", "thomas.39"],
+      "greek_coverage_note": "Logia ~36–39; possible overlap with material discussed as logion 24 in some catalogs — record uncertainty rather than forcing a silent id merge.",
+      "summary": "P.Oxy. 655 covers a different slice of Thomas than P.Oxy. 1/654; catalog mapping may be uncertain for some lines.",
+      "handling": "Keep manuscript-local line ids; map to Coptic unit ids only with explicit notes; never collapse uncertain coverage into a single Coptic saying without documentation.",
+      "notes": "JAK-31 coverage string: 24(?), 36–39."
+    },
+    {
+      "id": "poxy5575-not-thomas-ms",
+      "kind": "not-thomas-manuscript",
+      "greek_witness_id": "poxy-5575-excluded",
+      "greek_source_id": "excluded-poxy-5575",
+      "manuscript_id": "P.Oxy. 5575",
+      "coptic_unit_ids": [],
+      "greek_coverage_note": "Early sayings parallel overlapping Synoptics and Thomas traditions.",
+      "summary": "P.Oxy. 5575 is an independent parallel, not a manuscript of the Gospel of Thomas.",
+      "handling": "Do not ingest as a Thomas fragment witness; do not label as evidence type G for Thomas.",
+      "notes": "Listed in JAK-31 excluded_witnesses; kept here so holdout policy and divergence docs agree."
+    }
+  ],
+  "excluded_witnesses": ["P.Oxy. 5575"],
+  "notes": "Source ids dilley-thomas / dclp-poxy-* and corpus greek-thomas-fragments-v1 are defined by JAK-30 / JAK-31. This document is usable offline as a policy catalog even before those PRs merge; validation here checks schema shape and internal consistency, not presence of sibling ingest trees. Wording-level letter disagreements are scored later against surviving letters only (not restorations)."
+}

@@ -1,0 +1,139 @@
+{
+  "id": "horner-vaticanus-nt-split-v2",
+  "title": "Horner × Vaticanus B* Greek–Sahidic NT train/dev/holdout split v2 (46-unit pilot)",
+  "schema_version": "1",
+  "greek_source_id": "ntvmr-vaticanus-b",
+  "sahidic_source_id": "copsahhorner",
+  "pilot_corpus_id": "horner-vaticanus-nt-pilot-v2",
+  "owned_by": "JAK-33",
+  "consumed_by": ["JAK-28"],
+  "passages": [
+    {
+      "book": "john",
+      "chapter_from": 1,
+      "verse_from": 1,
+      "chapter_to": 1,
+      "verse_to": 18,
+      "unit_ids": [
+        "john.1.1",
+        "john.1.2",
+        "john.1.3",
+        "john.1.4",
+        "john.1.5",
+        "john.1.6",
+        "john.1.7",
+        "john.1.8",
+        "john.1.9",
+        "john.1.10",
+        "john.1.11",
+        "john.1.12",
+        "john.1.13",
+        "john.1.14",
+        "john.1.15",
+        "john.1.16",
+        "john.1.17",
+        "john.1.18"
+      ],
+      "role": "train",
+      "notes": "Prologue; nomina sacra; sayings-like density."
+    },
+    {
+      "book": "mark",
+      "chapter_from": 1,
+      "verse_from": 1,
+      "chapter_to": 1,
+      "verse_to": 8,
+      "unit_ids": [
+        "mark.1.1",
+        "mark.1.2",
+        "mark.1.3",
+        "mark.1.4",
+        "mark.1.5",
+        "mark.1.6",
+        "mark.1.7",
+        "mark.1.8"
+      ],
+      "role": "train",
+      "notes": "Gospel opening; loanwords; Mark 1:1 Sahidic book heading is paratext."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 5,
+      "verse_from": 14,
+      "chapter_to": 5,
+      "verse_to": 16,
+      "unit_ids": ["matthew.5.14", "matthew.5.15", "matthew.5.16"],
+      "role": "train",
+      "notes": "Light/city sayings (Thomas-adjacent imagery)."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 7,
+      "verse_from": 7,
+      "chapter_to": 7,
+      "verse_to": 8,
+      "unit_ids": ["matthew.7.7", "matthew.7.8"],
+      "role": "train",
+      "notes": "Imperatives ask/seek/knock (Thomas 2/92/94 zone)."
+    },
+    {
+      "book": "luke",
+      "chapter_from": 6,
+      "verse_from": 20,
+      "chapter_to": 6,
+      "verse_to": 21,
+      "unit_ids": ["luke.6.20", "luke.6.21"],
+      "role": "dev",
+      "notes": "Beatitudes; pronouns; clause variation (Thomas 54 zone)."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 31,
+      "chapter_to": 13,
+      "verse_to": 32,
+      "unit_ids": ["matthew.13.31", "matthew.13.32"],
+      "role": "holdout",
+      "notes": "Mustard-seed parable whole-passage holdout (Thomas 20 zone)."
+    }
+  ],
+  "evaluation_witness_exclusions": [
+    {
+      "witness_id": "poxy-654-dclp",
+      "source_id": "dclp-poxy-654",
+      "manuscript_id": "P.Oxy. 654",
+      "corpus_role": "evaluation-witness",
+      "unit_ids": ["thomas.1", "thomas.2", "thomas.3", "thomas.4", "thomas.5", "thomas.6", "thomas.7"],
+      "notes": "Greek Thomas fragment (incipit + logia 1–7). Hold out from Greek–Sahidic training mappings; JAK-34 pilot includes thomas.7."
+    },
+    {
+      "witness_id": "poxy-1-dclp",
+      "source_id": "dclp-poxy-1",
+      "manuscript_id": "P.Oxy. 1",
+      "corpus_role": "evaluation-witness",
+      "unit_ids": [
+        "thomas.26",
+        "thomas.27",
+        "thomas.28",
+        "thomas.29",
+        "thomas.30",
+        "thomas.77",
+        "thomas.31",
+        "thomas.32",
+        "thomas.33"
+      ],
+      "notes": "Greek Thomas fragment (logia ~26–30, 77b, 31–33). Sequence/division diverges from Coptic. Hold out; JAK-34 pilot includes thomas.30 and thomas.77."
+    },
+    {
+      "witness_id": "poxy-655-dclp",
+      "source_id": "dclp-poxy-655",
+      "manuscript_id": "P.Oxy. 655",
+      "corpus_role": "evaluation-witness",
+      "unit_ids": ["thomas.24", "thomas.36", "thomas.37", "thomas.38", "thomas.39"],
+      "notes": "Greek Thomas fragment (logia ~36–39; possible 24). Hold out from training mappings."
+    }
+  ],
+  "secondary_ot_used": false,
+  "secondary_ot_notes": "Secondary OT parallels are not part of this v2 split.",
+  "notes": "Canonical JAK-33 split for horner-vaticanus-nt-pilot-v2 (46 units). Path: data/training/splits/horner-vaticanus-nt-split-v2.json. JAK-28 (#13) must consume this artifact and must not maintain a second policy file under data/sources/pilot/splits.json. John 8:1–11 lives only in data/evidence/omissions/john-8-pa-omission-fixture-v1.json (not train/dev/holdout). Greek NT edition is Vaticanus B* only."
+}

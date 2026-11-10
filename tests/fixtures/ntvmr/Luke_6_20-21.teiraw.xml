@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="TEI-NTMSS.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+<text xml:lang="grc"><body>
+<div type="book" n="B03"><div type="chapter" n="B03K6"><ab n="Luke.6.20" xml:id="_Luke.6.20.P830.I1"><w>και</w> <w>αυτος</w> <w>επα<lb break="no"/>ρας</w> <w>τους</w> <w>οφθαλμουςαυτου</w> <w>εις</w> <w>τους</w> <w>μαθητας</w><lb/><w>αυτου</w> <app><rdg type="orig" hand="firsthand"><w>ελεγεν</w></rdg><rdg type="corr" hand="corrector2"><w>ελεγε</w></rdg></app> <w>μακαρι<lb break="no"/>οι</w> <w>οι</w> <w>πτωχοι</w> <w>οτι</w> <w>υμε<lb break="no"/>τερα</w> <w>εστιν</w> <w>η</w> <w>βασιλεια</w><lb/><w>του</w> <w><abbr type="nomSac"><hi rend="overline">θυ</hi></abbr></w></ab> <ab n="Luke.6.21" xml:id="_Luke.6.21.P840.I1"><w>μακαριοι</w> <w>οι</w><lb/><w>πεινωντες</w> <w>νυν</w> <w>οτι</w><lb/><w>χορτασθησεσθε</w> <w>μα<lb break="no"/>καριοι</w> <w>οι</w> <w>κλαιοντες</w><lb/><w>νυν</w> <w>οτι</w> <w>γελασετε</w><lb/></ab></div></div></body></text></TEI>

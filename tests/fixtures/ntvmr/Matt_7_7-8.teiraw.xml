@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-model href="TEI-NTMSS.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+<text xml:lang="grc"><body>
+<div type="book" n="B01"><div type="chapter" n="B01K7"><ab n="Matt.7.7" xml:id="_Matt.7.7.P110.I1"><w>αιτειτε</w> <w>και</w> <w>δοθησεται</w><lb/><w>υμιν</w> <w>ζητειτε</w> <w>και</w> <w>ευρη<lb break="no"/>σετε</w> <w>κρουετε</w> <w>και</w> <w>ανοι<lb break="no"/>γησεται</w> <w>υμιν</w></ab> <ab n="Matt.7.8" xml:id="_Matt.7.8.P110.I1"><w>πας</w> <w>γαρ</w><lb/><w>ο</w> <w>αιτων</w> <w>λαμβανει</w> <w>και</w><lb/><w>ο</w> <w>ζητων</w> <w>ευρισκει</w> <w>και</w><lb/><w>τω</w> <w>κρουοντι</w> <w>ανοιγεται</w><lb/></ab></div></div></body></text></TEI>

@@ -22,6 +22,8 @@ COPSAHHORNER_ZIP_URL = (
 NTVMR_TRANSCRIPT_GET = "https://ntvmr.uni-muenster.de/community/api/transcript/get/"
 
 # Pilot passage TEI pins (teiraw). Must match data/manifests/ntvmr-vaticanus-b.json.
+# Primary pin (manifest.checksum) remains John.1.1-18; additional pins are listed
+# in the manifest notes and verified on rebuild.
 NTVMR_TEIRAW_FILES: dict[str, str] = {
     "John.1.1-18": (
         "sha256:2153735c61cfec12877dfbda677b3c2269c323fccb9d67c6f70f45a742a725d9"
@@ -31,6 +33,18 @@ NTVMR_TEIRAW_FILES: dict[str, str] = {
     ),
     "John.8.1-11": (
         "sha256:8cd9c90bcbed2fee6f7a3241abd79540da712d58db44aa689e7b0c93cf2f6a92"
+    ),
+    "Matt.5.14-16": (
+        "sha256:7fe55d0e6496aa98677b933874c19c67de830766ba0825633307ba8910bd18b1"
+    ),
+    "Matt.7.7-8": (
+        "sha256:7426c91be43fd89a4d5444f3b2e85465f5789e902dd18bc60b3c51a46fd36368"
+    ),
+    "Matt.13.31-32": (
+        "sha256:cb3537a44c562292c14281ab4acd8820d834b823e500b86897054f8da8d28d1c"
+    ),
+    "Luke.6.20-21": (
+        "sha256:eac64e3ee66227d5413110fd835dab7085cd8fa536cb16b057fbcb10604de47d"
     ),
 }
 

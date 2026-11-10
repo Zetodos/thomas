@@ -19,6 +19,13 @@ from zetodos_thomas.ingest.fragments import (
     validate_fragment_corpus,
     write_fragment_corpus,
 )
+from zetodos_thomas.ingest.holdouts import (
+    HoldoutValidationError,
+    load_fragment_divergences,
+    load_nt_split,
+    load_omission_fixtures,
+    validate_holdout_artifacts,
+)
 from zetodos_thomas.ingest.manifests import (
     ManifestValidationError,
     load_all_manifests,
@@ -34,18 +41,23 @@ from zetodos_thomas.ingest.pilot import (
 __all__ = [
     "EvidencePilotValidationError",
     "FragmentValidationError",
+    "HoldoutValidationError",
     "ManifestValidationError",
     "build_fragment_corpus",
     "build_pilot_corpus",
     "load_all_manifests",
     "load_evidence_pilot",
     "load_fragment_corpus",
+    "load_fragment_divergences",
     "load_manifest",
+    "load_nt_split",
+    "load_omission_fixtures",
     "load_pilot_corpus",
     "load_thomas_corpus",
     "parse_tt",
     "validate_evidence_pilot_or_raise",
     "validate_fragment_corpus",
+    "validate_holdout_artifacts",
     "validate_manifests_dir",
     "write_evidence_pilot",
     "write_fragment_corpus",

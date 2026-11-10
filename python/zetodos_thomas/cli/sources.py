@@ -41,6 +41,10 @@ from zetodos_thomas.ingest.fragments import (
     validate_fragment_corpus_or_raise,
     write_fragment_corpus,
 )
+from zetodos_thomas.ingest.holdouts import (
+    HoldoutValidationError,
+    validate_holdout_artifacts,
+)
 from zetodos_thomas.ingest.manifests import (
     ManifestValidationError,
     load_manifest,
@@ -50,8 +54,11 @@ from zetodos_thomas.ingest.ntvmr_vaticanus import SOURCE_ID as VATICANUS_SOURCE_
 from zetodos_thomas.ingest.paths import (
     require_repo_root,
     resolve_evidence_pilot_path,
+    resolve_fragment_divergences_path,
     resolve_fragments_corpus_path,
     resolve_manifests_dir,
+    resolve_nt_split_path,
+    resolve_omission_fixtures_path,
     resolve_pilot_path,
     resolve_thomas_path,
 )
@@ -64,6 +71,7 @@ from zetodos_thomas.ingest.verify_inputs import (
     verify_fragment_rebuild_inputs,
     verify_pilot_rebuild_inputs,
 )
+from zetodos_thomas.schemas.holdout import PassageRole
 from zetodos_thomas.schemas.source import GATED_DEFAULT_SOURCE_IDS
 
 sources_app = typer.Typer(
@@ -273,6 +281,39 @@ def validate_sources(
         )
     else:
         typer.echo(f"Note: evidence pilot not found at {evidence_pilot} (skipped)")
+
+    split_path = resolve_nt_split_path(repo_root)
+    omission_path = resolve_omission_fixtures_path(repo_root)
+    divergence_path = resolve_fragment_divergences_path(repo_root)
+    if split_path.is_file() and omission_path.is_file() and divergence_path.is_file():
+        pilot_for_holdouts = None
+        if pilot.is_file():
+            pilot_for_holdouts = load_pilot_corpus(pilot)
+        try:
+            split, omissions, divergences = validate_holdout_artifacts(
+                split_path=split_path,
+                omission_path=omission_path,
+                divergence_path=divergence_path,
+                pilot=pilot_for_holdouts,
+            )
+        except HoldoutValidationError as exc:
+            typer.secho(f"Holdout validation failed: {exc}", fg=typer.colors.RED)
+            raise typer.Exit(code=1) from exc
+        train_n = sum(
+            len(p.unit_ids) for p in split.passages if p.role is PassageRole.TRAIN
+        )
+        holdout_n = sum(
+            len(p.unit_ids) for p in split.passages if p.role is PassageRole.HOLDOUT
+        )
+        typer.echo(
+            f"OK: holdouts {split.id} "
+            f"(train={train_n}, holdout={holdout_n}, "
+            f"omissions={len(omissions.units)}, "
+            f"divergences={len(divergences.divergences)}, "
+            f"eval-exclusions={len(split.evaluation_witness_exclusions)})"
+        )
+    else:
+        typer.echo("Note: JAK-33 holdout artifacts not found (skipped)")
 
 
 @sources_app.command("download")
