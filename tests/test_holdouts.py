@@ -181,22 +181,31 @@ def test_crosscheck_rejects_dev_omission_overlap() -> None:
         crosscheck_against_pilot(mutated, omissions, load_pilot_corpus(PILOT_PATH))
 
 
-def test_integrated_sources_validate_and_optional_align_benchmark() -> None:
-    """Canonical split must pass sources validate; align benchmark when present.
-
-    JAK-28 / #13 completes ``thomas align benchmark --splits`` against
-    ``data/training/splits/horner-vaticanus-nt-split-v2.json``.
-    """
+def test_integrated_sources_validate_and_align_benchmark() -> None:
+    """Single canonical artifact: sources validate + align benchmark."""
     runner = CliRunner()
     sources = runner.invoke(app, ["sources", "validate", "--repo-root", str(REPO_ROOT)])
     assert sources.exit_code == 0, sources.output
     assert "horner-vaticanus-nt-split-v2" in sources.output
 
-    align_help = runner.invoke(app, ["align", "--help"])
-    if align_help.exit_code != 0:
-        pytest.skip("thomas align lands with JAK-28 / #13")
-    assert "benchmark" in align_help.output
-
-    bench_help = runner.invoke(app, ["align", "benchmark", "--help"])
-    assert bench_help.exit_code == 0, bench_help.output
-    assert "--splits" in bench_help.output
+    out = REPO_ROOT / "data" / "sources" / "alignment" / "benchmark-report.json"
+    bench = runner.invoke(
+        app,
+        [
+            "align",
+            "benchmark",
+            "--repo-root",
+            str(REPO_ROOT),
+            "--splits",
+            str(SPLIT_PATH),
+            "-o",
+            str(out),
+        ],
+    )
+    assert bench.exit_code == 0, bench.output
+    assert out.is_file()
+    report = json.loads(out.read_text(encoding="utf-8"))
+    assert report["pass_threshold"] is None
+    assert report["pilot_id"] == "horner-vaticanus-nt-pilot-v2"
+    assert report["human_reference"]["status"] == "provisional"
+    assert "null_rate" not in report["lexical_baseline"]["null_alignments"]

@@ -7,6 +7,8 @@ from pathlib import Path
 
 import typer
 
+from zetodos_thomas.align.splits import load_canonical_splits
+from zetodos_thomas.align.validate import validate_pilot_corpus
 from zetodos_thomas.ingest.dilley_thomas import (
     EXPECTED_LOGIA,
     INGEST_LEVEL,
@@ -186,6 +188,26 @@ def validate_sources(
                 fg=typer.colors.RED,
             )
             raise typer.Exit(code=1)
+        # Structural / normalization / omission checks (JAK-28) against
+        # the single JAK-33 canonical training split.
+        splits = load_canonical_splits(
+            resolve_nt_split_path(repo_root),
+            resolve_omission_fixtures_path(repo_root),
+        )
+        report = validate_pilot_corpus(corpus, splits=splits)
+        for issue in report.issues:
+            if issue.severity == "error":
+                typer.secho(
+                    f"Pilot validation error [{issue.code}]: {issue.message}",
+                    fg=typer.colors.RED,
+                )
+        if not report.ok:
+            raise typer.Exit(code=1)
+        typer.echo(
+            "OK: pilot structural validation "
+            f"({report.nonempty_positive} nonempty positive, "
+            f"{report.omission_units} omission)"
+        )
     else:
         typer.echo(f"Note: pilot file not found at {pilot} (skipped)")
 

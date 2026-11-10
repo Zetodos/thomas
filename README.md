@@ -3,7 +3,7 @@
 Offline-capable, evidence-based reconstruction and reader for the *Gospel of Thomas*.
 
 **Repository:** <https://github.com/Zetodos/thomas>
-**Status:** Phase 0–1 foundation — licensing, Python toolchain, Horner × Vaticanus B* NT pilot (JAK-24), Dilley SCRIPTORIUM Coptic Thomas (JAK-30), Greek Thomas P.Oxy. fragments (JAK-31), alignment schema (JAK-32), and Thomas 7/17/30/77 evidence pilot (JAK-34). Reconstruction feasibility is not yet proven.
+**Status:** Phase 0–1 foundation — licensing, Python toolchain, Horner × Vaticanus B* NT pilot (JAK-24), Dilley SCRIPTORIUM Coptic Thomas (JAK-30), Greek Thomas P.Oxy. fragments (JAK-31), alignment schema (JAK-32), Thomas 7/17/30/77 evidence pilot (JAK-34), and Greek–Sahidic alignment benchmark pilot (JAK-28). Reconstruction feasibility is not yet proven.
 
 ## Objective
 
@@ -29,7 +29,9 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`PLAN.md`](PLAN.md) | Full implementation plan |
 | [`docs/source-licenses.md`](docs/source-licenses.md) | Dual code/data policy, setup modes, never-ship list, manifest schema |
 | [`docs/licensing-provenance-audit.md`](docs/licensing-provenance-audit.md) | 2026-11-09 provenance audit (updated for Horner decision) |
-| [`docs/horner-vaticanus-alignment-notes.md`](docs/horner-vaticanus-alignment-notes.md) | CopSahHorner + Vaticanus B* pilot notes (JAK-24) |
+| [`docs/horner-vaticanus-alignment-notes.md`](docs/horner-vaticanus-alignment-notes.md) | CopSahHorner + Vaticanus B* pilot notes (JAK-24/28) |
+| [`docs/alignment-pilot-splits.md`](docs/alignment-pilot-splits.md) | Train/dev/holdout/omission passage splits (JAK-28) |
+| [`docs/alignment-pilot-benchmark.md`](docs/alignment-pilot-benchmark.md) | Lexical baseline benchmark + limitations (JAK-28) |
 | [`docs/id-scheme.md`](docs/id-scheme.md) | Stable unit/token/span IDs + retokenization rule (JAK-32) |
 | [`docs/greek-thomas-fragments.md`](docs/greek-thomas-fragments.md) | P.Oxy. 1/654/655 DCLP ingest notes (JAK-31) |
 | [`docs/pilot-evidence-set.md`](docs/pilot-evidence-set.md) | Phase 1 Thomas 7/17/30/77 evidence pilot (JAK-34) |
@@ -41,6 +43,7 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`data/sources/fragments/`](data/sources/fragments/) | Bundled Greek Thomas fragments (evaluation-witness) |
 | [`data/evidence/pilot/`](data/evidence/pilot/) | Thomas 7/17/30/77 evidence inventory (JSON + JSONL) |
 | [`data/training/splits/`](data/training/splits/) | Canonical NT train/dev/holdout split v2 (JAK-33; consumed by JAK-28) |
+| [`data/sources/alignment/`](data/sources/alignment/) | Provisional gold sample + benchmark JSON (JAK-28) |
 
 ## Never ship (summary)
 
@@ -96,7 +99,7 @@ uv run ty check
 uv run pytest
 ```
 
-The `thomas` console script currently exposes `sources validate` (offline), `sources download` (explicit setup fetch into `data/downloads/`), `sources build-pilot`, `sources build-thomas`, and `sources build-fragments` (layered P.Oxy. corpus from bundled DCLP TEI). Further subcommands live in [`PLAN.md`](PLAN.md).
+The `thomas` console script exposes `sources validate|download|build-pilot|build-thomas|build-fragments` and `align validate|benchmark|eflomal-probe`. Further subcommands live in [`PLAN.md`](PLAN.md).
 
 Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web/` only (not started yet).
 
@@ -104,7 +107,7 @@ Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web
 
 After clone and `uv sync --locked`:
 
-1. **Offline immediately:** `uv run thomas sources validate` uses committed manifests + bundled corpora only (no network).
+1. **Offline immediately:** `uv run thomas sources validate` and `uv run thomas align validate` / `align benchmark` use committed manifests + bundled corpora + pilot gold only (no network).
 2. **Optional setup downloads** (gitignored): `uv run thomas sources download` (see [`data/downloads/README.md`](data/downloads/README.md)); then `build-pilot` / `build-thomas` to regenerate imports.
 3. After setup, CLI work must remain offline (no cloud APIs, CDNs, or hidden network fetches).
 

@@ -1,0 +1,252 @@
+{
+  "id": "horner-vaticanus-alignment-benchmark-v1",
+  "title": "Greek-Sahidic alignment pilot benchmark (JAK-28)",
+  "greek_source_id": "ntvmr-vaticanus-b",
+  "sahidic_source_id": "copsahhorner",
+  "pilot_id": "horner-vaticanus-nt-pilot-v2",
+  "pilot_units": 46,
+  "nonempty_positive_units": 35,
+  "omission_units": 11,
+  "validation_ok": true,
+  "validation_issues": [],
+  "splits": {
+    "id": "horner-vaticanus-nt-split-v2",
+    "owned_by": "JAK-33",
+    "pilot_corpus_id": "horner-vaticanus-nt-pilot-v2",
+    "source_split_path": "data/training/splits/horner-vaticanus-nt-split-v2.json",
+    "train_units": 31,
+    "dev_units": 2,
+    "holdout_units": 2,
+    "omission_units": 11,
+    "train_nonempty": 31,
+    "dev_nonempty": 2,
+    "holdout_nonempty": 2,
+    "excluded_from_training_stack": [
+      "poxy-654-dclp (P.Oxy. 654; evaluation-witness)",
+      "poxy-1-dclp (P.Oxy. 1; evaluation-witness)",
+      "poxy-655-dclp (P.Oxy. 655; evaluation-witness)",
+      "thomas-greek-fragments-poxy (JAK-31; logia 7/17/30/77 holdouts)"
+    ]
+  },
+  "lexical_baseline": {
+    "algorithm": "verse-level type co-occurrence Dice (once per type per verse) + mild positional prior; score restricted to gold-annotated left token ids",
+    "train_units_fit": [
+      "john.1.1",
+      "john.1.2",
+      "john.1.3",
+      "john.1.4",
+      "john.1.5",
+      "john.1.6",
+      "john.1.7",
+      "john.1.8",
+      "john.1.9",
+      "john.1.10",
+      "john.1.11",
+      "john.1.12",
+      "john.1.13",
+      "john.1.14",
+      "john.1.15",
+      "john.1.16",
+      "john.1.17",
+      "john.1.18",
+      "mark.1.1",
+      "mark.1.2",
+      "mark.1.3",
+      "mark.1.4",
+      "mark.1.5",
+      "mark.1.6",
+      "mark.1.7",
+      "mark.1.8",
+      "matthew.5.14",
+      "matthew.5.15",
+      "matthew.5.16",
+      "matthew.7.7",
+      "matthew.7.8"
+    ],
+    "pair_types": 4292,
+    "scoring": {
+      "restrict_to_annotated_left": true,
+      "min_dice_for_scoring": 0.0,
+      "note": "Every alignable left token gets a 1-best proposal (min_dice=0); only gold-annotated Sahidic left token ids enter the precision denominator so partial gold does not conflate coverage with accuracy. F1 is 0.0 when both denominators are nonzero and TP=0."
+    },
+    "overall": {
+      "precision": 0.5517241379310345,
+      "recall": 0.37209302325581395,
+      "f1": 0.4444444444444444,
+      "true_positives": 16,
+      "predicted_denominator": 29,
+      "gold_denominator": 43,
+      "unit_ids_scored": [
+        "john.1.1",
+        "john.1.2",
+        "luke.6.20",
+        "mark.1.1",
+        "matthew.13.31",
+        "matthew.7.7"
+      ],
+      "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Predictions restricted to gold-annotated left (Sahidic) token ids so partial gold does not conflate coverage with precision. Omission fixtures must not appear in these denominators. F1 is 0.0 when both denominators are nonzero and TP=0."
+    },
+    "by_split": {
+      "train": {
+        "precision": 0.6,
+        "recall": 0.375,
+        "f1": 0.4615384615384615,
+        "true_positives": 12,
+        "predicted_denominator": 20,
+        "gold_denominator": 32,
+        "unit_ids_scored": [
+          "john.1.1",
+          "john.1.2",
+          "mark.1.1",
+          "matthew.7.7"
+        ],
+        "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Predictions restricted to gold-annotated left (Sahidic) token ids so partial gold does not conflate coverage with precision. Omission fixtures must not appear in these denominators. F1 is 0.0 when both denominators are nonzero and TP=0."
+      },
+      "dev": {
+        "precision": 0.5,
+        "recall": 0.5,
+        "f1": 0.5,
+        "true_positives": 2,
+        "predicted_denominator": 4,
+        "gold_denominator": 4,
+        "unit_ids_scored": [
+          "luke.6.20"
+        ],
+        "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Predictions restricted to gold-annotated left (Sahidic) token ids so partial gold does not conflate coverage with precision. Omission fixtures must not appear in these denominators. F1 is 0.0 when both denominators are nonzero and TP=0."
+      },
+      "holdout": {
+        "precision": 0.4,
+        "recall": 0.2857142857142857,
+        "f1": 0.3333333333333333,
+        "true_positives": 2,
+        "predicted_denominator": 5,
+        "gold_denominator": 7,
+        "unit_ids_scored": [
+          "matthew.13.31"
+        ],
+        "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Predictions restricted to gold-annotated left (Sahidic) token ids so partial gold does not conflate coverage with precision. Omission fixtures must not appear in these denominators. F1 is 0.0 when both denominators are nonzero and TP=0."
+      }
+    },
+    "null_alignments": {
+      "alignable_sahidic_tokens": 61,
+      "links_emitted": 61,
+      "missing_predictions": 0,
+      "forced_prediction_coverage": 1.0,
+      "scoring_min_dice": 0.0,
+      "abstention_threshold": 0.05,
+      "null_sahidic_tokens_at_abstention_threshold": 26,
+      "null_rate_at_abstention_threshold": 0.4262295081967213,
+      "note": "forced_prediction_coverage reflects the scoring emission policy (e.g. min_dice=0 1-best), not learned null alignments. null_rate_at_abstention_threshold treats links below 0.05 as abstentions."
+    },
+    "failure_examples": [
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ",
+        "gold_right": "εν",
+        "predicted_right": "αρχη",
+        "predicted_score": 0.8094117647058824
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲛⲉϥϣⲟⲟⲡ",
+        "gold_right": "ην",
+        "predicted_right": "προς",
+        "predicted_score": 0.8056149732620321
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲛϭⲓⲡϣⲁϫⲉ",
+        "gold_right": "λογος",
+        "predicted_right": "λογος",
+        "predicted_score": 0.6761319073083779
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲛϭⲓⲡϣⲁϫⲉ",
+        "gold_right": "λογος",
+        "predicted_right": "λογος",
+        "predicted_score": 0.6761319073083779
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲡϣⲁϫⲉ",
+        "gold_right": "λογος",
+        "predicted_right": "λογος",
+        "predicted_score": 1.00951871657754
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲡϣⲁϫⲉ",
+        "gold_right": "λογος",
+        "predicted_right": "λογος",
+        "predicted_score": 1.00951871657754
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲡϣⲁϫⲉ.",
+        "gold_right": "λογος",
+        "predicted_right": "τον",
+        "predicted_score": 0.2290136660724896
+      },
+      {
+        "type": "mismatch",
+        "unit_id": "john.1.1",
+        "left": "ⲡϣⲁϫⲉ.",
+        "gold_right": "λογος",
+        "predicted_right": "τον",
+        "predicted_score": 0.2290136660724896
+      }
+    ]
+  },
+  "human_reference": {
+    "documents": [
+      "horner-vaticanus-gold-sample-v1.json"
+    ],
+    "status": "provisional",
+    "adjudication": "No named human reviewer or adjudication record; do not treat as Human-checked/Human-verified.",
+    "provenance_tag": "provisional-draft-jak28-unreviewed",
+    "gold_link_count": 43,
+    "titles": [
+      "Provisional Greek–Sahidic token/phrase reference sample (JAK-28)"
+    ],
+    "parallel_inventory": {
+      "horner-vaticanus-gold-sample-v1.json": {
+        "verse-pair": 6,
+        "phrase": 6,
+        "lexical": 17,
+        "loanword": 4,
+        "other": 1
+      }
+    },
+    "phrase_scoring": "Multi-token phrase parallels expand to Cartesian token links; reported F1 is a link-expansion metric, not independent phrase fidelity.",
+    "holdout_scale": "Matthew 13:31 gold is smoke-test scale (7 links); holdout F1 is not generalizable."
+  },
+  "eflomal": {
+    "available": false,
+    "selected_for_default_path": false,
+    "detail": "eflomal import failed (ModuleNotFoundError: No module named 'eflomal'). PyPI eflomal 2.0.0 requires compiling src/ via make; no wheel was available here. Lexical Dice baseline remains the deterministic offline path. Jake decision: whether to add a native eflomal toolchain pin later (still no LLM)."
+  },
+  "limitations": [
+    "No numeric pass threshold - baseline only (PLAN.md Phase 2).",
+    "Whitespace tokenization is not morphology; Coptic groups stay fused.",
+    "Verse-level type Dice still over-generates co-occurrence; order is weak.",
+    "Reference gold is provisional (unreviewed draft); scoring uses annotated-left coverage only.",
+    "Phrase parallels use Cartesian link expansion — not phrase-level F1.",
+    "Matthew 13:31 holdout gold is 7 links (smoke test, not generalizable).",
+    "null_alignments.forced_prediction_coverage reflects min_dice=0 scoring emission, not learned nulls; use null_rate_at_abstention_threshold for abstention-style nulls.",
+    "John 8:1-11 omission fixtures excluded from positive denominators.",
+    "Greek = NTVMR Vaticanus B* (GA 03 / docID 20003) only; no WH/SBLGNT mix.",
+    "eflomal unavailable without native build; not on default path (not implemented in this PR).",
+    "Thomas Greek fragments (7/17/30/77) are outside this NT training stack.",
+    "Canonical train/dev/holdout policy is owned by JAK-33 (data/training/splits/); this PR must not keep a competing splits file."
+  ],
+  "omission_leak_problems": [],
+  "pass_threshold": null
+}

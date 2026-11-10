@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import typer
 
+from zetodos_thomas.cli.align import align_app
 from zetodos_thomas.cli.sources import sources_app
 
 app = typer.Typer(
@@ -13,6 +14,7 @@ app = typer.Typer(
     no_args_is_help=True,
 )
 app.add_typer(sources_app, name="sources")
+app.add_typer(align_app, name="align")
 
 
 @app.callback()

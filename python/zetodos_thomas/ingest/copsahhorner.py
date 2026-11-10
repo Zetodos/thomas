@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import html
 from pathlib import Path
 from typing import Protocol
 
@@ -93,7 +94,8 @@ def read_verse(
         msg = f"unsupported Coptic book id: {book}"
         raise KeyError(msg)
     raw = bible.get(books=[sword_book], chapters=[chapter], verses=[verse])
-    original = raw.strip()
+    # SWORD may emit HTML entities for Horner editorial restorations (e.g. &lt;…&gt;).
+    original = html.unescape(raw).strip()
     return TextUnit(
         source_id=source_id,
         unit_id=f"{book}.{chapter}.{verse}",

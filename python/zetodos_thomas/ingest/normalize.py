@@ -17,11 +17,22 @@ _COPTIC_COMBINING = "".join(
     )
 )
 _COPTIC_STRIP_RE = re.compile(f"[{re.escape(_COPTIC_COMBINING)}\u0361]")
+# Diplomatic editorial wrappers: keep letters, drop brackets/angles.
+_EDITORIAL_WRAP_RE = re.compile(r"[\[\]⟨⟩<>]")
 
 
 def normalize_whitespace(text: str) -> str:
     """Collapse runs of whitespace and strip ends."""
     return _WHITESPACE_RE.sub(" ", text).strip()
+
+
+def strip_editorial_marks(text: str) -> str:
+    """Remove diplomatic uncertainty/restoration wrappers; keep letters.
+
+    Used so normalized matching is not polluted by ``[η]``, ``⟨…⟩``, or
+    Horner ``<…>`` restoration notation. Original text keeps the marks.
+    """
+    return _EDITORIAL_WRAP_RE.sub("", text)
 
 
 def normalize_coptic(text: str) -> str:
@@ -32,10 +43,26 @@ def normalize_coptic(text: str) -> str:
     """
     nfc = unicodedata.normalize("NFC", text)
     stripped = _COPTIC_STRIP_RE.sub("", nfc)
+    stripped = strip_editorial_marks(stripped)
     return normalize_whitespace(stripped)
 
 
 def normalize_greek(text: str) -> str:
-    """NFC + whitespace collapse for unaccented Robinson WH surfaces."""
+    """NFC + whitespace collapse; strip editorial wrappers for matching."""
     nfc = unicodedata.normalize("NFC", text)
-    return normalize_whitespace(nfc)
+    stripped = strip_editorial_marks(nfc)
+    return normalize_whitespace(stripped)
+
+
+def recompute_normalized(*, language: str, original_text: str) -> str:
+    """Deterministically recompute ``normalized_text`` from ``original_text``.
+
+    ``language`` is ``coptic`` / ``sahidic`` / ``greek`` (case-insensitive).
+    """
+    key = language.strip().lower()
+    if key in {"coptic", "sahidic", "cop", "sah"}:
+        return normalize_coptic(original_text)
+    if key in {"greek", "grc"}:
+        return normalize_greek(original_text)
+    msg = f"unsupported language for normalization: {language!r}"
+    raise ValueError(msg)
