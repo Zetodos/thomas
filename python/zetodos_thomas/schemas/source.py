@@ -69,6 +69,27 @@ class SourceManifest(BaseModel):
         default=None,
         description="Preferred parallel edition id (edition-independent pairing hint)",
     )
+    manuscript_id: str | None = Field(
+        default=None,
+        description=(
+            "Manuscript / papyrus shelfmark (required for fragment transcriptions)"
+        ),
+    )
+    tm_id: str | None = Field(
+        default=None,
+        description="Trismegistos text id when applicable",
+    )
+    evidence_type: str | None = Field(
+        default=None,
+        description="PLAN.md evidence type (G for direct Greek Thomas manuscripts)",
+    )
+    corpus_role: str | None = Field(
+        default=None,
+        description=(
+            "evaluation-witness | training-ok | display-only — fragment G texts "
+            "default to evaluation-witness (JAK-28 leakage control)"
+        ),
+    )
 
     @field_validator("id")
     @classmethod

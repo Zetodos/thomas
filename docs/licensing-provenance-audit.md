@@ -46,6 +46,7 @@ Project policy derived from this audit: [`source-licenses.md`](source-licenses.m
 | **Setup mode** | **bundled** small excerpts from PD Grenfell/Hunt, Evelyn-White 1920, or DCLP (tiny corpus); or **setup-download** from `papyri/idp.data` |
 | **Blocking risks** | Copying Attridge’s Greek appendix wholesale is a clear blocker. Do **not** conflate Evelyn-White **1920** (US PD) with later copyrighted critical editions. Website dumps that silently mix modern restorations without provenance. Prefer diplomatic + marked restorations. |
 | **Confidence** | **High** for DCLP CC BY 3.0, for “do not redistribute Brill/Attridge”, and for US PD of Evelyn-White 1920. **Medium** for asserting PD of every Grenfell/Hunt digitization (encoding layer may add rights — prefer DCLP or self-OCR of PD scan). |
+| **Ingest (JAK-31)** | Bundled DCLP TEI for **P.Oxy. 1 / 654 / 655** (TM 62838 / 62840 / 62839), each license ref verified CC BY 3.0 in TEI `availability`. Layered corpus + manifests under `data/sources/fragments/` and `data/manifests/dclp-poxy-*.json`. P.Oxy. **5575** excluded (not a Thomas MS). Apparatus `rdg` not promoted; Layton/Attridge continuous Greek not shipped. |
 
 **Primary refs:**
 - https://github.com/papyri/idp.data/blob/master/README.md (CC BY 3.0)

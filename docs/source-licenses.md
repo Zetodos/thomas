@@ -35,7 +35,7 @@ Adopted redistributable core (JAK-15 Done). Pin versions at ingest. Sahidica is 
 | Family | Typical mode | Notes |
 | --- | --- | --- |
 | **Dilley Thomas (Coptic SCRIPTORIUM)** | `setup-download` (+ bundled **unit-level** import) | **Primary Coptic Thomas target** (JAK-30). **CC BY 4.0**; attribute Dilley / SCRIPTORIUM. Manifest: [`data/manifests/dilley-thomas.json`](../data/manifests/dilley-thomas.json). Import: [`data/sources/thomas/dilley-thomas-v6.2.0.json`](../data/sources/thomas/dilley-thomas-v6.2.0.json) — **unit-level only** (orig+norm TextUnits); **not** token-complete / **not** alignment-ready. Full SCRIPTORIUM token/group data deferred; use JAK-32 ID grammar when it lands. |
-| P.Oxy. fragments (verify each transcription) | `bundled` (small) | Prefer DCLP (CC BY 3.0) or PD Grenfell/Hunt; Evelyn-White **1920** original is US PD (see audit §2) |
+| P.Oxy. fragments (verify each transcription) | `bundled` (small) | **JAK-31 imported:** DCLP TEI for P.Oxy. **1 / 654 / 655** — each verified **CC BY 3.0** (do not assume PD). Manifests `dclp-poxy-*`. Evidence type **G**, `corpus_role=evaluation-witness`. Prefer DCLP or PD Grenfell/Hunt / Evelyn-White **1920** (see audit §2). **Do not** label P.Oxy. 5575 as a Thomas manuscript. |
 | **Horner Sahidic NT** (`CopSahHorner`) | `setup-download` (+ bundled pilot excerpt) | **Default Sahidic NT** (PD module; JAK-14 Done; ingest JAK-24). Manifest: [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json). Alignment notes: [`horner-vaticanus-alignment-notes.md`](horner-vaticanus-alignment-notes.md) |
 | **NTVMR Vaticanus GA 03 B\*** (INTF TEI, `docID` 20003) | `setup-download` (+ bundled pilot excerpt) | **Default Greek NT** (JAK-25 GO; updates JAK-15 WH default). **CC BY 4.0** transcription; attribute INTF/NTVMR. Firsthand only; empty firsthand = omission; **no** corrector fill; **no** WH/SBLGNT lacuna fill; **do not** ship images. Manifest: [`data/manifests/ntvmr-vaticanus-b.json`](../data/manifests/ntvmr-vaticanus-b.json) |
 | Westcott–Hort 1881 (Robinson) | not default | Documented unused fallback only; **not** in default manifests/CLI |
@@ -95,7 +95,7 @@ Reference-only citation and short fair-use quotation policy may apply in scholar
 
 Machine-readable manifests live under [`data/manifests/`](../data/manifests/) as **JSON** (one file per source). Typed model: `zetodos_thomas.schemas.source.SourceManifest`. Validate offline with `uv run thomas sources validate`.
 
-Full CrossWire / NTVMR TEI / Dilley TT downloads stay under gitignored `data/downloads/`. Redistributable imports are committed at [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](../data/sources/pilot/horner-vaticanus-nt-pilot.json) and [`data/sources/thomas/dilley-thomas-v6.2.0.json`](../data/sources/thomas/dilley-thomas-v6.2.0.json).
+Full CrossWire / NTVMR TEI / Dilley TT downloads stay under gitignored `data/downloads/`. Redistributable imports are committed at [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](../data/sources/pilot/horner-vaticanus-nt-pilot.json), [`data/sources/thomas/dilley-thomas-v6.2.0.json`](../data/sources/thomas/dilley-thomas-v6.2.0.json), and [`data/sources/fragments/`](../data/sources/fragments/) — see [`greek-thomas-fragments.md`](greek-thomas-fragments.md).
 
 ### Required / expected fields
 
@@ -125,7 +125,7 @@ Full CrossWire / NTVMR TEI / Dilley TT downloads stay under gitignored `data/dow
 
 ### Live example
 
-See [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json), [`data/manifests/ntvmr-vaticanus-b.json`](../data/manifests/ntvmr-vaticanus-b.json), and [`data/manifests/dilley-thomas.json`](../data/manifests/dilley-thomas.json).
+See [`data/manifests/copsahhorner.json`](../data/manifests/copsahhorner.json), [`data/manifests/ntvmr-vaticanus-b.json`](../data/manifests/ntvmr-vaticanus-b.json), [`data/manifests/dilley-thomas.json`](../data/manifests/dilley-thomas.json), and [`data/manifests/dclp-poxy-1.json`](../data/manifests/dclp-poxy-1.json).
 
 ## Decision status
 

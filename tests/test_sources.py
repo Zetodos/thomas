@@ -94,7 +94,14 @@ def test_normalize_coptic_strips_overlines() -> None:
 def test_committed_manifests_validate() -> None:
     manifests = validate_manifests_dir(MANIFESTS_DIR)
     ids = {m.id for m in manifests}
-    assert ids == {"copsahhorner", "dilley-thomas", "ntvmr-vaticanus-b"}
+    assert ids == {
+        "copsahhorner",
+        "dilley-thomas",
+        "ntvmr-vaticanus-b",
+        "dclp-poxy-1",
+        "dclp-poxy-654",
+        "dclp-poxy-655",
+    }
     assert ids.isdisjoint(GATED_DEFAULT_SOURCE_IDS)
     horner = load_manifest(MANIFESTS_DIR / "copsahhorner.json")
     assert horner.mode is AvailabilityMode.SETUP_DOWNLOAD
@@ -104,6 +111,8 @@ def test_committed_manifests_validate() -> None:
     assert vat.counterpart_source_id == "copsahhorner"
     assert vat.spdx_or_custom == "CC-BY-4.0"
     assert "westcott" not in vat.id
+    # Vaticanus B* TEI / notes must remain the sole default Greek NT spine file.
+    assert (MANIFESTS_DIR / "ntvmr-vaticanus-b.json").is_file()
     dilley = load_manifest(MANIFESTS_DIR / "dilley-thomas.json")
     assert dilley.mode is AvailabilityMode.SETUP_DOWNLOAD
     assert dilley.spdx_or_custom == "CC-BY-4.0"
@@ -308,6 +317,9 @@ def test_bundled_resources_match_checkout() -> None:
         "copsahhorner.json",
         "ntvmr-vaticanus-b.json",
         "dilley-thomas.json",
+        "dclp-poxy-1.json",
+        "dclp-poxy-654.json",
+        "dclp-poxy-655.json",
     ):
         checkout = (MANIFESTS_DIR / name).read_text(encoding="utf-8")
         bundled = (bundled_manifests_dir() / name).read_text(encoding="utf-8")
@@ -328,7 +340,14 @@ def test_resolve_manifests_prefers_checkout() -> None:
 def test_verify_rebuild_rejects_bad_inputs(tmp_path: Path) -> None:
     manifests = tmp_path / "manifests"
     manifests.mkdir()
-    for name in ("copsahhorner.json", "ntvmr-vaticanus-b.json"):
+    for name in (
+        "copsahhorner.json",
+        "ntvmr-vaticanus-b.json",
+        "dilley-thomas.json",
+        "dclp-poxy-1.json",
+        "dclp-poxy-654.json",
+        "dclp-poxy-655.json",
+    ):
         manifests.joinpath(name).write_text(
             (MANIFESTS_DIR / name).read_text(encoding="utf-8"),
             encoding="utf-8",
