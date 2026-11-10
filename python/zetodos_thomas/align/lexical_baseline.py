@@ -84,8 +84,9 @@ def _norm_tokens(unit: ParallelUnit) -> tuple[list[Token], list[Token]]:
 def fit_lexical_baseline(train_units: list[ParallelUnit]) -> LexicalBaselineModel:
     """Fit co-occurrence Dice tables on nonempty train pairs.
 
-    Uses verse-level bag co-occurrence (every left token with every right token
-    in the same verse). Intentionally elementary; not IBM Model 1 / eflomal.
+    Uses verse-level type co-occurrence: each normalized token type is counted
+    once per verse in the joint and marginal tables (avoids Dice > 1 from
+    repeats). Intentionally elementary; not IBM Model 1 / eflomal.
     """
     model = LexicalBaselineModel()
     for unit in train_units:
@@ -97,14 +98,15 @@ def fit_lexical_baseline(train_units: list[ParallelUnit]) -> LexicalBaselineMode
         if not left or not right:
             continue
         model.train_unit_ids.append(unit.unit_id)
-        left_norms = [t.normalized for t in left]
-        right_norms = [t.normalized for t in right]
-        for ln in left_norms:
+        # Type-once-per-verse so joint and marginals use the same events.
+        left_types = {t.normalized for t in left}
+        right_types = {t.normalized for t in right}
+        for ln in left_types:
             model.left_counts[ln] += 1
-        for rn in right_norms:
+        for rn in right_types:
             model.right_counts[rn] += 1
-        for ln in left_norms:
-            for rn in right_norms:
+        for ln in left_types:
+            for rn in right_types:
                 model.pair_counts[(ln, rn)] += 1
     return model
 
@@ -227,24 +229,44 @@ def score_links(
     gold: list[TokenLink],
     *,
     unit_ids: set[str] | None = None,
+    restrict_to_annotated_left: bool = True,
 ) -> BenchmarkScores:
-    """Token-link precision/recall with explicit denominators."""
+    """Token-link precision/recall with explicit denominators.
+
+    When ``restrict_to_annotated_left`` is true (default), predictions are kept
+    only for Sahidic token ids that appear on the left of at least one gold
+    link in the filtered set. Partial gold therefore does not inflate false
+    positives on unannotated tokens; precision measures link accuracy on
+    annotated coverage, not annotation completeness.
+    """
 
     def _key(link: TokenLink) -> tuple[str, str, str]:
         return (link.unit_id, link.left_token_id, link.right_token_id)
 
-    pred = [p for p in predicted if unit_ids is None or p.unit_id in unit_ids]
     gld = [g for g in gold if unit_ids is None or g.unit_id in unit_ids]
+    pred = [p for p in predicted if unit_ids is None or p.unit_id in unit_ids]
+    if restrict_to_annotated_left:
+        annotated_left = {(g.unit_id, g.left_token_id) for g in gld}
+        pred = [p for p in pred if (p.unit_id, p.left_token_id) in annotated_left]
     pred_set = {_key(p) for p in pred}
     gold_set = {_key(g) for g in gld}
     tp = len(pred_set & gold_set)
     precision = (tp / len(pred_set)) if pred_set else None
     recall = (tp / len(gold_set)) if gold_set else None
-    if precision is None or recall is None or (precision + recall) == 0:
+    if precision is None or recall is None:
         f1 = None
+    elif precision + recall == 0:
+        # Both denominators nonempty but zero matches → defined zero F1.
+        f1 = 0.0
     else:
         f1 = 2 * precision * recall / (precision + recall)
     scored_units = sorted({*([p.unit_id for p in pred]), *([g.unit_id for g in gld])})
+    coverage_note = (
+        "Predictions restricted to gold-annotated left (Sahidic) token ids "
+        "so partial gold does not conflate coverage with precision. "
+        if restrict_to_annotated_left
+        else ""
+    )
     return BenchmarkScores(
         precision=precision,
         recall=recall,
@@ -255,8 +277,10 @@ def score_links(
         unit_ids_scored=scored_units,
         notes=(
             "No pass/fail threshold. Denominators are predicted link count and "
-            "gold link count after optional unit_id filter. Omission fixtures "
-            "must not appear in these denominators."
+            "gold link count after optional unit_id filter. "
+            f"{coverage_note}"
+            "Omission fixtures must not appear in these denominators. "
+            "F1 is 0.0 when both denominators are nonzero and TP=0."
         ),
     )
 

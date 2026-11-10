@@ -13,14 +13,17 @@
 | Pilot units | 46 |
 | Nonempty positive pairs | 35 |
 | Omission fixtures (John 8:1–11) | 11 (excluded from positive denominators) |
-| Algorithm | Verse-bag co-occurrence Dice + mild positional prior |
+| Algorithm | Verse-level **type** Dice (once per type per verse) + mild positional prior |
+| Scoring coverage | 1-best for every left token (`min_dice=0`); only gold-annotated Sahidic left ids enter precision |
 | Human gold links scored | 43 (token links expanded from lexical/phrase/loanword parallels) |
-| Predicted links on gold units | 36 |
-| True positives | 9 |
-| Precision | 0.25 (= 9 / 36) |
-| Recall | ≈0.209 (= 9 / 43) |
-| F1 | ≈0.228 |
+| Predicted links on annotated lefts | 29 |
+| True positives | 16 |
+| Precision | ≈0.552 (= 16 / 29) |
+| Recall | ≈0.372 (= 16 / 43) |
+| F1 | ≈0.444 |
 | Pass threshold | **None** (not invented) |
+
+When both prediction and gold denominators are nonzero and TP=0, F1 is **0.0** (not null). When there are no predictions, precision/F1 stay undefined (`null`).
 
 Reproduce:
 
@@ -40,7 +43,7 @@ Gold encodes inspected correspondences such as:
 - Matthew 13:31 — **holdout** gold only (mustard-seed phrase); never used to fit the baseline
 - John 8:1 — shared-absence omission fixture
 
-Qualitative pairs must not be reported as if they were system scores; scores above use explicit denominators.
+Qualitative pairs must not be reported as if they were system scores; scores above use explicit denominators on annotated-left coverage.
 
 ## Error categories observed
 
@@ -52,6 +55,7 @@ Qualitative pairs must not be reported as if they were system scores; scores abo
 | Word-order / null alignments | Mark 1:1 Greek plus vs Horner; Luke kingdom heavens/`θυ` |
 | Editorial marks | Must stay on `original_text`; stripped in normalized |
 | Paratext | Mark heading must not score as a Greek content word |
+| Partial gold | Unannotated tokens excluded from precision denominator |
 
 ## eflomal
 
@@ -61,7 +65,7 @@ Qualitative pairs must not be reported as if they were system scores; scores abo
 
 ## Limitations
 
-- Small human gold sample; not exhaustive verse annotation.
+- Small human gold sample; scoring uses annotated-left coverage rather than assuming exhaustive verse annotation.
 - No morphology / lemma layer yet.
 - Holdout metrics only appear when holdout units are in the gold file (Matthew 13:31 is).
 - Thomas Greek fragments 7/17/30/77 are outside this NT training stack (JAK-31/33/34).
@@ -69,4 +73,4 @@ Qualitative pairs must not be reported as if they were system scores; scores abo
 
 ## Validation / CI
 
-Offline checks cover unit/source identity, ordering/uniqueness, normalization recomputation, omission emptiness + notes, editorial-mark stripping, and Mark 1:1 paratext warning. See `tests/test_alignment_pilot.py`.
+Offline checks cover unit/source identity, ordering/uniqueness, normalization recomputation, omission emptiness + notes, editorial-mark stripping, Mark 1:1 paratext warning, non-overlapping split ranges, and explicit `--splits` path existence. See `tests/test_alignment_pilot.py`.

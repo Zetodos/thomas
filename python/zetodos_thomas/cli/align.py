@@ -55,9 +55,10 @@ def validate_align(
     splits_path: Path | None = typer.Option(
         None,
         "--splits",
-        help="Passage splits JSON",
-        exists=False,
+        help="Passage splits JSON (must exist when provided)",
+        exists=True,
         dir_okay=False,
+        readable=True,
     ),
 ) -> None:
     """Structural + normalization + omission/paratext validation (offline)."""
@@ -68,13 +69,18 @@ def validate_align(
         raise typer.Exit(code=1) from exc
 
     pilot = pilot_path or resolve_pilot_path(root)
-    splits_file = splits_path or _default_splits_path(root)
     if not pilot.is_file():
         typer.secho(f"pilot not found: {pilot}", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
     corpus = load_pilot_corpus(pilot)
-    splits = load_splits(splits_file) if splits_file.is_file() else DEFAULT_SPLITS
+    if splits_path is not None:
+        splits = load_splits(splits_path)
+    else:
+        default_splits = _default_splits_path(root)
+        splits = (
+            load_splits(default_splits) if default_splits.is_file() else DEFAULT_SPLITS
+        )
     report = validate_pilot_corpus(corpus, splits=splits)
     typer.echo(
         f"pilot {corpus.id}: {report.unit_count} units "
@@ -110,8 +116,10 @@ def benchmark_align(
     splits_path: Path | None = typer.Option(
         None,
         "--splits",
-        exists=False,
+        help="Passage splits JSON (must exist when provided)",
+        exists=True,
         dir_okay=False,
+        readable=True,
     ),
     reference_dir: Path | None = typer.Option(
         None,
@@ -135,14 +143,19 @@ def benchmark_align(
         raise typer.Exit(code=1) from exc
 
     pilot = pilot_path or resolve_pilot_path(root)
-    splits_file = splits_path or _default_splits_path(root)
     ref_dir = reference_dir or _default_reference_dir(root)
     out = output or _default_benchmark_json(root)
 
     if not pilot.is_file():
         typer.secho(f"pilot not found: {pilot}", fg=typer.colors.RED)
         raise typer.Exit(code=1)
-    splits = load_splits(splits_file) if splits_file.is_file() else DEFAULT_SPLITS
+    if splits_path is not None:
+        splits = load_splits(splits_path)
+    else:
+        default_splits = _default_splits_path(root)
+        splits = (
+            load_splits(default_splits) if default_splits.is_file() else DEFAULT_SPLITS
+        )
     refs = sorted(ref_dir.glob("*.json")) if ref_dir.is_dir() else []
     if not refs:
         typer.secho(f"no reference JSON under {ref_dir}", fg=typer.colors.RED)

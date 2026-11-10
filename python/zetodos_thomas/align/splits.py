@@ -6,6 +6,7 @@ from __future__ import annotations
 import json
 from enum import StrEnum
 from pathlib import Path
+from typing import Self
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -77,6 +78,26 @@ class PilotSplits(BaseModel):
         default_factory=list,
         description="Witnesses deliberately kept out of this NT training stack",
     )
+
+    @model_validator(mode="after")
+    def _reject_overlapping_ranges(self) -> Self:
+        """Forbid a unit_id appearing in more than one passage range.
+
+        Silent first-match resolution would let a custom splits file put the
+        same verse in train and holdout (fit as train, report as holdout).
+        """
+        claimed: dict[str, SplitRole] = {}
+        for passage in self.passages:
+            for unit_id in passage.unit_ids():
+                prior = claimed.get(unit_id)
+                if prior is not None:
+                    msg = (
+                        f"overlapping split ranges for {unit_id}: "
+                        f"{prior.value} and {passage.role.value}"
+                    )
+                    raise ValueError(msg)
+                claimed[unit_id] = passage.role
+        return self
 
     def role_for(self, unit_id: str) -> SplitRole | None:
         """Look up the split role for a unit_id."""

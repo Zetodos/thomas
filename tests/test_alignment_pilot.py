@@ -6,11 +6,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 from typer.testing import CliRunner
 
 from zetodos_thomas.align.benchmark import run_benchmark
 from zetodos_thomas.align.eflomal_probe import probe_eflomal
 from zetodos_thomas.align.lexical_baseline import (
+    TokenLink,
     fit_lexical_baseline,
     gold_links_from_reference,
     predict_links,
@@ -23,6 +25,8 @@ from zetodos_thomas.align.paratext import (
 )
 from zetodos_thomas.align.splits import (
     DEFAULT_SPLITS,
+    PassageRange,
+    PilotSplits,
     SplitRole,
     load_splits,
     nonempty_positive_units,
@@ -223,3 +227,122 @@ def test_default_splits_match_committed_file() -> None:
     committed = load_splits(SPLITS_PATH)
     assert committed.id == DEFAULT_SPLITS.id
     assert committed.model_dump() == DEFAULT_SPLITS.model_dump()
+
+
+def test_dice_counts_each_type_once_per_verse() -> None:
+    corpus = load_pilot_corpus(PILOT_PATH)
+    john = next(u for u in corpus.units if u.unit_id == "john.1.1")
+    model = fit_lexical_baseline([john])
+    # Repeated λογος / ⲡϣⲁϫⲉ surfaces must not yield Dice > 1.
+    assert model.dice("ⲡϣⲁϫⲉ", "λογος") <= 1.0
+    assert model.left_counts["ⲁⲩⲱ"] == 1  # two surfaces, one type-event
+    assert model.right_counts["λογος"] == 1
+    assert model.pair_counts[("ⲡϣⲁϫⲉ", "λογος")] == 1
+
+
+def test_score_links_restricts_to_annotated_left_coverage() -> None:
+    gold = [
+        TokenLink(
+            unit_id="u.1.1",
+            left_token_id="L0",
+            right_token_id="R0",
+            left_norm="a",
+            right_norm="α",
+        )
+    ]
+    predicted = [
+        TokenLink(
+            unit_id="u.1.1",
+            left_token_id="L0",
+            right_token_id="R0",
+            left_norm="a",
+            right_norm="α",
+        ),
+        TokenLink(
+            unit_id="u.1.1",
+            left_token_id="L_unannotated",
+            right_token_id="R9",
+            left_norm="noise",
+            right_norm="ν",
+        ),
+    ]
+    covered = score_links(predicted, gold, restrict_to_annotated_left=True)
+    assert covered.true_positives == 1
+    assert covered.predicted == 1
+    assert covered.precision == 1.0
+    raw = score_links(predicted, gold, restrict_to_annotated_left=False)
+    assert raw.predicted == 2
+    assert raw.precision == 0.5
+
+
+def test_score_links_f1_zero_when_denominators_nonzero() -> None:
+    gold = [
+        TokenLink(
+            unit_id="u.1.1",
+            left_token_id="L0",
+            right_token_id="R0",
+            left_norm="a",
+            right_norm="α",
+        )
+    ]
+    predicted = [
+        TokenLink(
+            unit_id="u.1.1",
+            left_token_id="L0",
+            right_token_id="R_wrong",
+            left_norm="a",
+            right_norm="β",
+        )
+    ]
+    scores = score_links(predicted, gold)
+    assert scores.true_positives == 0
+    assert scores.predicted == 1
+    assert scores.gold == 1
+    assert scores.precision == 0.0
+    assert scores.recall == 0.0
+    assert scores.f1 == 0.0
+
+
+def test_pilot_splits_reject_overlapping_ranges() -> None:
+    with pytest.raises(ValueError, match="overlapping split ranges"):
+        PilotSplits(
+            id="bad-overlap",
+            title="overlap",
+            greek_source_id="ntvmr-vaticanus-b",
+            sahidic_source_id="copsahhorner",
+            passages=[
+                PassageRange(
+                    book="matthew",
+                    chapter=13,
+                    verse_from=31,
+                    verse_to=32,
+                    role=SplitRole.TRAIN,
+                ),
+                PassageRange(
+                    book="matthew",
+                    chapter=13,
+                    verse_from=31,
+                    verse_to=31,
+                    role=SplitRole.HOLDOUT,
+                ),
+            ],
+        )
+
+
+def test_cli_explicit_missing_splits_fails() -> None:
+    runner = CliRunner()
+    missing = REPO_ROOT / "data" / "sources" / "pilot" / "does-not-exist-splits.json"
+    result = runner.invoke(
+        app,
+        [
+            "align",
+            "validate",
+            "--repo-root",
+            str(REPO_ROOT),
+            "--splits",
+            str(missing),
+        ],
+    )
+    assert result.exit_code != 0
+    combined = (result.stdout + result.stderr).lower()
+    assert "does-not-exist" in combined or "exist" in combined or "invalid" in combined

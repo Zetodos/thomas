@@ -37,6 +37,8 @@ Splits are **whole passages**, never random words. Omission fixtures are kept in
 - Greek Thomas fragment witnesses (notably logia **7 / 17 / 30 / 77**) are **not** in this NT stack (see JAK-31 / JAK-33 / JAK-34).
 - Coptic Thomas (Dilley) is **not** absorbed here (JAK-30).
 - Holdout Matthew 13:31–32 must not be used when fitting the lexical baseline.
+- `PilotSplits` **rejects overlapping passage ranges** on load (no silent first-match train/holdout leakage).
+- Explicit `thomas align … --splits PATH` requires the file to exist (`exists=True`); only omitted `--splits` may fall back to the committed default.
 
 ## Rebuild
 

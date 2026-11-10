@@ -65,7 +65,10 @@ def run_benchmark(
         for u in [*train, *dev, *holdout]
         if u.unit_id in gold_units and u.unit_id not in omission_ids
     ]
-    predicted = predict_links(model, eval_pool)
+    # Always emit a 1-best for every alignable left token when scoring so
+    # annotated-left coverage has a prediction (incl. weak/zero Dice). Training
+    # still uses the default min_dice filter inside interactive predicts.
+    predicted = predict_links(model, eval_pool, min_dice=0.0)
     leak = assert_no_omission_in_links(predicted, omission_ids)
     leak += assert_no_omission_in_links(gold, omission_ids)
 
@@ -114,9 +117,24 @@ def run_benchmark(
             "excluded_from_training_stack": splits.excluded_from_training_stack,
         },
         "lexical_baseline": {
-            "algorithm": "verse-bag co-occurrence Dice + mild positional prior",
+            "algorithm": (
+                "verse-level type co-occurrence Dice (once per type per verse) "
+                "+ mild positional prior; score restricted to gold-annotated "
+                "left token ids"
+            ),
             "train_units_fit": model.train_unit_ids,
             "pair_types": len(model.pair_counts),
+            "scoring": {
+                "restrict_to_annotated_left": True,
+                "min_dice_for_scoring": 0.0,
+                "note": (
+                    "Every alignable left token gets a 1-best proposal "
+                    "(min_dice=0); only gold-annotated Sahidic left token ids "
+                    "enter the precision denominator so partial gold does not "
+                    "conflate coverage with accuracy. F1 is 0.0 when both "
+                    "denominators are nonzero and TP=0."
+                ),
+            },
             "overall": overall.as_dict(),
             "by_split": by_split,
             "null_alignments": null_alignment_rate(eval_pool, predicted),
@@ -138,8 +156,8 @@ def run_benchmark(
         "limitations": [
             "No numeric pass threshold - baseline only (PLAN.md Phase 2).",
             "Whitespace tokenization is not morphology; Coptic groups stay fused.",
-            "Verse-bag Dice over-generates co-occurrence mass; phrase order is weak.",
-            "Human gold is a small sample, not exhaustive verse annotation.",
+            "Verse-level type Dice still over-generates co-occurrence; order is weak.",
+            "Human gold is a small sample; scoring uses annotated-left coverage only.",
             "John 8:1-11 omission fixtures excluded from positive denominators.",
             "Matthew 13:31-32 holdout scored only when present in gold fixtures.",
             "Greek = NTVMR Vaticanus B* (GA 03 / docID 20003) only; no WH/SBLGNT mix.",
