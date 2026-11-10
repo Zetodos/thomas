@@ -3,7 +3,7 @@
 Offline-capable, evidence-based reconstruction and reader for the *Gospel of Thomas*.
 
 **Repository:** <https://github.com/Zetodos/thomas>
-**Status:** Phase 0–1 foundation — licensing, Python toolchain, Horner × Vaticanus B* NT pilot (JAK-24), Dilley SCRIPTORIUM Coptic Thomas (JAK-30), and Greek Thomas P.Oxy. fragments (JAK-31). Reconstruction feasibility is not yet proven.
+**Status:** Phase 0–1 foundation — licensing, Python toolchain, Horner × Vaticanus B* NT pilot (JAK-24), Dilley SCRIPTORIUM Coptic Thomas (JAK-30), Greek Thomas P.Oxy. fragments (JAK-31), alignment schema (JAK-32), and Thomas 7/17/30/77 evidence pilot (JAK-34). Reconstruction feasibility is not yet proven.
 
 ## Objective
 
@@ -32,10 +32,12 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`docs/horner-vaticanus-alignment-notes.md`](docs/horner-vaticanus-alignment-notes.md) | CopSahHorner + Vaticanus B* pilot notes (JAK-24) |
 | [`docs/id-scheme.md`](docs/id-scheme.md) | Stable unit/token/span IDs + retokenization rule (JAK-32) |
 | [`docs/greek-thomas-fragments.md`](docs/greek-thomas-fragments.md) | P.Oxy. 1/654/655 DCLP ingest notes (JAK-31) |
+| [`docs/pilot-evidence-set.md`](docs/pilot-evidence-set.md) | Phase 1 Thomas 7/17/30/77 evidence pilot (JAK-34) |
 | [`data/manifests/`](data/manifests/) | Per-source JSON manifests (Horner, Vaticanus B*, Dilley, DCLP fragments) |
 | [`data/sources/pilot/`](data/sources/pilot/) | Bundled Horner × Vaticanus B* pilot excerpt |
 | [`data/sources/thomas/`](data/sources/thomas/) | Unit-level Dilley / SCRIPTORIUM Coptic Thomas import (JAK-30; not alignment-ready) |
 | [`data/sources/fragments/`](data/sources/fragments/) | Bundled Greek Thomas fragments (evaluation-witness) |
+| [`data/evidence/pilot/`](data/evidence/pilot/) | Thomas 7/17/30/77 evidence inventory (JSON + JSONL) |
 
 ## Never ship (summary)
 

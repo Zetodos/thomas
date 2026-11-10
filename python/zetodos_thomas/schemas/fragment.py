@@ -9,9 +9,17 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class EvidenceType(StrEnum):
-    """PLAN.md evidence typology (fragment ingest uses G only)."""
+    """PLAN.md §3.2 evidence typology.
+
+    Fragment ingest (JAK-31) commits only ``G``. The Phase 1 pilot set (JAK-34)
+    also uses ``L`` / ``N`` / ``P`` (and optional ``R``) slots.
+    """
 
     G = "G"  # Direct Greek manuscripts of Thomas
+    L = "L"  # Greek-derived words in Coptic
+    N = "N"  # Greek NT / Septuagint parallels
+    P = "P"  # Other early Greek literary attestations
+    R = "R"  # Modern scholarly retrotranslation (not independent ancient evidence)
 
 
 class CorpusRole(StrEnum):

@@ -52,6 +52,7 @@ packages = ["python/zetodos_thomas"]
 "python/zetodos_thomas/bundled/fragments/dclp/poxy-1-tm62838.xml" = "zetodos_thomas/bundled/fragments/dclp/poxy-1-tm62838.xml"
 "python/zetodos_thomas/bundled/fragments/dclp/poxy-654-tm62840.xml" = "zetodos_thomas/bundled/fragments/dclp/poxy-654-tm62840.xml"
 "python/zetodos_thomas/bundled/fragments/dclp/poxy-655-tm62839.xml" = "zetodos_thomas/bundled/fragments/dclp/poxy-655-tm62839.xml"
+"python/zetodos_thomas/bundled/evidence/pilot/thomas-7-17-30-77.json" = "zetodos_thomas/bundled/evidence/pilot/thomas-7-17-30-77.json"
 [tool.uv]
 package = true
 default-groups = ["dev"]

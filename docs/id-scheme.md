@@ -126,5 +126,6 @@ optional mapping file if editorial cost justifies it.
 | `data/sources/thomas/dilley-thomas-v6.2.0.json` | **Unit-level** Dilley SCRIPTORIUM Coptic Thomas (JAK-30; not token-complete / not alignment-ready) |
 | `tests/fixtures/alignment/horner-vaticanus-john1.1-phrase.json` | Phrase-level stub from that pilot |
 | `tests/fixtures/alignment/thomas-7-unit-stub.json` | Phrase-alignment stub using `dilley-thomas` source id |
+| `data/evidence/pilot/thomas-7-17-30-77.json` | Phase 1 evidence pilot with real Dilley / DCLP ids (JAK-34) |
 
 Offline tests load these fixtures without network access.
