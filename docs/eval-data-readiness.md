@@ -5,9 +5,9 @@
 can score without improvised labels.
 
 **Corpus / split:** [`horner-vaticanus-nt-pilot-v3`](../data/sources/pilot/horner-vaticanus-nt-pilot.json) +
-[`horner-vaticanus-nt-split-v3.json`](../data/training/splits/horner-vaticanus-nt-split-v3.json)  
-**Inventory:** [`horner-vaticanus-nt-v3-inventory.json`](../data/training/horner-vaticanus-nt-v3-inventory.json)  
-**Blind Thomas 7 pack:** [`thomas-7-blinded-v1.json`](../data/evidence/eval/thomas-7-blinded-v1.json)  
+[`horner-vaticanus-nt-split-v3.json`](../data/training/splits/horner-vaticanus-nt-split-v3.json)
+**Inventory:** [`horner-vaticanus-nt-v3-inventory.json`](../data/training/horner-vaticanus-nt-v3-inventory.json)
+**Blind Thomas 7 pack:** [`thomas-7-blinded-v1.json`](../data/evidence/eval/thomas-7-blinded-v1.json)
 **Evidence-type span:** [`thomas-7-17-30-77`](../data/evidence/pilot/thomas-7-17-30-77.json) (JAK-34)
 
 Greek NT spine remains **Vaticanus B\*** only. Sahidic is **CopSahHorner** (PD).

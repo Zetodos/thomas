@@ -14,7 +14,9 @@ repos:
       - id: check-yaml
       - id: check-toml
       - id: check-added-large-files
-        args: [--maxkb=500, --enforce-all]
+        # Phase 2 Horner×Vaticanus parallel corpora (JAK-43+) exceed 500 KB when
+        # indented for review; keep a hard ceiling with headroom for Gospel growth.
+        args: [--maxkb=1024, --enforce-all]
 
   - repo: local
     hooks:

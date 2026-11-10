@@ -33,7 +33,7 @@
 | Matthew 13:31–32 | 2 | **holdout** — mustard-seed parable |
 | John 8:1–11 | 11 | **omission** fixture (empty both sides) |
 
-**v3 (JAK-43):** 407 units · 396 nonempty positive · 11 omission.  
+**v3 (JAK-43):** 407 units · 396 nonempty positive · 11 omission.
 **v2 archival:** 46 units · 35 nonempty · 11 omission.
 
 ## Lexical / phrase observations (illustrative — not scores)
