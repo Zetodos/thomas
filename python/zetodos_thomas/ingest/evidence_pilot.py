@@ -13,7 +13,11 @@ from zetodos_thomas.ingest.fragments import (
     DEFAULT_FRAGMENT_CORPUS_FILENAME,
     load_fragment_corpus,
 )
-from zetodos_thomas.schemas.evidence import PILOT_LOGIA, PilotEvidenceSet
+from zetodos_thomas.schemas.evidence import (
+    PILOT_LOGIA,
+    EvidenceStatus,
+    PilotEvidenceSet,
+)
 from zetodos_thomas.schemas.fragment import EvidenceType
 from zetodos_thomas.schemas.source import SourceManifest
 
@@ -111,6 +115,33 @@ def validate_evidence_pilot_or_raise(
                     msg = (
                         f"{record.id}: transcription source_id {tx.source_id!r} "
                         f"!= record source_id {record.source_id!r}"
+                    )
+                    raise EvidencePilotValidationError(msg)
+            # Whole-transcription G links are coverage only — not word-level
+            # attestation usable for reconstruction confidence.
+            if (
+                record.evidence_type is EvidenceType.G
+                and record.transcription_id is not None
+            ):
+                if record.status is not EvidenceStatus.PARTIAL_COVERAGE:
+                    msg = (
+                        f"{record.id}: G linked only to a whole DCLP transcription "
+                        "must use status=partial-coverage (not attested) until "
+                        "manuscript-local line/span IDs and surviving/restored "
+                        "flags are recorded"
+                    )
+                    raise EvidencePilotValidationError(msg)
+                blob = f"{record.restrictions} {record.notes}".lower()
+                if "partial coverage" not in blob and "partial-coverage" not in blob:
+                    msg = (
+                        f"{record.id}: G partial-coverage notes/restrictions must "
+                        "label partial coverage explicitly"
+                    )
+                    raise EvidencePilotValidationError(msg)
+                if "word-level" not in blob and "word level" not in blob:
+                    msg = (
+                        f"{record.id}: G partial-coverage notes/restrictions must "
+                        "explicitly defer word-level verification"
                     )
                     raise EvidencePilotValidationError(msg)
 

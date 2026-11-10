@@ -19,6 +19,7 @@ class EvidenceStatus(StrEnum):
     """Whether a typed evidence slot is filled, reserved, or absent."""
 
     ATTESTED = "attested"
+    PARTIAL_COVERAGE = "partial-coverage"
     PLACEHOLDER = "placeholder"
     MISSING = "missing"
 

@@ -16,14 +16,14 @@
         {
           "id": "v1:evidence/thomas.7/G/poxy-654",
           "evidence_type": "G",
-          "status": "attested",
+          "status": "partial-coverage",
           "citation": "P.Oxy. 654 (TM 62840); DCLP layered transcription",
           "source_id": "dclp-poxy-654",
           "unit_id": "thomas.7",
           "transcription_id": "poxy-654-dclp",
           "agreement": null,
-          "restrictions": "corpus_role=evaluation-witness (JAK-28 leakage control)",
-          "notes": "P.Oxy. 654 logia_coverage includes incipit and 1–7. Surviving/lacuna/restoration layers stay separate in the fragment corpus."
+          "restrictions": "corpus_role=evaluation-witness (JAK-28 leakage control). Partial coverage only: link is whole DCLP transcription + Coptic thomas.7 — not word-level attestation. Do not assign reconstruction confidence from this G slot alone.",
+          "notes": "P.Oxy. 654 logia_coverage includes incipit and 1–7. Coverage for Thomas 7 is approximately lines 40–42, which mix surviving letters with extensive scholarly supplies/restorations in the layered corpus. Word-level verification (manuscript-local line/span IDs + surviving/restored flags per Greek word) is deferred; surviving/lacuna/restoration layers stay separate in the fragment corpus."
         },
         {
           "id": "v1:evidence/thomas.7/L/makarios",
@@ -64,14 +64,15 @@
       ],
       "attested": [
         "Coptic Dilley unit thomas.7 (dilley-thomas)",
-        "G: P.Oxy. 654 coverage of logion 7 (poxy-654-dclp)",
+        "G: P.Oxy. 654 partial coverage of logion 7 (poxy-654-dclp; ~lines 40–42; word-level deferred)",
         "L: Greek loan ⲙⲁⲕⲁⲣⲓⲟⲥ / μακάριος in Coptic surface"
       ],
       "missing": [
         "N: no NT/LXX parallel slot filled",
         "P: no early literary attestation ingested",
         "G: P.Oxy. 1 / 655 do not cover logion 7",
-        "R: modern retrotranslation not used as ancient evidence"
+        "R: modern retrotranslation not used as ancient evidence",
+        "G word-level: manuscript-local line/span IDs + surviving/restored flags for P.Oxy. 654 ~40–42"
       ],
       "notes": "Inspectable Phase 1 stub spanning G+L with empty N/P slots."
     },
@@ -151,14 +152,14 @@
         {
           "id": "v1:evidence/thomas.30/G/poxy-1",
           "evidence_type": "G",
-          "status": "attested",
+          "status": "partial-coverage",
           "citation": "P.Oxy. 1 (TM 62838); DCLP layered transcription",
           "source_id": "dclp-poxy-1",
           "unit_id": "thomas.30",
           "transcription_id": "poxy-1-dclp",
           "agreement": null,
-          "restrictions": "corpus_role=evaluation-witness; do not silently merge with Coptic 77",
-          "notes": "P.Oxy. 1 logia_coverage lists 26–30, 77b, 31–33. Material related to Coptic 30 sits in a Greek sequence that also carries 77b — see witness_alignments."
+          "restrictions": "corpus_role=evaluation-witness; do not silently merge with Coptic 77. Partial coverage only: whole DCLP transcription + Coptic thomas.30 — not word-level attestation. Defer reconstruction-confidence assignment until line/span IDs and surviving/restored flags exist.",
+          "notes": "P.Oxy. 1 logia_coverage lists 26–30, 77b, 31–33. Material related to Coptic 30 sits in a Greek sequence that also carries 77b — see witness_alignments. This G entry records papyrus coverage, not verified word-level Greek attestation of the Coptic saying."
         },
         {
           "id": "v1:evidence/thomas.30/L/slot",
@@ -199,14 +200,15 @@
       ],
       "attested": [
         "Coptic Dilley unit thomas.30 (dilley-thomas)",
-        "G: P.Oxy. 1 coverage intersecting Coptic 30 (poxy-1-dclp)",
+        "G: P.Oxy. 1 partial coverage intersecting Coptic 30 (poxy-1-dclp; word-level deferred)",
         "Witness alignment: P.Oxy. 1 divergent sequence vs Coptic 30/77 (not merged)"
       ],
       "missing": [
         "L: no loanword inventory yet",
         "N: only a semantic placeholder (no Vaticanus verse unit yet)",
         "P: no early literary attestation ingested",
-        "G: P.Oxy. 654/655 do not cover logion 30"
+        "G: P.Oxy. 654/655 do not cover logion 30",
+        "G word-level: manuscript-local line/span IDs + surviving/restored flags for P.Oxy. 1 vs thomas.30"
       ],
       "notes": "Pair with thomas.77 via witness_alignments — separate witness, not silent merge. Longer divergence/holdout prose: JAK-33."
     },
@@ -219,14 +221,14 @@
         {
           "id": "v1:evidence/thomas.77/G/poxy-1-77b",
           "evidence_type": "G",
-          "status": "attested",
+          "status": "partial-coverage",
           "citation": "P.Oxy. 1 (TM 62838) 77b material; DCLP layered transcription",
           "source_id": "dclp-poxy-1",
           "unit_id": "thomas.77",
           "transcription_id": "poxy-1-dclp",
           "agreement": null,
-          "restrictions": "corpus_role=evaluation-witness; 77b is not silently folded into Coptic 30",
-          "notes": "Greek fragment coverage is 77b within P.Oxy. 1's divergent order relative to Coptic Thomas 30/77. Keep as separate witness alignment."
+          "restrictions": "corpus_role=evaluation-witness; 77b is not silently folded into Coptic 30. Partial coverage only: whole DCLP transcription + Coptic thomas.77 — not word-level attestation. Defer reconstruction-confidence assignment until manuscript-local line/span IDs exist.",
+          "notes": "Greek fragment coverage is 77b within P.Oxy. 1's divergent order relative to Coptic Thomas 30/77. Keep as separate witness alignment. Word-level verification of surviving vs restored Greek is deferred for later confidence scoring."
         },
         {
           "id": "v1:evidence/thomas.77/L/slot",
@@ -267,14 +269,15 @@
       ],
       "attested": [
         "Coptic Dilley unit thomas.77 (dilley-thomas)",
-        "G: P.Oxy. 1 77b coverage (poxy-1-dclp)",
+        "G: P.Oxy. 1 77b partial coverage (poxy-1-dclp; word-level deferred)",
         "Witness alignment: P.Oxy. 1 divergent sequence vs Coptic 30/77 (not merged)"
       ],
       "missing": [
         "L: no loanword inventory yet",
         "N: no NT/LXX parallel slot filled",
         "P: no early literary attestation ingested",
-        "G: P.Oxy. 654/655 do not cover logion 77"
+        "G: P.Oxy. 654/655 do not cover logion 77",
+        "G word-level: manuscript-local line/span IDs + surviving/restored flags for P.Oxy. 1 77b"
       ],
       "notes": "Must not be silently merged with Coptic 30 from the Greek side. See JAK-33 for holdout/divergence documentation."
     }
@@ -304,5 +307,5 @@
       "notes": "Straightforward coverage link for pilot Thomas 7; still evaluation-witness for training leakage."
     }
   ],
-  "notes": "Phase 1 pilot only (JAK-34). Not a critical edition. Coptic units resolve against Dilley ingest (JAK-30); Greek fragments against DCLP corpus (JAK-31); IDs follow JAK-32. Greek NT spine remains Vaticanus B* (ntvmr-vaticanus-b)."
+  "notes": "Phase 1 pilot only (JAK-34). Not a critical edition. Coptic units resolve against Dilley ingest (JAK-30); Greek fragments against DCLP corpus (JAK-31); IDs follow JAK-32. Greek NT spine remains Vaticanus B* (ntvmr-vaticanus-b). Pilot G slots that only link a whole DCLP transcription use status=partial-coverage (not attested) until word-level spans exist."
 }

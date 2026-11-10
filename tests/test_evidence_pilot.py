@@ -93,7 +93,24 @@ def test_jsonl_matches_json_sayings() -> None:
         if line.strip()
     ]
     assert len(lines) == len(package.sayings)
-    assert [row["unit_id"] for row in lines] == [s.unit_id for s in package.sayings]
+    expected = [json.loads(s.model_dump_json()) for s in package.sayings]
+    assert lines == expected
+
+
+def test_g_transcription_links_are_partial_coverage() -> None:
+    package = load_evidence_pilot(EVIDENCE_PATH)
+    linked = [
+        e
+        for s in package.sayings
+        for e in s.evidence
+        if e.evidence_type is EvidenceType.G and e.transcription_id is not None
+    ]
+    assert linked
+    for record in linked:
+        assert record.status.value == "partial-coverage"
+        blob = f"{record.restrictions} {record.notes}".lower()
+        assert "partial coverage" in blob or "partial-coverage" in blob
+        assert "word-level" in blob or "word level" in blob
 
 
 def test_bundled_evidence_pilot_matches_checkout() -> None:
@@ -201,6 +218,33 @@ def test_witness_alignment_rejects_source_transcription_mismatch() -> None:
     except EvidencePilotValidationError as exc:
         ok = False
         assert "greek_source_id" in str(exc)
+    assert ok is False
+
+
+def test_rejects_g_attested_whole_transcription_link() -> None:
+    package = load_evidence_pilot(EVIDENCE_PATH)
+    data = json.loads(package.model_dump_json())
+    for saying in data["sayings"]:
+        for record in saying["evidence"]:
+            if (
+                record["evidence_type"] == "G"
+                and record.get("transcription_id") is not None
+            ):
+                record["status"] = "attested"
+                break
+    bad = PilotEvidenceSet.model_validate(data)
+    manifests = validate_manifests_dir(MANIFESTS_DIR)
+    try:
+        validate_evidence_pilot_or_raise(
+            bad,
+            manifests=manifests,
+            thomas_corpus_path=THOMAS_PATH,
+            fragments_corpus_path=FRAGMENTS_PATH,
+        )
+        ok = True
+    except EvidencePilotValidationError as exc:
+        ok = False
+        assert "partial-coverage" in str(exc)
     assert ok is False
 
 
