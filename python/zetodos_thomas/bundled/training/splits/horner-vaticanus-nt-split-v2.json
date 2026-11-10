@@ -1,10 +1,10 @@
 {
-  "id": "horner-vaticanus-nt-split-v1",
-  "title": "Horner × Vaticanus B* Greek–Sahidic NT train/dev/holdout split (whole passages)",
+  "id": "horner-vaticanus-nt-split-v2",
+  "title": "Horner × Vaticanus B* Greek–Sahidic NT train/dev/holdout split v2 (46-unit pilot)",
   "schema_version": "1",
   "greek_source_id": "ntvmr-vaticanus-b",
   "sahidic_source_id": "copsahhorner",
-  "pilot_corpus_id": "horner-vaticanus-nt-pilot-v1",
+  "pilot_corpus_id": "horner-vaticanus-nt-pilot-v2",
   "owned_by": "JAK-33",
   "consumed_by": ["JAK-28"],
   "passages": [
@@ -35,17 +35,7 @@
         "john.1.18"
       ],
       "role": "train",
-      "notes": "Whole prologue passage for lexical/phrase mapping observations. Nonempty on both sides in the JAK-24 pilot."
-    },
-    {
-      "book": "reserved",
-      "chapter_from": 1,
-      "verse_from": 0,
-      "chapter_to": 1,
-      "verse_to": 0,
-      "unit_ids": [],
-      "role": "dev",
-      "notes": "Dev role present but empty. With only two nonempty pilot passages, Mark 1:1–8 is the holdout (not shared with dev). JAK-28 should add a whole new nonempty book/passage into this role before threshold tuning — do not carve random verses from train/holdout."
+      "notes": "Prologue; nomina sacra; sayings-like density."
     },
     {
       "book": "mark",
@@ -63,8 +53,48 @@
         "mark.1.7",
         "mark.1.8"
       ],
+      "role": "train",
+      "notes": "Gospel opening; loanwords; Mark 1:1 Sahidic book heading is paratext."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 5,
+      "verse_from": 14,
+      "chapter_to": 5,
+      "verse_to": 16,
+      "unit_ids": ["matthew.5.14", "matthew.5.15", "matthew.5.16"],
+      "role": "train",
+      "notes": "Light/city sayings (Thomas-adjacent imagery)."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 7,
+      "verse_from": 7,
+      "chapter_to": 7,
+      "verse_to": 8,
+      "unit_ids": ["matthew.7.7", "matthew.7.8"],
+      "role": "train",
+      "notes": "Imperatives ask/seek/knock (Thomas 2/92/94 zone)."
+    },
+    {
+      "book": "luke",
+      "chapter_from": 6,
+      "verse_from": 20,
+      "chapter_to": 6,
+      "verse_to": 21,
+      "unit_ids": ["luke.6.20", "luke.6.21"],
+      "role": "dev",
+      "notes": "Beatitudes; pronouns; clause variation (Thomas 54 zone)."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 31,
+      "chapter_to": 13,
+      "verse_to": 32,
+      "unit_ids": ["matthew.13.31", "matthew.13.32"],
       "role": "holdout",
-      "notes": "Whole-passage NT reconstruction holdout. Exclude these unit_ids from training mappings/phrase tables when evaluating Greek recovery (PLAN.md leakage controls)."
+      "notes": "Mustard-seed parable whole-passage holdout (Thomas 20 zone)."
     }
   ],
   "evaluation_witness_exclusions": [
@@ -92,7 +122,7 @@
         "thomas.32",
         "thomas.33"
       ],
-      "notes": "Greek Thomas fragment (logia ~26–30, 77b, 31–33). Sequence/division diverges from Coptic (see divergence catalog). Hold out; JAK-34 pilot includes thomas.30 and thomas.77."
+      "notes": "Greek Thomas fragment (logia ~26–30, 77b, 31–33). Sequence/division diverges from Coptic. Hold out; JAK-34 pilot includes thomas.30 and thomas.77."
     },
     {
       "witness_id": "poxy-655-dclp",
@@ -104,6 +134,6 @@
     }
   ],
   "secondary_ot_used": false,
-  "secondary_ot_notes": "Secondary OT parallels are not part of this v1 split. If later adopted, add whole-passage roles here — do not invent a separate undocumented OT holdout.",
-  "notes": "Ownership: JAK-33 defines this file under data/training/splits/. JAK-28 consumes it for leakage controls and benchmarks; do not duplicate a competing NT split path. John 8:1–11 lives only in the omission-fixture set (not train/dev/holdout). Greek NT edition is Vaticanus B* only."
+  "secondary_ot_notes": "Secondary OT parallels are not part of this v2 split.",
+  "notes": "Canonical JAK-33 split for horner-vaticanus-nt-pilot-v2 (46 units). Path: data/training/splits/horner-vaticanus-nt-split-v2.json. JAK-28 (#13) must consume this artifact and must not maintain a second policy file under data/sources/pilot/splits.json. John 8:1–11 lives only in data/evidence/omissions/john-8-pa-omission-fixture-v1.json (not train/dev/holdout). Greek NT edition is Vaticanus B* only."
 }

@@ -19,7 +19,7 @@ class HoldoutValidationError(ValueError):
     """Invalid holdout / split / omission / divergence artifact."""
 
 
-SPLIT_REL = Path("data/training/splits/horner-vaticanus-nt-split-v1.json")
+SPLIT_REL = Path("data/training/splits/horner-vaticanus-nt-split-v2.json")
 OMISSION_REL = Path("data/evidence/omissions/john-8-pa-omission-fixture-v1.json")
 DIVERGENCE_REL = Path(
     "data/evidence/divergences/greek-thomas-fragment-divergences-v1.json"

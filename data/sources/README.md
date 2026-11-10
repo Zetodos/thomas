@@ -4,7 +4,7 @@ Committed, legally redistributable excerpts and imports live here.
 
 | Path | Contents |
 | --- | --- |
-| [`pilot/horner-vaticanus-nt-pilot.json`](pilot/horner-vaticanus-nt-pilot.json) | Horner × Vaticanus B* NT pilot (John 1:1–18, Mark 1:1–8, John 8:1–11) |
+| [`pilot/horner-vaticanus-nt-pilot.json`](pilot/horner-vaticanus-nt-pilot.json) | Horner × Vaticanus B* NT pilot v2 (46 units; John/Mark/Matt/Luke ranges + John 8 PA omission) |
 | [`thomas/dilley-thomas-v6.2.0.json`](thomas/dilley-thomas-v6.2.0.json) | **Unit-level** Dilley / SCRIPTORIUM Coptic Thomas (prologue + 114 logia; orig+norm; JAK-30). Not token-complete / not alignment-ready. |
 | [`fragments/`](fragments/) | Greek Thomas P.Oxy. fragments (DCLP CC BY 3.0; evidence type G / evaluation-witness) |
 

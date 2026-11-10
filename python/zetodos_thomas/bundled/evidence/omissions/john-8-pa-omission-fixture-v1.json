@@ -4,9 +4,11 @@
   "schema_version": "1",
   "greek_source_id": "ntvmr-vaticanus-b",
   "sahidic_source_id": "copsahhorner",
-  "pilot_corpus_id": "horner-vaticanus-nt-pilot-v1",
+  "pilot_corpus_id": "horner-vaticanus-nt-pilot-v2",
   "owned_by": "JAK-33",
-  "consumed_by": ["JAK-28"],
+  "consumed_by": [
+    "JAK-28"
+  ],
   "units": [
     {
       "unit_id": "john.8.1",
@@ -119,5 +121,5 @@
       "notes": ""
     }
   ],
-  "notes": "Listed separately from positive lexical/phrase pairs. Do not count toward usable training pairs or positive alignment precision/recall denominators. Do not fill empty firsthand with Westcott–Hort or SBLGNT. Useful as a shared-absence / omission regression fixture only."
+  "notes": "Listed separately from positive lexical/phrase pairs. Do not count toward usable training pairs or positive alignment precision/recall denominators. Do not fill empty firsthand with Westcott–Hort or SBLGNT. Useful as a shared-absence / omission regression fixture only. Pins pilot_corpus_id=horner-vaticanus-nt-pilot-v2 (JAK-33 canonical split v2)."
 }

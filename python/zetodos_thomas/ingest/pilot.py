@@ -17,15 +17,24 @@ from zetodos_thomas.ingest.ntvmr_vaticanus import (
 )
 from zetodos_thomas.schemas.source import ParallelUnit, PilotCorpus
 
-# Representative Phase 1-2 sample (JAK-24): prologue + gospel opening +
-# pericope-adulterae empty slots (documented mismatch / lacuna).
+# JAK-28 expanded sample: prior prologue/opening/PA + Thomas-relevant nonempty
+# pairs (light sayings, imperatives, beatitudes, mustard-seed parable holdout).
 PILOT_RANGES: tuple[tuple[str, int, int, int], ...] = (
     ("john", 1, 1, 18),
     ("mark", 1, 1, 8),
+    ("matthew", 5, 14, 16),
+    ("matthew", 7, 7, 8),
+    ("luke", 6, 20, 21),
+    ("matthew", 13, 31, 32),
     ("john", 8, 1, 11),
 )
 
-DEFAULT_PILOT_ID = "horner-vaticanus-nt-pilot-v1"
+DEFAULT_PILOT_ID = "horner-vaticanus-nt-pilot-v2"
+
+# Expected counts after JAK-28 expansion (regression anchors).
+EXPECTED_UNIT_COUNT = 46
+EXPECTED_NONEMPTY_POSITIVE = 35
+EXPECTED_OMISSION_UNITS = 11
 
 
 def _tei_paths_for_pilot(vaticanus_tei_dir: Path) -> list[Path]:
@@ -86,6 +95,11 @@ def build_pilot_corpus(
                     "(lacuna / absent passage; not filled from WH or any other "
                     "Greek edition)."
                 )
+            if book == "mark" and chapter == 1 and verse == 1:
+                note_parts.append(
+                    "Paratext: Sahidic begins with book heading ⲙⲁⲣⲕⲟⲥ; "
+                    "do not align it as a Greek verse token."
+                )
             units.append(
                 ParallelUnit(
                     unit_id=f"{book}.{chapter}.{verse}",
@@ -99,18 +113,21 @@ def build_pilot_corpus(
         id=DEFAULT_PILOT_ID,
         title=(
             "Horner Sahidic NT x NTVMR Vaticanus B* Greek NT pilot "
-            "(John 1:1-18, Mark 1:1-8, John 8:1-11)"
+            "(John 1:1-18, Mark 1:1-8, Matt 5:14-16, Matt 7:7-8, "
+            "Luke 6:20-21, Matt 13:31-32 holdout, John 8:1-11 omission)"
         ),
         greek_source_id=greek_source_id,
         sahidic_source_id=sahidic_source_id,
         units=units,
         notes=(
             "Public-domain Sahidic (Horner/CrossWire) + CC BY 4.0 INTF/NTVMR "
-            "Vaticanus GA 03 firsthand (B*) pilot for lexical/phrase alignment. "
-            "Greek = Vaticanus B* only (JAK-25 / updated JAK-15); Westcott-Hort "
-            "and SBLGNT are not used. John 8:1-11 is empty on both sides "
-            "(PA absent in both traditions). Empty firsthand readings are "
-            "omissions, not corrector fill."
+            "Vaticanus GA 03 firsthand (B*) pilot for lexical/phrase alignment "
+            "(JAK-28). Greek = Vaticanus B* only (JAK-25 / updated JAK-15); "
+            "Westcott-Hort and SBLGNT are not used. John 8:1-11 is an omission "
+            "fixture (empty on both sides; not positive training). "
+            "Matthew 13:31-32 is a whole-passage holdout. Empty firsthand "
+            "readings are omissions, not corrector fill. See "
+            "docs/benchmark-holdouts.md."
         ),
     )
 

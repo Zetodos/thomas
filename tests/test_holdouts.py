@@ -34,7 +34,7 @@ from zetodos_thomas.schemas.holdout import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SPLIT_PATH = REPO_ROOT / "data/training/splits/horner-vaticanus-nt-split-v1.json"
+SPLIT_PATH = REPO_ROOT / "data/training/splits/horner-vaticanus-nt-split-v2.json"
 OMISSION_PATH = REPO_ROOT / "data/evidence/omissions/john-8-pa-omission-fixture-v1.json"
 DIVERGENCE_PATH = (
     REPO_ROOT / "data/evidence/divergences/greek-thomas-fragment-divergences-v1.json"
@@ -50,22 +50,27 @@ def test_committed_holdout_artifacts_validate() -> None:
         divergence_path=DIVERGENCE_PATH,
         pilot=pilot,
     )
-    assert split.id == "horner-vaticanus-nt-split-v1"
+    assert split.id == "horner-vaticanus-nt-split-v2"
     assert split.owned_by == "JAK-33"
     assert "JAK-28" in split.consumed_by
     assert split.greek_source_id == "ntvmr-vaticanus-b"
+    assert split.pilot_corpus_id == "horner-vaticanus-nt-pilot-v2"
+    assert pilot.id == "horner-vaticanus-nt-pilot-v2"
     assert split.secondary_ot_used is False
 
     train = [p for p in split.passages if p.role is PassageRole.TRAIN]
     holdout = [p for p in split.passages if p.role is PassageRole.HOLDOUT]
     dev = [p for p in split.passages if p.role is PassageRole.DEV]
-    assert len(train) == 1 and train[0].unit_ids[0] == "john.1.1"
+    assert {p.book for p in train} == {"john", "mark", "matthew"}
+    assert any(p.book == "mark" for p in train)
     assert len(holdout) == 1 and holdout[0].unit_ids == [
-        f"mark.1.{n}" for n in range(1, 9)
+        "matthew.13.31",
+        "matthew.13.32",
     ]
-    assert len(dev) == 1 and dev[0].unit_ids == []
+    assert len(dev) == 1 and dev[0].unit_ids == ["luke.6.20", "luke.6.21"]
 
     assert len(omissions.units) == 11
+    assert omissions.pilot_corpus_id == "horner-vaticanus-nt-pilot-v2"
     assert {u.unit_id for u in omissions.units} == {f"john.8.{n}" for n in range(1, 12)}
     assert all(u.greek_empty and u.sahidic_empty for u in omissions.units)
 
@@ -88,7 +93,6 @@ def test_bundled_holdouts_match_checkout() -> None:
 
 def test_split_rejects_unit_role_overlap() -> None:
     payload = json.loads(SPLIT_PATH.read_text(encoding="utf-8"))
-    # Force john.1.1 into holdout as well.
     for passage in payload["passages"]:
         if passage["role"] == "holdout":
             passage["unit_ids"] = ["john.1.1", *passage["unit_ids"]]
@@ -125,7 +129,7 @@ def test_cli_sources_validate_includes_holdouts() -> None:
     runner = CliRunner()
     result = runner.invoke(app, ["sources", "validate", "--repo-root", str(REPO_ROOT)])
     assert result.exit_code == 0, result.output
-    assert "holdouts horner-vaticanus-nt-split-v1" in result.output
+    assert "holdouts horner-vaticanus-nt-split-v2" in result.output
     assert "omissions=11" in result.output
 
 
@@ -138,14 +142,13 @@ def test_loaders_round_trip_types() -> None:
 def test_crosscheck_rejects_unit_outside_declared_passage_range(
     tmp_path: Path,
 ) -> None:
-    """Moving Mark holdout ids into John train while ranges stay John fails."""
+    """Moving Mark train ids into John train while ranges stay John fails."""
     split = load_nt_split(SPLIT_PATH)
     payload = split.model_dump(mode="json")
     for passage in payload["passages"]:
-        if passage["role"] == "train":
-            # Keep John 1:1-18 range advertisement; sneak mark.1.1 into unit_ids.
+        if passage["role"] == "train" and passage["book"] == "john":
             passage["unit_ids"] = [*passage["unit_ids"], "mark.1.1"]
-        if passage["role"] == "holdout":
+        if passage["role"] == "train" and passage["book"] == "mark":
             passage["unit_ids"] = [
                 uid for uid in passage["unit_ids"] if uid != "mark.1.1"
             ]
@@ -176,3 +179,24 @@ def test_crosscheck_rejects_dev_omission_overlap() -> None:
     mutated = NtCorpusSplit.model_validate(payload)
     with pytest.raises(HoldoutValidationError, match="dev overlaps omission"):
         crosscheck_against_pilot(mutated, omissions, load_pilot_corpus(PILOT_PATH))
+
+
+def test_integrated_sources_validate_and_optional_align_benchmark() -> None:
+    """Canonical split must pass sources validate; align benchmark when present.
+
+    JAK-28 / #13 completes ``thomas align benchmark --splits`` against
+    ``data/training/splits/horner-vaticanus-nt-split-v2.json``.
+    """
+    runner = CliRunner()
+    sources = runner.invoke(app, ["sources", "validate", "--repo-root", str(REPO_ROOT)])
+    assert sources.exit_code == 0, sources.output
+    assert "horner-vaticanus-nt-split-v2" in sources.output
+
+    align_help = runner.invoke(app, ["align", "--help"])
+    if align_help.exit_code != 0:
+        pytest.skip("thomas align lands with JAK-28 / #13")
+    assert "benchmark" in align_help.output
+
+    bench_help = runner.invoke(app, ["align", "benchmark", "--help"])
+    assert bench_help.exit_code == 0, bench_help.output
+    assert "--splits" in bench_help.output
