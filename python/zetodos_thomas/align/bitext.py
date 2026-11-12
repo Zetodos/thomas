@@ -12,6 +12,7 @@ import hashlib
 from dataclasses import dataclass
 
 from zetodos_thomas.align.paratext import filter_alignable_tokens
+from zetodos_thomas.align.project_spans import parent_whitespace_token
 from zetodos_thomas.align.segment_coptic import (
     ALIGNMENT_READY,
     SEGMENTATION_VERSION,
@@ -65,10 +66,21 @@ class BitextBundle:
 def _unit_to_sentence(unit: ParallelUnit, role: SplitRole) -> BitextSentence | None:
     if not (unit.greek.original_text.strip() and unit.sahidic.original_text.strip()):
         return None
-    left = filter_alignable_tokens(segmented_coptic_tokens(unit.sahidic))
+    left_raw = segmented_coptic_tokens(unit.sahidic)
+    whitespace_left = whitespace_tokens(unit.sahidic)
+    left = filter_alignable_tokens(left_raw)
     right = filter_alignable_tokens(whitespace_tokens(unit.greek))
     if not left or not right:
         return None
+    parent_ids: list[str] = []
+    char_spans: list[tuple[int, int]] = []
+    for token in left:
+        parent = parent_whitespace_token(token, whitespace_left)
+        parent_ids.append(parent.id if parent is not None else "")
+        if token.char_start is None or token.char_end is None:
+            char_spans.append((-1, -1))
+        else:
+            char_spans.append((token.char_start, token.char_end))
     return BitextSentence(
         unit_id=unit.unit_id,
         source_tokens=tuple(t.normalized for t in left),
@@ -76,6 +88,8 @@ def _unit_to_sentence(unit: ParallelUnit, role: SplitRole) -> BitextSentence | N
         source_token_ids=tuple(t.id for t in left),
         target_token_ids=tuple(t.id for t in right),
         split_role=role.value,
+        source_parent_v1_ids=tuple(parent_ids),
+        source_char_spans=tuple(char_spans),
     )
 
 

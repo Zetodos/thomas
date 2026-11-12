@@ -20,65 +20,68 @@ uv run thomas align setup-aligners
 uv run thomas align aligner-probe
 ```
 
-Binaries land in gitignored `data/local/aligners/`. Adapters live under
-`zetodos_thomas.integrations.aligners` and refuse to invent scores when the
-tool is absent.
+Binaries land in gitignored `data/local/aligners/`. Upstream commits are
+**pinned** in `zetodos_thomas.integrations.aligners.pins` and written to
+`data/local/aligners/versions.json` + report `aligner_pins`. Adapters refuse
+to invent scores when the tool is absent.
 
 ## Leakage controls
 
 | Forbidden as positive training pairs | Enforcement |
 | --- | --- |
-| Holdout units | Learning-curve train subsets drawn only from `SplitRole.TRAIN` |
+| Holdout / dev units in fit bitext | OOS: fit on `SplitRole.TRAIN` only; apply to unseen score sets |
 | John 8:1–11 PA omission | Bitext builder emits zero omission sentences |
 | Thomas 7 / P.Oxy. 654 (and other P.Oxy. evaluation witnesses) | Split v3 exclusions + train unit_id guards |
 
 ## Protocol
 
 1. Tokenize nonempty train/dev/holdout with bound-group Coptic + whitespace Greek.
-2. For each train fraction `{0.25, 0.5, 0.75, 1.0}`, jointly align
-   `train_subset + dev` (unsupervised) and score **dev only**. Dev is tuning,
-   not the sealed holdout.
-3. Full-train **dev**: same joint train+dev protocol; export the **exact**
-   `AlignmentLinks` object used for that comparison (no second stochastic draw).
-4. **Holdout (no leakage):** eflomal aligns **train only**, writes Dirichlet
-   priors, then aligns **holdout only** with those frozen priors. fast_align
-   holdout scores are **omitted** (adapter has no apply/priors path; we refuse
-   joint train+holdout fit).
-5. Control: lexical Dice baseline with the same Coptic segmentation.
+   Each bound-group token carries a **parent-v1 id** via original char spans.
+2. For each train fraction `{0.25, 0.5, 0.75, 1.0}`, **fit on train_subset only**
+   and **apply to the fixed unseen dev** set:
+   - eflomal: train → Dirichlet priors → dev-only align with frozen priors
+   - fast_align: train → frozen co-occurrence table → greedy apply + symmetrize
+3. Full-train **dev** and **holdout**: same OOS apply path for both aligners.
+   Export the exact `AlignmentLinks` used for full-train→dev (no second draw).
+4. Control: lexical Dice baseline with the same Coptic segmentation (also OOS;
+   preds projected to parent-v1 before gold scoring).
+5. Regression guards: fit∩score unit_ids must be empty; repeated Coptic `ⲡ`
+   cannot cross-match via substring.
 
 **Primary intrinsic metric:** mean forward↔reverse agreement
 `|fwd ∩ rev| / |fwd ∪ rev|` on eval sentences (no gold required).
 
-**Secondary:** soft gold F1 — segmented left projects onto whitespace gold left
-by equality or contiguous substring; `right_norm` must match exactly. Gold
-remains `provisional-draft` — not decisive.
+**Secondary:** provisional gold F1 via **positional parent-v1 identity**
+`(unit_id, left_token_id, right_norm)` after char-span projection — **not**
+substring membership. Gold remains `provisional-draft` — not decisive.
 
 ## Learning-curve / sufficiency notes (seed=36 committed run)
 
 Primary intrinsic metric = mean forward↔reverse agreement on **dev** (51 units),
-joint unsupervised protocol. Train nonempty = **304**. Exact floats live in
+**out-of-sample** protocol. Train nonempty = **304**. Exact floats live in
 `statistical-aligner-eval-v1.json` (eflomal varies slightly across runs).
 
 | Train fraction | Train n | eflomal agreement | fast_align agreement |
 | --- | ---: | ---: | ---: |
-| 0.25 | 76 | ~0.50 | ~0.42 |
-| 0.50 | 152 | ~0.53 | ~0.42 |
-| 0.75 | 228 | ~0.50 | ~0.42 |
-| 1.00 | 304 | ~0.53 | ~0.42 |
+| 0.25 | 76 | ~0.49 | ~0.14 |
+| 0.50 | 152 | ~0.51 | ~0.13 |
+| 0.75 | 228 | ~0.51 | ~0.13 |
+| 1.00 | 304 | ~0.52 | ~0.13 |
 
-Full-train **dev** (joint): eflomal ~**0.50** vs fast_align ~**0.42** (Δ ≈ +0.08).
-**Holdout** (41): eflomal ~**0.57** via train-only priors + holdout-only align;
-fast_align holdout **omitted** (no frozen-prior apply path).
+Full-train **dev** (OOS): eflomal ~**0.54** vs fast_align ~**0.13** (frozen
+lexical apply). **Holdout** (41, OOS): eflomal ~**0.60**; fast_align ~**0.14**.
 
-**Sufficiency:** eflomal stays above fast_align on the shared joint-dev intrinsic
-at every curve point; the 25%→100% slope is weak / noisy (Gibbs variance), not a
-clean plateau proof. v3 is adequate to **rank** tools and begin Phase 2 lexical
-work; more Gospel/NT pairs and human-checked gold still matter more for
-JAK-37/40 than another bake-off.
+**Sufficiency:** eflomal leads clearly under the shared OOS intrinsic; the
+25%→100% eflomal slope is still mild/noisy (Gibbs variance), not a plateau
+proof. fast_align’s frozen-table apply is much weaker than prior joint-EM
+dev numbers — treat those as superseded. v3 remains adequate to **rank** tools
+and begin Phase 2 lexical work; more Gospel/NT pairs and human-checked gold
+still matter more for JAK-37/40 than another bake-off.
 
 **Burden / reproducibility:** eflomal needs OpenMP + Python headers; fast_align
 needs cmake/C++ only. fast_align EM is deterministic for fixed flags; eflomal's
-Gibbs sampler uses OS entropy (seed recorded, not fully pinning).
+Gibbs sampler uses OS entropy (seed recorded, not fully pinning). Upstream SHAs
+are pinned.
 
 ## Jake decision (do not silent-lock)
 

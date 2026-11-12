@@ -17,7 +17,12 @@ class AlignerName(StrEnum):
 
 @dataclass(frozen=True)
 class BitextSentence:
-    """One parallel sentence with tokenized sides and stable unit provenance."""
+    """One parallel sentence with tokenized sides and stable unit provenance.
+
+    ``source_parent_v1_ids`` maps each bound-group (v2) source token onto the
+    whitespace (v1) parent token id via original-text character spans. Entries
+    may be empty strings when projection fails.
+    """
 
     unit_id: str
     source_tokens: tuple[str, ...]
@@ -25,6 +30,8 @@ class BitextSentence:
     source_token_ids: tuple[str, ...]
     target_token_ids: tuple[str, ...]
     split_role: str
+    source_parent_v1_ids: tuple[str, ...] = ()
+    source_char_spans: tuple[tuple[int, int], ...] = ()
 
     def as_pharaoh_line(self) -> str:
         """fast_align joint line: ``src tokens ||| trg tokens``."""

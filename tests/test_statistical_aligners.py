@@ -12,6 +12,7 @@ from zetodos_thomas.align.bitext import build_bitext, subsample_train
 from zetodos_thomas.align.lexical_baseline import TokenLink
 from zetodos_thomas.align.splits import SplitRole, load_canonical_splits
 from zetodos_thomas.align.statistical import (
+    assert_fit_score_disjoint,
     links_to_token_links,
     score_intrinsic,
     score_norm_gold,
@@ -23,6 +24,11 @@ from zetodos_thomas.integrations.aligners.pharaoh import (
     format_pharaoh_line,
     parse_pharaoh_line,
     symmetrize_grow_diag_final_and,
+)
+from zetodos_thomas.integrations.aligners.pins import (
+    EFLOMAL_COMMIT_SHA,
+    FAST_ALIGN_COMMIT_SHA,
+    pinned_versions_payload,
 )
 from zetodos_thomas.integrations.aligners.types import (
     AlignerName,
@@ -75,6 +81,9 @@ def test_bitext_uses_v3_bound_group_and_excludes_omission() -> None:
     john = next(s for s in train if s.unit_id == "john.1.1")
     assert john.source_token_ids[0].startswith("v2:")
     assert john.target_token_ids[0].startswith("v1:")
+    assert john.source_parent_v1_ids
+    assert all(pid.startswith("v1:") for pid in john.source_parent_v1_ids if pid)
+    assert len(john.source_parent_v1_ids) == len(john.source_tokens)
     assert any(
         "poxy-654" in ex.lower() or "654" in ex
         for ex in bitext.excluded_from_training_stack
@@ -106,11 +115,13 @@ def test_intrinsic_and_norm_gold_scoring() -> None:
     sentences = [
         BitextSentence(
             unit_id="john.1.1",
-            source_tokens=("ϩⲛⲧⲉ", "ϩⲟⲩⲉⲓⲧⲉ"),
+            source_tokens=("ϩⲛ", "ⲧⲉϩⲟⲩⲉⲓⲧⲉ"),
             target_tokens=("εν", "αρχη"),
             source_token_ids=("v2:c/john.1.1/t/0", "v2:c/john.1.1/t/1"),
             target_token_ids=("v1:g/john.1.1/t/0", "v1:g/john.1.1/t/1"),
             split_role="dev",
+            source_parent_v1_ids=("v1:c/john.1.1/t/0", "v1:c/john.1.1/t/0"),
+            source_char_spans=((0, 2), (2, 11)),
         )
     ]
     links = AlignmentLinks(
@@ -124,12 +135,12 @@ def test_intrinsic_and_norm_gold_scoring() -> None:
     assert intrinsic.sentence_count == 1
     assert intrinsic.mean_fwd_rev_agreement == 1.0
     pred = links_to_token_links(links)
-    # Whitespace gold left is the fused form; segmented pred peels project onto it.
+    # Both bound-group pieces project onto the same parent-v1 id.
     gold = [
         TokenLink(
             unit_id="john.1.1",
-            left_token_id="v1:ignored",
-            right_token_id="v1:ignored",
+            left_token_id="v1:c/john.1.1/t/0",
+            right_token_id="v1:g/john.1.1/t/0",
             left_norm="ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ",
             right_norm="εν",
         )
@@ -137,9 +148,116 @@ def test_intrinsic_and_norm_gold_scoring() -> None:
     scored = score_norm_gold(pred, gold, unit_ids={"john.1.1"})
     assert scored["true_positives"] == 1
     assert scored["recall"] == 1.0
-    # Both segmented pieces project onto the fused gold left → both kept.
+    # Two preds share one parent id; only the εν match counts as TP, αρχη is FP.
     assert scored["predicted_denominator"] == 2
     assert scored["precision"] == 0.5
+
+
+def test_repeated_coptic_pi_does_not_cross_match() -> None:
+    """Segmented ``ⲡ`` must not TP against a different parent that merely contains ⲡ."""
+    sentences = [
+        BitextSentence(
+            unit_id="toy.pi",
+            source_tokens=("ⲡ", "ϣⲁϫⲉ", "ⲡ", "ⲛⲟⲩⲧⲉ"),
+            target_tokens=("ο", "λογος", "ο", "θεος"),
+            source_token_ids=(
+                "v2:c/toy.pi/t/0",
+                "v2:c/toy.pi/t/1",
+                "v2:c/toy.pi/t/2",
+                "v2:c/toy.pi/t/3",
+            ),
+            target_token_ids=(
+                "v1:g/toy.pi/t/0",
+                "v1:g/toy.pi/t/1",
+                "v1:g/toy.pi/t/2",
+                "v1:g/toy.pi/t/3",
+            ),
+            split_role="dev",
+            source_parent_v1_ids=(
+                "v1:c/toy.pi/t/0",
+                "v1:c/toy.pi/t/1",
+                "v1:c/toy.pi/t/2",
+                "v1:c/toy.pi/t/3",
+            ),
+            source_char_spans=((0, 1), (1, 5), (6, 7), (7, 12)),
+        )
+    ]
+    gold = [
+        TokenLink(
+            unit_id="toy.pi",
+            left_token_id="v1:c/toy.pi/t/0",
+            right_token_id="v1:g/toy.pi/t/0",
+            left_norm="ⲡ",
+            right_norm="ο",
+        ),
+        TokenLink(
+            unit_id="toy.pi",
+            left_token_id="v1:c/toy.pi/t/2",
+            right_token_id="v1:g/toy.pi/t/3",
+            left_norm="ⲡ",
+            right_norm="θεος",
+        ),
+    ]
+    # Wrong under old substring rule: first ⲡ → θεος (shared surface letter + right).
+    links_wrong = AlignmentLinks(
+        aligner=AlignerName.EFLOMAL,
+        sentences=sentences,
+        forward=[DirectionalAlignment("toy.pi", ((0, 3),))],
+        reverse=[DirectionalAlignment("toy.pi", ((0, 3),))],
+        symmetrized=[DirectionalAlignment("toy.pi", ((0, 3),))],
+    )
+    scored_wrong = score_norm_gold(
+        links_to_token_links(links_wrong), gold, unit_ids={"toy.pi"}
+    )
+    assert scored_wrong["true_positives"] == 0
+    assert scored_wrong["predicted_denominator"] == 1
+    # Correct positional links.
+    links_ok = AlignmentLinks(
+        aligner=AlignerName.EFLOMAL,
+        sentences=sentences,
+        forward=[DirectionalAlignment("toy.pi", ((0, 0), (2, 3)))],
+        reverse=[DirectionalAlignment("toy.pi", ((0, 0), (2, 3)))],
+        symmetrized=[DirectionalAlignment("toy.pi", ((0, 0), (2, 3)))],
+    )
+    scored_ok = score_norm_gold(
+        links_to_token_links(links_ok), gold, unit_ids={"toy.pi"}
+    )
+    assert scored_ok["true_positives"] == 2
+    assert scored_ok["recall"] == 1.0
+
+
+def test_oos_fit_score_unit_ids_disjoint() -> None:
+    fit = [
+        BitextSentence(
+            unit_id="train.1",
+            source_tokens=("ⲁ",),
+            target_tokens=("a",),
+            source_token_ids=("v2:c/train.1/t/0",),
+            target_token_ids=("v1:g/train.1/t/0",),
+            split_role="train",
+        )
+    ]
+    score = [
+        BitextSentence(
+            unit_id="dev.1",
+            source_tokens=("ⲃ",),
+            target_tokens=("b",),
+            source_token_ids=("v2:c/dev.1/t/0",),
+            target_token_ids=("v1:g/dev.1/t/0",),
+            split_role="dev",
+        )
+    ]
+    assert_fit_score_disjoint(fit, score)
+    with pytest.raises(AssertionError, match="fit/score unit_id overlap"):
+        assert_fit_score_disjoint(fit, fit)
+
+
+def test_aligner_pins_are_immutable_shas() -> None:
+    pins = pinned_versions_payload()
+    assert pins["eflomal"]["commit_sha"] == EFLOMAL_COMMIT_SHA
+    assert pins["fast_align"]["commit_sha"] == FAST_ALIGN_COMMIT_SHA
+    assert len(EFLOMAL_COMMIT_SHA) == 40
+    assert len(FAST_ALIGN_COMMIT_SHA) == 40
 
 
 def test_symmetrize_final_and_is_order_stable() -> None:

@@ -32,6 +32,7 @@ from zetodos_thomas.ingest.paths import (
 )
 from zetodos_thomas.ingest.pilot import load_pilot_corpus
 from zetodos_thomas.integrations.aligners.discovery import discover_aligners
+from zetodos_thomas.integrations.aligners.pins import pinned_versions_payload
 from zetodos_thomas.integrations.aligners.types import AlignerConfig, AlignmentLinks
 
 align_app = typer.Typer(
@@ -367,9 +368,10 @@ def statistical_eval_cmd(
             "coptic_segmentation": bitext.coptic_segmentation,
             "greek_tokenization": bitext.greek_tokenization,
             "protocol": (
-                "exact AlignmentLinks retained from full-train×dev comparison "
+                "exact OOS AlignmentLinks retained from full-train→dev apply "
                 "(not a second stochastic draw)"
             ),
+            "aligner_pins": pinned_versions_payload(),
             "seed": seed,
             "config": config.as_dict(),
         }

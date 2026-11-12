@@ -3,17 +3,28 @@
 
 Not invoked by offline reconstruction. Requires network once to clone sources,
 plus a C/C++ toolchain (gcc/g++, make, cmake, libomp, python3-dev).
+
+Upstream commits are pinned in ``zetodos_thomas.integrations.aligners.pins``.
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import shutil
 import subprocess
 import sys
 import tempfile
 from pathlib import Path
+
+from zetodos_thomas.integrations.aligners.pins import (
+    EFLOMAL_COMMIT_SHA,
+    EFLOMAL_GIT_URL,
+    FAST_ALIGN_COMMIT_SHA,
+    FAST_ALIGN_GIT_URL,
+    pinned_versions_payload,
+)
 
 
 def _run(
@@ -27,19 +38,27 @@ def _repo_root() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
+def _clone_pinned(url: str, sha: str, dest: Path) -> None:
+    """Fetch a single pinned commit into ``dest`` and verify HEAD == sha."""
+    if dest.exists():
+        shutil.rmtree(dest)
+    dest.mkdir(parents=True)
+    _run(["git", "init"], cwd=dest)
+    _run(["git", "remote", "add", "origin", url], cwd=dest)
+    _run(["git", "fetch", "--depth", "1", "origin", sha], cwd=dest)
+    _run(["git", "checkout", "--force", "FETCH_HEAD"], cwd=dest)
+    got = subprocess.check_output(
+        ["git", "rev-parse", "HEAD"], cwd=dest, text=True
+    ).strip()
+    if got != sha:
+        msg = f"pin mismatch for {url}: expected {sha}, got {got}"
+        raise RuntimeError(msg)
+    print(f"pinned {url} @ {got}", flush=True)
+
+
 def setup_fast_align(dest: Path, work: Path) -> Path:
     src = work / "fast_align"
-    if not src.exists():
-        _run(
-            [
-                "git",
-                "clone",
-                "--depth",
-                "1",
-                "https://github.com/clab/fast_align.git",
-                str(src),
-            ]
-        )
+    _clone_pinned(FAST_ALIGN_GIT_URL, FAST_ALIGN_COMMIT_SHA, src)
     build = src / "build"
     build.mkdir(exist_ok=True)
     _run(["cmake", ".."], cwd=build)
@@ -53,17 +72,7 @@ def setup_fast_align(dest: Path, work: Path) -> Path:
 
 def setup_eflomal(dest: Path, work: Path, *, python: str) -> Path:
     src = work / "eflomal"
-    if not src.exists():
-        _run(
-            [
-                "git",
-                "clone",
-                "--depth",
-                "1",
-                "https://github.com/robertostling/eflomal.git",
-                str(src),
-            ]
-        )
+    _clone_pinned(EFLOMAL_GIT_URL, EFLOMAL_COMMIT_SHA, src)
     _run(["make", "-C", "src", "clean"], cwd=src)
     env = os.environ.copy()
     env.setdefault("CC", "gcc")
@@ -79,6 +88,16 @@ def setup_eflomal(dest: Path, work: Path, *, python: str) -> Path:
     else:
         _run([python, "-m", "pip", "install", "--quiet", str(src)])
     return binary
+
+
+def _write_versions(dest: Path) -> Path:
+    dest.mkdir(parents=True, exist_ok=True)
+    path = dest / "versions.json"
+    path.write_text(
+        json.dumps(pinned_versions_payload(), indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    return path
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -111,6 +130,8 @@ def main(argv: list[str] | None = None) -> int:
         if not args.skip_eflomal:
             path = setup_eflomal(dest, work, python=python)
             print(f"eflomal -> {path}")
+    versions = _write_versions(dest)
+    print(f"wrote pin manifest {versions}")
     print(f"Aligner binaries in {dest}")
     return 0
 

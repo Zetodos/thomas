@@ -1,15 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 """Statistical aligner comparison + learning curves on v3 splits (JAK-36).
 
-Trains/aligns only on expanded train partitions; scores fixed dev (and optional
-holdout) via the joint unsupervised protocol. Never treats PA omission fixtures
-as positive pairs. No LLM.
+Out-of-sample protocol: fit on train (subsets) only, apply to fixed unseen
+dev/holdout. Never treats PA omission fixtures as positive pairs. No LLM.
 """
 
 from __future__ import annotations
 
 import json
 import tempfile
+from collections import Counter
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -24,12 +24,16 @@ from zetodos_thomas.align.lexical_baseline import (
     predict_links,
     score_links,
 )
+from zetodos_thomas.align.paratext import filter_alignable_tokens
+from zetodos_thomas.align.project_spans import parent_whitespace_token
+from zetodos_thomas.align.segment_coptic import segmented_coptic_tokens
 from zetodos_thomas.align.splits import (
     PilotSplits,
     SplitRole,
     nonempty_positive_units,
     partition_corpus,
 )
+from zetodos_thomas.align.tokenize import whitespace_tokens
 from zetodos_thomas.integrations.aligners.discovery import discover_aligners
 from zetodos_thomas.integrations.aligners.eflomal_adapter import (
     EflomalNotAvailableError,
@@ -40,6 +44,8 @@ from zetodos_thomas.integrations.aligners.fast_align_adapter import (
     FastAlignNotAvailableError,
     align_fast_align,
 )
+from zetodos_thomas.integrations.aligners.pharaoh import symmetrize_batch
+from zetodos_thomas.integrations.aligners.pins import pinned_versions_payload
 from zetodos_thomas.integrations.aligners.types import (
     AlignerConfig,
     AlignerName,
@@ -131,13 +137,19 @@ def links_to_token_links(
     unit_ids: set[str] | None = None,
     use_symmetrized: bool = True,
 ) -> list[TokenLink]:
-    """Map Pharaoh index pairs onto TokenLink rows via sentence token ids."""
+    """Map Pharaoh index pairs onto TokenLink rows via parent-v1 projection.
+
+    Bound-group (v2) source indices are projected onto whitespace parent-v1
+    token ids using ``BitextSentence.source_parent_v1_ids`` (char-span based).
+    Predictions that cannot be projected are dropped.
+    """
     chosen = links.symmetrized if use_symmetrized else links.forward
     by_pairs = {a.unit_id: a.pairs for a in chosen}
     out: list[TokenLink] = []
     for sentence in links.sentences:
         if unit_ids is not None and sentence.unit_id not in unit_ids:
             continue
+        parents = sentence.source_parent_v1_ids
         for i, j in by_pairs.get(sentence.unit_id, ()):
             if i < 0 or j < 0:
                 continue
@@ -145,10 +157,12 @@ def links_to_token_links(
                 sentence.target_token_ids
             ):
                 continue
+            if i >= len(parents) or not parents[i]:
+                continue
             out.append(
                 TokenLink(
                     unit_id=sentence.unit_id,
-                    left_token_id=sentence.source_token_ids[i],
+                    left_token_id=parents[i],
                     right_token_id=sentence.target_token_ids[j],
                     left_norm=sentence.source_tokens[i],
                     right_norm=sentence.target_tokens[j],
@@ -158,17 +172,40 @@ def links_to_token_links(
     return out
 
 
-def _left_norms_related(pred_left: str, gold_left: str) -> bool:
-    """True when segmented pred_left projects onto whitespace gold_left.
-
-    Exact equality, or pred piece is a contiguous substring of the gold
-    whitespace token (bound-group peel of a fused Horner surface).
-    """
-    if pred_left == gold_left:
-        return True
-    if not pred_left or not gold_left:
-        return False
-    return pred_left in gold_left
+def project_token_links_to_parent_v1(
+    predicted: list[TokenLink],
+    units: Sequence[ParallelUnit],
+) -> list[TokenLink]:
+    """Rewrite segmented left_token_ids onto parent whitespace v1 ids via spans."""
+    by_unit = {u.unit_id: u for u in units}
+    out: list[TokenLink] = []
+    for link in predicted:
+        unit = by_unit.get(link.unit_id)
+        if unit is None:
+            continue
+        segmented = filter_alignable_tokens(segmented_coptic_tokens(unit.sahidic))
+        whitespace = filter_alignable_tokens(whitespace_tokens(unit.sahidic))
+        by_seg = {t.id: t for t in segmented}
+        seg = by_seg.get(link.left_token_id)
+        if seg is None:
+            # Already a v1 id, or unknown — keep only if it matches a whitespace id.
+            if any(t.id == link.left_token_id for t in whitespace):
+                out.append(link)
+            continue
+        parent = parent_whitespace_token(seg, whitespace)
+        if parent is None:
+            continue
+        out.append(
+            TokenLink(
+                unit_id=link.unit_id,
+                left_token_id=parent.id,
+                right_token_id=link.right_token_id,
+                left_norm=link.left_norm,
+                right_norm=link.right_norm,
+                score=link.score,
+            )
+        )
+    return out
 
 
 def score_norm_gold(
@@ -177,41 +214,30 @@ def score_norm_gold(
     *,
     unit_ids: set[str] | None = None,
 ) -> dict[str, object]:
-    """Soft gold score bridging whitespace v1 gold and bound-group v2 preds.
+    """Gold score via positional parent-v1 identity (no substring matching).
 
-    A prediction matches a gold link when ``unit_id`` and ``right_norm`` agree
-    and the predicted Sahidic piece projects onto the gold whitespace left
-    token (equal or contiguous substring). Annotated-left filtering keeps any
-    pred whose left piece projects onto at least one gold left on that unit.
+    Predictions must already carry whitespace parent-v1 ``left_token_id`` values
+    (see ``links_to_token_links`` / ``project_token_links_to_parent_v1``). A true
+    positive is an exact ``(unit_id, left_token_id, right_norm)`` match against
+    gold. Repeated identical surfaces (e.g. multiple ``ⲡ``) do not cross-match
+    across different parent token ids / Greek rights.
     """
     gld = [g for g in gold if unit_ids is None or g.unit_id in unit_ids]
     pred = [p for p in predicted if unit_ids is None or p.unit_id in unit_ids]
-    gold_lefts_by_unit: dict[str, list[str]] = {}
-    for g in gld:
-        gold_lefts_by_unit.setdefault(g.unit_id, []).append(g.left_norm)
+    annotated_left = {(g.unit_id, g.left_token_id) for g in gld}
+    pred = [p for p in pred if (p.unit_id, p.left_token_id) in annotated_left]
 
-    def _annotated(p: TokenLink) -> bool:
-        return any(
-            _left_norms_related(p.left_norm, gleft)
-            for gleft in gold_lefts_by_unit.get(p.unit_id, [])
-        )
+    def _key(link: TokenLink) -> tuple[str, str, str]:
+        return (link.unit_id, link.left_token_id, link.right_norm)
 
-    pred = [p for p in pred if _annotated(p)]
-    matched_gold: set[int] = set()
-    matched_pred: set[int] = set()
-    for pi, p in enumerate(pred):
-        for gi, g in enumerate(gld):
-            if gi in matched_gold:
-                continue
-            if p.unit_id != g.unit_id or p.right_norm != g.right_norm:
-                continue
-            if _left_norms_related(p.left_norm, g.left_norm):
-                matched_gold.add(gi)
-                matched_pred.add(pi)
-                break
-    tp = len(matched_gold)
-    precision = (tp / len(pred)) if pred else None
-    recall = (tp / len(gld)) if gld else None
+    # Multiset-aware matching so duplicate keys do not over-count.
+    gold_bag: Counter[tuple[str, str, str]] = Counter(_key(g) for g in gld)
+    pred_bag: Counter[tuple[str, str, str]] = Counter(_key(p) for p in pred)
+    tp = sum((pred_bag & gold_bag).values())
+    pred_n = sum(pred_bag.values())
+    gold_n = sum(gold_bag.values())
+    precision = (tp / pred_n) if pred_n else None
+    recall = (tp / gold_n) if gold_n else None
     if precision is None or recall is None:
         f1 = None
     elif precision + recall == 0:
@@ -223,34 +249,34 @@ def score_norm_gold(
         "recall": recall,
         "f1": f1,
         "true_positives": tp,
-        "predicted_denominator": len(pred),
-        "gold_denominator": len(gld),
-        "matched_predictions": len(matched_pred),
+        "predicted_denominator": pred_n,
+        "gold_denominator": gold_n,
+        "matched_predictions": tp,
         "unit_ids_scored": sorted(
             {*(p.unit_id for p in pred), *(g.unit_id for g in gld)}
         ),
         "notes": (
-            "Soft projection: segmented left matches whitespace gold left by "
-            "equality or contiguous substring; right_norm must match exactly. "
-            "Provisional gold only - not human-checked. Intrinsic agreement "
-            "remains the primary bake-off metric."
+            "Positional parent-v1 identity: predicted bound-group tokens are "
+            "projected onto whitespace parent ids via char spans; match key is "
+            "(unit_id, left_token_id, right_norm). No substring membership. "
+            "Repeated parents (e.g. ⲡ) cannot cross-match. Provisional gold — "
+            "intrinsic agreement remains the primary bake-off metric."
         ),
     }
 
 
-def _align_dispatch(
-    name: AlignerName,
-    sentences: list[BitextSentence],
-    *,
-    config: AlignerConfig,
-    repo_root: Path | None,
-) -> AlignmentLinks:
-    if name is AlignerName.EFLOMAL:
-        return align_eflomal(sentences, config=config, repo_root=repo_root)
-    if name is AlignerName.FAST_ALIGN:
-        return align_fast_align(sentences, config=config, repo_root=repo_root)
-    msg = f"unsupported aligner {name}"
-    raise ValueError(msg)
+def assert_fit_score_disjoint(
+    fit_sents: Sequence[BitextSentence],
+    score_sents: Sequence[BitextSentence],
+) -> None:
+    """Raise if any unit_id appears in both fit and score sets (OOS guard)."""
+    fit_ids = {s.unit_id for s in fit_sents}
+    score_ids = {s.unit_id for s in score_sents}
+    overlap = fit_ids & score_ids
+    if overlap:
+        sample = ", ".join(sorted(overlap)[:5])
+        msg = f"fit/score unit_id overlap (OOS violated): {sample}"
+        raise AssertionError(msg)
 
 
 def _score_links_block(
@@ -262,6 +288,8 @@ def _score_links_block(
     eval_size: int,
     protocol: str,
     gold: list[TokenLink] | None,
+    fit_unit_ids: list[str] | None = None,
+    score_unit_ids: list[str] | None = None,
 ) -> dict[str, Any]:
     intrinsic = score_intrinsic(links, eval_unit_ids=eval_ids)
     pred_links = links_to_token_links(links, unit_ids=eval_ids)
@@ -270,8 +298,10 @@ def _score_links_block(
         "available": True,
         "train_size": train_size,
         "eval_size": eval_size,
-        "joint_size": len(links.sentences),
+        "apply_size": len(links.sentences),
         "protocol": protocol,
+        "fit_unit_ids": fit_unit_ids,
+        "score_unit_ids": score_unit_ids,
         "intrinsic": intrinsic.as_dict(),
         "config": links.config,
         "notes": links.notes,
@@ -282,7 +312,97 @@ def _score_links_block(
     return result
 
 
-def _joint_align_and_score(
+def _best_align_greedy(
+    src_tokens: Sequence[str],
+    trg_tokens: Sequence[str],
+    pair_counts: Counter[tuple[str, str]],
+) -> tuple[tuple[int, int], ...]:
+    """1-best unused target per source from frozen co-occurrence counts."""
+    used: set[int] = set()
+    pairs: list[tuple[int, int]] = []
+    n_src = max(len(src_tokens), 1)
+    n_trg = max(len(trg_tokens), 1)
+    for i, src in enumerate(src_tokens):
+        best_j = -1
+        best_score = -1.0
+        for j, trg in enumerate(trg_tokens):
+            if j in used:
+                continue
+            count = float(pair_counts[(src, trg)])
+            pos = 1.0 - abs(i / n_src - j / n_trg)
+            score = count * 10.0 + pos
+            if score > best_score:
+                best_score = score
+                best_j = j
+        if best_j >= 0:
+            used.add(best_j)
+            pairs.append((i, best_j))
+    return tuple(pairs)
+
+
+def apply_frozen_lexical_table(
+    train_links: AlignmentLinks,
+    eval_sents: Sequence[BitextSentence],
+    *,
+    symmetrization: str = "grow-diag-final-and",
+) -> AlignmentLinks:
+    """Apply a frozen train co-occurrence table to unseen sentences (OOS)."""
+    fwd_counts: Counter[tuple[str, str]] = Counter()
+    rev_counts: Counter[tuple[str, str]] = Counter()
+    by_sym = {a.unit_id: a.pairs for a in train_links.symmetrized}
+    for sent in train_links.sentences:
+        for i, j in by_sym.get(sent.unit_id, ()):
+            if i < 0 or i >= len(sent.source_tokens):
+                continue
+            if j < 0 or j >= len(sent.target_tokens):
+                continue
+            src = sent.source_tokens[i]
+            trg = sent.target_tokens[j]
+            fwd_counts[(src, trg)] += 1
+            rev_counts[(trg, src)] += 1
+
+    forward: list[DirectionalAlignment] = []
+    reverse: list[DirectionalAlignment] = []
+    src_lens: list[int] = []
+    trg_lens: list[int] = []
+    for sent in eval_sents:
+        fwd_pairs = _best_align_greedy(
+            sent.source_tokens, sent.target_tokens, fwd_counts
+        )
+        rev_raw = _best_align_greedy(sent.target_tokens, sent.source_tokens, rev_counts)
+        rev_pairs = tuple((src_i, trg_j) for trg_j, src_i in rev_raw)
+        forward.append(DirectionalAlignment(unit_id=sent.unit_id, pairs=fwd_pairs))
+        reverse.append(DirectionalAlignment(unit_id=sent.unit_id, pairs=rev_pairs))
+        src_lens.append(len(sent.source_tokens))
+        trg_lens.append(len(sent.target_tokens))
+
+    sym = symmetrize_batch(
+        forward,
+        reverse,
+        src_lens,
+        trg_lens,
+        method=symmetrization,
+    )
+    return AlignmentLinks(
+        aligner=AlignerName.FAST_ALIGN,
+        sentences=list(eval_sents),
+        forward=forward,
+        reverse=reverse,
+        symmetrized=sym,
+        symmetrization=symmetrization,
+        config={
+            "protocol": "oos-frozen-lexical-table",
+            "train_sentences": len(train_links.sentences),
+            "pair_types": len(fwd_counts),
+        },
+        notes=[
+            "OOS apply: frozen train co-occurrence table; greedy 1-best + symmetrize.",
+            "Eval sentences were not in the fit set used to build the table.",
+        ],
+    )
+
+
+def _oos_align_and_score(
     name: AlignerName,
     train: list[BitextSentence],
     eval_sents: list[BitextSentence],
@@ -290,21 +410,73 @@ def _joint_align_and_score(
     config: AlignerConfig,
     repo_root: Path | None,
     gold: list[TokenLink] | None,
+    work_dir: Path | None = None,
 ) -> dict[str, Any]:
-    """Joint unsupervised align of train+dev; score eval only.
+    """Out-of-sample: fit on train only, apply to unseen eval sentences."""
+    assert_fit_score_disjoint(train, eval_sents)
+    fit_ids = [s.unit_id for s in train]
+    score_ids = [s.unit_id for s in eval_sents]
+    eval_id_set = set(score_ids)
+    if not train:
+        return {
+            "aligner": name.value,
+            "available": False,
+            "error": "empty fit set",
+            "train_size": 0,
+            "eval_size": len(eval_sents),
+            "protocol": "out-of-sample-train-only",
+            "fit_unit_ids": fit_ids,
+            "score_unit_ids": score_ids,
+        }
+    if not eval_sents:
+        return {
+            "aligner": name.value,
+            "available": False,
+            "error": "empty score set",
+            "train_size": len(train),
+            "eval_size": 0,
+            "protocol": "out-of-sample-train-only",
+            "fit_unit_ids": fit_ids,
+            "score_unit_ids": score_ids,
+        }
 
-    Used for learning curves and full-train **dev** (not sealed holdout).
-    """
-    eval_ids = {s.unit_id for s in eval_sents}
-    seen: set[str] = set()
-    joint: list[BitextSentence] = []
-    for sentence in [*train, *eval_sents]:
-        if sentence.unit_id in seen:
-            continue
-        seen.add(sentence.unit_id)
-        joint.append(sentence)
     try:
-        links = _align_dispatch(name, joint, config=config, repo_root=repo_root)
+        if name is AlignerName.EFLOMAL:
+            train_links = align_eflomal(train, config=config, repo_root=repo_root)
+            priors_dir = work_dir or Path(
+                tempfile.mkdtemp(prefix="thomas-eflomal-priors-")
+            )
+            priors_dir.mkdir(parents=True, exist_ok=True)
+            priors_path = priors_dir / f"train_{len(train)}.priors"
+            write_priors_from_links(train_links, priors_path)
+            score_links = align_eflomal(
+                eval_sents,
+                config=config,
+                repo_root=repo_root,
+                priors_path=priors_path,
+            )
+            score_links.notes = [
+                *score_links.notes,
+                "OOS: priors estimated on train only; applied to unseen score set.",
+            ]
+            protocol = (
+                "out-of-sample: eflomal train-only → Dirichlet priors → "
+                "score-set align with frozen priors"
+            )
+        elif name is AlignerName.FAST_ALIGN:
+            train_links = align_fast_align(train, config=config, repo_root=repo_root)
+            score_links = apply_frozen_lexical_table(
+                train_links,
+                eval_sents,
+                symmetrization=config.symmetrization,
+            )
+            protocol = (
+                "out-of-sample: fast_align train-only → frozen lexical table → "
+                "greedy apply on score set"
+            )
+        else:
+            msg = f"unsupported aligner {name}"
+            raise ValueError(msg)
     except (EflomalNotAvailableError, FastAlignNotAvailableError) as exc:
         return {
             "aligner": name.value,
@@ -312,92 +484,21 @@ def _joint_align_and_score(
             "error": str(exc),
             "train_size": len(train),
             "eval_size": len(eval_sents),
+            "protocol": "out-of-sample-train-only",
+            "fit_unit_ids": fit_ids,
+            "score_unit_ids": score_ids,
         }
+
     return _score_links_block(
         name,
-        links,
-        eval_ids=eval_ids,
+        score_links,
+        eval_ids=eval_id_set,
         train_size=len(train),
         eval_size=len(eval_sents),
-        protocol=(
-            "joint unsupervised alignment of train_subset + dev; "
-            "metrics on dev unit_ids only (dev is not sealed holdout)"
-        ),
+        protocol=protocol,
         gold=gold,
-    )
-
-
-def _holdout_align_and_score(
-    name: AlignerName,
-    train: list[BitextSentence],
-    holdout: list[BitextSentence],
-    *,
-    config: AlignerConfig,
-    repo_root: Path | None,
-    gold: list[TokenLink] | None,
-    work_dir: Path | None,
-) -> dict[str, Any]:
-    """Score holdout without joint-fitting on holdout pairs.
-
-    eflomal: align TRAIN only → Dirichlet priors → align HOLDOUT with frozen
-    priors. fast_align: omitted (no frozen-prior apply path in this adapter).
-    """
-    if name is AlignerName.FAST_ALIGN:
-        return {
-            "aligner": name.value,
-            "available": False,
-            "skipped": True,
-            "train_size": len(train),
-            "eval_size": len(holdout),
-            "error": (
-                "holdout scores omitted for fast_align: adapter has no "
-                "frozen-prior / apply path; refusing joint train+holdout fit"
-            ),
-            "protocol": "omitted-to-prevent-holdout-leakage",
-        }
-    if name is not AlignerName.EFLOMAL:
-        msg = f"unsupported holdout aligner {name}"
-        raise ValueError(msg)
-    try:
-        train_links = align_eflomal(train, config=config, repo_root=repo_root)
-    except EflomalNotAvailableError as exc:
-        return {
-            "aligner": name.value,
-            "available": False,
-            "error": str(exc),
-            "train_size": len(train),
-            "eval_size": len(holdout),
-        }
-    priors_dir = work_dir or Path(tempfile.mkdtemp(prefix="thomas-eflomal-priors-"))
-    priors_dir.mkdir(parents=True, exist_ok=True)
-    priors_path = priors_dir / "train.priors"
-    write_priors_from_links(train_links, priors_path)
-    try:
-        holdout_links = align_eflomal(
-            holdout,
-            config=config,
-            repo_root=repo_root,
-            priors_path=priors_path,
-        )
-    except EflomalNotAvailableError as exc:
-        return {
-            "aligner": name.value,
-            "available": False,
-            "error": str(exc),
-            "train_size": len(train),
-            "eval_size": len(holdout),
-        }
-    return _score_links_block(
-        name,
-        holdout_links,
-        eval_ids={s.unit_id for s in holdout},
-        train_size=len(train),
-        eval_size=len(holdout),
-        protocol=(
-            "train-only eflomal align → Dirichlet priors → holdout-only align "
-            "with frozen priors (holdout never in fitting bitext)"
-        ),
-        gold=gold,
+        fit_unit_ids=fit_ids,
+        score_unit_ids=score_ids,
     )
 
 
@@ -416,21 +517,23 @@ def _lexical_curve_point(
     predicted = predict_links(
         model, eval_units, min_dice=0.0, coptic_segmentation="bound-group-v1"
     )
+    projected = project_token_links_to_parent_v1(predicted, eval_units)
     eval_ids = {u.unit_id for u in eval_units}
     return {
         "aligner": "lexical_dice_baseline",
         "available": True,
         "train_size": len(model.train_unit_ids),
         "eval_size": len(eval_units),
-        "token_id_gold": score_links(predicted, gold, unit_ids=eval_ids).as_dict()
+        "protocol": "out-of-sample-train-only",
+        "token_id_gold": score_links(projected, gold, unit_ids=eval_ids).as_dict()
         if gold
         else None,
-        "norm_gold": score_norm_gold(predicted, gold, unit_ids=eval_ids)
+        "norm_gold": score_norm_gold(projected, gold, unit_ids=eval_ids)
         if gold
         else None,
         "notes": [
             "Control baseline with bound-group-v1 Coptic segmentation.",
-            "token_id_gold may be empty/weak because gold is whitespace v1 ids.",
+            "Predictions projected to parent-v1 ids before gold scoring.",
         ],
     }
 
@@ -480,15 +583,17 @@ def run_statistical_evaluation(
     for fraction in curve_fractions:
         n = max(1, round(len(train) * fraction))
         train_subset = subsample_train(train, n=n, seed=cfg.seed)
+        assert_fit_score_disjoint(train_subset, dev)
         point: dict[str, Any] = {
             "fraction": fraction,
             "train_size_requested": n,
             "train_size_actual": len(train_subset),
             "train_unit_ids": [s.unit_id for s in train_subset],
+            "score_unit_ids": [s.unit_id for s in dev],
             "aligners": {},
         }
         for name in aligners:
-            point["aligners"][name.value] = _joint_align_and_score(
+            point["aligners"][name.value] = _oos_align_and_score(
                 name,
                 train_subset,
                 dev,
@@ -509,7 +614,7 @@ def run_statistical_evaluation(
     full_comparison: dict[str, Any] = {"dev": {}, "holdout": {}}
     retained_links: dict[str, AlignmentLinks] = {}
     for name in aligners:
-        dev_block = _joint_align_and_score(
+        dev_block = _oos_align_and_score(
             name, train, dev, config=cfg, repo_root=repo_root, gold=gold
         )
         links_obj = dev_block.pop("_links", None)
@@ -517,14 +622,13 @@ def run_statistical_evaluation(
             retained_links[name.value] = links_obj
         full_comparison["dev"][name.value] = dev_block
         if include_holdout:
-            hold_block = _holdout_align_and_score(
+            hold_block = _oos_align_and_score(
                 name,
                 train,
                 holdout,
                 config=cfg,
                 repo_root=repo_root,
                 gold=gold,
-                work_dir=None,
             )
             hold_block.pop("_links", None)
             full_comparison["holdout"][name.value] = hold_block
@@ -565,19 +669,21 @@ def run_statistical_evaluation(
             "notes": bitext.notes,
         },
         "config": cfg.as_dict(),
+        "aligner_pins": pinned_versions_payload(),
         "availability": {k: v.as_dict() for k, v in availability.items()},
         "human_reference": {
             "documents": gold_docs,
             "gold_link_count": len(gold),
             "status": "provisional-draft",
             "scoring": (
-                "soft projection: segmented left onto whitespace gold left; "
-                "right_norm exact"
+                "positional parent-v1 identity via char-span projection; "
+                "match (unit_id, left_token_id, right_norm); no substring"
             ),
         },
         "learning_curve": {
             "fractions": list(curve_fractions),
             "eval_split": "dev",
+            "protocol": "out-of-sample-train-only",
             "points": curve_points,
         },
         "full_train_comparison": full_comparison,
@@ -586,9 +692,9 @@ def run_statistical_evaluation(
         "limitations": [
             "Provisional gold is tiny / unreviewed; intrinsic agreement is primary.",
             "eflomal C sampler is stochastic; seed recorded but not fully pinning.",
-            "Dev curves use joint train+dev (dev is not sealed holdout).",
-            "Holdout: eflomal train-only priors then holdout-only align; "
-            "fast_align holdout omitted (no apply path).",
+            "Dev/holdout curves are out-of-sample: fit on train only, apply to "
+            "unseen score sets (eflomal priors; fast_align frozen lexical table).",
+            "Upstream aligner commits are pinned in aligner_pins / versions.json.",
             "No LLM. Greek = Vaticanus B* only. PA omission never positive pairs.",
             "Thomas 7 / P.Oxy. 654 excluded from training stack.",
         ],
@@ -635,6 +741,7 @@ def _jake_decision_scaffold(
     rationale = [
         "eflomal evaluated first per PLAN.md / JAK-36; not preselected.",
         "Identical v3 train/dev/holdout + bound-group-v1 segmentation for both.",
+        "Metrics are out-of-sample (train-only fit → apply to unseen dev/holdout).",
     ]
     if evidence_thin:
         rationale.append(
