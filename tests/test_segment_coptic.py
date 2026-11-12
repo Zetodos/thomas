@@ -10,6 +10,7 @@ import pytest
 
 from zetodos_thomas.align.lexical_baseline import fit_lexical_baseline
 from zetodos_thomas.align.segment_coptic import (
+    ALIGNMENT_READY,
     SEGMENTATION_VERSION,
     SEGMENTED_ID_SCHEME_VERSION,
     peel_bound_group,
@@ -38,6 +39,29 @@ def test_peel_common_horner_bound_groups() -> None:
     assert peel_bound_group("ⲛϭⲓ") == ["ⲛϭⲓ"]
     assert SEGMENTATION_VERSION == "bound-group-v1"
     assert SEGMENTED_ID_SCHEME_VERSION == "2"
+    assert ALIGNMENT_READY is True
+
+
+def test_peel_does_not_break_common_stems() -> None:
+    """Jake review 4544895967: bare ⲛ/ⲟⲩ/ⲧⲉ/ⲡⲉ must not slice lexemes.
+
+    Exact Unicode from the review body (ϫ in ⲡⲉϫⲉ is U+03EB as in Horner).
+    """
+    # Without a stem guard these become [ⲛ, ⲟⲩ, ⲧⲉ] / [ⲡ, ⲛ, ⲟⲩ, ⲧⲉ] / [ⲡⲉ, ϫⲉ].
+    assert peel_bound_group("ⲛⲟⲩⲧⲉ") == ["ⲛⲟⲩⲧⲉ"]
+    assert peel_bound_group("ⲡⲛⲟⲩⲧⲉ") == ["ⲡ", "ⲛⲟⲩⲧⲉ"]
+    assert peel_bound_group("ⲡⲉϫⲉ") == ["ⲡⲉϫⲉ"]
+    assert peel_bound_group("ⲙⲡⲛⲟⲩⲧⲉ") == ["ⲙⲡ", "ⲛⲟⲩⲧⲉ"]
+    assert peel_bound_group("ⲡⲉϫⲁϥ") == ["ⲡⲉϫⲁϥ"]
+    # Codepoint lock for the review examples (guards against UTF corruption).
+    assert [hex(ord(c)) for c in "ⲛⲟⲩⲧⲉ"] == [
+        "0x2c9b",
+        "0x2c9f",
+        "0x2ca9",
+        "0x2ca7",
+        "0x2c89",
+    ]
+    assert [hex(ord(c)) for c in "ⲡⲉϫⲉ"] == ["0x2ca1", "0x2c89", "0x3eb", "0x2c89"]
 
 
 def test_segment_normalized_splits_john_1_1() -> None:
@@ -112,6 +136,22 @@ def test_inventory_records_expansion_counts() -> None:
     inv = json.loads(INVENTORY_PATH.read_text(encoding="utf-8"))
     assert inv["nonempty_positive_pairs"] == 396
     assert inv["unit_slots"] == 407
-    assert inv["split_nonempty_counts"]["train"] == 323
-    assert inv["split_nonempty_counts"]["holdout"] == 22
+    assert inv["split_nonempty_counts"]["train"] == 304
+    assert inv["split_nonempty_counts"]["holdout"] == 41
+    assert inv["split_nonempty_counts"]["dev"] == 51
     assert inv["phase1_comparison"]["expansion_factor_nonempty"] >= 10
+
+
+def test_eval_review_gate_blocks_unreviewed_thomas7() -> None:
+    from zetodos_thomas.eval.review_gate import (
+        EvalReviewGateError,
+        assert_eval_package_human_checked,
+    )
+
+    with pytest.raises(EvalReviewGateError, match="human-checked"):
+        assert_eval_package_human_checked(BLIND_PATH)
+    payload = json.loads(BLIND_PATH.read_text(encoding="utf-8"))
+    assert payload["review_status"] == "ready-for-independent-review"
+    assert "blocking follow-up" in payload["notes"].lower() or (
+        "follow-up" in payload.get("independent_review_follow_up", {}).get("status", "")
+    )

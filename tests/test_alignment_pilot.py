@@ -109,7 +109,7 @@ def test_splits_cover_every_unit_without_overlap() -> None:
         "matthew.10.26",
         "luke.8.4",
     }
-    assert len(holdout_ids) == 22
+    assert len(holdout_ids) == 41
     assert [u.unit_id for u in buckets[SplitRole.OMISSION]] == [
         f"john.8.{v}" for v in range(1, 12)
     ]
@@ -301,7 +301,7 @@ def test_default_splits_match_committed_canonical_artifact() -> None:
     assert len(committed.unit_ids_for(SplitRole.DEV)) == 51
     hold = committed.unit_ids_for(SplitRole.HOLDOUT)
     assert "matthew.13.31" in hold and "matthew.10.26" in hold and "luke.8.4" in hold
-    assert len(hold) == 22
+    assert len(hold) == 41
     # load_splits also accepts the NtCorpusSplit path directly.
     via_load = load_splits(SPLITS_PATH, omission_path=OMISSION_PATH)
     assert via_load.unit_ids_for(SplitRole.OMISSION) == [

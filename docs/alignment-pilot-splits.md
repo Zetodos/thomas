@@ -13,14 +13,16 @@
 
 | Role | Passages (summary) | Nonempty units |
 | --- | --- | --- |
-| **train** | John 1; Mark 1; Mark 4; Matt 5–7; Matt 13 except 31–32; Luke 6:1–19; Luke 11:9–13; Luke 12:2–3 | **323** |
+| **train** | Gospel blocks minus holdout leakage counterparts | **304** |
 | **dev** | Luke 6:20–49; John 3:1–21 | **51** |
-| **holdout** | Matt 13:31–32; Matt 10:26–33; Luke 8:4–15 | **22** |
+| **holdout** | Matt 10:26–33; Luke 8:4–15; Luke 12:2–3; Synoptic/phrase-leakage counterparts (Mark 4 / Matt 5·7·13 verses) | **41** |
 | **omission** (separate catalog) | John 8:1–11 | 11 dual-empty |
 
 **Totals:** 407 units · 396 nonempty positive pairs · 11 omission slots (~11× Phase 1 nonempty).
 
 ## Leakage controls
+
+- Train and holdout share **no** exact Greek five-token sequences (Synoptic parallel / phrase leakage regression in `tests/test_holdouts.py` + `assert_no_train_holdout_greek_ngram_leakage`).
 
 - Greek Thomas fragment witnesses (P.Oxy. 654 / 1 / 655; logia **7 / 17 / 30 / 77**) are **not** in this NT stack.
 - Coptic Thomas (Dilley) is **not** absorbed here.

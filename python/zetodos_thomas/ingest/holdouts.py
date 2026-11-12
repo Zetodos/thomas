@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 import json
+import re
+from collections import defaultdict
 from pathlib import Path
 
 from zetodos_thomas.schemas.holdout import (
@@ -13,6 +15,9 @@ from zetodos_thomas.schemas.holdout import (
     PassageRole,
 )
 from zetodos_thomas.schemas.source import PilotCorpus
+
+_GREEK_TOKEN_RE = re.compile(r"\S+")
+GREEK_NGRAM_ORDER = 5
 
 
 class HoldoutValidationError(ValueError):
@@ -107,6 +112,69 @@ def _assert_passage_unit_ids_match_range(
             raise HoldoutValidationError(msg)
 
 
+def greek_token_ngrams(text: str, order: int = GREEK_NGRAM_ORDER) -> set[str]:
+    """Return whitespace token n-grams from normalized Greek text."""
+    if order < 1:
+        msg = "ngram order must be >= 1"
+        raise ValueError(msg)
+    tokens = _GREEK_TOKEN_RE.findall(text)
+    if len(tokens) < order:
+        return set()
+    return {" ".join(tokens[i : i + order]) for i in range(len(tokens) - order + 1)}
+
+
+def cross_split_greek_ngram_leaks(
+    split: NtCorpusSplit,
+    pilot: PilotCorpus,
+    *,
+    order: int = GREEK_NGRAM_ORDER,
+    left: PassageRole = PassageRole.TRAIN,
+    right: PassageRole = PassageRole.HOLDOUT,
+) -> dict[str, tuple[set[str], set[str]]]:
+    """Map shared Greek n-grams to (left unit ids, right unit ids).
+
+    Different verse unit_ids are insufficient when Synoptic parallels copy
+    phrase-level Greek into both train and holdout (PLAN.md / Jake review).
+    """
+    units_by_id = {unit.unit_id: unit for unit in pilot.units}
+    left_ids = _unit_ids_by_role(split, left)
+    right_ids = _unit_ids_by_role(split, right)
+    left_ngrams: dict[str, set[str]] = defaultdict(set)
+    right_ngrams: dict[str, set[str]] = defaultdict(set)
+    for unit_id, bucket in ((left_ids, left_ngrams), (right_ids, right_ngrams)):
+        for uid in unit_id:
+            unit = units_by_id.get(uid)
+            if unit is None or not unit.greek.normalized_text:
+                continue
+            for ng in greek_token_ngrams(unit.greek.normalized_text, order=order):
+                bucket[ng].add(uid)
+    shared = set(left_ngrams) & set(right_ngrams)
+    return {ng: (left_ngrams[ng], right_ngrams[ng]) for ng in sorted(shared)}
+
+
+def assert_no_train_holdout_greek_ngram_leakage(
+    split: NtCorpusSplit,
+    pilot: PilotCorpus,
+    *,
+    order: int = GREEK_NGRAM_ORDER,
+) -> None:
+    """Reject splits where train and holdout share exact Greek token n-grams."""
+    leaks = cross_split_greek_ngram_leaks(split, pilot, order=order)
+    if not leaks:
+        return
+    examples: list[str] = []
+    for ngram, (train_uids, hold_uids) in list(leaks.items())[:8]:
+        examples.append(
+            f"{ngram!r} train={sorted(train_uids)} holdout={sorted(hold_uids)}"
+        )
+    msg = (
+        f"train/holdout share {len(leaks)} exact Greek {order}-token sequence(s); "
+        "group Synoptic parallels in the same split or exclude overlapping phrase "
+        "observations. Examples: " + "; ".join(examples)
+    )
+    raise HoldoutValidationError(msg)
+
+
 def crosscheck_against_pilot(
     split: NtCorpusSplit,
     omissions: OmissionFixtureSet,
@@ -188,6 +256,8 @@ def crosscheck_against_pilot(
         if exclusion.corpus_role != "evaluation-witness":
             msg = f"{exclusion.witness_id} must remain evaluation-witness"
             raise HoldoutValidationError(msg)
+
+    assert_no_train_holdout_greek_ngram_leakage(split, pilot)
 
 
 def validate_holdout_artifacts(

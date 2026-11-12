@@ -12,15 +12,15 @@
   "greek_only_empty_sahidic": 0,
   "sahidic_only_empty_greek": 0,
   "split_unit_counts": {
-    "train": 323,
+    "train": 304,
     "dev": 51,
-    "holdout": 22,
+    "holdout": 41,
     "omission": 11
   },
   "split_nonempty_counts": {
-    "train": 323,
+    "train": 304,
     "dev": 51,
-    "holdout": 22
+    "holdout": 41
   },
   "phase1_comparison": {
     "pilot_v2_units": 46,

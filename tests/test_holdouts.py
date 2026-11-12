@@ -19,6 +19,8 @@ from zetodos_thomas.bundled import (
 from zetodos_thomas.cli.app import app
 from zetodos_thomas.ingest.holdouts import (
     HoldoutValidationError,
+    assert_no_train_holdout_greek_ngram_leakage,
+    cross_split_greek_ngram_leaks,
     crosscheck_against_pilot,
     load_fragment_divergences,
     load_nt_split,
@@ -71,10 +73,18 @@ def test_committed_holdout_artifacts_validate() -> None:
     hold_ids = [uid for p in holdout for uid in p.unit_ids]
     assert "matthew.13.31" in hold_ids and "matthew.10.26" in hold_ids
     assert "luke.8.4" in hold_ids
-    assert len(hold_ids) == 22
+    # Synoptic parallels grouped into holdout (Jake review 4544895956).
+    assert "luke.12.2" in hold_ids and "luke.12.3" in hold_ids
+    assert "mark.4.4" in hold_ids and "matthew.13.4" in hold_ids
+    assert len(hold_ids) == 41
+    train_ids = {uid for p in train for uid in p.unit_ids}
+    assert "luke.12.2" not in train_ids
+    assert len(train_ids) == 304
     dev_ids = [uid for p in dev for uid in p.unit_ids]
     assert "luke.6.20" in dev_ids and "john.3.1" in dev_ids
     assert len(dev_ids) == 51
+    assert_no_train_holdout_greek_ngram_leakage(split, pilot)
+    assert cross_split_greek_ngram_leaks(split, pilot) == {}
 
     assert len(omissions.units) == 11
     assert omissions.pilot_corpus_id == "horner-vaticanus-nt-pilot-v3"

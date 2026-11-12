@@ -14,6 +14,21 @@
   "coptic_corpus_id": "dilley-thomas-v6.2.0",
   "greek_nt_spine_source_id": "ntvmr-vaticanus-b",
   "review_status": "ready-for-independent-review",
+  "independent_review_follow_up": {
+    "status": "blocking-follow-up",
+    "blocks": [
+      "JAK-40",
+      "JAK-41"
+    ],
+    "gate": "zetodos_thomas.eval.review_gate.assert_eval_package_human_checked",
+    "required_before_scoring": [
+      "Independent reviewer name",
+      "Review date",
+      "Inspected witness/source version (Dilley corpus id + P.Oxy. 654 / dclp fragment pin)",
+      "Surviving-letter vs editorial-restoration scoring decisions recorded"
+    ],
+    "notes": "JAK-43 formally moves the 'independently reviewed evaluation data' acceptance criterion to this blocking follow-up. Do not relabel review_status as human-checked without a real review. JAK-40/41 scoring entry points must call the review gate."
+  },
   "seal": {
     "greek_witness_id": "poxy-654-dclp",
     "greek_source_id": "dclp-poxy-654",
@@ -76,5 +91,5 @@
     "Confirm loanword clue is labeled clue-only, not morphology proof.",
     "Independent reviewer signs review_status → human-checked before JAK-40 scoring run."
   ],
-  "notes": "Prepared under JAK-43 so JAK-40/41 can score without improvised labels. NT holdout gold expansion uses the same review_status vocabulary (see docs/eval-data-readiness.md)."
+  "notes": "Prepared under JAK-43 so JAK-40/41 can score without improvised labels once independently reviewed. review_status remains ready-for-independent-review: the independently-reviewed acceptance criterion is a blocking follow-up gated by zetodos_thomas.eval.review_gate (see independent_review_follow_up and docs/eval-data-readiness.md). Do not relabel as human-checked without a real review."
 }
