@@ -146,9 +146,7 @@ def generate_candidates_cmd(
         "bitext_checksum_sha256": bitext.checksum_sha256,
         "excluded_from_training_stack": bitext.excluded_from_training_stack,
     }
-    write_lexical_candidate_table(
-        table, out, compact=compact, columnar=columnar
-    )
+    write_lexical_candidate_table(table, out, compact=compact, columnar=columnar)
     typer.echo(f"Wrote {out}")
     typer.echo(
         f"observed_wordforms={table.summary.get('observed_wordform_types')} "
