@@ -15,9 +15,14 @@ XML_ID = "{http://www.w3.org/XML/1998/namespace}id"
 PINNED_CCL_TEI_SHA256 = (
     "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
 )
-DEFAULT_SUBSET_REL = (
-    "data/sources/mappings/fixtures/ccl-ddglc-tei-verified-subset-v1.xml"
+# Bytes of the committed offline subset extracted from the SHA-pinned full TEI.
+# Independent of the parent-TEI SHA claimed in the XML comment — both must hold.
+PINNED_CCL_TEI_SUBSET_SHA256 = (
+    "fc1bc945980acc70428ff6bfcd87b864b6f0209d8c04a26aa9baa536f3f40cd6"
 )
+FULL_TEI_BASENAME = "Comprehensive_Coptic_Lexicon-v1.2-2020.xml"
+SUBSET_TEI_BASENAME = "ccl-ddglc-tei-verified-subset-v1.xml"
+DEFAULT_SUBSET_REL = f"data/sources/mappings/fixtures/{SUBSET_TEI_BASENAME}"
 
 
 @dataclass(frozen=True)
@@ -45,24 +50,54 @@ def default_ccl_tei_subset_path(repo_root: Path) -> Path:
 
 
 def default_ccl_tei_download_path(repo_root: Path) -> Path:
-    return (
-        repo_root
-        / "data"
-        / "downloads"
-        / "ccl-ddglc"
-        / "Comprehensive_Coptic_Lexicon-v1.2-2020.xml"
+    return repo_root / "data" / "downloads" / "ccl-ddglc" / FULL_TEI_BASENAME
+
+
+def verify_ccl_tei_path(path: Path) -> str:
+    """Fail closed unless ``path`` is the pinned full TEI or pinned subset.
+
+    Returns ``\"full\"`` or ``\"subset\"`` for the pin that matched.
+    Alternate basenames and checksum mismatches raise ``ValueError``.
+    """
+    digest = sha256_file(path)
+    if path.name == FULL_TEI_BASENAME:
+        if digest != PINNED_CCL_TEI_SHA256:
+            msg = (
+                f"CCL TEI checksum mismatch: got {digest}, "
+                f"expected {PINNED_CCL_TEI_SHA256}"
+            )
+            raise ValueError(msg)
+        return "full"
+    if path.name == SUBSET_TEI_BASENAME:
+        if digest != PINNED_CCL_TEI_SUBSET_SHA256:
+            msg = (
+                f"CCL TEI subset checksum mismatch: got {digest}, "
+                f"expected {PINNED_CCL_TEI_SUBSET_SHA256}"
+            )
+            raise ValueError(msg)
+        return "subset"
+    msg = (
+        f"untrusted CCL TEI path {path.name!r}: expected pinned full TEI "
+        f"({FULL_TEI_BASENAME}) or offline subset ({SUBSET_TEI_BASENAME})"
     )
+    raise ValueError(msg)
 
 
 def resolve_ccl_tei_path(repo_root: Path, *, prefer_full: bool = False) -> Path:
-    """Prefer full downloaded TEI when present; otherwise the offline subset."""
+    """Prefer full downloaded TEI when present; otherwise the offline subset.
+
+    Returned path is always checksum-verified against the matching pin.
+    """
     full = default_ccl_tei_download_path(repo_root)
     subset = default_ccl_tei_subset_path(repo_root)
     if prefer_full and full.is_file():
+        verify_ccl_tei_path(full)
         return full
     if full.is_file():
+        verify_ccl_tei_path(full)
         return full
     if subset.is_file():
+        verify_ccl_tei_path(subset)
         return subset
     msg = (
         f"CCL TEI not found: expected download at {full} or offline subset at {subset}"

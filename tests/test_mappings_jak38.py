@@ -122,6 +122,116 @@ def test_verbal_false_morphology_verses_not_promoted() -> None:
         assert all(unit not in c.source_unit_ids for c in table.constructions)
 
 
+def test_article_false_lexeme_verses_not_promoted() -> None:
+    """Jake review: fused peels / ⲛⲓⲙ must not become family=article mappings.
+
+    Dual-aligner agreement on John 1:23/25 (ⲡ+ⲉⲡ), Matt 7:24/25 (ⲧ+ⲡⲉⲧ),
+    and Luke 11:10 / Matt 7:8 (ⲛ+ⲓⲙ) is not proof of DET+noun validity.
+    """
+    sents = [
+        _sentence("john.1.23", ("ⲡ", "ⲉⲡ"), ("ο", "προφητης")),
+        _sentence("john.1.25", ("ⲡ", "ⲉⲡ"), ("ο", "προφητης")),
+        _sentence("matthew.7.24", ("ⲧ", "ⲡⲉⲧ"), ("την", "πετραν")),
+        _sentence("matthew.7.25", ("ⲧ", "ⲡⲉⲧ"), ("την", "πετραν")),
+        _sentence("luke.11.10", ("ⲛ", "ⲓⲙ"), ("ο", "αιτων")),
+        _sentence("matthew.7.8", ("ⲛ", "ⲓⲙ"), ("ο", "αιτων")),
+        # Allowlisted whole lexemes still promote across two units.
+        _sentence("john.1.1", ("ⲡ", "ϣⲁϫⲉ"), ("ο", "λογος")),
+        _sentence("john.1.14", ("ⲡ", "ϣⲁϫⲉ"), ("ο", "λογος")),
+    ]
+    pairs: dict[str, tuple[tuple[int, int], ...]] = {
+        uid: ((0, 0), (1, 1)) for uid in (s.unit_id for s in sents)
+    }
+    table = build_statistical_construction_table(
+        {
+            "eflomal": _links(AlignerName.EFLOMAL, sents, pairs),
+            "fast_align": _links(AlignerName.FAST_ALIGN, sents, pairs),
+        },
+        min_dual_units=2,
+    )
+    articles = [
+        c for c in table.constructions if c.family is ConstructionFamily.ARTICLE
+    ]
+    assert len(articles) == 1
+    assert articles[0].coptic_pattern == ["ⲡ", "ϣⲁϫⲉ"]
+    blocked_patterns = {
+        ("ⲡ", "ⲉⲡ"),
+        ("ⲧ", "ⲡⲉⲧ"),
+        ("ⲛ", "ⲓⲙ"),
+    }
+    for c in articles:
+        assert tuple(c.coptic_pattern) not in blocked_patterns
+    for unit in {
+        "john.1.23",
+        "john.1.25",
+        "matthew.7.24",
+        "matthew.7.25",
+        "luke.11.10",
+        "matthew.7.8",
+    }:
+        assert all(
+            unit not in c.source_unit_ids
+            for c in articles
+            if tuple(c.coptic_pattern) in blocked_patterns
+        )
+
+
+def test_tampered_ccl_tei_subset_rejected(tmp_path: Path) -> None:
+    """Subset fixture must match PINNED_CCL_TEI_SUBSET_SHA256."""
+    from zetodos_thomas.mappings.ccl_tei import (
+        PINNED_CCL_TEI_SUBSET_SHA256,
+        default_ccl_tei_subset_path,
+        verify_ccl_tei_path,
+    )
+
+    src = default_ccl_tei_subset_path(REPO_ROOT)
+    assert src.is_file()
+    assert verify_ccl_tei_path(src) == "subset"
+    tampered = tmp_path / "ccl-ddglc-tei-verified-subset-v1.xml"
+    text = src.read_text(encoding="utf-8")
+    tampered.write_text(text.replace("ⲁⲅⲅⲉⲗⲟⲥ", "ϫϫϫϫϫϫϫ", 1), encoding="utf-8")
+    try:
+        verify_ccl_tei_path(tampered)
+        raised = False
+    except ValueError as exc:
+        raised = True
+        assert "subset checksum mismatch" in str(exc)
+        assert PINNED_CCL_TEI_SUBSET_SHA256 in str(exc)
+    assert raised
+    try:
+        verified_loanword_table(repo_root=REPO_ROOT, tei_path=tampered)
+        loan_raised = False
+    except ValueError:
+        loan_raised = True
+    assert loan_raised
+
+
+def test_untrusted_alternate_ccl_tei_path_rejected(tmp_path: Path) -> None:
+    """Non-pinned basename must fail even when content is a copy of the subset."""
+    from zetodos_thomas.mappings.ccl_tei import (
+        default_ccl_tei_subset_path,
+        verify_ccl_tei_path,
+    )
+
+    src = default_ccl_tei_subset_path(REPO_ROOT)
+    alt = tmp_path / "alternate-tei.xml"
+    alt.write_bytes(src.read_bytes())
+    try:
+        verify_ccl_tei_path(alt)
+        raised = False
+    except ValueError as exc:
+        raised = True
+        assert "untrusted" in str(exc).lower()
+    assert raised
+    try:
+        verified_loanword_table(repo_root=REPO_ROOT, tei_path=alt)
+        loan_raised = False
+    except ValueError as exc:
+        loan_raised = True
+        assert "untrusted" in str(exc).lower()
+    assert loan_raised
+
+
 def test_example_non_train_unit_rejected_by_validate() -> None:
     sents = [
         _sentence("john.1.1", ("ⲡ", "ϣⲁϫⲉ"), ("ο", "λογος")),
@@ -313,6 +423,22 @@ def test_committed_artifacts_validate() -> None:
         if c.family is ConstructionFamily.VERBAL:
             assert not (blocked & set(c.source_unit_ids))
             assert len(c.source_unit_ids) >= 2
+    # False article peels / ⲛⲓⲙ must be absent; remaining article rows use
+    # whole allowlisted Coptic noun lexemes only.
+    from zetodos_thomas.mappings.phrases import (
+        ARTICLE_NOUN_ALLOWLIST,
+        _normalize_coptic_lexeme,
+    )
+
+    false_article_patterns = {("ⲡ", "ⲉⲡ"), ("ⲧ", "ⲡⲉⲧ"), ("ⲛ", "ⲓⲙ")}
+    article_rows = [
+        c for c in phrases.constructions if c.family is ConstructionFamily.ARTICLE
+    ]
+    assert article_rows
+    for c in article_rows:
+        assert tuple(c.coptic_pattern) not in false_article_patterns
+        assert _normalize_coptic_lexeme(c.coptic_pattern[1]) in ARTICLE_NOUN_ALLOWLIST
+    assert loan.provenance.get("ccl_tei_subset_sha256")
 
 
 def test_cli_mappings_validate() -> None:

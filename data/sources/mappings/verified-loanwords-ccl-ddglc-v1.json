@@ -28,7 +28,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -69,7 +69,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -113,7 +113,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -154,7 +154,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -197,7 +197,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -237,7 +237,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -277,7 +277,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -317,7 +317,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -357,7 +357,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -397,7 +397,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -437,7 +437,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -477,7 +477,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -517,7 +517,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -558,7 +558,7 @@
       "source_manifest_id": "ccl-ddglc-tei",
       "spot_check": {
         "checked_by": "jak-38-ccl-tei-verify",
-        "checked_at_utc": "2026-11-12T20:14:11Z",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
         "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
         "result": "pass",
         "notes": "Lexical correspondence only; inflection not entailed.",
@@ -580,13 +580,14 @@
   ],
   "provenance": {
     "owned_by": "JAK-38",
-    "created_at_utc": "2026-11-12T20:14:11Z",
+    "created_at_utc": "2026-11-12T20:34:42Z",
     "policy": "JAK-19",
     "source_manifest_id": "ccl-ddglc-tei",
     "ccl_release": "Comprehensive Coptic Lexicon v1.2 (2020)",
     "ccl_tei_filename": "Comprehensive_Coptic_Lexicon-v1.2-2020.xml",
     "ccl_tei_source_url": "https://raw.githubusercontent.com/KELLIA/dictionary/master/xml/Comprehensive_Coptic_Lexicon-v1.2-2020.xml",
     "ccl_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d",
+    "ccl_tei_subset_sha256": "fc1bc945980acc70428ff6bfcd87b864b6f0209d8c04a26aa9baa536f3f40cd6",
     "ccl_tei_verification_path": "data/sources/mappings/fixtures/ccl-ddglc-tei-verified-subset-v1.xml",
     "ccl_tei_subset_fixture": "data/sources/mappings/fixtures/ccl-ddglc-tei-verified-subset-v1.xml",
     "doi": "10.17169/refubium-27566",

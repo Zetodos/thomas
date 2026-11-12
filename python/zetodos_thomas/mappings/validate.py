@@ -9,6 +9,7 @@ from pathlib import Path
 from zetodos_thomas.lexicon.candidates import FORBIDDEN_UNIT_MARKERS
 from zetodos_thomas.mappings.ccl_tei import (
     PINNED_CCL_TEI_SHA256,
+    PINNED_CCL_TEI_SUBSET_SHA256,
     load_ccl_tei_index,
     resolve_ccl_tei_path,
     verify_loanword_against_tei,
@@ -279,6 +280,19 @@ def validate_verified_loanword_table(
                 "error",
                 "ccl_tei_sha_mismatch",
                 f"provenance.ccl_tei_sha256 must be {PINNED_CCL_TEI_SHA256}",
+            )
+        )
+    if table.provenance.get("ccl_tei_subset_sha256") not in {
+        PINNED_CCL_TEI_SUBSET_SHA256,
+        f"sha256:{PINNED_CCL_TEI_SUBSET_SHA256}",
+        None,  # older artifacts without the field still check live TEI bytes
+    }:
+        issues.append(
+            MappingValidationIssue(
+                "error",
+                "ccl_tei_subset_sha_mismatch",
+                "provenance.ccl_tei_subset_sha256 must be "
+                f"{PINNED_CCL_TEI_SUBSET_SHA256}",
             )
         )
 

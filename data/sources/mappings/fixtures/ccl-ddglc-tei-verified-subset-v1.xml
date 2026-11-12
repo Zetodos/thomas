@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- JAK-38 fixture: entry subset extracted from Comprehensive_Coptic_Lexicon-v1.2-2020.xml
      pinned checksum sha256:ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d
-     Full TEI is setup-download only; this subset is for offline entry-level verification. -->
+     Full TEI is setup-download only; this subset is for offline entry-level verification.
+     Subset bytes are checksum-pinned in ccl_tei.PINNED_CCL_TEI_SUBSET_SHA256 (not self-hashed here). -->
 <TEI xmlns="http://www.tei-c.org/ns/1.0">
   <teiHeader>
     <fileDesc>

@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import json
 import re
+import unicodedata
 from collections import defaultdict
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
@@ -57,6 +58,28 @@ VERBAL_FALSE_POSITIVE_UNITS = frozenset(
         "matthew.5.40",  # ⲛⲧⲉ + ⲕϣⲧⲏⲛ ← possessive garment, not aux+verb
         "matthew.5.48",  # ⲛⲧⲉ + ⲗⲓⲟⲥ ← split adjective ⲛⲧⲉⲗⲓⲟⲥ
         "john.1.23",  # ⲛⲧⲉ + ϩⲓ ← not a credible verbal boundary
+    }
+)
+# Conservative whole-lexeme allowlist for DET + N promotions. Dual-aligner
+# agreement alone does not prove the Coptic second token is a noun stem —
+# fused peels (ⲡⲉⲡⲣⲟⲫⲏⲧⲏⲥ → ⲡ+ⲉⲡ; ⲧⲡⲉⲧⲣⲁ → ⲧ+ⲡⲉⲧ) and non-article
+# constructions (ⲟⲩⲟⲛ … ⲛⲓⲙ → ⲛ+ⲓⲙ) must not become family=article rows.
+ARTICLE_NOUN_ALLOWLIST = frozenset(
+    {
+        "ⲟⲩⲟⲓⲛ",  # light
+        "ϣⲁϫⲉ",  # word
+        "ⲛⲟⲩⲧⲉ",  # God
+        "ⲭⲥ",  # Χριστός nomen sacrum
+        "ⲣⲱⲙⲉ",  # man (protected stem)
+        "ⲥϩⲓⲙⲉ",  # woman (protected stem)
+    }
+)
+# Interrogative / indefinite remnants that are never DET+N heads.
+ARTICLE_NON_NOUN_SECONDS = frozenset(
+    {
+        "ⲓⲙ",  # from ⲛⲓⲙ 'who/everyone'
+        "ⲁϣ",
+        "ⲟⲩ",
     }
 )
 GREEK_PARTICLES = frozenset(
@@ -230,6 +253,25 @@ def _coptic_second_looks_nonverbal(aux: str, second: str) -> bool:
     return False
 
 
+def _normalize_coptic_lexeme(token: str) -> str:
+    """NFC, strip combining marks and trailing punctuation for allowlist checks."""
+    nfd = unicodedata.normalize("NFD", token.strip())
+    stripped = "".join(ch for ch in nfd if unicodedata.category(ch) != "Mn")
+    return unicodedata.normalize("NFC", stripped).strip(".,;:·̈\"'()[]")
+
+
+def _coptic_article_noun_ok(second: str) -> bool:
+    """True only when the DET-following token is a whole allowlisted noun lexeme.
+
+    Mis-segmented fragments (ⲉⲡ, ⲡⲉⲧ) and non-nouns (ⲓⲙ) fail even when both
+    aligners agree on the Greek article+content span.
+    """
+    stem = _normalize_coptic_lexeme(second)
+    if not stem or stem in ARTICLE_NON_NOUN_SECONDS:
+        return False
+    return stem in ARTICLE_NOUN_ALLOWLIST
+
+
 def _assert_safe_unit(
     unit_id: str,
     *,
@@ -330,11 +372,14 @@ def _extract_from_sentence(
         js = sorted({j for i in idxs for j in src_to_trg[i]})
         return min(js), max(js)
 
-    # Articles: DET + N with Greek article in target span.
+    # Articles: DET + whole-lexeme N with Greek article in target span.
+    # Dual-aligner agreement is not proof of a valid article+noun construction.
     for i in range(len(src) - 1):
         if src[i] not in COPTIC_DET | COPTIC_INDEF:
             continue
         if src[i + 1] in COPTIC_PARTICLE_LOANS | COPTIC_DET | COPTIC_INDEF:
+            continue
+        if not _coptic_article_noun_ok(src[i + 1]):
             continue
         if not aligned((i, i + 1)):
             continue
@@ -699,6 +744,10 @@ def build_statistical_construction_table(
             "morphology guards; one-off aux peels (e.g. Matt 5:40/5:48, "
             "John 1:23) are omitted rather than promoted as reusable mappings. "
             "If no verbal rows survive, reliable patterns are unrecovered yet.",
+            "Article family requires a conservative whole-lexeme Coptic noun "
+            "allowlist after DET (not mere DET+next-token+Greek-article); "
+            "fused peels (John 1:23/25 ⲡ+ⲉⲡ; Matt 7:24/25 ⲧ+ⲡⲉⲧ) and "
+            "non-article ⲛⲓⲙ (Luke 11:10 / Matt 7:8) are omitted.",
         ],
     )
 

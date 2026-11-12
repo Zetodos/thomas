@@ -17,10 +17,11 @@ from typing import Any
 
 from zetodos_thomas.mappings.ccl_tei import (
     PINNED_CCL_TEI_SHA256,
+    PINNED_CCL_TEI_SUBSET_SHA256,
     default_ccl_tei_subset_path,
     load_ccl_tei_index,
     resolve_ccl_tei_path,
-    sha256_file,
+    verify_ccl_tei_path,
     verify_loanword_against_tei,
 )
 from zetodos_thomas.schemas.mappings import (
@@ -319,15 +320,8 @@ def verified_loanword_entries(
     """Build curated rows after TEI verification (fails closed on mismatch)."""
     root = repo_root or Path.cwd()
     path = tei_path or resolve_ccl_tei_path(root)
-    # Offline subset is extracted from the pinned full TEI; full file must match pin.
-    if path.name == "Comprehensive_Coptic_Lexicon-v1.2-2020.xml":
-        digest = sha256_file(path)
-        if digest != PINNED_CCL_TEI_SHA256:
-            msg = (
-                f"CCL TEI checksum mismatch: got {digest}, "
-                f"expected {PINNED_CCL_TEI_SHA256}"
-            )
-            raise ValueError(msg)
+    # Full TEI and offline subset are both checksum-pinned; alternate paths fail.
+    verify_ccl_tei_path(path)
     index = load_ccl_tei_index(path)
     checked_at = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     entries: list[VerifiedLoanword] = []
@@ -409,6 +403,7 @@ def verified_loanword_table(
                 "xml/Comprehensive_Coptic_Lexicon-v1.2-2020.xml"
             ),
             "ccl_tei_sha256": PINNED_CCL_TEI_SHA256,
+            "ccl_tei_subset_sha256": PINNED_CCL_TEI_SUBSET_SHA256,
             "ccl_tei_verification_path": str(path.relative_to(root))
             if path.is_relative_to(root)
             else str(path),
