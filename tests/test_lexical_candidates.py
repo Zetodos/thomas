@@ -215,19 +215,20 @@ def test_compact_artifact_roundtrip(tmp_path: Path) -> None:
 
 
 def test_validate_cli_on_fixture(tmp_path: Path) -> None:
+    # Use canonical v3 train unit ids so CLI membership checks pass.
     sents = [
-        _sentence("matt.5.3", ("ⲛⲁⲓⲁⲧⲟⲩ",), ("μακαριοι",)),
-        _sentence("matt.5.4", ("ⲛⲁⲓⲁⲧⲟⲩ",), ("μακαριοι",)),
+        _sentence("john.1.1", ("ⲛⲁⲓⲁⲧⲟⲩ",), ("μακαριοι",)),
+        _sentence("john.1.2", ("ⲛⲁⲓⲁⲧⲟⲩ",), ("μακαριοι",)),
     ]
     efl = _links(
         AlignerName.EFLOMAL,
         sents,
-        {"matt.5.3": ((0, 0),), "matt.5.4": ((0, 0),)},
+        {"john.1.1": ((0, 0),), "john.1.2": ((0, 0),)},
     )
     fa = _links(
         AlignerName.FAST_ALIGN,
         sents,
-        {"matt.5.3": ((0, 0),), "matt.5.4": ((0, 0),)},
+        {"john.1.1": ((0, 0),), "john.1.2": ((0, 0),)},
     )
     table = build_lexical_candidate_table(
         {"eflomal": efl, "fast_align": fa},
@@ -284,7 +285,14 @@ def test_committed_artifact_roundtrip_and_validate() -> None:
     assert all(
         r.layer is LexicalLayer.CONFIDENCE_ESTIMATE for r in table.confidence_estimates
     )
-    report = validate_lexical_candidate_table(table)
+    from zetodos_thomas.align.splits import SplitRole, load_canonical_splits
+
+    splits = load_canonical_splits(
+        REPO_ROOT / "data/training/splits/horner-vaticanus-nt-split-v3.json",
+        REPO_ROOT / "data/evidence/omissions/john-8-pa-omission-fixture-v3.json",
+    )
+    train_ids = set(splits.unit_ids_for(SplitRole.TRAIN))
+    report = validate_lexical_candidate_table(table, train_unit_ids=train_ids)
     assert report.ok, report.issues
     # No Thomas / P.Oxy leakage in source units.
     for row in table.observed_wordforms:
@@ -292,6 +300,7 @@ def test_committed_artifact_roundtrip_and_validate() -> None:
             not (uid.lower().startswith("thomas.") or "poxy" in uid.lower())
             for uid in row.source_unit_ids
         )
+        assert all(uid in train_ids for uid in row.source_unit_ids)
 
 
 def test_validation_flags_leakage() -> None:
@@ -303,3 +312,119 @@ def test_validation_flags_leakage() -> None:
     report = validate_lexical_candidate_table(table)
     assert not report.ok
     assert any(i.code == "holdout_leakage" for i in report.issues)
+
+
+def test_validation_rejects_holdout_labeled_as_train() -> None:
+    sents = [_sentence("john.1.1", ("ⲁ",), ("α",))]
+    links = _links(AlignerName.EFLOMAL, sents, {"john.1.1": ((0, 0),)})
+    table = build_lexical_candidate_table({"eflomal": links})
+    # Canonical holdout/dev/omission ids labeled train must still fail.
+    table.observed_wordforms[0].source_unit_ids = ["mark.4.4"]
+    report = validate_lexical_candidate_table(
+        table, train_unit_ids={"john.1.1", "john.1.2"}
+    )
+    assert not report.ok
+    assert any(i.code == "holdout_non_train_or_unknown" for i in report.issues)
+
+
+def test_duplicate_pharaoh_pairs_do_not_inflate_counts() -> None:
+    sents = [_sentence("john.1.1", ("ϩⲛ",), ("εν",))]
+    links = AlignmentLinks(
+        aligner=AlignerName.EFLOMAL,
+        sentences=sents,
+        forward=[DirectionalAlignment(unit_id="john.1.1", pairs=((0, 0), (0, 0)))],
+        reverse=[DirectionalAlignment(unit_id="john.1.1", pairs=((0, 0), (0, 0)))],
+        symmetrized=[DirectionalAlignment(unit_id="john.1.1", pairs=((0, 0), (0, 0)))],
+    )
+    accum = accumulate_wordform_observations({"eflomal": links})
+    assert accum[("ϩⲛ", "εν")].per_aligner["eflomal"] == 1
+
+
+def test_example_cap_still_updates_aligners_on_existing() -> None:
+    sents = [_sentence(f"john.1.{i}", ("ϩⲛ",), ("εν",)) for i in range(1, 7)]
+    efl_pairs: dict[str, tuple[tuple[int, int], ...]] = {
+        s.unit_id: ((0, 0),) for s in sents
+    }
+    # First aligner fills the example cap (3).
+    efl = _links(AlignerName.EFLOMAL, sents, efl_pairs)
+    # Second aligner only overlaps the first capped examples.
+    fa = _links(
+        AlignerName.FAST_ALIGN,
+        sents[:3],
+        {s.unit_id: ((0, 0),) for s in sents[:3]},
+    )
+    accum = accumulate_wordform_observations(
+        {"eflomal": efl, "fast_align": fa}, max_examples=3
+    )
+    bucket = accum[("ϩⲛ", "εν")]
+    assert len(bucket.examples) == 3
+    assert all("fast_align" in ex.aligners for ex in bucket.examples)
+
+
+def test_load_rejects_aligner_identity_mismatch(tmp_path: Path) -> None:
+    sents = [_sentence("john.1.1", ("ϩⲛ",), ("εν",))]
+    links = _links(AlignerName.FAST_ALIGN, sents, {"john.1.1": ((0, 0),)})
+    from zetodos_thomas.align.statistical import export_alignment_artifact
+
+    path = tmp_path / "fast_align-train-links-v1.json"
+    export_alignment_artifact(
+        links,
+        path=path,
+        provenance={"owned_by": "JAK-37", "aligner": "fast_align"},
+        compact=True,
+    )
+    with pytest.raises(ValueError, match="aligner identity mismatch"):
+        load_compact_alignment_artifact(path, sents, expected_aligner="eflomal")
+
+
+def test_load_rejects_provenance_checksum_mismatch(tmp_path: Path) -> None:
+    sents = [_sentence("john.1.1", ("ϩⲛ",), ("εν",))]
+    links = _links(AlignerName.EFLOMAL, sents, {"john.1.1": ((0, 0),)})
+    from zetodos_thomas.align.statistical import export_alignment_artifact
+
+    path = tmp_path / "eflomal-train-links-v1.json"
+    export_alignment_artifact(
+        links,
+        path=path,
+        provenance={
+            "owned_by": "JAK-37",
+            "aligner": "eflomal",
+            "bitext_checksum_sha256": "abc",
+            "pilot_corpus_id": "horner-vaticanus-nt-pilot-v3",
+            "split_id": "horner-vaticanus-nt-split-v3",
+            "coptic_segmentation": "bound-group-v1",
+            "greek_tokenization": "whitespace-v1",
+        },
+        compact=True,
+    )
+    with pytest.raises(ValueError, match="provenance mismatch"):
+        load_compact_alignment_artifact(
+            path,
+            sents,
+            expected_aligner="eflomal",
+            expected_provenance={"bitext_checksum_sha256": "different"},
+        )
+
+
+def test_columnar_preserves_example_token_ids_and_aligners(tmp_path: Path) -> None:
+    sents = [_sentence("john.1.1", ("ϩⲛ",), ("εν",))]
+    efl = _links(AlignerName.EFLOMAL, sents, {"john.1.1": ((0, 0),)})
+    fa = _links(AlignerName.FAST_ALIGN, sents, {"john.1.1": ((0, 0),)})
+    table = build_lexical_candidate_table({"eflomal": efl, "fast_align": fa})
+    path = tmp_path / "table.json"
+    write_lexical_candidate_table(table, path, columnar=True, compact=True)
+    from zetodos_thomas.lexicon.candidates import load_lexical_candidate_table
+
+    loaded = load_lexical_candidate_table(path)
+    ex = loaded.observed_wordforms[0].examples[0]
+    assert ex.coptic_token_id.startswith("v2:")
+    assert ex.greek_token_id.startswith("v1:")
+    assert set(ex.aligners) == {"eflomal", "fast_align"}
+
+
+def test_allowed_unit_ids_reject_mislabeled_train() -> None:
+    # Unit claims train role but is not in authoritative membership.
+    sents = [_sentence("mark.4.4", ("ⲁ",), ("α",), role="train")]
+    links = _links(AlignerName.EFLOMAL, sents, {"mark.4.4": ((0, 0),)})
+    with pytest.raises(ValueError, match="authoritative train"):
+        build_lexical_candidate_table({"eflomal": links}, allowed_unit_ids={"john.1.1"})

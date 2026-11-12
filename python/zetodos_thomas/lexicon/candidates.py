@@ -65,7 +65,8 @@ DEFAULT_PHASE2_ALIGNERS: tuple[AlignerName, ...] = (
     AlignerName.EFLOMAL,
     AlignerName.FAST_ALIGN,
 )
-MAX_EXAMPLES_PER_ENTRY = 5
+MAX_EXAMPLES_PER_ENTRY = 3
+COLUMNAR_MAX_EXAMPLES = 1
 FORBIDDEN_UNIT_MARKERS = ("thomas.", "poxy")
 COLUMNAR_FORMAT = "columnar-v1"
 
@@ -79,7 +80,11 @@ class _PairAccum:
     examples: list[ObservationExample] = field(default_factory=list)
 
 
-def _assert_train_only(sentences: Sequence[BitextSentence]) -> None:
+def _assert_train_only(
+    sentences: Sequence[BitextSentence],
+    *,
+    allowed_unit_ids: set[str] | None = None,
+) -> None:
     for sentence in sentences:
         if sentence.split_role != SplitRole.TRAIN.value:
             msg = (
@@ -93,14 +98,24 @@ def _assert_train_only(sentences: Sequence[BitextSentence]) -> None:
                 f"refusing forbidden evaluation unit in train links: {sentence.unit_id}"
             )
             raise ValueError(msg)
+        if allowed_unit_ids is not None and sentence.unit_id not in allowed_unit_ids:
+            msg = f"unit {sentence.unit_id!r} is not in authoritative train membership"
+            raise ValueError(msg)
 
 
-def _assert_safe_unit_id(unit_id: str) -> None:
+def _assert_safe_unit_id(
+    unit_id: str,
+    *,
+    allowed_unit_ids: set[str] | None = None,
+) -> None:
     lowered = unit_id.lower()
     for marker in FORBIDDEN_UNIT_MARKERS:
         if marker in lowered:
             msg = f"forbidden unit id in lexical observations: {unit_id}"
             raise ValueError(msg)
+    if allowed_unit_ids is not None and unit_id not in allowed_unit_ids:
+        msg = f"unit {unit_id!r} is not in authoritative train membership"
+        raise ValueError(msg)
 
 
 def align_train_sentences(
@@ -137,12 +152,56 @@ def align_train_sentences(
     return out
 
 
+def _require_matching_provenance(
+    artifact_provenance: Mapping[str, Any],
+    *,
+    expected: Mapping[str, Any],
+    path: Path,
+) -> None:
+    """Reject cached links whose originating bitext/config disagrees with expected."""
+    checks = (
+        ("bitext_checksum_sha256", "bitext_checksum_sha256"),
+        ("pilot_corpus_id", "pilot_corpus_id"),
+        ("split_id", "split_id"),
+        ("coptic_segmentation", "coptic_segmentation"),
+        ("greek_tokenization", "greek_tokenization"),
+    )
+    for art_key, exp_key in checks:
+        expected_val = expected.get(exp_key)
+        if expected_val is None:
+            continue
+        got = artifact_provenance.get(art_key)
+        if got != expected_val:
+            msg = (
+                f"cached alignment provenance mismatch in {path.name}: "
+                f"{art_key} artifact={got!r} expected={expected_val!r}"
+            )
+            raise ValueError(msg)
+
+
 def load_compact_alignment_artifact(
     path: Path,
     sentences: Sequence[BitextSentence],
+    *,
+    expected_aligner: str | None = None,
+    expected_provenance: Mapping[str, Any] | None = None,
 ) -> AlignmentLinks:
     """Rehydrate compact JAK-36/37 link JSON onto bitext sentences."""
     payload = json.loads(path.read_text(encoding="utf-8"))
+    aligner = AlignerName(payload["aligner"])
+    if expected_aligner is not None and aligner.value != expected_aligner:
+        msg = (
+            f"cached aligner identity mismatch in {path.name}: "
+            f"artifact={aligner.value!r} requested={expected_aligner!r}"
+        )
+        raise ValueError(msg)
+    artifact_provenance = payload.get("provenance") or {}
+    if expected_provenance is not None:
+        _require_matching_provenance(
+            artifact_provenance,
+            expected=expected_provenance,
+            path=path,
+        )
     by_unit = {s.unit_id: s for s in sentences}
     rows = payload.get("rows") or []
     ordered: list[BitextSentence] = []
@@ -168,22 +227,17 @@ def load_compact_alignment_artifact(
             )
             raise ValueError(msg)
         ordered.append(sentence)
-        forward.append(
-            DirectionalAlignment(
-                unit_id=unit_id, pairs=parse_pharaoh_line(row.get("fwd", ""))
-            )
-        )
-        reverse.append(
-            DirectionalAlignment(
-                unit_id=unit_id, pairs=parse_pharaoh_line(row.get("rev", ""))
-            )
-        )
-        symmetrized.append(
-            DirectionalAlignment(
-                unit_id=unit_id, pairs=parse_pharaoh_line(row.get("sym", ""))
-            )
-        )
-    aligner = AlignerName(payload["aligner"])
+        # Deduplicate Pharaoh coords (native symmetrize yields unique pairs).
+        fwd = tuple(dict.fromkeys(parse_pharaoh_line(row.get("fwd", ""))))
+        rev = tuple(dict.fromkeys(parse_pharaoh_line(row.get("rev", ""))))
+        sym = tuple(dict.fromkeys(parse_pharaoh_line(row.get("sym", ""))))
+        forward.append(DirectionalAlignment(unit_id=unit_id, pairs=fwd))
+        reverse.append(DirectionalAlignment(unit_id=unit_id, pairs=rev))
+        symmetrized.append(DirectionalAlignment(unit_id=unit_id, pairs=sym))
+    # Preserve cached config/provenance rather than inventing a fresh run.
+    config = dict(payload.get("config") or {})
+    config["cached_artifact_path"] = str(path)
+    config["cached_provenance"] = dict(artifact_provenance)
     return AlignmentLinks(
         aligner=aligner,
         sentences=ordered,
@@ -191,20 +245,30 @@ def load_compact_alignment_artifact(
         reverse=reverse,
         symmetrized=symmetrized,
         symmetrization=payload.get("symmetrization", "grow-diag-final-and"),
-        config=payload.get("config") or {},
-        notes=list(payload.get("notes") or []),
+        config=config,
+        notes=[
+            *list(payload.get("notes") or []),
+            (
+                "Loaded from compact train-links artifact; "
+                "provenance checked against bitext."
+            ),
+        ],
     )
 
 
 def _iter_sym_observations(
     aligner: str,
     links: AlignmentLinks,
+    *,
+    allowed_unit_ids: set[str] | None = None,
 ) -> Iterable[tuple[str, str, str, str, str]]:
     """Yield (unit_id, coptic_wf, greek_wf, coptic_tid, greek_tid) from symmetrized."""
     by_pairs = {a.unit_id: a.pairs for a in links.symmetrized}
     for sentence in links.sentences:
-        _assert_safe_unit_id(sentence.unit_id)
-        for i, j in by_pairs.get(sentence.unit_id, ()):
+        _assert_safe_unit_id(sentence.unit_id, allowed_unit_ids=allowed_unit_ids)
+        # Unique coordinates only — duplicate Pharaoh pairs must not inflate counts.
+        pairs = tuple(dict.fromkeys(by_pairs.get(sentence.unit_id, ())))
+        for i, j in pairs:
             if i < 0 or j < 0:
                 continue
             if i >= len(sentence.source_tokens) or j >= len(sentence.target_tokens):
@@ -226,43 +290,47 @@ def accumulate_wordform_observations(
     aligner_links: Mapping[str, AlignmentLinks],
     *,
     max_examples: int = MAX_EXAMPLES_PER_ENTRY,
+    allowed_unit_ids: set[str] | None = None,
 ) -> dict[tuple[str, str], _PairAccum]:
     """Aggregate train symmetrized links across aligners into wordform pairs."""
     accum: dict[tuple[str, str], _PairAccum] = {}
     for aligner, links in aligner_links.items():
-        _assert_train_only(links.sentences)
-        for unit_id, c_wf, g_wf, c_tid, g_tid in _iter_sym_observations(aligner, links):
+        _assert_train_only(links.sentences, allowed_unit_ids=allowed_unit_ids)
+        for unit_id, c_wf, g_wf, c_tid, g_tid in _iter_sym_observations(
+            aligner, links, allowed_unit_ids=allowed_unit_ids
+        ):
             key = (c_wf, g_wf)
             bucket = accum.setdefault(key, _PairAccum())
             bucket.per_aligner[aligner] += 1
             bucket.unit_ids.add(unit_id)
-            if len(bucket.examples) < max_examples:
-                # Prefer examples that show dual-aligner when already present.
-                existing_keys = {
-                    (ex.unit_id, ex.coptic_token_id, ex.greek_token_id)
-                    for ex in bucket.examples
-                }
-                ek = (unit_id, c_tid, g_tid)
-                if ek in existing_keys:
-                    for ex in bucket.examples:
-                        if (
-                            ex.unit_id,
-                            ex.coptic_token_id,
-                            ex.greek_token_id,
-                        ) == ek and aligner not in ex.aligners:
-                            ex.aligners.append(aligner)
-                    continue
-                bucket.examples.append(
-                    ObservationExample(
-                        unit_id=unit_id,
-                        split_role=SplitMembership.TRAIN,
-                        coptic_token_id=c_tid,
-                        greek_token_id=g_tid,
-                        coptic_wordform=c_wf,
-                        greek_wordform=g_wf,
-                        aligners=[aligner],
-                    )
+            ek = (unit_id, c_tid, g_tid)
+            updated_existing = False
+            for ex in bucket.examples:
+                if (
+                    ex.unit_id,
+                    ex.coptic_token_id,
+                    ex.greek_token_id,
+                ) == ek:
+                    if aligner not in ex.aligners:
+                        ex.aligners.append(aligner)
+                    updated_existing = True
+                    break
+            if updated_existing:
+                continue
+            # Cap applies only when appending a *new* example.
+            if len(bucket.examples) >= max_examples:
+                continue
+            bucket.examples.append(
+                ObservationExample(
+                    unit_id=unit_id,
+                    split_role=SplitMembership.TRAIN,
+                    coptic_token_id=c_tid,
+                    greek_token_id=g_tid,
+                    coptic_wordform=c_wf,
+                    greek_wordform=g_wf,
+                    aligners=[aligner],
                 )
+            )
     return accum
 
 
@@ -461,19 +529,33 @@ def build_lexical_candidate_table(
     provenance: dict[str, Any] | None = None,
     train_units: Sequence[ParallelUnit] | None = None,
     max_examples: int = MAX_EXAMPLES_PER_ENTRY,
+    allowed_unit_ids: set[str] | None = None,
 ) -> LexicalCandidateTable:
     """Assemble the three-layer lexical candidate table from train links."""
     for links in aligner_links.values():
-        _assert_train_only(links.sentences)
+        _assert_train_only(links.sentences, allowed_unit_ids=allowed_unit_ids)
+
+    # Observation population actually present in the loaded/aligned links.
+    observed_unit_ids = {
+        s.unit_id for links in aligner_links.values() for s in links.sentences
+    }
 
     dice_model: LexicalBaselineModel | None = None
     if train_units:
-        dice_model = fit_lexical_baseline(
-            list(train_units),
-            coptic_segmentation="bound-group-v1",
-        )
+        # Restrict Dice to the shared observation population (not a larger
+        # train set than the links actually cover).
+        dice_units = [u for u in train_units if u.unit_id in observed_unit_ids]
+        if dice_units:
+            dice_model = fit_lexical_baseline(
+                dice_units,
+                coptic_segmentation="bound-group-v1",
+            )
 
-    accum = accumulate_wordform_observations(aligner_links, max_examples=max_examples)
+    accum = accumulate_wordform_observations(
+        aligner_links,
+        max_examples=max_examples,
+        allowed_unit_ids=allowed_unit_ids,
+    )
     wordforms = build_observed_wordforms(accum, dice_model=dice_model)
     lemmas = build_inferred_lemmas(wordforms)
     confidence = build_confidence_estimates(wordforms)
@@ -563,7 +645,18 @@ def table_to_columnar_payload(table: LexicalCandidateTable) -> dict[str, Any]:
         {uid for row in table.observed_wordforms for uid in row.source_unit_ids}
     )
     unit_to_idx = {uid: i for i, uid in enumerate(unit_id_table)}
+    token_id_table: list[str] = sorted(
+        {
+            tid
+            for row in table.observed_wordforms
+            for ex in row.examples[:COLUMNAR_MAX_EXAMPLES]
+            for tid in (ex.coptic_token_id, ex.greek_token_id)
+            if tid
+        }
+    )
+    token_to_idx = {tid: i for i, tid in enumerate(token_id_table)}
 
+    aligner_to_idx = {name: i for i, name in enumerate(aligner_names)}
     obs_fields = [
         "coptic_wordform",
         "greek_wordform",
@@ -571,18 +664,27 @@ def table_to_columnar_payload(table: LexicalCandidateTable) -> dict[str, Any]:
         *[f"count_{name}" for name in aligner_names],
         "source_unit_indexes",
         "example_refs",
-        "dice_cooccurrence",
     ]
     obs_rows: list[list[Any]] = []
     for row in table.observed_wordforms:
-        # Unit-index examples only (token ids recoverable from train-links).
-        example_refs: list[int] = []
-        for ex in row.examples:
+        # Full attestation refs via shared unit/token/aligner indexes.
+        example_refs: list[list[Any]] = []
+        for ex in row.examples[:COLUMNAR_MAX_EXAMPLES]:
             if ex.unit_id not in unit_to_idx:
                 continue
-            idx = unit_to_idx[ex.unit_id]
-            if idx not in example_refs:
-                example_refs.append(idx)
+            if (
+                ex.coptic_token_id not in token_to_idx
+                or ex.greek_token_id not in token_to_idx
+            ):
+                continue
+            example_refs.append(
+                [
+                    unit_to_idx[ex.unit_id],
+                    token_to_idx[ex.coptic_token_id],
+                    token_to_idx[ex.greek_token_id],
+                    [aligner_to_idx[a] for a in ex.aligners if a in aligner_to_idx],
+                ]
+            )
         obs_rows.append(
             [
                 row.coptic_wordform,
@@ -594,7 +696,6 @@ def table_to_columnar_payload(table: LexicalCandidateTable) -> dict[str, Any]:
                 ],
                 [unit_to_idx[uid] for uid in row.source_unit_ids if uid in unit_to_idx],
                 example_refs,
-                row.dice_cooccurrence,
             ]
         )
 
@@ -629,14 +730,11 @@ def table_to_columnar_payload(table: LexicalCandidateTable) -> dict[str, Any]:
             ]
         )
 
+    # Slim confidence rows; components are rebuilt on load from observed evidence.
     conf_fields = [
         "observed_index",
         "confidence",
         "uncertainty",
-        "relative_frequency",
-        "aligner_agreement",
-        "observation_support",
-        "dice_baseline",
     ]
     conf_rows: list[list[Any]] = []
     for row in table.confidence_estimates:
@@ -647,17 +745,7 @@ def table_to_columnar_payload(table: LexicalCandidateTable) -> dict[str, Any]:
         idx = obs_index.get(key)
         if idx is None:
             continue
-        conf_rows.append(
-            [
-                idx,
-                row.confidence,
-                row.uncertainty,
-                row.components.relative_frequency_among_coptic_candidates,
-                row.components.aligner_agreement,
-                row.components.observation_support,
-                row.components.dice_baseline,
-            ]
-        )
+        conf_rows.append([idx, row.confidence, row.uncertainty])
 
     return {
         "id": table.id,
@@ -668,6 +756,7 @@ def table_to_columnar_payload(table: LexicalCandidateTable) -> dict[str, Any]:
         "layers": table.layers,
         "aligner_names": aligner_names,
         "unit_id_table": unit_id_table,
+        "token_id_table": token_id_table,
         "observed_wordforms": {"fields": obs_fields, "rows": obs_rows},
         "inferred_lemmas": {
             "fields": lem_fields,
@@ -681,6 +770,7 @@ def table_to_columnar_payload(table: LexicalCandidateTable) -> dict[str, Any]:
             "applies_to_layer": LexicalLayer.OBSERVED_WORDFORM.value,
             "notes": (
                 "observed_index references observed_wordforms.rows; "
+                "components rebuilt on load from observed evidence; "
                 "null scores mean insufficient evidence (not fabricated)."
             ),
         },
@@ -694,6 +784,7 @@ def columnar_payload_to_table(payload: dict[str, Any]) -> LexicalCandidateTable:
     """Expand columnar-v1 JSON back into the rich pydantic table model."""
     aligner_names: list[str] = list(payload.get("aligner_names") or [])
     unit_id_table: list[str] = list(payload.get("unit_id_table") or [])
+    token_id_table: list[str] = list(payload.get("token_id_table") or [])
     obs_block = payload["observed_wordforms"]
     obs_fields: list[str] = obs_block["fields"]
     observed: list[ObservedWordformCandidate] = []
@@ -714,7 +805,8 @@ def columnar_payload_to_table(payload: dict[str, Any]) -> LexicalCandidateTable:
             source_unit_ids = list(row.get("source_unit_ids") or [])
         examples: list[ObservationExample] = []
         for ref in row.get("example_refs") or []:
-            # columnar-v1: unit index; older shapes: [unit, c_tid, g_tid, ...].
+            # columnar-v1: [unit_idx, c_tid_idx|str, g_tid_idx|str, aligner_idxs|names]
+            # older: bare unit index or [unit, ...].
             c_tid = ""
             g_tid = ""
             aligners = sorted(per_aligner)
@@ -723,10 +815,24 @@ def columnar_payload_to_table(payload: dict[str, Any]) -> LexicalCandidateTable:
             elif isinstance(ref, list) and ref:
                 unit_ref = ref[0]
                 if len(ref) >= 3:
-                    c_tid = str(ref[1])
-                    g_tid = str(ref[2])
+                    c_ref, g_ref = ref[1], ref[2]
+                    if isinstance(c_ref, int) and 0 <= c_ref < len(token_id_table):
+                        c_tid = token_id_table[c_ref]
+                    else:
+                        c_tid = str(c_ref)
+                    if isinstance(g_ref, int) and 0 <= g_ref < len(token_id_table):
+                        g_tid = token_id_table[g_ref]
+                    else:
+                        g_tid = str(g_ref)
                 if len(ref) >= 4:
-                    aligners = list(ref[3])
+                    raw_aligners = list(ref[3])
+                    resolved: list[str] = []
+                    for item in raw_aligners:
+                        if isinstance(item, int) and 0 <= item < len(aligner_names):
+                            resolved.append(aligner_names[item])
+                        else:
+                            resolved.append(str(item))
+                    aligners = resolved
             else:
                 continue
             if isinstance(unit_ref, int):
@@ -812,6 +918,10 @@ def columnar_payload_to_table(payload: dict[str, Any]) -> LexicalCandidateTable:
     conf_method = conf_block.get(
         "method", "relative_frequency_aligner_agreement_support_v1"
     )
+    # Rebuild relative-frequency denominators from the observed layer.
+    by_coptic_total: dict[str, int] = defaultdict(int)
+    for obs in observed:
+        by_coptic_total[obs.coptic_wordform] += obs.observation_count
     confidence: list[ConfidenceEstimate] = []
     for raw in conf_block["rows"]:
         row = dict(zip(conf_fields, raw, strict=True))
@@ -819,6 +929,22 @@ def columnar_payload_to_table(payload: dict[str, Any]) -> LexicalCandidateTable:
         if idx < 0 or idx >= len(observed):
             continue
         target = observed[idx]
+        sibling_total = by_coptic_total.get(target.coptic_wordform, 0)
+        rel_freq = (
+            (target.observation_count / sibling_total) if sibling_total > 0 else None
+        )
+        n_aligners = len(target.contributing_aligners)
+        agreement = None if n_aligners <= 0 else (1.0 if n_aligners >= 2 else 0.5)
+        support = _observation_support(target.observation_count)
+        # Prefer stored component fields when present (expanded / older dumps).
+        components = ConfidenceComponents(
+            relative_frequency_among_coptic_candidates=row.get(
+                "relative_frequency", rel_freq
+            ),
+            aligner_agreement=row.get("aligner_agreement", agreement),
+            observation_support=row.get("observation_support", support),
+            dice_baseline=row.get("dice_baseline", target.dice_cooccurrence),
+        )
         confidence.append(
             ConfidenceEstimate(
                 layer=LexicalLayer.CONFIDENCE_ESTIMATE,
@@ -830,14 +956,7 @@ def columnar_payload_to_table(payload: dict[str, Any]) -> LexicalCandidateTable:
                 method=conf_method,
                 confidence=row.get("confidence"),
                 uncertainty=row.get("uncertainty"),
-                components=ConfidenceComponents(
-                    relative_frequency_among_coptic_candidates=row.get(
-                        "relative_frequency"
-                    ),
-                    aligner_agreement=row.get("aligner_agreement"),
-                    observation_support=row.get("observation_support"),
-                    dice_baseline=row.get("dice_baseline"),
-                ),
+                components=components,
                 evidence={
                     "observation_count": target.observation_count,
                     "per_aligner_observation_counts": (
@@ -905,15 +1024,29 @@ def export_train_link_artifacts(
     out_dir: Path,
     provenance: dict[str, Any],
 ) -> dict[str, Path]:
-    """Write compact train-only link JSON per aligner (inspectable inputs)."""
+    """Write compact train-only link JSON per aligner (inspectable inputs).
+
+    When links were loaded from cache, prefer the originating cached provenance
+    over inventing a fresh-run envelope.
+    """
     out_dir.mkdir(parents=True, exist_ok=True)
     written: dict[str, Path] = {}
     for name, links in aligner_links.items():
         path = out_dir / f"{name}-train-links-v1.json"
+        cached = links.config.get("cached_provenance")
+        if isinstance(cached, dict) and cached:
+            art_prov = {
+                **cached,
+                "aligner": name,
+                "owned_by": cached.get("owned_by", "JAK-37"),
+                "reexported_from_cache": True,
+            }
+        else:
+            art_prov = {**provenance, "aligner": name, "owned_by": "JAK-37"}
         export_alignment_artifact(
             links,
             path=path,
-            provenance={**provenance, "aligner": name, "owned_by": "JAK-37"},
+            provenance=art_prov,
             compact=True,
         )
         written[name] = path
@@ -929,17 +1062,32 @@ def generate_lexical_candidates(
     config: AlignerConfig | None = None,
     aligners: Sequence[AlignerName] = DEFAULT_PHASE2_ALIGNERS,
     link_paths: Mapping[str, Path] | None = None,
+    bitext_checksum_sha256: str | None = None,
 ) -> tuple[LexicalCandidateTable, dict[str, AlignmentLinks]]:
     """End-to-end: align (or load) train links → three-layer candidate table."""
     train = [s for s in bitext_sentences if s.split_role == SplitRole.TRAIN.value]
     if not train:
         msg = "no train bitext sentences available for lexical candidates"
         raise ValueError(msg)
-    _assert_train_only(train)
+    allowed_unit_ids = set(splits.unit_ids_for(SplitRole.TRAIN))
+    _assert_train_only(train, allowed_unit_ids=allowed_unit_ids)
+
+    expected_provenance = {
+        "pilot_corpus_id": corpus.id,
+        "split_id": splits.id,
+        "coptic_segmentation": "bound-group-v1",
+        "greek_tokenization": "whitespace-v1",
+        "bitext_checksum_sha256": bitext_checksum_sha256,
+    }
 
     if link_paths:
         aligner_links = {
-            name: load_compact_alignment_artifact(path, train)
+            name: load_compact_alignment_artifact(
+                path,
+                train,
+                expected_aligner=name,
+                expected_provenance=expected_provenance,
+            )
             for name, path in link_paths.items()
         }
     else:
@@ -949,10 +1097,29 @@ def generate_lexical_candidates(
             config=config,
             repo_root=repo_root,
         )
+        # Fresh aligns must still respect authoritative train membership.
+        for links in aligner_links.values():
+            _assert_train_only(links.sentences, allowed_unit_ids=allowed_unit_ids)
 
     # Train ParallelUnits for optional Dice annotation (JAK-28 reuse).
     buckets = partition_corpus(corpus, splits)
     train_units = nonempty_positive_units(buckets[SplitRole.TRAIN])
+
+    # Prefer cached artifact config/provenance when reusing links.
+    cached_configs = {
+        name: (links.config.get("cached_provenance") or {})
+        for name, links in aligner_links.items()
+        if links.config.get("cached_provenance")
+    }
+    active_config: dict[str, Any]
+    if cached_configs and link_paths:
+        # Use first cached config block; do not invent a fresh run config.
+        first_cached = next(iter(cached_configs.values()))
+        active_config = dict(first_cached.get("config") or {})
+        if not active_config:
+            active_config = (config or AlignerConfig()).as_dict()
+    else:
+        active_config = (config or AlignerConfig()).as_dict()
 
     provenance = {
         "owned_by": "JAK-37",
@@ -972,9 +1139,18 @@ def generate_lexical_candidates(
             "from_issue": "JAK-36",
         },
         "aligner_pins": pinned_versions_payload(),
-        "config": (config or AlignerConfig()).as_dict(),
+        "config": active_config,
         "coptic_segmentation": "bound-group-v1",
         "greek_tokenization": "whitespace-v1",
+        "bitext_checksum_sha256": bitext_checksum_sha256,
+        "cached_link_artifacts": {
+            name: {
+                "path": str(path),
+                "aligner": name,
+                "provenance": cached_configs.get(name, {}),
+            }
+            for name, path in (link_paths or {}).items()
+        },
         "protocol": (
             "Train-only symmetrized links from phase2_active_aligners; "
             "holdout/dev/omission/Thomas-7 excluded from observations."
@@ -984,6 +1160,7 @@ def generate_lexical_candidates(
         aligner_links,
         provenance=provenance,
         train_units=train_units,
+        allowed_unit_ids=allowed_unit_ids,
     )
     return table, aligner_links
 

@@ -15,6 +15,7 @@ from zetodos_thomas.align.splits import (
     load_canonical_splits,
     load_splits,
 )
+from zetodos_thomas.align.validate import validate_pilot_corpus
 from zetodos_thomas.ingest.paths import (
     require_repo_root,
     resolve_nt_split_path,
@@ -117,6 +118,22 @@ def generate_candidates_cmd(
 
     splits = _resolve_runtime_splits(root, splits_path)
     corpus = load_pilot_corpus(pilot)
+    pilot_report = validate_pilot_corpus(corpus, splits=splits)
+    if not pilot_report.ok:
+        for issue in pilot_report.issues:
+            if issue.severity != "error":
+                continue
+            loc = f" [{issue.unit_id}]" if issue.unit_id else ""
+            typer.secho(
+                f"error:{issue.code}{loc}: {issue.message}",
+                fg=typer.colors.RED,
+            )
+        typer.secho(
+            "pilot source validation failed (Vaticanus B* / split checks)",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(code=1)
+
     bitext = build_bitext(corpus, splits)
     out = output or default_table_path(root)
     link_paths: dict[str, Path] | None = None
@@ -135,12 +152,12 @@ def generate_candidates_cmd(
             repo_root=root,
             config=AlignerConfig(seed=seed),
             link_paths=link_paths,
+            bitext_checksum_sha256=bitext.checksum_sha256,
         )
     except (RuntimeError, ValueError) as exc:
         typer.secho(str(exc), fg=typer.colors.RED)
         raise typer.Exit(code=1) from exc
 
-    # Attach bitext checksum into provenance for audit.
     table.provenance = {
         **table.provenance,
         "bitext_checksum_sha256": bitext.checksum_sha256,
@@ -199,7 +216,9 @@ def validate_candidates_cmd(
         typer.secho(f"table not found: {path}", fg=typer.colors.RED)
         raise typer.Exit(code=1)
 
-    report = validate_lexical_candidate_path(path)
+    splits = _resolve_runtime_splits(root, None)
+    train_unit_ids = set(splits.unit_ids_for(SplitRole.TRAIN))
+    report = validate_lexical_candidate_path(path, train_unit_ids=train_unit_ids)
     typer.echo(json.dumps(report.as_dict(), indent=2, ensure_ascii=False))
     if not report.ok:
         raise typer.Exit(code=1)

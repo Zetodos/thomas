@@ -55,10 +55,47 @@ def _unit_forbidden(unit_id: str) -> bool:
     return any(marker in lowered for marker in FORBIDDEN_MARKERS)
 
 
+def _check_unit_membership(
+    unit_id: str,
+    *,
+    train_unit_ids: set[str] | None,
+    issues: list[LexicalValidationIssue],
+    code_prefix: str,
+    context: str,
+) -> None:
+    if _unit_forbidden(unit_id):
+        issues.append(
+            LexicalValidationIssue(
+                "error",
+                f"{code_prefix}_leakage",
+                f"forbidden unit_id {unit_id} in {context}",
+            )
+        )
+        return
+    if train_unit_ids is None:
+        return
+    if unit_id not in train_unit_ids:
+        issues.append(
+            LexicalValidationIssue(
+                "error",
+                f"{code_prefix}_non_train_or_unknown",
+                f"unit_id {unit_id} is not in authoritative train membership "
+                f"({context})",
+            )
+        )
+
+
 def validate_lexical_candidate_table(
     table: LexicalCandidateTable,
+    *,
+    train_unit_ids: set[str] | None = None,
 ) -> LexicalValidationReport:
-    """Check layering, train-only membership, non-fabrication, no leakage."""
+    """Check layering, train-only membership, non-fabrication, no leakage.
+
+    When ``train_unit_ids`` is provided (canonical split train membership),
+    every source/example unit must be a known train id — labeled ``train`` alone
+    is not enough (blocks holdout/dev/omission leakage).
+    """
     issues: list[LexicalValidationIssue] = []
 
     if table.owned_by != "JAK-37":
@@ -153,16 +190,15 @@ def validate_lexical_candidate_table(
                         "observation_count appears to sum aligners (forbidden)",
                     )
                 )
+        ctx = f"observed wordform {row.coptic_wordform!r}↔{row.greek_wordform!r}"
         for unit_id in row.source_unit_ids:
-            if _unit_forbidden(unit_id):
-                issues.append(
-                    LexicalValidationIssue(
-                        "error",
-                        "holdout_leakage",
-                        f"forbidden unit_id {unit_id} in observed wordform "
-                        f"{row.coptic_wordform!r}↔{row.greek_wordform!r}",
-                    )
-                )
+            _check_unit_membership(
+                unit_id,
+                train_unit_ids=train_unit_ids,
+                issues=issues,
+                code_prefix="holdout",
+                context=ctx,
+            )
         for ex in row.examples:
             if ex.split_role is not SplitMembership.TRAIN:
                 issues.append(
@@ -172,14 +208,13 @@ def validate_lexical_candidate_table(
                         f"example unit {ex.unit_id} not train",
                     )
                 )
-            if _unit_forbidden(ex.unit_id):
-                issues.append(
-                    LexicalValidationIssue(
-                        "error",
-                        "example_leakage",
-                        f"forbidden example unit {ex.unit_id}",
-                    )
-                )
+            _check_unit_membership(
+                ex.unit_id,
+                train_unit_ids=train_unit_ids,
+                issues=issues,
+                code_prefix="example",
+                context=f"example in {ctx}",
+            )
 
     for row in table.inferred_lemmas:
         if row.layer is not LexicalLayer.INFERRED_LEMMA:
@@ -208,14 +243,13 @@ def validate_lexical_candidate_table(
                 )
             )
         for unit_id in row.source_unit_ids:
-            if _unit_forbidden(unit_id):
-                issues.append(
-                    LexicalValidationIssue(
-                        "error",
-                        "lemma_leakage",
-                        f"forbidden unit_id {unit_id} in inferred lemma",
-                    )
-                )
+            _check_unit_membership(
+                unit_id,
+                train_unit_ids=train_unit_ids,
+                issues=issues,
+                code_prefix="lemma",
+                context=(f"inferred lemma {row.coptic_lemma!r}↔{row.greek_lemma!r}"),
+            )
 
     for row in table.confidence_estimates:
         if row.layer is not LexicalLayer.CONFIDENCE_ESTIMATE:
@@ -287,7 +321,11 @@ def validate_lexical_candidate_table(
     )
 
 
-def validate_lexical_candidate_path(path: Path) -> LexicalValidationReport:
+def validate_lexical_candidate_path(
+    path: Path,
+    *,
+    train_unit_ids: set[str] | None = None,
+) -> LexicalValidationReport:
     """Load JSON from disk and validate."""
     table = load_lexical_candidate_table(path)
-    return validate_lexical_candidate_table(table)
+    return validate_lexical_candidate_table(table, train_unit_ids=train_unit_ids)
