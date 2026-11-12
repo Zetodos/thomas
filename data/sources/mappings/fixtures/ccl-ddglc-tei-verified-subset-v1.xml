@@ -152,7 +152,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C8126">
             <ns0:form xml:id="CF18503" type="lemma">
                <ns0:orth>ⲁⲓⲧⲉⲓ</ns0:orth>
@@ -414,7 +414,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C8179">
             <ns0:form xml:id="CF18776" type="lemma">
                <ns0:orth>ⲁⲗⲗⲁ</ns0:orth>
@@ -495,7 +495,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C8657">
             <ns0:form xml:id="CF20474" type="lemma">
                <ns0:orth>ⲅⲁⲣ</ns0:orth>
@@ -590,7 +590,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C8719">
             <ns0:form xml:id="CF20757" type="lemma">
                <ns0:orth>ⲇⲉ</ns0:orth>
@@ -690,7 +690,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C9059">
             <ns0:form xml:id="CF22411" type="lemma">
                <ns0:orth>ⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ</ns0:orth>
@@ -779,7 +779,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C9517">
             <ns0:form xml:id="CF24208" type="lemma">
                <ns0:orth>ⲕⲟⲥⲙⲟⲥ</ns0:orth>
@@ -929,7 +929,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C9683">
             <ns0:form xml:id="CF24841" type="lemma">
                <ns0:orth>ⲙⲁⲑⲏⲧⲏⲥ</ns0:orth>
@@ -1014,7 +1014,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C9689">
             <ns0:form xml:id="CF24876" type="lemma">
                <ns0:orth>ⲙⲁⲕⲁⲣⲓⲟⲥ</ns0:orth>
@@ -1209,7 +1209,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C9959">
             <ns0:form xml:id="CF25965" type="lemma">
                <ns0:orth>ⲟⲩⲇⲉ</ns0:orth>
@@ -1303,7 +1303,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C10032">
             <ns0:form xml:id="CF26233" type="lemma">
                <ns0:orth>ⲡⲁⲣⲁⲃⲟⲗⲏ</ns0:orth>
@@ -1361,7 +1361,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C10220">
             <ns0:form xml:id="CF27013" type="lemma">
                <ns0:orth>ⲡⲛⲉⲩⲙⲁ</ns0:orth>
@@ -1663,7 +1663,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C10421">
             <ns0:form xml:id="CF27869" type="lemma">
                <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
@@ -1805,7 +1805,7 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
 <ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C11031">
             <ns0:form xml:id="CF30301" type="lemma">
                <ns0:orth>ⲯⲩⲭⲏ</ns0:orth>
@@ -2032,6 +2032,6 @@
                </ns0:cit>
             </ns0:sense>
          </ns0:entry>
-         
+
   </body></text>
 </TEI>
