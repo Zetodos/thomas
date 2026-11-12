@@ -220,14 +220,14 @@ def test_crosscheck_rejects_dev_omission_overlap() -> None:
         crosscheck_against_pilot(mutated, omissions, load_pilot_corpus(PILOT_PATH))
 
 
-def test_integrated_sources_validate_and_align_benchmark() -> None:
+def test_integrated_sources_validate_and_align_benchmark(tmp_path: Path) -> None:
     """Single canonical artifact: sources validate + align benchmark."""
     runner = CliRunner()
     sources = runner.invoke(app, ["sources", "validate", "--repo-root", str(REPO_ROOT)])
     assert sources.exit_code == 0, sources.output
     assert "horner-vaticanus-nt-split-v3" in sources.output
 
-    out = REPO_ROOT / "data" / "sources" / "alignment" / "benchmark-report.json"
+    out = tmp_path / "benchmark-report.json"
     bench = runner.invoke(
         app,
         [

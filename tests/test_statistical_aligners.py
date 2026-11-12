@@ -124,18 +124,32 @@ def test_intrinsic_and_norm_gold_scoring() -> None:
     assert intrinsic.sentence_count == 1
     assert intrinsic.mean_fwd_rev_agreement == 1.0
     pred = links_to_token_links(links)
+    # Whitespace gold left is the fused form; segmented pred peels project onto it.
     gold = [
         TokenLink(
             unit_id="john.1.1",
             left_token_id="v1:ignored",
             right_token_id="v1:ignored",
-            left_norm="ϩⲛⲧⲉ",
+            left_norm="ϩⲛⲧⲉϩⲟⲩⲉⲓⲧⲉ",
             right_norm="εν",
         )
     ]
     scored = score_norm_gold(pred, gold, unit_ids={"john.1.1"})
     assert scored["true_positives"] == 1
     assert scored["recall"] == 1.0
+    # Both segmented pieces project onto the fused gold left → both kept.
+    assert scored["predicted_denominator"] == 2
+    assert scored["precision"] == 0.5
+
+
+def test_symmetrize_final_and_is_order_stable() -> None:
+    # Competing isolated links: forward-only should win over reverse-only.
+    fwd = ((0, 0), (1, 2))
+    rev = ((0, 0), (2, 1))
+    a = symmetrize_grow_diag_final_and(fwd, rev, src_len=3, trg_len=3)
+    b = symmetrize_grow_diag_final_and(fwd, rev, src_len=3, trg_len=3)
+    assert a == b
+    assert (1, 2) in a  # forward-only preferred in final-and
 
 
 def test_discover_aligners_does_not_raise() -> None:

@@ -266,11 +266,13 @@ def test_eflomal_probe_does_not_raise() -> None:
     assert isinstance(result.detail, str) and result.detail
 
 
-def test_cli_align_validate_and_benchmark() -> None:
+def test_cli_align_validate_and_benchmark(tmp_path: Path) -> None:
     runner = CliRunner()
     result = runner.invoke(app, ["align", "validate", "--repo-root", str(REPO_ROOT)])
     assert result.exit_code == 0, result.stdout + result.stderr
-    out = REPO_ROOT / "data" / "sources" / "alignment" / "benchmark-report.json"
+    # Write to a temp path so local eflomal availability cannot dirty the
+    # committed JAK-28 benchmark-report.json during pytest.
+    out = tmp_path / "benchmark-report.json"
     result = runner.invoke(
         app,
         [

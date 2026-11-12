@@ -72,8 +72,12 @@ def setup_eflomal(dest: Path, work: Path, *, python: str) -> Path:
     binary = dest / "eflomal"
     shutil.copy2(src / "src" / "eflomal", binary)
     binary.chmod(0o755)
-    # Optional Python package into the active environment.
-    _run([python, "-m", "pip", "install", "--quiet", str(src)])
+    # Install Python package into the selected interpreter (uv first; pip fallback).
+    uv_bin = shutil.which("uv")
+    if uv_bin is not None:
+        _run([uv_bin, "pip", "install", "--python", python, str(src)])
+    else:
+        _run([python, "-m", "pip", "install", "--quiet", str(src)])
     return binary
 
 

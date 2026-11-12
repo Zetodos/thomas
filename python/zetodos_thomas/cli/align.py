@@ -15,7 +15,6 @@ from zetodos_thomas.align.bitext import build_bitext
 from zetodos_thomas.align.eflomal_probe import probe_eflomal
 from zetodos_thomas.align.splits import (
     PilotSplits,
-    SplitRole,
     load_canonical_splits,
     load_splits,
 )
@@ -33,15 +32,7 @@ from zetodos_thomas.ingest.paths import (
 )
 from zetodos_thomas.ingest.pilot import load_pilot_corpus
 from zetodos_thomas.integrations.aligners.discovery import discover_aligners
-from zetodos_thomas.integrations.aligners.eflomal_adapter import (
-    EflomalNotAvailableError,
-    align_eflomal,
-)
-from zetodos_thomas.integrations.aligners.fast_align_adapter import (
-    FastAlignNotAvailableError,
-    align_fast_align,
-)
-from zetodos_thomas.integrations.aligners.types import AlignerConfig, AlignerName
+from zetodos_thomas.integrations.aligners.types import AlignerConfig, AlignmentLinks
 
 align_app = typer.Typer(
     name="align",
@@ -367,15 +358,7 @@ def statistical_eval_cmd(
 
     if export_artifacts:
         bitext = build_bitext(corpus, splits)
-        train = bitext.sentences_for(SplitRole.TRAIN)
-        dev = bitext.sentences_for(SplitRole.DEV)
-        seen: set[str] = set()
-        joint = []
-        for sentence in [*train, *dev]:
-            if sentence.unit_id in seen:
-                continue
-            seen.add(sentence.unit_id)
-            joint.append(sentence)
+        retained = report.get("retained_dev_links") or {}
         provenance = {
             "owned_by": "JAK-36",
             "pilot_corpus_id": bitext.pilot_corpus_id,
@@ -383,25 +366,25 @@ def statistical_eval_cmd(
             "bitext_checksum_sha256": bitext.checksum_sha256,
             "coptic_segmentation": bitext.coptic_segmentation,
             "greek_tokenization": bitext.greek_tokenization,
-            "protocol": "joint unsupervised train+dev; artifact includes all links",
+            "protocol": (
+                "exact AlignmentLinks retained from full-train×dev comparison "
+                "(not a second stochastic draw)"
+            ),
             "seed": seed,
             "config": config.as_dict(),
         }
-        for name, align_fn, err_type in (
-            (AlignerName.EFLOMAL, align_eflomal, EflomalNotAvailableError),
-            (AlignerName.FAST_ALIGN, align_fast_align, FastAlignNotAvailableError),
-        ):
-            art_path = out_dir / f"{name.value}-train-dev-links-v1.json"
-            try:
-                links = align_fn(joint, config=config, repo_root=root)
-            except err_type as exc:
-                typer.secho(
-                    f"skip artifact {name.value}: {exc}", fg=typer.colors.YELLOW
-                )
+        if not retained:
+            typer.secho(
+                "no retained_dev_links to export (aligners unavailable?)",
+                fg=typer.colors.YELLOW,
+            )
+        for name, links in retained.items():
+            if not isinstance(links, AlignmentLinks):
                 continue
+            art_path = out_dir / f"{name}-train-dev-links-v1.json"
             export_alignment_artifact(
                 links,
                 path=art_path,
-                provenance={**provenance, "aligner": name.value},
+                provenance={**provenance, "aligner": name},
             )
             typer.echo(f"Wrote {art_path}")

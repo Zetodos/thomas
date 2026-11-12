@@ -9,6 +9,7 @@ as positive pairs. No LLM.
 from __future__ import annotations
 
 import json
+import tempfile
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, datetime
@@ -33,6 +34,7 @@ from zetodos_thomas.integrations.aligners.discovery import discover_aligners
 from zetodos_thomas.integrations.aligners.eflomal_adapter import (
     EflomalNotAvailableError,
     align_eflomal,
+    write_priors_from_links,
 )
 from zetodos_thomas.integrations.aligners.fast_align_adapter import (
     FastAlignNotAvailableError,
@@ -156,30 +158,60 @@ def links_to_token_links(
     return out
 
 
+def _left_norms_related(pred_left: str, gold_left: str) -> bool:
+    """True when segmented pred_left projects onto whitespace gold_left.
+
+    Exact equality, or pred piece is a contiguous substring of the gold
+    whitespace token (bound-group peel of a fused Horner surface).
+    """
+    if pred_left == gold_left:
+        return True
+    if not pred_left or not gold_left:
+        return False
+    return pred_left in gold_left
+
+
 def score_norm_gold(
     predicted: list[TokenLink],
     gold: list[TokenLink],
     *,
     unit_ids: set[str] | None = None,
 ) -> dict[str, object]:
-    """Soft gold score by ``(unit_id, left_norm, right_norm)``.
+    """Soft gold score bridging whitespace v1 gold and bound-group v2 preds.
 
-    Provisional v1 gold uses whitespace Coptic ids; statistical path uses v2
-    bound-group ids. Norm-form scoring bridges layers without rewriting gold.
+    A prediction matches a gold link when ``unit_id`` and ``right_norm`` agree
+    and the predicted Sahidic piece projects onto the gold whitespace left
+    token (equal or contiguous substring). Annotated-left filtering keeps any
+    pred whose left piece projects onto at least one gold left on that unit.
     """
-
-    def _key(link: TokenLink) -> tuple[str, str, str]:
-        return (link.unit_id, link.left_norm, link.right_norm)
-
     gld = [g for g in gold if unit_ids is None or g.unit_id in unit_ids]
     pred = [p for p in predicted if unit_ids is None or p.unit_id in unit_ids]
-    annotated_left = {(g.unit_id, g.left_norm) for g in gld}
-    pred = [p for p in pred if (p.unit_id, p.left_norm) in annotated_left]
-    pred_set = {_key(p) for p in pred}
-    gold_set = {_key(g) for g in gld}
-    tp = len(pred_set & gold_set)
-    precision = (tp / len(pred_set)) if pred_set else None
-    recall = (tp / len(gold_set)) if gold_set else None
+    gold_lefts_by_unit: dict[str, list[str]] = {}
+    for g in gld:
+        gold_lefts_by_unit.setdefault(g.unit_id, []).append(g.left_norm)
+
+    def _annotated(p: TokenLink) -> bool:
+        return any(
+            _left_norms_related(p.left_norm, gleft)
+            for gleft in gold_lefts_by_unit.get(p.unit_id, [])
+        )
+
+    pred = [p for p in pred if _annotated(p)]
+    matched_gold: set[int] = set()
+    matched_pred: set[int] = set()
+    for pi, p in enumerate(pred):
+        for gi, g in enumerate(gld):
+            if gi in matched_gold:
+                continue
+            if p.unit_id != g.unit_id or p.right_norm != g.right_norm:
+                continue
+            if _left_norms_related(p.left_norm, g.left_norm):
+                matched_gold.add(gi)
+                matched_pred.add(pi)
+                break
+    tp = len(matched_gold)
+    precision = (tp / len(pred)) if pred else None
+    recall = (tp / len(gld)) if gld else None
     if precision is None or recall is None:
         f1 = None
     elif precision + recall == 0:
@@ -191,14 +223,17 @@ def score_norm_gold(
         "recall": recall,
         "f1": f1,
         "true_positives": tp,
-        "predicted_denominator": len(pred_set),
-        "gold_denominator": len(gold_set),
+        "predicted_denominator": len(pred),
+        "gold_denominator": len(gld),
+        "matched_predictions": len(matched_pred),
         "unit_ids_scored": sorted(
             {*(p.unit_id for p in pred), *(g.unit_id for g in gld)}
         ),
         "notes": (
-            "Norm-form soft match bridges whitespace v1 gold and bound-group "
-            "v2 aligner tokens. Provisional gold only - not human-checked."
+            "Soft projection: segmented left matches whitespace gold left by "
+            "equality or contiguous substring; right_norm must match exactly. "
+            "Provisional gold only - not human-checked. Intrinsic agreement "
+            "remains the primary bake-off metric."
         ),
     }
 
@@ -218,6 +253,35 @@ def _align_dispatch(
     raise ValueError(msg)
 
 
+def _score_links_block(
+    name: AlignerName,
+    links: AlignmentLinks,
+    *,
+    eval_ids: set[str],
+    train_size: int,
+    eval_size: int,
+    protocol: str,
+    gold: list[TokenLink] | None,
+) -> dict[str, Any]:
+    intrinsic = score_intrinsic(links, eval_unit_ids=eval_ids)
+    pred_links = links_to_token_links(links, unit_ids=eval_ids)
+    result: dict[str, Any] = {
+        "aligner": name.value,
+        "available": True,
+        "train_size": train_size,
+        "eval_size": eval_size,
+        "joint_size": len(links.sentences),
+        "protocol": protocol,
+        "intrinsic": intrinsic.as_dict(),
+        "config": links.config,
+        "notes": links.notes,
+        "_links": links,  # retained for exact artifact export; stripped before JSON
+    }
+    if gold:
+        result["norm_gold"] = score_norm_gold(pred_links, gold, unit_ids=eval_ids)
+    return result
+
+
 def _joint_align_and_score(
     name: AlignerName,
     train: list[BitextSentence],
@@ -227,9 +291,11 @@ def _joint_align_and_score(
     repo_root: Path | None,
     gold: list[TokenLink] | None,
 ) -> dict[str, Any]:
-    """Joint unsupervised align of train+eval; score eval only."""
+    """Joint unsupervised align of train+dev; score eval only.
+
+    Used for learning curves and full-train **dev** (not sealed holdout).
+    """
     eval_ids = {s.unit_id for s in eval_sents}
-    # Preserve order: train first, then eval (stable, reproducible).
     seen: set[str] = set()
     joint: list[BitextSentence] = []
     for sentence in [*train, *eval_sents]:
@@ -247,25 +313,92 @@ def _joint_align_and_score(
             "train_size": len(train),
             "eval_size": len(eval_sents),
         }
-    intrinsic = score_intrinsic(links, eval_unit_ids=eval_ids)
-    pred_links = links_to_token_links(links, unit_ids=eval_ids)
-    result: dict[str, Any] = {
-        "aligner": name.value,
-        "available": True,
-        "train_size": len(train),
-        "eval_size": len(eval_sents),
-        "joint_size": len(joint),
-        "protocol": (
-            "joint unsupervised alignment of train_subset + eval; "
-            "metrics computed on eval unit_ids only"
+    return _score_links_block(
+        name,
+        links,
+        eval_ids=eval_ids,
+        train_size=len(train),
+        eval_size=len(eval_sents),
+        protocol=(
+            "joint unsupervised alignment of train_subset + dev; "
+            "metrics on dev unit_ids only (dev is not sealed holdout)"
         ),
-        "intrinsic": intrinsic.as_dict(),
-        "config": links.config,
-        "notes": links.notes,
-    }
-    if gold:
-        result["norm_gold"] = score_norm_gold(pred_links, gold, unit_ids=eval_ids)
-    return result
+        gold=gold,
+    )
+
+
+def _holdout_align_and_score(
+    name: AlignerName,
+    train: list[BitextSentence],
+    holdout: list[BitextSentence],
+    *,
+    config: AlignerConfig,
+    repo_root: Path | None,
+    gold: list[TokenLink] | None,
+    work_dir: Path | None,
+) -> dict[str, Any]:
+    """Score holdout without joint-fitting on holdout pairs.
+
+    eflomal: align TRAIN only → Dirichlet priors → align HOLDOUT with frozen
+    priors. fast_align: omitted (no frozen-prior apply path in this adapter).
+    """
+    if name is AlignerName.FAST_ALIGN:
+        return {
+            "aligner": name.value,
+            "available": False,
+            "skipped": True,
+            "train_size": len(train),
+            "eval_size": len(holdout),
+            "error": (
+                "holdout scores omitted for fast_align: adapter has no "
+                "frozen-prior / apply path; refusing joint train+holdout fit"
+            ),
+            "protocol": "omitted-to-prevent-holdout-leakage",
+        }
+    if name is not AlignerName.EFLOMAL:
+        msg = f"unsupported holdout aligner {name}"
+        raise ValueError(msg)
+    try:
+        train_links = align_eflomal(train, config=config, repo_root=repo_root)
+    except EflomalNotAvailableError as exc:
+        return {
+            "aligner": name.value,
+            "available": False,
+            "error": str(exc),
+            "train_size": len(train),
+            "eval_size": len(holdout),
+        }
+    priors_dir = work_dir or Path(tempfile.mkdtemp(prefix="thomas-eflomal-priors-"))
+    priors_dir.mkdir(parents=True, exist_ok=True)
+    priors_path = priors_dir / "train.priors"
+    write_priors_from_links(train_links, priors_path)
+    try:
+        holdout_links = align_eflomal(
+            holdout,
+            config=config,
+            repo_root=repo_root,
+            priors_path=priors_path,
+        )
+    except EflomalNotAvailableError as exc:
+        return {
+            "aligner": name.value,
+            "available": False,
+            "error": str(exc),
+            "train_size": len(train),
+            "eval_size": len(holdout),
+        }
+    return _score_links_block(
+        name,
+        holdout_links,
+        eval_ids={s.unit_id for s in holdout},
+        train_size=len(train),
+        eval_size=len(holdout),
+        protocol=(
+            "train-only eflomal align → Dirichlet priors → holdout-only align "
+            "with frozen priors (holdout never in fitting bitext)"
+        ),
+        gold=gold,
+    )
 
 
 def _lexical_curve_point(
@@ -374,24 +507,37 @@ def run_statistical_evaluation(
         curve_points.append(point)
 
     full_comparison: dict[str, Any] = {"dev": {}, "holdout": {}}
+    retained_links: dict[str, AlignmentLinks] = {}
     for name in aligners:
-        full_comparison["dev"][name.value] = _joint_align_and_score(
+        dev_block = _joint_align_and_score(
             name, train, dev, config=cfg, repo_root=repo_root, gold=gold
         )
+        links_obj = dev_block.pop("_links", None)
+        if isinstance(links_obj, AlignmentLinks):
+            retained_links[name.value] = links_obj
+        full_comparison["dev"][name.value] = dev_block
         if include_holdout:
-            full_comparison["holdout"][name.value] = _joint_align_and_score(
+            hold_block = _holdout_align_and_score(
                 name,
                 train,
                 holdout,
                 config=cfg,
                 repo_root=repo_root,
                 gold=gold,
+                work_dir=None,
             )
+            hold_block.pop("_links", None)
+            full_comparison["holdout"][name.value] = hold_block
 
     # Full-train lexical control on dev.
     full_comparison["dev"]["lexical_dice_baseline"] = _lexical_curve_point(
         train_units, dev_units, gold, train_size=len(train_units)
     )
+
+    for point in curve_points:
+        for block in point["aligners"].values():
+            if isinstance(block, dict):
+                block.pop("_links", None)
 
     decision = _jake_decision_scaffold(full_comparison, curve_points, availability)
 
@@ -424,7 +570,10 @@ def run_statistical_evaluation(
             "documents": gold_docs,
             "gold_link_count": len(gold),
             "status": "provisional-draft",
-            "scoring": "norm-form soft match across v1 gold / v2 segmented tokens",
+            "scoring": (
+                "soft projection: segmented left onto whitespace gold left; "
+                "right_norm exact"
+            ),
         },
         "learning_curve": {
             "fractions": list(curve_fractions),
@@ -433,10 +582,13 @@ def run_statistical_evaluation(
         },
         "full_train_comparison": full_comparison,
         "jake_decision": decision,
+        "retained_dev_links": retained_links,
         "limitations": [
             "Provisional gold is tiny / unreviewed; intrinsic agreement is primary.",
             "eflomal C sampler is stochastic; seed recorded but not fully pinning.",
-            "Joint unsupervised protocol mixes train+eval during alignment.",
+            "Dev curves use joint train+dev (dev is not sealed holdout).",
+            "Holdout: eflomal train-only priors then holdout-only align; "
+            "fast_align holdout omitted (no apply path).",
             "No LLM. Greek = Vaticanus B* only. PA omission never positive pairs.",
             "Thomas 7 / P.Oxy. 654 excluded from training stack.",
         ],
@@ -537,10 +689,12 @@ def _jake_decision_scaffold(
 
 
 def write_eval_json(report: dict[str, Any], path: Path) -> None:
-    """Write the statistical evaluation report JSON."""
+    """Write the statistical evaluation report JSON (no AlignmentLinks objects)."""
     path.parent.mkdir(parents=True, exist_ok=True)
+    serializable = {k: v for k, v in report.items() if k != "retained_dev_links"}
     path.write_text(
-        json.dumps(report, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+        json.dumps(serializable, indent=2, ensure_ascii=False) + "\n",
+        encoding="utf-8",
     )
 
 

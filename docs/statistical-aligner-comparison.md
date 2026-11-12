@@ -36,18 +36,22 @@ tool is absent.
 
 1. Tokenize nonempty train/dev/holdout with bound-group Coptic + whitespace Greek.
 2. For each train fraction `{0.25, 0.5, 0.75, 1.0}`, jointly align
-   `train_subset ∪ dev` (unsupervised) and score **dev only**.
-3. Full-train comparison: same protocol on **dev** and **holdout**.
-4. Control: lexical Dice baseline with the same Coptic segmentation.
-5. Export inspectable JSON alignments (forward / reverse / symmetrized) with
-   provenance (corpus id, split id, bitext sha256, seed, config).
+   `train_subset + dev` (unsupervised) and score **dev only**. Dev is tuning,
+   not the sealed holdout.
+3. Full-train **dev**: same joint train+dev protocol; export the **exact**
+   `AlignmentLinks` object used for that comparison (no second stochastic draw).
+4. **Holdout (no leakage):** eflomal aligns **train only**, writes Dirichlet
+   priors, then aligns **holdout only** with those frozen priors. fast_align
+   holdout scores are **omitted** (adapter has no apply/priors path; we refuse
+   joint train+holdout fit).
+5. Control: lexical Dice baseline with the same Coptic segmentation.
 
 **Primary intrinsic metric:** mean forward↔reverse agreement
 `|fwd ∩ rev| / |fwd ∪ rev|` on eval sentences (no gold required).
 
-**Secondary:** symmetrized density / source fertility; soft norm-form F1 against
-provisional v1 gold (bridges whitespace gold ↔ v2 segmented tokens). Gold remains
-`provisional-draft` — not decisive.
+**Secondary:** soft gold F1 — segmented left projects onto whitespace gold left
+by equality or contiguous substring; `right_norm` must match exactly. Gold
+remains `provisional-draft` — not decisive.
 
 ## Learning-curve / sufficiency notes (seed=36 committed run)
 
@@ -62,14 +66,15 @@ joint unsupervised protocol. Train nonempty = **304**. Exact floats live in
 | 0.75 | 228 | ~0.50 | ~0.42 |
 | 1.00 | 304 | ~0.53 | ~0.42 |
 
-Full-train **dev**: eflomal ~**0.51** vs fast_align ~**0.42** (Δ ≈ +0.09).
-Full-train **holdout** (41): eflomal ~**0.49** vs fast_align ~**0.41**.
+Full-train **dev** (joint): eflomal ~**0.50** vs fast_align ~**0.42** (Δ ≈ +0.08).
+**Holdout** (41): eflomal ~**0.57** via train-only priors + holdout-only align;
+fast_align holdout **omitted** (no frozen-prior apply path).
 
-**Sufficiency:** eflomal stays above fast_align on this intrinsic at every curve
-point; the 25%→100% slope is weak / noisy (Gibbs variance), not a clean plateau
-proof. v3 is adequate to **rank** tools and begin Phase 2 lexical work; more
-Gospel/NT pairs and human-checked gold still matter more for JAK-37/40 than
-another bake-off.
+**Sufficiency:** eflomal stays above fast_align on the shared joint-dev intrinsic
+at every curve point; the 25%→100% slope is weak / noisy (Gibbs variance), not a
+clean plateau proof. v3 is adequate to **rank** tools and begin Phase 2 lexical
+work; more Gospel/NT pairs and human-checked gold still matter more for
+JAK-37/40 than another bake-off.
 
 **Burden / reproducibility:** eflomal needs OpenMP + Python headers; fast_align
 needs cmake/C++ only. fast_align EM is deterministic for fixed flags; eflomal's

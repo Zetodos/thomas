@@ -1,7 +1,7 @@
 {
   "id": "horner-vaticanus-statistical-aligner-eval-v1",
   "title": "Greek-Sahidic statistical aligner comparison + learning curves (JAK-36)",
-  "created_at_utc": "2026-11-12T01:12:26.997853+00:00",
+  "created_at_utc": "2026-11-12T01:22:59.119401+00:00",
   "owned_by": "JAK-36",
   "greek_source_id": "ntvmr-vaticanus-b",
   "sahidic_source_id": "copsahhorner",
@@ -62,7 +62,7 @@
     ],
     "gold_link_count": 43,
     "status": "provisional-draft",
-    "scoring": "norm-form soft match across v1 gold / v2 segmented tokens"
+    "scoring": "soft projection: segmented left onto whitespace gold left; right_norm exact"
   },
   "learning_curve": {
     "fractions": [
@@ -162,13 +162,13 @@
             "train_size": 76,
             "eval_size": 51,
             "joint_size": 127,
-            "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
+            "protocol": "joint unsupervised alignment of train_subset + dev; metrics on dev unit_ids only (dev is not sealed holdout)",
             "intrinsic": {
               "sentence_count": 51,
-              "mean_fwd_rev_agreement": 0.49558558989185375,
-              "mean_alignment_density": 0.04939408661285422,
-              "mean_source_fertility": 0.8195118494721503,
-              "total_sym_links": 872,
+              "mean_fwd_rev_agreement": 0.4507711809330973,
+              "mean_alignment_density": 0.05163769478794587,
+              "mean_source_fertility": 0.8472188712265526,
+              "total_sym_links": 895,
               "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
             },
             "config": {
@@ -182,7 +182,8 @@
               "fast_align_variational_bayes": true,
               "symmetrization": "grow-diag-final-and",
               "binary_path": "/agent/repos/thomas/data/local/aligners/eflomal",
-              "python_module": true
+              "python_module": true,
+              "priors_path": null
             },
             "notes": [
               "eflomal Gibbs sampler uses OS entropy; seed is recorded for config provenance but does not fully pin C RNG.",
@@ -190,16 +191,17 @@
               "No LLM; offline after setup."
             ],
             "norm_gold": {
-              "precision": 1.0,
-              "recall": 0.25,
-              "f1": 0.4,
-              "true_positives": 1,
-              "predicted_denominator": 1,
+              "precision": 0.4444444444444444,
+              "recall": 1.0,
+              "f1": 0.6153846153846153,
+              "true_positives": 4,
+              "predicted_denominator": 9,
               "gold_denominator": 4,
+              "matched_predictions": 4,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             }
           },
           "fast_align": {
@@ -208,13 +210,13 @@
             "train_size": 76,
             "eval_size": 51,
             "joint_size": 127,
-            "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
+            "protocol": "joint unsupervised alignment of train_subset + dev; metrics on dev unit_ids only (dev is not sealed holdout)",
             "intrinsic": {
               "sentence_count": 51,
-              "mean_fwd_rev_agreement": 0.4198867845145354,
-              "mean_alignment_density": 0.06783373006736142,
-              "mean_source_fertility": 1.1029800304110722,
-              "total_sym_links": 1154,
+              "mean_fwd_rev_agreement": 0.4213120794447323,
+              "mean_alignment_density": 0.06857011202604434,
+              "mean_source_fertility": 1.1130437462778446,
+              "total_sym_links": 1164,
               "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
             },
             "config": {
@@ -236,16 +238,17 @@
               "No LLM; offline after setup."
             ],
             "norm_gold": {
-              "precision": 1.0,
-              "recall": 0.25,
-              "f1": 0.4,
-              "true_positives": 1,
-              "predicted_denominator": 1,
+              "precision": 0.3076923076923077,
+              "recall": 1.0,
+              "f1": 0.47058823529411764,
+              "true_positives": 4,
+              "predicted_denominator": 13,
               "gold_denominator": 4,
+              "matched_predictions": 4,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             }
           },
           "lexical_dice_baseline": {
@@ -266,16 +269,17 @@
               "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Predictions restricted to gold-annotated left (Sahidic) token ids so partial gold does not conflate coverage with precision. Omission fixtures must not appear in these denominators. F1 is 0.0 when both denominators are nonzero and TP=0."
             },
             "norm_gold": {
-              "precision": 0.0,
-              "recall": 0.0,
-              "f1": 0.0,
-              "true_positives": 0,
-              "predicted_denominator": 1,
+              "precision": 0.36363636363636365,
+              "recall": 1.0,
+              "f1": 0.5333333333333333,
+              "true_positives": 4,
+              "predicted_denominator": 11,
               "gold_denominator": 4,
+              "matched_predictions": 4,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             },
             "notes": [
               "Control baseline with bound-group-v1 Coptic segmentation.",
@@ -449,13 +453,13 @@
             "train_size": 152,
             "eval_size": 51,
             "joint_size": 203,
-            "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
+            "protocol": "joint unsupervised alignment of train_subset + dev; metrics on dev unit_ids only (dev is not sealed holdout)",
             "intrinsic": {
               "sentence_count": 51,
-              "mean_fwd_rev_agreement": 0.5251855868463658,
-              "mean_alignment_density": 0.05028134852583612,
-              "mean_source_fertility": 0.8354959723115609,
-              "total_sym_links": 890,
+              "mean_fwd_rev_agreement": 0.5417466900953515,
+              "mean_alignment_density": 0.048232399298665955,
+              "mean_source_fertility": 0.8048451990309173,
+              "total_sym_links": 859,
               "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
             },
             "config": {
@@ -469,7 +473,8 @@
               "fast_align_variational_bayes": true,
               "symmetrization": "grow-diag-final-and",
               "binary_path": "/agent/repos/thomas/data/local/aligners/eflomal",
-              "python_module": true
+              "python_module": true,
+              "priors_path": null
             },
             "notes": [
               "eflomal Gibbs sampler uses OS entropy; seed is recorded for config provenance but does not fully pin C RNG.",
@@ -477,16 +482,17 @@
               "No LLM; offline after setup."
             ],
             "norm_gold": {
-              "precision": 1.0,
-              "recall": 0.25,
-              "f1": 0.4,
-              "true_positives": 1,
-              "predicted_denominator": 1,
+              "precision": 0.4444444444444444,
+              "recall": 1.0,
+              "f1": 0.6153846153846153,
+              "true_positives": 4,
+              "predicted_denominator": 9,
               "gold_denominator": 4,
+              "matched_predictions": 4,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             }
           },
           "fast_align": {
@@ -495,13 +501,13 @@
             "train_size": 152,
             "eval_size": 51,
             "joint_size": 203,
-            "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
+            "protocol": "joint unsupervised alignment of train_subset + dev; metrics on dev unit_ids only (dev is not sealed holdout)",
             "intrinsic": {
               "sentence_count": 51,
-              "mean_fwd_rev_agreement": 0.41995571687838357,
-              "mean_alignment_density": 0.06785285811870538,
-              "mean_source_fertility": 1.1097095458191464,
-              "total_sym_links": 1163,
+              "mean_fwd_rev_agreement": 0.41569082386668754,
+              "mean_alignment_density": 0.06818828923350978,
+              "mean_source_fertility": 1.112955616517639,
+              "total_sym_links": 1166,
               "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
             },
             "config": {
@@ -523,16 +529,17 @@
               "No LLM; offline after setup."
             ],
             "norm_gold": {
-              "precision": 1.0,
-              "recall": 0.25,
-              "f1": 0.4,
-              "true_positives": 1,
-              "predicted_denominator": 1,
+              "precision": 0.3076923076923077,
+              "recall": 1.0,
+              "f1": 0.47058823529411764,
+              "true_positives": 4,
+              "predicted_denominator": 13,
               "gold_denominator": 4,
+              "matched_predictions": 4,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             }
           },
           "lexical_dice_baseline": {
@@ -553,16 +560,17 @@
               "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Predictions restricted to gold-annotated left (Sahidic) token ids so partial gold does not conflate coverage with precision. Omission fixtures must not appear in these denominators. F1 is 0.0 when both denominators are nonzero and TP=0."
             },
             "norm_gold": {
-              "precision": 0.0,
-              "recall": 0.0,
-              "f1": 0.0,
-              "true_positives": 0,
-              "predicted_denominator": 1,
+              "precision": 0.2727272727272727,
+              "recall": 0.75,
+              "f1": 0.39999999999999997,
+              "true_positives": 3,
+              "predicted_denominator": 11,
               "gold_denominator": 4,
+              "matched_predictions": 3,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             },
             "notes": [
               "Control baseline with bound-group-v1 Coptic segmentation.",
@@ -812,13 +820,13 @@
             "train_size": 228,
             "eval_size": 51,
             "joint_size": 279,
-            "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
+            "protocol": "joint unsupervised alignment of train_subset + dev; metrics on dev unit_ids only (dev is not sealed holdout)",
             "intrinsic": {
               "sentence_count": 51,
-              "mean_fwd_rev_agreement": 0.49632909102247746,
-              "mean_alignment_density": 0.050131226266560795,
-              "mean_source_fertility": 0.8408752990030922,
-              "total_sym_links": 895,
+              "mean_fwd_rev_agreement": 0.5179360069339992,
+              "mean_alignment_density": 0.04944682120219012,
+              "mean_source_fertility": 0.8256404445326339,
+              "total_sym_links": 879,
               "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
             },
             "config": {
@@ -832,7 +840,8 @@
               "fast_align_variational_bayes": true,
               "symmetrization": "grow-diag-final-and",
               "binary_path": "/agent/repos/thomas/data/local/aligners/eflomal",
-              "python_module": true
+              "python_module": true,
+              "priors_path": null
             },
             "notes": [
               "eflomal Gibbs sampler uses OS entropy; seed is recorded for config provenance but does not fully pin C RNG.",
@@ -840,16 +849,17 @@
               "No LLM; offline after setup."
             ],
             "norm_gold": {
-              "precision": 1.0,
-              "recall": 0.25,
-              "f1": 0.4,
-              "true_positives": 1,
-              "predicted_denominator": 1,
+              "precision": 0.4444444444444444,
+              "recall": 1.0,
+              "f1": 0.6153846153846153,
+              "true_positives": 4,
+              "predicted_denominator": 9,
               "gold_denominator": 4,
+              "matched_predictions": 4,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             }
           },
           "fast_align": {
@@ -858,13 +868,13 @@
             "train_size": 228,
             "eval_size": 51,
             "joint_size": 279,
-            "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
+            "protocol": "joint unsupervised alignment of train_subset + dev; metrics on dev unit_ids only (dev is not sealed holdout)",
             "intrinsic": {
               "sentence_count": 51,
               "mean_fwd_rev_agreement": 0.42013834784240867,
-              "mean_alignment_density": 0.06824310684001719,
-              "mean_source_fertility": 1.1128063896189586,
-              "total_sym_links": 1163,
+              "mean_alignment_density": 0.06834407394825609,
+              "mean_source_fertility": 1.114173471539446,
+              "total_sym_links": 1164,
               "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
             },
             "config": {
@@ -886,16 +896,17 @@
               "No LLM; offline after setup."
             ],
             "norm_gold": {
-              "precision": 1.0,
-              "recall": 0.25,
-              "f1": 0.4,
-              "true_positives": 1,
-              "predicted_denominator": 1,
+              "precision": 0.2857142857142857,
+              "recall": 1.0,
+              "f1": 0.4444444444444445,
+              "true_positives": 4,
+              "predicted_denominator": 14,
               "gold_denominator": 4,
+              "matched_predictions": 4,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             }
           },
           "lexical_dice_baseline": {
@@ -916,16 +927,17 @@
               "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Predictions restricted to gold-annotated left (Sahidic) token ids so partial gold does not conflate coverage with precision. Omission fixtures must not appear in these denominators. F1 is 0.0 when both denominators are nonzero and TP=0."
             },
             "norm_gold": {
-              "precision": 1.0,
-              "recall": 0.25,
-              "f1": 0.4,
-              "true_positives": 1,
-              "predicted_denominator": 1,
+              "precision": 0.2727272727272727,
+              "recall": 0.75,
+              "f1": 0.39999999999999997,
+              "true_positives": 3,
+              "predicted_denominator": 11,
               "gold_denominator": 4,
+              "matched_predictions": 3,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             },
             "notes": [
               "Control baseline with bound-group-v1 Coptic segmentation.",
@@ -1251,13 +1263,13 @@
             "train_size": 304,
             "eval_size": 51,
             "joint_size": 355,
-            "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
+            "protocol": "joint unsupervised alignment of train_subset + dev; metrics on dev unit_ids only (dev is not sealed holdout)",
             "intrinsic": {
               "sentence_count": 51,
-              "mean_fwd_rev_agreement": 0.5330251811947274,
-              "mean_alignment_density": 0.04927784748398278,
-              "mean_source_fertility": 0.82329049375169,
-              "total_sym_links": 879,
+              "mean_fwd_rev_agreement": 0.5012875878826444,
+              "mean_alignment_density": 0.04971468958361326,
+              "mean_source_fertility": 0.8304042680187814,
+              "total_sym_links": 887,
               "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
             },
             "config": {
@@ -1271,7 +1283,8 @@
               "fast_align_variational_bayes": true,
               "symmetrization": "grow-diag-final-and",
               "binary_path": "/agent/repos/thomas/data/local/aligners/eflomal",
-              "python_module": true
+              "python_module": true,
+              "priors_path": null
             },
             "notes": [
               "eflomal Gibbs sampler uses OS entropy; seed is recorded for config provenance but does not fully pin C RNG.",
@@ -1279,16 +1292,17 @@
               "No LLM; offline after setup."
             ],
             "norm_gold": {
-              "precision": 1.0,
-              "recall": 0.25,
-              "f1": 0.4,
-              "true_positives": 1,
-              "predicted_denominator": 1,
+              "precision": 0.4,
+              "recall": 1.0,
+              "f1": 0.5714285714285715,
+              "true_positives": 4,
+              "predicted_denominator": 10,
               "gold_denominator": 4,
+              "matched_predictions": 4,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             }
           },
           "fast_align": {
@@ -1297,13 +1311,13 @@
             "train_size": 304,
             "eval_size": 51,
             "joint_size": 355,
-            "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
+            "protocol": "joint unsupervised alignment of train_subset + dev; metrics on dev unit_ids only (dev is not sealed holdout)",
             "intrinsic": {
               "sentence_count": 51,
-              "mean_fwd_rev_agreement": 0.4174268927136416,
-              "mean_alignment_density": 0.06839716214507544,
-              "mean_source_fertility": 1.1077566255322098,
-              "total_sym_links": 1150,
+              "mean_fwd_rev_agreement": 0.4172194023100727,
+              "mean_alignment_density": 0.0686385371889829,
+              "mean_source_fertility": 1.1120913452500565,
+              "total_sym_links": 1154,
               "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
             },
             "config": {
@@ -1325,16 +1339,17 @@
               "No LLM; offline after setup."
             ],
             "norm_gold": {
-              "precision": 1.0,
-              "recall": 0.25,
-              "f1": 0.4,
-              "true_positives": 1,
-              "predicted_denominator": 1,
+              "precision": 0.3076923076923077,
+              "recall": 1.0,
+              "f1": 0.47058823529411764,
+              "true_positives": 4,
+              "predicted_denominator": 13,
               "gold_denominator": 4,
+              "matched_predictions": 4,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             }
           },
           "lexical_dice_baseline": {
@@ -1355,16 +1370,17 @@
               "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Predictions restricted to gold-annotated left (Sahidic) token ids so partial gold does not conflate coverage with precision. Omission fixtures must not appear in these denominators. F1 is 0.0 when both denominators are nonzero and TP=0."
             },
             "norm_gold": {
-              "precision": 1.0,
-              "recall": 0.25,
-              "f1": 0.4,
-              "true_positives": 1,
-              "predicted_denominator": 1,
+              "precision": 0.2727272727272727,
+              "recall": 0.75,
+              "f1": 0.39999999999999997,
+              "true_positives": 3,
+              "predicted_denominator": 11,
               "gold_denominator": 4,
+              "matched_predictions": 3,
               "unit_ids_scored": [
                 "luke.6.20"
               ],
-              "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+              "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
             },
             "notes": [
               "Control baseline with bound-group-v1 Coptic segmentation.",
@@ -1383,13 +1399,13 @@
         "train_size": 304,
         "eval_size": 51,
         "joint_size": 355,
-        "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
+        "protocol": "joint unsupervised alignment of train_subset + dev; metrics on dev unit_ids only (dev is not sealed holdout)",
         "intrinsic": {
           "sentence_count": 51,
-          "mean_fwd_rev_agreement": 0.5070808504222958,
-          "mean_alignment_density": 0.048496687354132074,
-          "mean_source_fertility": 0.8102915644265177,
-          "total_sym_links": 864,
+          "mean_fwd_rev_agreement": 0.50005282194493,
+          "mean_alignment_density": 0.05094192123552373,
+          "mean_source_fertility": 0.8444219557937904,
+          "total_sym_links": 893,
           "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
         },
         "config": {
@@ -1403,7 +1419,8 @@
           "fast_align_variational_bayes": true,
           "symmetrization": "grow-diag-final-and",
           "binary_path": "/agent/repos/thomas/data/local/aligners/eflomal",
-          "python_module": true
+          "python_module": true,
+          "priors_path": null
         },
         "notes": [
           "eflomal Gibbs sampler uses OS entropy; seed is recorded for config provenance but does not fully pin C RNG.",
@@ -1411,16 +1428,17 @@
           "No LLM; offline after setup."
         ],
         "norm_gold": {
-          "precision": 1.0,
-          "recall": 0.25,
-          "f1": 0.4,
-          "true_positives": 1,
-          "predicted_denominator": 1,
+          "precision": 0.36363636363636365,
+          "recall": 1.0,
+          "f1": 0.5333333333333333,
+          "true_positives": 4,
+          "predicted_denominator": 11,
           "gold_denominator": 4,
+          "matched_predictions": 4,
           "unit_ids_scored": [
             "luke.6.20"
           ],
-          "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+          "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
         }
       },
       "fast_align": {
@@ -1429,13 +1447,13 @@
         "train_size": 304,
         "eval_size": 51,
         "joint_size": 355,
-        "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
+        "protocol": "joint unsupervised alignment of train_subset + dev; metrics on dev unit_ids only (dev is not sealed holdout)",
         "intrinsic": {
           "sentence_count": 51,
-          "mean_fwd_rev_agreement": 0.41918018662379825,
-          "mean_alignment_density": 0.06833982927040509,
-          "mean_source_fertility": 1.107481427733792,
-          "total_sym_links": 1150,
+          "mean_fwd_rev_agreement": 0.4172194023100727,
+          "mean_alignment_density": 0.0686385371889829,
+          "mean_source_fertility": 1.1120913452500565,
+          "total_sym_links": 1154,
           "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
         },
         "config": {
@@ -1457,16 +1475,17 @@
           "No LLM; offline after setup."
         ],
         "norm_gold": {
-          "precision": 1.0,
-          "recall": 0.25,
-          "f1": 0.4,
-          "true_positives": 1,
-          "predicted_denominator": 1,
+          "precision": 0.3076923076923077,
+          "recall": 1.0,
+          "f1": 0.47058823529411764,
+          "true_positives": 4,
+          "predicted_denominator": 13,
           "gold_denominator": 4,
+          "matched_predictions": 4,
           "unit_ids_scored": [
             "luke.6.20"
           ],
-          "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+          "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
         }
       },
       "lexical_dice_baseline": {
@@ -1487,16 +1506,17 @@
           "notes": "No pass/fail threshold. Denominators are predicted link count and gold link count after optional unit_id filter. Predictions restricted to gold-annotated left (Sahidic) token ids so partial gold does not conflate coverage with precision. Omission fixtures must not appear in these denominators. F1 is 0.0 when both denominators are nonzero and TP=0."
         },
         "norm_gold": {
-          "precision": 1.0,
-          "recall": 0.25,
-          "f1": 0.4,
-          "true_positives": 1,
-          "predicted_denominator": 1,
+          "precision": 0.2727272727272727,
+          "recall": 0.75,
+          "f1": 0.39999999999999997,
+          "true_positives": 3,
+          "predicted_denominator": 11,
           "gold_denominator": 4,
+          "matched_predictions": 3,
           "unit_ids_scored": [
             "luke.6.20"
           ],
-          "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+          "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
         },
         "notes": [
           "Control baseline with bound-group-v1 Coptic segmentation.",
@@ -1510,14 +1530,14 @@
         "available": true,
         "train_size": 304,
         "eval_size": 41,
-        "joint_size": 345,
-        "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
+        "joint_size": 41,
+        "protocol": "train-only eflomal align → Dirichlet priors → holdout-only align with frozen priors (holdout never in fitting bitext)",
         "intrinsic": {
           "sentence_count": 41,
-          "mean_fwd_rev_agreement": 0.4915511680120855,
-          "mean_alignment_density": 0.054425175433997754,
-          "mean_source_fertility": 0.9323611136473446,
-          "total_sym_links": 774,
+          "mean_fwd_rev_agreement": 0.5705126478202238,
+          "mean_alignment_density": 0.05179656757911304,
+          "mean_source_fertility": 0.9050540930589284,
+          "total_sym_links": 759,
           "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
         },
         "config": {
@@ -1531,71 +1551,37 @@
           "fast_align_variational_bayes": true,
           "symmetrization": "grow-diag-final-and",
           "binary_path": "/agent/repos/thomas/data/local/aligners/eflomal",
-          "python_module": true
+          "python_module": true,
+          "priors_path": "/tmp/thomas-eflomal-priors-lgtlqmxw/train.priors"
         },
         "notes": [
           "eflomal Gibbs sampler uses OS entropy; seed is recorded for config provenance but does not fully pin C RNG.",
           "Source=Sahidic (bound-group tokens), target=Greek (whitespace).",
-          "No LLM; offline after setup."
+          "No LLM; offline after setup.",
+          "Aligned with frozen Dirichlet priors from train.priors."
         ],
         "norm_gold": {
-          "precision": 0.5,
-          "recall": 0.2857142857142857,
-          "f1": 0.36363636363636365,
-          "true_positives": 2,
-          "predicted_denominator": 4,
+          "precision": 0.6666666666666666,
+          "recall": 0.5714285714285714,
+          "f1": 0.6153846153846153,
+          "true_positives": 4,
+          "predicted_denominator": 6,
           "gold_denominator": 7,
+          "matched_predictions": 4,
           "unit_ids_scored": [
             "matthew.13.31"
           ],
-          "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
+          "notes": "Soft projection: segmented left matches whitespace gold left by equality or contiguous substring; right_norm must match exactly. Provisional gold only - not human-checked. Intrinsic agreement remains the primary bake-off metric."
         }
       },
       "fast_align": {
         "aligner": "fast_align",
-        "available": true,
+        "available": false,
+        "skipped": true,
         "train_size": 304,
         "eval_size": 41,
-        "joint_size": 345,
-        "protocol": "joint unsupervised alignment of train_subset + eval; metrics computed on eval unit_ids only",
-        "intrinsic": {
-          "sentence_count": 41,
-          "mean_fwd_rev_agreement": 0.407236470396113,
-          "mean_alignment_density": 0.06773389331271772,
-          "mean_source_fertility": 1.1561773605232797,
-          "total_sym_links": 946,
-          "notes": "fwd_rev_agreement = |fwd&rev| / |fwd U rev| per sentence, averaged. density = symmetrized links / (src_len * trg_len). fertility = symmetrized links / src_len."
-        },
-        "config": {
-          "seed": 36,
-          "eflomal_model": 3,
-          "eflomal_n_samplers": 1,
-          "eflomal_null_prior": 0.2,
-          "fast_align_iterations": 5,
-          "fast_align_favor_diagonal": true,
-          "fast_align_optimize_diagonal": true,
-          "fast_align_variational_bayes": true,
-          "symmetrization": "grow-diag-final-and",
-          "binary_path": "/agent/repos/thomas/data/local/aligners/fast_align"
-        },
-        "notes": [
-          "fast_align EM is deterministic for fixed -I / -d / -o / -v flags.",
-          "Reverse pass uses -r; pairs kept in left=source (Sahidic) coords.",
-          "Symmetrization: pure-Python grow-diag-final-and (atools optional).",
-          "No LLM; offline after setup."
-        ],
-        "norm_gold": {
-          "precision": 0.6,
-          "recall": 0.42857142857142855,
-          "f1": 0.5,
-          "true_positives": 3,
-          "predicted_denominator": 5,
-          "gold_denominator": 7,
-          "unit_ids_scored": [
-            "matthew.13.31"
-          ],
-          "notes": "Norm-form soft match bridges whitespace v1 gold and bound-group v2 aligner tokens. Provisional gold only - not human-checked."
-        }
+        "error": "holdout scores omitted for fast_align: adapter has no frozen-prior / apply path; refusing joint train+holdout fit",
+        "protocol": "omitted-to-prevent-holdout-leakage"
       }
     }
   },
@@ -1607,16 +1593,17 @@
     "rationale": [
       "eflomal evaluated first per PLAN.md / JAK-36; not preselected.",
       "Identical v3 train/dev/holdout + bound-group-v1 segmentation for both.",
-      "Full-train dev fwd↔rev agreement: eflomal=0.5071, fast_align=0.4192 (Δ=+0.0879).",
-      "eflomal learning curve agreement 25%→100%: 0.4956→0.5330.",
-      "fast_align learning curve agreement 25%→100%: 0.4199→0.4174.",
+      "Full-train dev fwd↔rev agreement: eflomal=0.5001, fast_align=0.4172 (Δ=+0.0828).",
+      "eflomal learning curve agreement 25%→100%: 0.4508→0.5013.",
+      "fast_align learning curve agreement 25%→100%: 0.4213→0.4172.",
       "eflomal leads on intrinsic agreement; still pending Jake adopt."
     ]
   },
   "limitations": [
     "Provisional gold is tiny / unreviewed; intrinsic agreement is primary.",
     "eflomal C sampler is stochastic; seed recorded but not fully pinning.",
-    "Joint unsupervised protocol mixes train+eval during alignment.",
+    "Dev curves use joint train+dev (dev is not sealed holdout).",
+    "Holdout: eflomal train-only priors then holdout-only align; fast_align holdout omitted (no apply path).",
     "No LLM. Greek = Vaticanus B* only. PA omission never positive pairs.",
     "Thomas 7 / P.Oxy. 654 excluded from training stack."
   ]

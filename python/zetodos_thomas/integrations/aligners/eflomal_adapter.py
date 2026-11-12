@@ -3,7 +3,8 @@
 
 Uses the eflomal Python package when importable; otherwise raises with a
 setup hint. Alignments are bidirectional (forward + reverse) then symmetrized
-in-process. No LLM.
+in-process. Supports optional Dirichlet priors for train-then-infer (holdout).
+No LLM.
 """
 
 from __future__ import annotations
@@ -16,6 +17,7 @@ from typing import Any
 
 from zetodos_thomas.integrations.aligners.discovery import probe_eflomal
 from zetodos_thomas.integrations.aligners.pharaoh import (
+    format_pharaoh_line,
     parse_pharaoh_batch,
     symmetrize_batch,
 )
@@ -39,14 +41,37 @@ def _write_side(path: Path, sentences: list[BitextSentence], *, source: bool) ->
     path.write_text("".join(lines), encoding="utf-8")
 
 
+def write_priors_from_links(
+    links: AlignmentLinks,
+    priors_path: Path,
+) -> None:
+    """Estimate eflomal Dirichlet priors from an AlignmentLinks batch."""
+    eflomal_mod: Any = importlib.import_module("eflomal")
+    src_lines = [" ".join(s.source_tokens) + "\n" for s in links.sentences]
+    trg_lines = [" ".join(s.target_tokens) + "\n" for s in links.sentences]
+    fwd_lines = [format_pharaoh_line(a.pairs) + "\n" for a in links.forward]
+    rev_lines = [format_pharaoh_line(a.pairs) + "\n" for a in links.reverse]
+    priors_tuple = eflomal_mod.calculate_priors(
+        src_lines, trg_lines, fwd_lines, rev_lines, reverse=False
+    )
+    priors_path.parent.mkdir(parents=True, exist_ok=True)
+    with priors_path.open("w", encoding="utf-8") as priors_f:
+        eflomal_mod.write_priors(priors_f, *priors_tuple)
+
+
 def align_eflomal(
     sentences: list[BitextSentence],
     *,
     config: AlignerConfig | None = None,
     repo_root: Path | None = None,
     work_dir: Path | None = None,
+    priors_path: Path | None = None,
 ) -> AlignmentLinks:
-    """Align ``sentences`` with eflomal (src=Sahidic, trg=Greek)."""
+    """Align ``sentences`` with eflomal (src=Sahidic, trg=Greek).
+
+    When ``priors_path`` is set, Dirichlet priors from a prior train-only run
+    are applied (frozen-model inference for holdout / sealed eval).
+    """
     if not sentences:
         msg = "eflomal requires at least one bitext sentence"
         raise ValueError(msg)
@@ -82,17 +107,25 @@ def align_eflomal(
         _write_side(src_path, sentences, source=True)
         _write_side(trg_path, sentences, source=False)
 
-        with (
-            src_path.open(encoding="utf-8") as src_f,
-            trg_path.open(encoding="utf-8") as trg_f,
-        ):
-            aligner.align(
-                src_f,
-                trg_f,
-                links_filename_fwd=str(fwd_path),
-                links_filename_rev=str(rev_path),
-                quiet=True,
-            )
+        priors_input = None
+        if priors_path is not None:
+            priors_input = priors_path.open(encoding="utf-8")
+        try:
+            with (
+                src_path.open(encoding="utf-8") as src_f,
+                trg_path.open(encoding="utf-8") as trg_f,
+            ):
+                aligner.align(
+                    src_f,
+                    trg_f,
+                    links_filename_fwd=str(fwd_path),
+                    links_filename_rev=str(rev_path),
+                    priors_input=priors_input,
+                    quiet=True,
+                )
+        finally:
+            if priors_input is not None:
+                priors_input.close()
 
         fwd_lines = fwd_path.read_text(encoding="utf-8").splitlines()
         rev_lines = rev_path.read_text(encoding="utf-8").splitlines()
@@ -111,6 +144,14 @@ def align_eflomal(
         trg_lens,
         method=cfg.symmetrization,
     )
+    notes = [
+        "eflomal Gibbs sampler uses OS entropy; seed is recorded for "
+        "config provenance but does not fully pin C RNG.",
+        "Source=Sahidic (bound-group tokens), target=Greek (whitespace).",
+        "No LLM; offline after setup.",
+    ]
+    if priors_path is not None:
+        notes.append(f"Aligned with frozen Dirichlet priors from {priors_path.name}.")
     return AlignmentLinks(
         aligner=AlignerName.EFLOMAL,
         sentences=list(sentences),
@@ -122,11 +163,7 @@ def align_eflomal(
             **cfg.as_dict(),
             "binary_path": availability.binary_path,
             "python_module": availability.python_module,
+            "priors_path": str(priors_path) if priors_path else None,
         },
-        notes=[
-            "eflomal Gibbs sampler uses OS entropy; seed is recorded for "
-            "config provenance but does not fully pin C RNG.",
-            "Source=Sahidic (bound-group tokens), target=Greek (whitespace).",
-            "No LLM; offline after setup.",
-        ],
+        notes=notes,
     )

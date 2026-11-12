@@ -54,7 +54,11 @@ def _find_binary(name: str, repo_root: Path | None) -> Path | None:
 
 
 def probe_eflomal(repo_root: Path | None = None) -> AlignerAvailability:
-    """Probe eflomal Python module and/or native binary."""
+    """Probe eflomal; available only when the Python package can be imported.
+
+    A bare native binary without the Python wrapper is not enough for the
+    typed adapter (``align_eflomal``), so that state is reported unavailable.
+    """
     binary = _find_binary("eflomal", repo_root)
     has_module = importlib.util.find_spec("eflomal") is not None
     if has_module:
@@ -71,8 +75,12 @@ def probe_eflomal(repo_root: Path | None = None) -> AlignerAvailability:
     if binary is not None:
         return AlignerAvailability(
             name=AlignerName.EFLOMAL,
-            available=True,
-            detail=f"eflomal binary available at {binary} (no Python module)",
+            available=False,
+            detail=(
+                f"eflomal binary at {binary} but Python package missing; "
+                "install with `uv pip install --python .venv/bin/python "
+                "<eflomal-src>` (or re-run `thomas align setup-aligners`)."
+            ),
             binary_path=str(binary),
             python_module=False,
         )
@@ -82,7 +90,7 @@ def probe_eflomal(repo_root: Path | None = None) -> AlignerAvailability:
         detail=(
             "eflomal not found. Run `uv run thomas align setup-aligners` "
             "(needs gcc, make, libomp, python3-dev) or install from "
-            "https://github.com/robertostling/eflomal — then re-run offline."
+            "https://github.com/robertostling/eflomal - then re-run offline."
         ),
     )
 
