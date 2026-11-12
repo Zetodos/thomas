@@ -166,28 +166,26 @@ def validate_lexical_candidate_table(
             )
         else:
             max_pa = max(row.per_aligner_observation_counts.values())
-            if row.observation_count != max_pa:
+            sum_pa = sum(row.per_aligner_observation_counts.values())
+            # Union of (unit, c_tid, g_tid) across aligners: max ≤ |U| ≤ sum.
+            if not (max_pa <= row.observation_count <= sum_pa):
                 issues.append(
                     LexicalValidationIssue(
                         "error",
                         "observation_count_inconsistent",
-                        f"observation_count {row.observation_count} != "
-                        f"max(per_aligner) {max_pa} for "
+                        f"observation_count {row.observation_count} outside "
+                        f"union bounds [max={max_pa}, sum={sum_pa}] for "
                         f"{row.coptic_wordform!r}↔{row.greek_wordform!r}",
                     )
                 )
-            # Summing aligners would double-count; flag if headline looks like a sum.
-            if (
-                len(row.per_aligner_observation_counts) > 1
-                and row.observation_count
-                == sum(row.per_aligner_observation_counts.values())
-                and row.observation_count > max_pa
-            ):
+            if row.observation_count < len(row.source_unit_ids):
                 issues.append(
                     LexicalValidationIssue(
                         "error",
-                        "fabricated_summed_count",
-                        "observation_count appears to sum aligners (forbidden)",
+                        "observation_count_below_unit_evidence",
+                        f"observation_count {row.observation_count} < "
+                        f"|source_unit_ids|={len(row.source_unit_ids)} for "
+                        f"{row.coptic_wordform!r}↔{row.greek_wordform!r}",
                     )
                 )
         ctx = f"observed wordform {row.coptic_wordform!r}↔{row.greek_wordform!r}"
@@ -268,7 +266,7 @@ def validate_lexical_candidate_table(
                     "confidence row must apply to wordform or lemma layer",
                 )
             )
-        # Confidence may be null (insufficient evidence) — that is OK.
+        # Calibrated confidence may be null (insufficient / uncalibrated) — OK.
         # Fabrication would be inventing observation_count in evidence.
         obs = row.evidence.get("observation_count")
         if obs is not None and not isinstance(obs, int):
@@ -287,23 +285,59 @@ def validate_lexical_candidate_table(
                     "confidence evidence observation_count must be >= 0",
                 )
             )
-
-    # Dual-aligner keep-both expectation in summary when present.
-    summary = table.summary or {}
-    active = summary.get("phase2_active_aligners")
-    if active is not None:
-        if set(active) != {"eflomal", "fast_align"}:
+        # Sparse / single-aligner evidence cannot carry a calibrated confidence.
+        aligners = row.evidence.get("contributing_aligners") or []
+        if (
+            row.confidence is not None
+            and isinstance(obs, int)
+            and (obs < 3 or len(aligners) < 2)
+        ):
             issues.append(
                 LexicalValidationIssue(
-                    "warning",
+                    "error",
+                    "uncalibrated_confidence",
+                    "confidence must be null when evidence is sparse/noisy "
+                    f"(observation_count={obs}, aligners={aligners!r})",
+                )
+            )
+
+    # Dual-aligner keep-both: declared phase2 set must match both aligners and
+    # the aligners that actually contributed observations (reject mismatch).
+    summary = table.summary or {}
+    expected_aligners = {"eflomal", "fast_align"}
+    active = summary.get("phase2_active_aligners")
+    if active is not None:
+        if set(active) != expected_aligners:
+            issues.append(
+                LexicalValidationIssue(
+                    "error",
                     "phase2_aligners",
-                    f"expected both eflomal and fast_align active, got {active!r}",
+                    f"keep-both requires both eflomal and fast_align, got {active!r}",
+                )
+            )
+    actual_aligners = {
+        name for row in table.observed_wordforms for name in row.contributing_aligners
+    }
+    if active is not None and actual_aligners and set(active) != actual_aligners:
+        # Declared set must not silently omit or invent an aligner relative to data.
+        # Partial contribution (one aligner saw fewer pairs) is fine; the *set* of
+        # names present in provenance must equal the declared keep-both set when
+        # both appear anywhere in the table. If only one name appears at all, that
+        # is a declared-vs-actual mismatch under keep-both.
+        if actual_aligners != expected_aligners:
+            issues.append(
+                LexicalValidationIssue(
+                    "error",
+                    "phase2_aligner_mismatch",
+                    "declared phase2_active_aligners "
+                    f"{active!r} != actual contributing aligners "
+                    f"{sorted(actual_aligners)!r}",
                 )
             )
     if summary.get("adopted_aligner") not in (None,):
         issues.append(
             LexicalValidationIssue(
-                "warning",
+                "error",
                 "adopted_aligner",
                 f"Jake keep-both expects adopted_aligner=null, got "
                 f"{summary.get('adopted_aligner')!r}",

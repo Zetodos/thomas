@@ -112,7 +112,7 @@ def test_layers_stay_separate_and_counts_are_evidence_backed() -> None:
     assert hn.split_membership is SplitMembership.TRAIN
     assert hn.per_aligner_observation_counts["eflomal"] == 2
     assert hn.per_aligner_observation_counts["fast_align"] == 2
-    # Headline count is max(per_aligner), never a fabricated sum.
+    # Fully overlapping aligner views → union equals max (and per-aligner).
     assert hn.observation_count == 2
     assert set(hn.contributing_aligners) == {"eflomal", "fast_align"}
     assert hn.source_unit_ids == ["john.1.1", "john.1.2"]
@@ -137,11 +137,132 @@ def test_layers_stay_separate_and_counts_are_evidence_backed() -> None:
     )
     assert conf.layer is LexicalLayer.CONFIDENCE_ESTIMATE
     assert conf.applies_to_layer is LexicalLayer.OBSERVED_WORDFORM
-    assert conf.confidence is not None
+    # Ranking aid may be present; calibrated confidence stays null (uncalibrated).
+    assert conf.heuristic_ranking_score is not None
+    assert conf.confidence is None
     assert conf.components.aligner_agreement == 1.0
 
     report = validate_lexical_candidate_table(table)
     assert report.ok, report.issues
+
+
+def test_observation_count_is_union_across_partially_disjoint_aligners() -> None:
+    """Jake: |union(unit,c_tid,g_tid)| — not max(per_aligner)."""
+    sents = [
+        _sentence("john.1.1", ("ϩⲛ",), ("εν",)),
+        _sentence("john.1.2", ("ϩⲛ",), ("εν",)),
+        _sentence("john.1.3", ("ϩⲛ",), ("εν",)),
+    ]
+    efl = _links(
+        AlignerName.EFLOMAL,
+        sents,
+        {
+            "john.1.1": ((0, 0),),
+            "john.1.2": ((0, 0),),
+            # eflomal misses john.1.3
+        },
+    )
+    fa = _links(
+        AlignerName.FAST_ALIGN,
+        sents,
+        {
+            # fast_align misses john.1.1
+            "john.1.2": ((0, 0),),
+            "john.1.3": ((0, 0),),
+        },
+    )
+    table = build_lexical_candidate_table({"eflomal": efl, "fast_align": fa})
+    hn = next(
+        r
+        for r in table.observed_wordforms
+        if r.coptic_wordform == "ϩⲛ" and r.greek_wordform == "εν"
+    )
+    assert hn.per_aligner_observation_counts["eflomal"] == 2
+    assert hn.per_aligner_observation_counts["fast_align"] == 2
+    # Union of three distinct unit/token triples (overlap on john.1.2 only).
+    assert hn.observation_count == 3
+    assert hn.source_unit_ids == ["john.1.1", "john.1.2", "john.1.3"]
+    # Lemma rollup uses the same union-based wordform counts.
+    lemma = next(
+        r
+        for r in table.inferred_lemmas
+        if r.coptic_lemma == "ϩⲛ" and r.greek_lemma == "εν"
+    )
+    assert lemma.observation_count == 3
+    report = validate_lexical_candidate_table(table)
+    assert report.ok, report.issues
+
+
+def test_sparse_confidence_stays_null_with_heuristic_rank() -> None:
+    """Jake: sparse/noisy rows must not look like calibrated correctness."""
+    sents = [_sentence("john.1.1", ("ϩⲛ",), ("εν",))]
+    efl = _links(AlignerName.EFLOMAL, sents, {"john.1.1": ((0, 0),)})
+    fa = _links(AlignerName.FAST_ALIGN, sents, {"john.1.1": ((0, 0),)})
+    # Dual-aligner singleton still has no calibrated confidence rule.
+    dual = build_confidence_estimates(
+        build_observed_wordforms(
+            accumulate_wordform_observations({"eflomal": efl, "fast_align": fa})
+        )
+    )
+    assert len(dual) == 1
+    assert dual[0].heuristic_ranking_score is not None
+    assert dual[0].confidence is None
+
+    # Noisy single-aligner singleton: ranking may exist; confidence null.
+    sparse = build_confidence_estimates(
+        build_observed_wordforms(accumulate_wordform_observations({"eflomal": efl}))
+    )
+    assert sparse[0].confidence is None
+    assert sparse[0].heuristic_ranking_score is not None
+
+    # Validation rejects a fabricated calibrated confidence on sparse evidence.
+    fake = build_lexical_candidate_table({"eflomal": efl, "fast_align": fa})
+    fake.confidence_estimates[0].confidence = 0.9
+    report = validate_lexical_candidate_table(fake)
+    assert not report.ok
+    assert any(i.code == "uncalibrated_confidence" for i in report.issues)
+
+
+def test_keep_both_errors_when_one_aligner_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from zetodos_thomas.integrations.aligners.eflomal_adapter import (
+        EflomalNotAvailableError,
+    )
+    from zetodos_thomas.lexicon import candidates as cand
+
+    sents = [_sentence("john.1.1", ("ϩⲛ",), ("εν",))]
+
+    def _boom(*_a: object, **_k: object) -> AlignmentLinks:
+        raise EflomalNotAvailableError("eflomal missing for keep-both test")
+
+    monkeypatch.setattr(cand, "align_eflomal", _boom)
+
+    with pytest.raises(RuntimeError, match="keep-both requires every requested"):
+        cand.align_train_sentences(sents)
+
+
+def test_keep_both_rejects_missing_link_artifact(tmp_path: Path) -> None:
+    from unittest.mock import MagicMock
+
+    from zetodos_thomas.lexicon.candidates import generate_lexical_candidates
+
+    corpus = MagicMock()
+    corpus.id = "pilot"
+    corpus.greek_source_id = "vaticanus"
+    corpus.sahidic_source_id = "horner"
+    splits = MagicMock()
+    splits.id = "split-v3"
+    splits.unit_ids_for.return_value = ["john.1.1"]
+    bitext = [_sentence("john.1.1", ("ϩⲛ",), ("εν",))]
+
+    with pytest.raises(ValueError, match="keep-both requires every requested"):
+        generate_lexical_candidates(
+            corpus=corpus,
+            splits=splits,
+            bitext_sentences=bitext,
+            link_paths={"eflomal": tmp_path / "only-eflomal.json"},
+        )
 
 
 def test_rejects_dev_or_thomas_observations() -> None:
@@ -185,6 +306,18 @@ def test_confidence_null_when_no_components() -> None:
     # Manually craft empty-ish path via zero-count skip: confidence built only
     # from positive observed rows; empty list → empty confidence.
     assert build_confidence_estimates([]) == []
+
+
+def test_validate_rejects_declared_vs_actual_aligner_mismatch() -> None:
+    sents = [_sentence("john.1.1", ("ϩⲛ",), ("εν",))]
+    efl = _links(AlignerName.EFLOMAL, sents, {"john.1.1": ((0, 0),)})
+    table = build_lexical_candidate_table({"eflomal": efl})
+    # Declare keep-both while only one aligner contributed.
+    table.summary["phase2_active_aligners"] = ["eflomal", "fast_align"]
+    table.summary["adopted_aligner"] = None
+    report = validate_lexical_candidate_table(table)
+    assert not report.ok
+    assert any(i.code == "phase2_aligner_mismatch" for i in report.issues)
 
 
 def test_compact_artifact_roundtrip(tmp_path: Path) -> None:
@@ -337,7 +470,10 @@ def test_duplicate_pharaoh_pairs_do_not_inflate_counts() -> None:
         symmetrized=[DirectionalAlignment(unit_id="john.1.1", pairs=((0, 0), (0, 0)))],
     )
     accum = accumulate_wordform_observations({"eflomal": links})
-    assert accum[("ϩⲛ", "εν")].per_aligner["eflomal"] == 1
+    assert len(accum[("ϩⲛ", "εν")].per_aligner_occurrences["eflomal"]) == 1
+    assert accum[("ϩⲛ", "εν")].occurrences == {
+        ("john.1.1", "v2:c/john.1.1/t/0", "v1:g/john.1.1/t/0")
+    }
 
 
 def test_example_cap_still_updates_aligners_on_existing() -> None:

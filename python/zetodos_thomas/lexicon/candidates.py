@@ -75,7 +75,11 @@ COLUMNAR_FORMAT = "columnar-v1"
 class _PairAccum:
     """Mutable aggregator for one Coptic↔Greek wordform pair."""
 
-    per_aligner: Counter[str] = field(default_factory=Counter)
+    # Distinct aligned token-pair occurrences: (unit_id, coptic_tid, greek_tid).
+    occurrences: set[tuple[str, str, str]] = field(default_factory=set)
+    per_aligner_occurrences: dict[str, set[tuple[str, str, str]]] = field(
+        default_factory=dict
+    )
     unit_ids: set[str] = field(default_factory=set)
     examples: list[ObservationExample] = field(default_factory=list)
 
@@ -125,12 +129,17 @@ def align_train_sentences(
     config: AlignerConfig | None = None,
     repo_root: Path | None = None,
 ) -> dict[str, AlignmentLinks]:
-    """Run each active Phase-2 aligner on train sentences only."""
+    """Run each requested Phase-2 aligner on train sentences only.
+
+    Keep-both (JAK-36): every requested aligner must succeed. A single missing
+    adapter is a hard error — never silently degrade to a one-aligner table.
+    """
     _assert_train_only(train)
     cfg = config or AlignerConfig()
+    requested = tuple(aligners) if aligners else DEFAULT_PHASE2_ALIGNERS
     out: dict[str, AlignmentLinks] = {}
     errors: dict[str, str] = {}
-    for name in aligners:
+    for name in requested:
         try:
             if name is AlignerName.EFLOMAL:
                 links = align_eflomal(train, config=cfg, repo_root=repo_root)
@@ -146,8 +155,12 @@ def align_train_sentences(
             out[name.value] = links
         except (EflomalNotAvailableError, FastAlignNotAvailableError) as exc:
             errors[name.value] = str(exc)
-    if not out:
-        msg = f"no aligners available for lexical candidates: {errors}"
+    missing = [name.value for name in requested if name.value not in out]
+    if missing:
+        msg = (
+            "keep-both requires every requested aligner; "
+            f"missing={missing}; errors={errors}"
+        )
         raise RuntimeError(msg)
     return out
 
@@ -301,16 +314,17 @@ def accumulate_wordform_observations(
         ):
             key = (c_wf, g_wf)
             bucket = accum.setdefault(key, _PairAccum())
-            bucket.per_aligner[aligner] += 1
+            occ = (unit_id, c_tid, g_tid)
+            bucket.occurrences.add(occ)
+            bucket.per_aligner_occurrences.setdefault(aligner, set()).add(occ)
             bucket.unit_ids.add(unit_id)
-            ek = (unit_id, c_tid, g_tid)
             updated_existing = False
             for ex in bucket.examples:
                 if (
                     ex.unit_id,
                     ex.coptic_token_id,
                     ex.greek_token_id,
-                ) == ek:
+                ) == occ:
                     if aligner not in ex.aligners:
                         ex.aligners.append(aligner)
                     updated_existing = True
@@ -335,16 +349,18 @@ def accumulate_wordform_observations(
 
 
 def _observation_count(bucket: _PairAccum) -> int:
-    """Union-style count: max per-aligner (not sum — avoids double-counting).
+    """Union of distinct ``(unit_id, coptic_tid, greek_tid)`` across aligners.
 
-    Dual-aligner provenance stays in ``per_aligner_observation_counts``. The
-    headline ``observation_count`` is the strongest single-aligner attestation
-    count so we never invent a larger figure by summing overlapping views of
-    the same verse links.
+    Per-aligner counts remain separate (``len`` of each aligner's occurrence
+    set). Never use ``max(per_aligner)`` as a stand-in for the union.
     """
-    if not bucket.per_aligner:
-        return 0
-    return max(bucket.per_aligner.values())
+    return len(bucket.occurrences)
+
+
+def _per_aligner_counts(bucket: _PairAccum) -> dict[str, int]:
+    return {
+        name: len(occs) for name, occs in sorted(bucket.per_aligner_occurrences.items())
+    }
 
 
 def build_observed_wordforms(
@@ -364,14 +380,15 @@ def build_observed_wordforms(
         if dice_model is not None:
             co = dice_model.pair_counts.get((c_wf, g_wf), 0)
             dice = dice_model.dice(c_wf, g_wf) if co else None
+        per_aligner = _per_aligner_counts(bucket)
         rows.append(
             ObservedWordformCandidate(
                 layer=LexicalLayer.OBSERVED_WORDFORM,
                 coptic_wordform=c_wf,
                 greek_wordform=g_wf,
                 observation_count=count,
-                per_aligner_observation_counts=dict(sorted(bucket.per_aligner.items())),
-                contributing_aligners=sorted(bucket.per_aligner),
+                per_aligner_observation_counts=per_aligner,
+                contributing_aligners=sorted(per_aligner),
                 source_unit_ids=sorted(bucket.unit_ids),
                 split_membership=SplitMembership.TRAIN,
                 examples=bucket.examples,
@@ -402,10 +419,14 @@ def build_inferred_lemmas(
         per_aligner: Counter[str] = Counter()
         unit_ids: set[str] = set()
         pairs: list[dict[str, str | int]] = []
+        # Wordform pairs partition distinct (unit, c_tid, g_tid) triples, so the
+        # lemma rollup observation_count is the sum of member union counts.
+        obs = 0
         for member in members:
             for aligner, count in member.per_aligner_observation_counts.items():
                 per_aligner[aligner] += count
             unit_ids.update(member.source_unit_ids)
+            obs += member.observation_count
             pairs.append(
                 {
                     "coptic_wordform": member.coptic_wordform,
@@ -413,9 +434,6 @@ def build_inferred_lemmas(
                     "observation_count": member.observation_count,
                 }
             )
-        # Headline count = max over aligners of summed wordform counts for that
-        # aligner (still evidence-backed; never invented).
-        obs = max(per_aligner.values()) if per_aligner else 0
         out.append(
             InferredLemmaCandidate(
                 layer=LexicalLayer.INFERRED_LEMMA,
@@ -437,14 +455,22 @@ def _observation_support(count: int) -> float | None:
     """Monotone support in (0, 1); None when count is zero (missing evidence)."""
     if count <= 0:
         return None
-    # 1→~0.5, 3→~0.75, 10→~0.91 — never claims certainty from sparse data.
+    # 1→~0.5, 3→~0.75, 10→~0.91 — ranking aid only, not calibrated confidence.
     return count / (count + 1.0)
+
+
+CONFIDENCE_METHOD = "heuristic_ranking_uncalibrated_v1"
 
 
 def build_confidence_estimates(
     wordforms: Sequence[ObservedWordformCandidate],
 ) -> list[ConfidenceEstimate]:
-    """Separate confidence layer over observed wordforms (not collapsed into them)."""
+    """Separate confidence layer over observed wordforms (not collapsed into them).
+
+    ``heuristic_ranking_score`` is the mean of available ranking components.
+    ``confidence`` stays null: JAK-37 has no independently justified calibrated
+    correctness estimator, so sparse/noisy rows must not look calibrated.
+    """
     by_coptic: dict[str, list[ObservedWordformCandidate]] = defaultdict(list)
     for row in wordforms:
         by_coptic[row.coptic_wordform].append(row)
@@ -480,14 +506,11 @@ def build_confidence_estimates(
         if dice is not None and dice > 0:
             components.append(dice)
 
-        confidence: float | None
-        uncertainty: float | None
+        heuristic: float | None
         if not components:
-            confidence = None
-            uncertainty = None
+            heuristic = None
         else:
-            confidence = sum(components) / len(components)
-            uncertainty = 1.0 - confidence
+            heuristic = sum(components) / len(components)
 
         estimates.append(
             ConfidenceEstimate(
@@ -497,17 +520,20 @@ def build_confidence_estimates(
                     "coptic_wordform": row.coptic_wordform,
                     "greek_wordform": row.greek_wordform,
                 },
-                method="relative_frequency_aligner_agreement_support_v1",
-                confidence=confidence,
-                uncertainty=uncertainty,
+                method=CONFIDENCE_METHOD,
+                heuristic_ranking_score=heuristic,
+                # No calibrated correctness rule is adopted in JAK-37.
+                confidence=None,
+                uncertainty=None,
                 components=ConfidenceComponents(
                     relative_frequency_among_coptic_candidates=rel_freq,
                     aligner_agreement=agreement,
                     observation_support=support,
                     dice_baseline=dice,
                     notes=(
-                        "Mean of available components only; null components omitted. "
-                        "Never fabricates observation counts."
+                        "heuristic_ranking_score = mean of available components; "
+                        "confidence left null (uncalibrated / evidence-insufficient "
+                        "for a correctness claim). Never fabricates observation counts."
                     ),
                 ),
                 evidence={
@@ -597,11 +623,12 @@ def build_lexical_candidate_table(
             },
             "confidence_estimate": {
                 "description": (
-                    "Separate confidence/uncertainty scores keyed to observed "
-                    "wordform pairs. Null when evidence is insufficient."
+                    "Separate heuristic ranking vs calibrated confidence keyed to "
+                    "observed wordform pairs. confidence is null without an "
+                    "independent calibration rule; heuristic_ranking_score ranks only."
                 ),
                 "entry_count": len(confidence),
-                "method": "relative_frequency_aligner_agreement_support_v1",
+                "method": CONFIDENCE_METHOD,
             },
         },
         observed_wordforms=wordforms,
@@ -623,9 +650,12 @@ def build_lexical_candidate_table(
             "Layers are separate: do not collapse wordforms, lemmas, and confidence.",
             "Only train-split observations feed this table (JAK-33/43 holdout rules).",
             "No Thomas-7 / P.Oxy. 654 leakage; Vaticanus B* Greek only.",
-            "observation_count is max(per_aligner counts), not a fabricated sum.",
+            "observation_count is the union of "
+            "(unit_id, coptic_token_id, greek_token_id) across aligners; "
+            "per_aligner counts stay separate.",
+            "heuristic_ranking_score is uncalibrated; confidence stays null in JAK-37.",
             "Jake decision (JAK-36): phase2_active_aligners=[eflomal, fast_align]; "
-            "adopted_aligner=null.",
+            "adopted_aligner=null; both aligners required (keep-both).",
             "Dice values are optional secondary metrics from JAK-28 fit on the same "
             "train units — not a redo of the elementary baseline as the table.",
         ],
@@ -733,6 +763,7 @@ def table_to_columnar_payload(table: LexicalCandidateTable) -> dict[str, Any]:
     # Slim confidence rows; components are rebuilt on load from observed evidence.
     conf_fields = [
         "observed_index",
+        "heuristic_ranking_score",
         "confidence",
         "uncertainty",
     ]
@@ -745,7 +776,14 @@ def table_to_columnar_payload(table: LexicalCandidateTable) -> dict[str, Any]:
         idx = obs_index.get(key)
         if idx is None:
             continue
-        conf_rows.append([idx, row.confidence, row.uncertainty])
+        conf_rows.append(
+            [
+                idx,
+                row.heuristic_ranking_score,
+                row.confidence,
+                row.uncertainty,
+            ]
+        )
 
     return {
         "id": table.id,
@@ -766,12 +804,13 @@ def table_to_columnar_payload(table: LexicalCandidateTable) -> dict[str, Any]:
         "confidence_estimates": {
             "fields": conf_fields,
             "rows": conf_rows,
-            "method": "relative_frequency_aligner_agreement_support_v1",
+            "method": CONFIDENCE_METHOD,
             "applies_to_layer": LexicalLayer.OBSERVED_WORDFORM.value,
             "notes": (
                 "observed_index references observed_wordforms.rows; "
                 "components rebuilt on load from observed evidence; "
-                "null scores mean insufficient evidence (not fabricated)."
+                "heuristic_ranking_score is uncalibrated; "
+                "confidence null means no calibrated correctness claim."
             ),
         },
         "provenance": table.provenance,
@@ -915,9 +954,7 @@ def columnar_payload_to_table(payload: dict[str, Any]) -> LexicalCandidateTable:
 
     conf_block = payload["confidence_estimates"]
     conf_fields = conf_block["fields"]
-    conf_method = conf_block.get(
-        "method", "relative_frequency_aligner_agreement_support_v1"
-    )
+    conf_method = conf_block.get("method", CONFIDENCE_METHOD)
     # Rebuild relative-frequency denominators from the observed layer.
     by_coptic_total: dict[str, int] = defaultdict(int)
     for obs in observed:
@@ -944,7 +981,25 @@ def columnar_payload_to_table(payload: dict[str, Any]) -> LexicalCandidateTable:
             aligner_agreement=row.get("aligner_agreement", agreement),
             observation_support=row.get("observation_support", support),
             dice_baseline=row.get("dice_baseline", target.dice_cooccurrence),
+            notes=(
+                "heuristic_ranking_score = mean of available components; "
+                "confidence left null without an independent calibration rule."
+            ),
         )
+        component_vals = [
+            v
+            for v in (
+                components.relative_frequency_among_coptic_candidates,
+                components.aligner_agreement,
+                components.observation_support,
+                components.dice_baseline,
+            )
+            if isinstance(v, (int, float)) and float(v) > 0
+        ]
+        rebuilt_heuristic = (
+            sum(component_vals) / len(component_vals) if component_vals else None
+        )
+        heuristic = row.get("heuristic_ranking_score", rebuilt_heuristic)
         confidence.append(
             ConfidenceEstimate(
                 layer=LexicalLayer.CONFIDENCE_ESTIMATE,
@@ -954,6 +1009,7 @@ def columnar_payload_to_table(payload: dict[str, Any]) -> LexicalCandidateTable:
                     "greek_wordform": target.greek_wordform,
                 },
                 method=conf_method,
+                heuristic_ranking_score=heuristic,
                 confidence=row.get("confidence"),
                 uncertainty=row.get("uncertainty"),
                 components=components,
@@ -1080,7 +1136,17 @@ def generate_lexical_candidates(
         "bitext_checksum_sha256": bitext_checksum_sha256,
     }
 
+    requested = tuple(aligners) if aligners else DEFAULT_PHASE2_ALIGNERS
+    requested_names = {name.value for name in requested}
     if link_paths:
+        supplied = set(link_paths)
+        missing_links = sorted(requested_names - supplied)
+        if missing_links:
+            msg = (
+                "keep-both requires every requested aligner link artifact; "
+                f"missing={missing_links}; supplied={sorted(supplied)}"
+            )
+            raise ValueError(msg)
         aligner_links = {
             name: load_compact_alignment_artifact(
                 path,
@@ -1089,11 +1155,12 @@ def generate_lexical_candidates(
                 expected_provenance=expected_provenance,
             )
             for name, path in link_paths.items()
+            if name in requested_names
         }
     else:
         aligner_links = align_train_sentences(
             train,
-            aligners=aligners,
+            aligners=requested,
             config=config,
             repo_root=repo_root,
         )

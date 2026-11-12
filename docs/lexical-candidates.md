@@ -30,16 +30,23 @@ labels for downstream morph upgrades.
 
 ### Confidence method
 
-`relative_frequency_aligner_agreement_support_v1` averages available
-components only (relative frequency among Coptic candidates, dual-aligner
-agreement, observation support, optional JAK-28 Dice). Missing components
-stay null; counts are never invented.
+`heuristic_ranking_uncalibrated_v1` exposes `heuristic_ranking_score` as the
+mean of available ranking components (relative frequency among Coptic
+candidates, dual-aligner agreement, observation support, optional JAK-28
+Dice). That score is for ranking only. Calibrated `confidence` stays null
+unless an independently justified calibration rule is adopted — sparse or
+noisy rows must not look like correctness probabilities. Counts are never
+invented.
 
 ## Dual-aligner provenance
 
 Each observed row carries `per_aligner_observation_counts` and
-`contributing_aligners`. Headline `observation_count = max(per_aligner)` so
-overlapping verse links are not double-counted by summing aligners.
+`contributing_aligners`. Headline `observation_count` is the size of the
+union of `(unit_id, coptic_token_id, greek_token_id)` across aligners
+(so partially disjoint aligner views are not collapsed to `max(per_aligner)`).
+Keep-both requires both `eflomal` and `fast_align` (or both validated link
+artifacts); a missing aligner is an error, and validation rejects
+declared-vs-actual aligner mismatch.
 
 Train-link inputs are also committed beside the table:
 
@@ -52,7 +59,7 @@ Train-link inputs are also committed beside the table:
 | --- | --- |
 | Dev / holdout / omission as observations | Train-role assert on every link sentence |
 | Thomas 7 / P.Oxy. 654 | Unit-id guards + split v3 exclusions |
-| Fabricated attestation counts | Validation rejects inconsistent / summed counts |
+| Fabricated attestation counts | Validation rejects counts outside union bounds `[max, sum]` of per-aligner |
 
 Optional Dice values reuse the JAK-28 `fit_lexical_baseline` on the **same**
 train units as a secondary metric — not a redo of the elementary baseline as

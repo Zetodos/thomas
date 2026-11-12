@@ -118,7 +118,12 @@ class ConfidenceComponents(BaseModel):
 
 
 class ConfidenceEstimate(BaseModel):
-    """Confidence/uncertainty for one keyed candidate (separate layer)."""
+    """Confidence/uncertainty for one keyed candidate (separate layer).
+
+    ``heuristic_ranking_score`` is an uncalibrated ranking aid only.
+    ``confidence`` is reserved for calibrated correctness estimates and stays
+    null unless an independently justified calibration rule applies.
+    """
 
     layer: LexicalLayer = LexicalLayer.CONFIDENCE_ESTIMATE
     applies_to_layer: LexicalLayer
@@ -126,9 +131,19 @@ class ConfidenceEstimate(BaseModel):
         description="Identity keys for the target layer entry (wordforms or lemmas).",
     )
     method: str
+    heuristic_ranking_score: float | None = Field(
+        default=None,
+        description=(
+            "Uncalibrated ranking heuristic from available components. "
+            "Not a probability of a correct Coptic→Greek mapping."
+        ),
+    )
     confidence: float | None = Field(
         default=None,
-        description="Null when evidence is insufficient to estimate.",
+        description=(
+            "Calibrated correctness confidence. Null when evidence is insufficient "
+            "or no independent calibration rule is adopted."
+        ),
     )
     uncertainty: float | None = None
     components: ConfidenceComponents = Field(default_factory=ConfidenceComponents)
