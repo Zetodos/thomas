@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+from collections.abc import Mapping
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -55,7 +56,7 @@ def _sentence(
 def _links(
     name: AlignerName,
     sentences: list[BitextSentence],
-    sym_pairs: dict[str, tuple[tuple[int, int], ...]],
+    sym_pairs: Mapping[str, tuple[tuple[int, int], ...]],
 ) -> AlignmentLinks:
     forward = [
         DirectionalAlignment(unit_id=s.unit_id, pairs=sym_pairs.get(s.unit_id, ()))
@@ -102,15 +103,12 @@ def test_verbal_false_morphology_verses_not_promoted() -> None:
     # Use real unit ids for the blocked set; extra unit uses a non-blocked id
     # with the same peel pattern so dual-unit alone cannot promote it.
     sents[3] = _sentence("mark.4.6", ("ⲛⲧⲉ", "ⲕϣⲧⲏⲛ"), ("σου", "λαβειν"))
-    pairs = {
-        s.unit_id: ((0, 0), (1, 1) if len(s.target_tokens) > 1 else (0, 0))
-        for s in sents
+    pairs: dict[str, tuple[tuple[int, int], ...]] = {
+        "matthew.5.40": ((0, 0), (1, 1)),
+        "matthew.5.48": ((0, 0), (1, 0)),
+        "john.1.23": ((0, 0), (1, 1)),
+        "mark.4.6": ((0, 0), (1, 1)),
     }
-    # Fix mark.4.6 pairs for 2-token greek... actually greek has 2 tokens for first
-    pairs["matthew.5.40"] = ((0, 0), (1, 1))
-    pairs["matthew.5.48"] = ((0, 0), (1, 0))
-    pairs["john.1.23"] = ((0, 0), (1, 1))
-    pairs["mark.4.6"] = ((0, 0), (1, 1))
     table = build_statistical_construction_table(
         {
             "eflomal": _links(AlignerName.EFLOMAL, sents, pairs),
@@ -129,7 +127,7 @@ def test_example_non_train_unit_rejected_by_validate() -> None:
         _sentence("john.1.1", ("ⲡ", "ϣⲁϫⲉ"), ("ο", "λογος")),
         _sentence("john.1.2", ("ⲡ", "ϣⲁϫⲉ"), ("ο", "λογος")),
     ]
-    pairs = {
+    pairs: dict[str, tuple[tuple[int, int], ...]] = {
         "john.1.1": ((0, 0), (1, 1)),
         "john.1.2": ((0, 0), (1, 1)),
     }
