@@ -94,9 +94,13 @@ def test_statistical_vs_verified_are_separate_classes() -> None:
     )
     assert table.evidence_class is EvidenceClass.STATISTICAL
     assert table.constructions
-    assert all(c.evidence_class is EvidenceClass.STATISTICAL for c in table.constructions)
+    assert all(
+        c.evidence_class is EvidenceClass.STATISTICAL for c in table.constructions
+    )
     families = {c.family for c in table.constructions}
-    assert ConstructionFamily.ARTICLE in families or ConstructionFamily.PRONOUN in families
+    assert (
+        ConstructionFamily.ARTICLE in families or ConstructionFamily.PRONOUN in families
+    )
 
     loan = verified_loanword_table()
     assert loan.evidence_class is EvidenceClass.INDEPENDENTLY_VERIFIED
@@ -172,15 +176,15 @@ def test_committed_artifacts_validate() -> None:
         resolve_omission_fixtures_path(REPO_ROOT),
     )
     train_ids = set(splits.unit_ids_for(SplitRole.TRAIN))
-    assert validate_statistical_construction_table(
-        phrases, train_unit_ids=train_ids
-    ).ok
+    assert validate_statistical_construction_table(phrases, train_unit_ids=train_ids).ok
     assert validate_verified_loanword_table(loan).ok
     report = validate_mappings_dir(REPO_ROOT, train_unit_ids=train_ids)
     assert report.ok, report.as_dict()
 
     # Span IDs present for decoder (JAK-39) consumption.
-    assert any(ex.coptic_span.span_id for c in phrases.constructions for ex in c.examples)
+    assert any(
+        ex.coptic_span.span_id for c in phrases.constructions for ex in c.examples
+    )
     assert phrases.summary["phase2_active_aligners"] == ["eflomal", "fast_align"]
     assert phrases.summary["adopted_aligner"] is None
 
@@ -199,6 +203,7 @@ def test_manifest_ccl_present() -> None:
     data = json.loads(manifest.read_text(encoding="utf-8"))
     assert data["id"] == "ccl-ddglc-tei"
     assert data["spdx_or_custom"] == "CC-BY-SA-4.0"
-    assert "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d" in data[
-        "checksum"
-    ]
+    assert (
+        "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+        in data["checksum"]
+    )

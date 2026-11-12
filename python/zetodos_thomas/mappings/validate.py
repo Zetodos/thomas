@@ -148,18 +148,14 @@ def validate_statistical_construction_table(
                 parse_parallel_id(ex.parallel_id)
             except ValueError as exc:
                 issues.append(
-                    MappingValidationIssue(
-                        "error", "bad_parallel_id", str(exc)
-                    )
+                    MappingValidationIssue("error", "bad_parallel_id", str(exc))
                 )
             for span in (ex.coptic_span, ex.greek_span):
                 try:
                     parsed = parse_span_id(span.span_id)
                 except ValueError as exc:
                     issues.append(
-                        MappingValidationIssue(
-                            "error", "bad_span_id", str(exc)
-                        )
+                        MappingValidationIssue("error", "bad_span_id", str(exc))
                     )
                     continue
                 if parsed.source_id != span.source_id or parsed.unit_id != span.unit_id:
@@ -175,9 +171,7 @@ def validate_statistical_construction_table(
                         tok = parse_token_id(tid)
                     except ValueError as exc:
                         issues.append(
-                            MappingValidationIssue(
-                                "error", "bad_token_id", str(exc)
-                            )
+                            MappingValidationIssue("error", "bad_token_id", str(exc))
                         )
                         continue
                     if tok.unit_id != span.unit_id:
@@ -327,15 +321,11 @@ def validate_ablation_package(package: AblationPackage) -> MappingValidationRepo
     includes = package.includes
     if not includes.get("lexical_candidates"):
         issues.append(
-            MappingValidationIssue(
-                "error", "missing_lexical_candidates", package.id
-            )
+            MappingValidationIssue("error", "missing_lexical_candidates", package.id)
         )
     if not includes.get("statistical_phrase_constructions"):
         issues.append(
-            MappingValidationIssue(
-                "error", "missing_statistical_phrases", package.id
-            )
+            MappingValidationIssue("error", "missing_statistical_phrases", package.id)
         )
     verified = includes.get("verified_loanwords")
     if package.condition is AblationCondition.NT_ALIGNER_ONLY:
@@ -387,9 +377,7 @@ def validate_mappings_dir(
     loan_path = default_verified_loanwords_path(repo_root)
     if not phrases_path.is_file():
         issues.append(
-            MappingValidationIssue(
-                "error", "missing_file", str(phrases_path)
-            )
+            MappingValidationIssue("error", "missing_file", str(phrases_path))
         )
         ok = False
     else:
@@ -401,9 +389,7 @@ def validate_mappings_dir(
         ok = ok and report.ok
 
     if not loan_path.is_file():
-        issues.append(
-            MappingValidationIssue("error", "missing_file", str(loan_path))
-        )
+        issues.append(MappingValidationIssue("error", "missing_file", str(loan_path)))
         ok = False
     else:
         report = validate_verified_loanword_table(
@@ -414,9 +400,7 @@ def validate_mappings_dir(
 
     for path in default_ablation_paths(repo_root).values():
         if not path.is_file():
-            issues.append(
-                MappingValidationIssue("error", "missing_file", str(path))
-            )
+            issues.append(MappingValidationIssue("error", "missing_file", str(path)))
             ok = False
             continue
         payload = path.read_text(encoding="utf-8")

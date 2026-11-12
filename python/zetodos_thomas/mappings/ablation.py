@@ -83,8 +83,7 @@ def build_ablation_packages(
     plus_loan = AblationPackage(
         id="ablation-nt-aligner-plus-loanwords-v1",
         title=(
-            "Ablation arm B: NT aligner statistical stack + verified "
-            "loanwords (JAK-38)"
+            "Ablation arm B: NT aligner statistical stack + verified loanwords (JAK-38)"
         ),
         condition=AblationCondition.NT_ALIGNER_PLUS_VERIFIED_LOANWORDS,
         includes={

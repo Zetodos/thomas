@@ -46,9 +46,7 @@ mappings_app = typer.Typer(
 )
 
 
-def _resolve_runtime_splits(
-    root: Path, splits_path: Path | None
-) -> PilotSplits:
+def _resolve_runtime_splits(root: Path, splits_path: Path | None) -> PilotSplits:
     omission = resolve_omission_fixtures_path(root)
     if splits_path is not None:
         return load_splits(splits_path, omission_path=omission)

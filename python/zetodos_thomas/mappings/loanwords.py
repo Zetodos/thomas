@@ -318,9 +318,7 @@ def verified_loanword_table(
             "doi": "10.17169/refubium-27566",
             "license": "CC-BY-SA-4.0",
             "attribution": _CCL_ATTRIBUTION,
-            "dioskoros": (
-                "Not used; JAK-19 forbids waiting on / scraping DIOSKOROS."
-            ),
+            "dioskoros": ("Not used; JAK-19 forbids waiting on / scraping DIOSKOROS."),
             **dict(provenance or {}),
         },
         summary={

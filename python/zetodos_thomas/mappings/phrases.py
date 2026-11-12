@@ -20,7 +20,6 @@ from typing import Any
 from zetodos_thomas.align.bitext import build_bitext
 from zetodos_thomas.align.segment_coptic import SEGMENTED_ID_SCHEME_VERSION
 from zetodos_thomas.align.splits import PilotSplits, SplitRole
-from zetodos_thomas.integrations.aligners.pharaoh import parse_pharaoh_line
 from zetodos_thomas.integrations.aligners.types import AlignmentLinks, BitextSentence
 from zetodos_thomas.lexicon.candidates import (
     DEFAULT_PHASE2_ALIGNERS,
@@ -160,9 +159,7 @@ def default_mappings_dir(repo_root: Path) -> Path:
 
 def default_statistical_constructions_path(repo_root: Path) -> Path:
     """Committed statistical construction table path."""
-    return (
-        default_mappings_dir(repo_root) / "statistical-phrase-constructions-v1.json"
-    )
+    return default_mappings_dir(repo_root) / "statistical-phrase-constructions-v1.json"
 
 
 def _clean_greek(token: str) -> str:
@@ -446,10 +443,7 @@ def _construction_id(
     coptic: Sequence[str],
     greek: Sequence[str],
 ) -> str:
-    return (
-        f"stat-{family.value}-{_slug_tokens(coptic)}--"
-        f"{_slug_tokens(greek)}"
-    )
+    return f"stat-{family.value}-{_slug_tokens(coptic)}--{_slug_tokens(greek)}"
 
 
 def build_statistical_construction_table(
@@ -512,9 +506,7 @@ def build_statistical_construction_table(
                     continue
                 # Which aligners saw this coordinate?
                 aligners = [
-                    name
-                    for name, occs in accum.per_aligner.items()
-                    if coord in occs
+                    name for name, occs in accum.per_aligner.items() if coord in occs
                 ]
                 if not aligners:
                     aligners = [hit.aligner]

@@ -120,10 +120,7 @@ class VerifiedLoanword(BaseModel):
     @model_validator(mode="after")
     def _verified_only(self) -> Self:
         if self.evidence_class is not EvidenceClass.INDEPENDENTLY_VERIFIED:
-            msg = (
-                "VerifiedLoanword must use "
-                "evidence_class=independently_verified"
-            )
+            msg = "VerifiedLoanword must use evidence_class=independently_verified"
             raise ValueError(msg)
         return self
 
