@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Optional eflomal availability probe (PLAN.md Phase 2 consideration).
+"""Optional eflomal availability probe (JAK-28 legacy; prefer aligner-probe).
 
-eflomal is **not** on the deterministic default path. The package on PyPI
-requires a native ``make`` build of the C binary; this environment could not
-install it. JAK-28 therefore ships the lexical Dice baseline and records the
-eflomal outcome for Jake review rather than inventing scores.
+eflomal is **not** on the deterministic default path. JAK-36 adds typed
+adapters under ``zetodos_thomas.integrations.aligners`` and
+``thomas align aligner-probe`` / ``statistical-eval``. This probe remains for
+backward-compatible CLI/benchmark fields.
 """
 
 from __future__ import annotations

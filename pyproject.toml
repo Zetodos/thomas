@@ -89,6 +89,10 @@ select = [
 "python/zetodos_thomas/ingest/dilley_thomas.py" = ["RUF001"]
 "python/zetodos_thomas/ingest/dclp_fragments.py" = ["RUF001"]
 "python/zetodos_thomas/ingest/fragments.py" = ["RUF001"]
+"python/zetodos_thomas/align/bitext.py" = ["RUF001"]
+"python/zetodos_thomas/align/statistical.py" = ["RUF001"]
+"python/zetodos_thomas/integrations/aligners/**" = ["RUF001"]
+"python/zetodos_thomas/cli/align.py" = ["B008", "RUF001"]
 
 [tool.ruff.format]
 quote-style = "double"

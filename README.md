@@ -99,7 +99,7 @@ uv run ty check
 uv run pytest
 ```
 
-The `thomas` console script exposes `sources validate|download|build-pilot|build-thomas|build-fragments` and `align validate|benchmark|eflomal-probe`. Further subcommands live in [`PLAN.md`](PLAN.md).
+The `thomas` console script exposes `sources validate|download|build-pilot|build-thomas|build-fragments` and `align validate|benchmark|eflomal-probe|aligner-probe|setup-aligners|statistical-eval`. Further subcommands live in [`PLAN.md`](PLAN.md). Statistical aligner notes: [`docs/statistical-aligner-comparison.md`](docs/statistical-aligner-comparison.md).
 
 Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web/` only (not started yet).
 

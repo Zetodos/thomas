@@ -67,11 +67,18 @@ Scoring emits a 1-best for every alignable left token (`min_dice=0`). Therefore 
 | Paratext | Mark heading must not score as a Greek content word |
 | Partial / provisional gold | Unannotated tokens excluded from precision denominator |
 
-## eflomal
+## eflomal / statistical aligners
 
-`eflomal` is **not implemented** in this PR. Probe-only: `uv run thomas align eflomal-probe`. Native build remains unavailable; not on the default path.
+Lexical Dice remains the deterministic offline baseline here. JAK-36 adds typed
+`eflomal` + `fast_align` adapters, learning curves on split v3, and a Jake
+adopt/skip decision scaffold — see
+[`statistical-aligner-comparison.md`](statistical-aligner-comparison.md).
 
-**Jake decision:** whether to add a native eflomal toolchain pin later for Phase 2 comparison (still no LLM on the deterministic path).
+```bash
+uv run thomas align setup-aligners   # explicit native setup
+uv run thomas align aligner-probe
+uv run thomas align statistical-eval
+```
 
 ## Limitations (Phase 2 gate)
 
