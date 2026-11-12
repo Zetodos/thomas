@@ -5185,18 +5185,25 @@
     }
   },
   "jake_decision": {
-    "status": "pending-jake",
-    "recommendation": "lean-eflomal-pending-jake",
+    "status": "decided",
+    "decision": "keep-both",
+    "recommendation": "keep-both",
     "adopted_aligner": null,
-    "question_for_jake": "Adopt eflomal, adopt fast_align, or keep both available for Phase 2 lexical-table work (JAK-37+)? Evidence above; gold is provisional so do not treat F1 alone as decisive.",
+    "phase2_active_aligners": [
+      "eflomal",
+      "fast_align"
+    ],
+    "decided_by": "Jake",
+    "question_for_jake": null,
     "rationale": [
+      "Jake decided (JAK-36 / PR #15): keep both eflomal and fast_align for the rest of Phase 2; do not adopt a single aligner yet.",
       "eflomal evaluated first per PLAN.md / JAK-36; not preselected.",
       "Identical v3 train/dev/holdout + bound-group-v1 segmentation for both.",
       "Metrics are out-of-sample (train-only fit → apply to unseen dev/holdout).",
       "Full-train dev fwd↔rev agreement: eflomal=0.5446, fast_align=0.1287 (Δ=+0.4159).",
       "eflomal learning curve agreement 25%→100%: 0.4885→0.5153.",
       "fast_align learning curve agreement 25%→100%: 0.1358→0.1281.",
-      "eflomal leads on intrinsic agreement; still pending Jake adopt."
+      "Intrinsic margin does not override Jake's keep-both dual-path call."
     ]
   },
   "limitations": [

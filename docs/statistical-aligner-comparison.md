@@ -83,12 +83,24 @@ needs cmake/C++ only. fast_align EM is deterministic for fixed flags; eflomal's
 Gibbs sampler uses OS entropy (seed recorded, not fully pinning). Upstream SHAs
 are pinned.
 
-## Jake decision (do not silent-lock)
+## Jake decision (recorded)
 
-The report’s `jake_decision` block leaves `adopted_aligner: null` and asks Jake
-to **adopt eflomal**, **adopt fast_align**, or **keep both** for Phase 2 lexical
-table work. Thin intrinsic margins (< ~0.02 agreement) or missing binaries force
-`needs-jake-decision`.
+**Keep both** eflomal and fast_align for the rest of Phase 2 — do **not** adopt
+a single aligner yet.
+
+In `jake_decision` / `statistical-aligner-eval-v1.json`:
+
+| Field | Value |
+| --- | --- |
+| `status` | `decided` |
+| `decision` / `recommendation` | `keep-both` |
+| `adopted_aligner` | `null` (no single winner) |
+| `phase2_active_aligners` | `["eflomal", "fast_align"]` |
+| `decided_by` | Jake |
+
+Downstream Phase 2 lexical-table work (JAK-37+) should treat **both** adapters
+as active dual-path options; do not drop fast_align because eflomal leads on
+the provisional OOS intrinsic.
 
 ## Reproduce
 

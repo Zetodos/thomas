@@ -706,7 +706,11 @@ def _jake_decision_scaffold(
     curve_points: list[dict[str, Any]],
     availability: dict[str, Any],
 ) -> dict[str, Any]:
-    """Present evidence; do not silently lock an aligner choice."""
+    """Record Jake's JAK-36 decision: keep both aligners for Phase 2.
+
+    ``adopted_aligner`` stays null (no single winner). Downstream Phase 2 work
+    should use ``phase2_active_aligners`` / ``decision == keep-both``.
+    """
     efl_ok = availability.get("eflomal") and availability["eflomal"].available
     fa_ok = availability.get("fast_align") and availability["fast_align"].available
     efl_dev = full_comparison.get("dev", {}).get("eflomal", {})
@@ -722,7 +726,6 @@ def _jake_decision_scaffold(
     efl_a = _agree(efl_dev)
     fa_a = _agree(fa_dev)
 
-    # Learning-curve slope proxy: agreement at 25% vs 100% on eflomal.
     def _curve_agree(aligner: str, fraction: float) -> float | None:
         for point in curve_points:
             if abs(point["fraction"] - fraction) > 1e-9:
@@ -736,17 +739,19 @@ def _jake_decision_scaffold(
     fa_lo = _curve_agree("fast_align", 0.25)
     fa_hi = _curve_agree("fast_align", 1.0)
 
-    evidence_thin = not (efl_ok and fa_ok and efl_a is not None and fa_a is not None)
-    recommendation = "needs-jake-decision"
     rationale = [
+        (
+            "Jake decided (JAK-36 / PR #15): keep both eflomal and fast_align "
+            "for the rest of Phase 2; do not adopt a single aligner yet."
+        ),
         "eflomal evaluated first per PLAN.md / JAK-36; not preselected.",
         "Identical v3 train/dev/holdout + bound-group-v1 segmentation for both.",
         "Metrics are out-of-sample (train-only fit → apply to unseen dev/holdout).",
     ]
-    if evidence_thin:
+    if not (efl_ok and fa_ok and efl_a is not None and fa_a is not None):
         rationale.append(
-            "Evidence incomplete (aligner unavailable or missing intrinsic "
-            "scores). Do not lock a default - Jake must decide after setup/run."
+            "Note: one or both aligners were unavailable in this eval run; "
+            "dual-path decision still stands for Phase 2 once setup completes."
         )
     else:
         assert efl_a is not None and fa_a is not None
@@ -764,33 +769,19 @@ def _jake_decision_scaffold(
                 f"fast_align learning curve agreement 25%→100%: "
                 f"{fa_lo:.4f}→{fa_hi:.4f}."
             )
-        # Require a clear margin before suggesting adopt; else ask Jake.
-        if abs(delta) < 0.02:
-            recommendation = "needs-jake-decision"
-            rationale.append(
-                "Agreement delta < 0.02 on provisional intrinsic metric - "
-                "thin margin; prefer Jake call (also weigh build burden)."
-            )
-        elif delta > 0:
-            recommendation = "lean-eflomal-pending-jake"
-            rationale.append(
-                "eflomal leads on intrinsic agreement; still pending Jake adopt."
-            )
-        else:
-            recommendation = "lean-fast_align-pending-jake"
-            rationale.append(
-                "fast_align leads on intrinsic agreement; still pending Jake adopt."
-            )
+        rationale.append(
+            "Intrinsic margin does not override Jake's keep-both dual-path call."
+        )
 
     return {
-        "status": "pending-jake",
-        "recommendation": recommendation,
+        "status": "decided",
+        "decision": "keep-both",
+        "recommendation": "keep-both",
+        # No single winner — both remain active for Phase 2.
         "adopted_aligner": None,
-        "question_for_jake": (
-            "Adopt eflomal, adopt fast_align, or keep both available for "
-            "Phase 2 lexical-table work (JAK-37+)? Evidence above; gold is "
-            "provisional so do not treat F1 alone as decisive."
-        ),
+        "phase2_active_aligners": ["eflomal", "fast_align"],
+        "decided_by": "Jake",
+        "question_for_jake": None,
         "rationale": rationale,
     }
 

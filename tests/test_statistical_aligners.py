@@ -260,6 +260,77 @@ def test_aligner_pins_are_immutable_shas() -> None:
     assert len(FAST_ALIGN_COMMIT_SHA) == 40
 
 
+def test_jake_decision_keep_both_is_recorded() -> None:
+    from zetodos_thomas.align.statistical import _jake_decision_scaffold
+    from zetodos_thomas.integrations.aligners.discovery import AlignerAvailability
+    from zetodos_thomas.integrations.aligners.types import AlignerName
+
+    availability = {
+        "eflomal": AlignerAvailability(
+            name=AlignerName.EFLOMAL,
+            available=True,
+            binary_path="/tmp/eflomal",
+            python_module=True,
+            detail="ok",
+        ),
+        "fast_align": AlignerAvailability(
+            name=AlignerName.FAST_ALIGN,
+            available=True,
+            binary_path="/tmp/fast_align",
+            python_module=False,
+            detail="ok",
+        ),
+    }
+    full = {
+        "dev": {
+            "eflomal": {
+                "available": True,
+                "intrinsic": {"mean_fwd_rev_agreement": 0.5},
+            },
+            "fast_align": {
+                "available": True,
+                "intrinsic": {"mean_fwd_rev_agreement": 0.1},
+            },
+        }
+    }
+    curves = [
+        {
+            "fraction": 0.25,
+            "aligners": {
+                "eflomal": {
+                    "available": True,
+                    "intrinsic": {"mean_fwd_rev_agreement": 0.4},
+                },
+                "fast_align": {
+                    "available": True,
+                    "intrinsic": {"mean_fwd_rev_agreement": 0.1},
+                },
+            },
+        },
+        {
+            "fraction": 1.0,
+            "aligners": {
+                "eflomal": {
+                    "available": True,
+                    "intrinsic": {"mean_fwd_rev_agreement": 0.5},
+                },
+                "fast_align": {
+                    "available": True,
+                    "intrinsic": {"mean_fwd_rev_agreement": 0.1},
+                },
+            },
+        },
+    ]
+    decision = _jake_decision_scaffold(full, curves, availability)
+    assert decision["status"] == "decided"
+    assert decision["decision"] == "keep-both"
+    assert decision["recommendation"] == "keep-both"
+    assert decision["adopted_aligner"] is None
+    assert decision["phase2_active_aligners"] == ["eflomal", "fast_align"]
+    assert decision["decided_by"] == "Jake"
+    assert decision["question_for_jake"] is None
+
+
 def test_symmetrize_final_and_is_order_stable() -> None:
     # Competing isolated links: forward-only should win over reverse-only.
     fwd = ((0, 0), (1, 2))

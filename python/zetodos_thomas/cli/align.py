@@ -342,9 +342,11 @@ def statistical_eval_cmd(
     write_eval_json(report, out)
     typer.echo(f"Wrote {out}")
     decision = report["jake_decision"]
+    active = decision.get("phase2_active_aligners") or []
     typer.echo(
-        f"jake_decision={decision['recommendation']} "
-        f"(adopted={decision['adopted_aligner']!r})"
+        f"jake_decision={decision.get('decision') or decision.get('recommendation')} "
+        f"(adopted={decision['adopted_aligner']!r}; "
+        f"phase2_active={active!r})"
     )
     for name, block in report["full_train_comparison"]["dev"].items():
         if not block.get("available"):
