@@ -6,6 +6,7 @@ from __future__ import annotations
 import typer
 
 from zetodos_thomas.cli.align import align_app
+from zetodos_thomas.cli.lexicon import lexicon_app
 from zetodos_thomas.cli.sources import sources_app
 
 app = typer.Typer(
@@ -15,6 +16,7 @@ app = typer.Typer(
 )
 app.add_typer(sources_app, name="sources")
 app.add_typer(align_app, name="align")
+app.add_typer(lexicon_app, name="lexicon")
 
 
 @app.callback()

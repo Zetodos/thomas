@@ -53,6 +53,14 @@ from zetodos_thomas.schemas.ids import (
     span_id,
     token_id,
 )
+from zetodos_thomas.schemas.lexicon import (
+    ConfidenceEstimate,
+    InferredLemmaCandidate,
+    LexicalCandidateTable,
+    LexicalLayer,
+    ObservedWordformCandidate,
+    SplitMembership,
+)
 from zetodos_thomas.schemas.package import PackageInfo
 from zetodos_thomas.schemas.source import (
     GATED_DEFAULT_SOURCE_IDS,
@@ -70,6 +78,7 @@ __all__ = [
     "AgreementDegree",
     "AlignmentDocument",
     "AvailabilityMode",
+    "ConfidenceEstimate",
     "CorpusRole",
     "DivergenceKind",
     "EvaluationWitnessExclusion",
@@ -83,7 +92,11 @@ __all__ = [
     "FragmentLine",
     "FragmentToken",
     "FragmentTranscription",
+    "InferredLemmaCandidate",
+    "LexicalCandidateTable",
+    "LexicalLayer",
     "NtCorpusSplit",
+    "ObservedWordformCandidate",
     "OmissionFixtureKind",
     "OmissionFixtureSet",
     "OmissionUnit",
@@ -102,6 +115,7 @@ __all__ = [
     "SourceManifest",
     "Span",
     "SpanKind",
+    "SplitMembership",
     "TextUnit",
     "ThomasCorpus",
     "Token",
