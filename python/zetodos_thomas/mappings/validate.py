@@ -288,9 +288,7 @@ def validate_verified_loanword_table(
             path = tei_path or resolve_ccl_tei_path(repo_root or Path.cwd())
             tei_index = load_ccl_tei_index(path)
         except (OSError, ValueError) as exc:
-            issues.append(
-                MappingValidationIssue("error", "tei_unavailable", str(exc))
-            )
+            issues.append(MappingValidationIssue("error", "tei_unavailable", str(exc)))
 
     seen: set[str] = set()
     for entry in table.entries:
@@ -394,9 +392,7 @@ def validate_verified_loanword_table(
                 parsed = parse_span_id(sid)
             except ValueError as exc:
                 issues.append(
-                    MappingValidationIssue(
-                        "error", "bad_illustrative_span", str(exc)
-                    )
+                    MappingValidationIssue("error", "bad_illustrative_span", str(exc))
                 )
                 continue
             if train_unit_ids is not None and parsed.unit_id not in train_unit_ids:

@@ -366,7 +366,9 @@ def verified_loanword_entries(
                 ccl_form_ids=list(spec["ccl_form_ids"]),
                 spot=spot,
                 pilot_priority_notes=str(spec.get("pilot_priority_notes", "")),
-                illustrative_nt_span_ids=list(spec.get("illustrative_nt_span_ids") or []),
+                illustrative_nt_span_ids=list(
+                    spec.get("illustrative_nt_span_ids") or []
+                ),
                 notes=str(spec.get("notes", "")),
             )
         )

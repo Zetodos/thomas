@@ -65,8 +65,7 @@ def resolve_ccl_tei_path(repo_root: Path, *, prefer_full: bool = False) -> Path:
     if subset.is_file():
         return subset
     msg = (
-        "CCL TEI not found: expected download at "
-        f"{full} or offline subset at {subset}"
+        f"CCL TEI not found: expected download at {full} or offline subset at {subset}"
     )
     raise FileNotFoundError(msg)
 
@@ -150,7 +149,8 @@ def verify_loanword_against_tei(
         got = _undiacriticize_greek(_nfc(entry.greek_lemma))
         if want != got:
             errors.append(
-                f"{tla_entry_id}: greek lemma {greek_lemma!r} != TEI {entry.greek_lemma!r}"
+                f"{tla_entry_id}: greek lemma {greek_lemma!r} != "
+                f"TEI {entry.greek_lemma!r}"
             )
     lemma = _nfc(coptic_lemma)
     if lemma not in entry.orths:

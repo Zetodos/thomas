@@ -202,7 +202,12 @@ def _looks_greek_verbal(tokens: Sequence[str]) -> bool:
         g = _clean_greek(raw)
         if not g:
             continue
-        if g in GREEK_ART or g in GREEK_NEG or g in GREEK_PARTICLES or _is_greek_pron(g):
+        if (
+            g in GREEK_ART
+            or g in GREEK_NEG
+            or g in GREEK_PARTICLES
+            or _is_greek_pron(g)
+        ):
             continue
         # Infinitives / common finite endings, or a contentful stem.
         if g.endswith(("ειν", "σθαι", "ναι", "σαι", "αι")):
@@ -455,7 +460,10 @@ def _extract_from_sentence(
             second = src[i + 1]
             if _coptic_second_looks_nonverbal(tok, second):
                 continue
-            if second in COPTIC_DET | COPTIC_INDEF | COPTIC_PARTICLE_LOANS | COPTIC_PRON:
+            if (
+                second
+                in COPTIC_DET | COPTIC_INDEF | COPTIC_PARTICLE_LOANS | COPTIC_PRON
+            ):
                 continue
             if not aligned((i, i + 1)):
                 continue
