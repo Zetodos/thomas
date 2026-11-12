@@ -26,5 +26,13 @@ Bundled Greek Thomas fragments (data/sources/fragments/):
     Attribution: Digital Corpus of Literary Papyri and LDAB (Trismegistos).
     Papyrus images are not included. Labeled evaluation-witness (evidence type G).
 
+Bundled verified loanword subset (data/sources/mappings/verified-loanwords-ccl-ddglc-v1.json):
+  - Adapted from Comprehensive Coptic Lexicon TEI v1.2 / DDGLC Greek loanwords
+    (Burns, Feder, John, Kupreyev; BBAW TLA; DDGLC FU Berlin), CC BY-SA 4.0.
+    DOI https://doi.org/10.17169/refubium-27566. Manifest:
+    data/manifests/ccl-ddglc-tei.json. ShareAlike applies to this adapted
+    lexical subset. DIOSKOROS is not used.
+
 See data/manifests/*.json, docs/horner-vaticanus-alignment-notes.md,
-docs/id-scheme.md, and docs/greek-thomas-fragments.md.
+docs/id-scheme.md, docs/greek-thomas-fragments.md, and
+docs/phrase-loanword-mappings.md.
