@@ -8,9 +8,11 @@ in-process. No LLM.
 
 from __future__ import annotations
 
+import importlib
 import os
 import tempfile
 from pathlib import Path
+from typing import Any
 
 from zetodos_thomas.integrations.aligners.discovery import probe_eflomal
 from zetodos_thomas.integrations.aligners.pharaoh import (
@@ -53,13 +55,14 @@ def align_eflomal(
     if not availability.available or not availability.python_module:
         raise EflomalNotAvailableError(availability.detail)
 
-    import eflomal
+    # Optional native package — load dynamically so CI ty passes without it.
+    eflomal_mod: Any = importlib.import_module("eflomal")
 
     # Best-effort reproducibility: eflomal's C sampler reads OS entropy;
     # PYTHONHASHSEED + fixed n_samplers still reduce variance across runs.
     os.environ.setdefault("PYTHONHASHSEED", str(cfg.seed))
 
-    aligner = eflomal.Aligner(
+    aligner = eflomal_mod.Aligner(
         model=cfg.eflomal_model,
         n_samplers=cfg.eflomal_n_samplers,
         null_prior=cfg.eflomal_null_prior,
