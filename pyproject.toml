@@ -92,7 +92,10 @@ select = [
 "python/zetodos_thomas/align/bitext.py" = ["RUF001"]
 "python/zetodos_thomas/align/statistical.py" = ["RUF001"]
 "python/zetodos_thomas/integrations/aligners/**" = ["RUF001"]
+"python/zetodos_thomas/lexicon/**" = ["RUF001"]
+"python/zetodos_thomas/schemas/lexicon.py" = ["RUF001"]
 "python/zetodos_thomas/cli/align.py" = ["B008", "RUF001"]
+"python/zetodos_thomas/cli/lexicon.py" = ["B008", "RUF001"]
 
 [tool.ruff.format]
 quote-style = "double"

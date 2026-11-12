@@ -44,6 +44,9 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`data/evidence/pilot/`](data/evidence/pilot/) | Thomas 7/17/30/77 evidence inventory (JSON + JSONL) |
 | [`data/training/splits/`](data/training/splits/) | Canonical NT train/dev/holdout split v2 (JAK-33; consumed by JAK-28) |
 | [`data/sources/alignment/`](data/sources/alignment/) | Provisional gold sample + benchmark JSON (JAK-28) |
+| [`docs/statistical-aligner-comparison.md`](docs/statistical-aligner-comparison.md) | eflomal vs fast_align; Jake keep-both (JAK-36) |
+| [`docs/lexical-candidates.md`](docs/lexical-candidates.md) | Coptic→Greek lexical candidate layers (JAK-37) |
+| [`data/sources/lexicon/`](data/sources/lexicon/) | Lexical candidate table + train-link JSON (JAK-37) |
 
 ## Never ship (summary)
 
@@ -99,7 +102,7 @@ uv run ty check
 uv run pytest
 ```
 
-The `thomas` console script exposes `sources validate|download|build-pilot|build-thomas|build-fragments` and `align validate|benchmark|eflomal-probe|aligner-probe|setup-aligners|statistical-eval`. Further subcommands live in [`PLAN.md`](PLAN.md). Statistical aligner notes: [`docs/statistical-aligner-comparison.md`](docs/statistical-aligner-comparison.md).
+The `thomas` console script exposes `sources validate|download|build-pilot|build-thomas|build-fragments`, `align validate|benchmark|eflomal-probe|aligner-probe|setup-aligners|statistical-eval`, and `lexicon generate-candidates|validate-candidates`. Further subcommands live in [`PLAN.md`](PLAN.md). Statistical aligner notes: [`docs/statistical-aligner-comparison.md`](docs/statistical-aligner-comparison.md). Lexical candidates: [`docs/lexical-candidates.md`](docs/lexical-candidates.md).
 
 Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web/` only (not started yet).
 
