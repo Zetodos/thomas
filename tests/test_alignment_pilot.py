@@ -55,10 +55,10 @@ from zetodos_thomas.schemas.alignment import AlignmentDocument, ParallelRelation
 REPO_ROOT = Path(__file__).resolve().parents[1]
 PILOT_PATH = REPO_ROOT / "data" / "sources" / "pilot" / "horner-vaticanus-nt-pilot.json"
 SPLITS_PATH = (
-    REPO_ROOT / "data" / "training" / "splits" / "horner-vaticanus-nt-split-v2.json"
+    REPO_ROOT / "data" / "training" / "splits" / "horner-vaticanus-nt-split-v3.json"
 )
 OMISSION_PATH = (
-    REPO_ROOT / "data" / "evidence" / "omissions" / "john-8-pa-omission-fixture-v1.json"
+    REPO_ROOT / "data" / "evidence" / "omissions" / "john-8-pa-omission-fixture-v3.json"
 )
 GOLD_PATH = (
     REPO_ROOT
@@ -77,7 +77,7 @@ def _canonical_splits() -> PilotSplits:
 
 def test_pilot_expanded_counts_and_sources() -> None:
     corpus = load_pilot_corpus(PILOT_PATH)
-    assert corpus.id == "horner-vaticanus-nt-pilot-v2"
+    assert corpus.id == "horner-vaticanus-nt-pilot-v3"
     assert corpus.greek_source_id == "ntvmr-vaticanus-b"
     assert corpus.sahidic_source_id == "copsahhorner"
     assert len(corpus.units) == EXPECTED_UNIT_COUNT
@@ -86,9 +86,9 @@ def test_pilot_expanded_counts_and_sources() -> None:
     assert report.ok, report.errors
     assert report.nonempty_positive == EXPECTED_NONEMPTY_POSITIVE
     assert report.omission_units == EXPECTED_OMISSION_UNITS
-    assert splits.id == "horner-vaticanus-nt-split-v2"
+    assert splits.id == "horner-vaticanus-nt-split-v3"
     assert splits.pilot_corpus_id == corpus.id
-    assert splits.owned_by == "JAK-33"
+    assert splits.owned_by == "JAK-43"
     assert not (REPO_ROOT / "data" / "sources" / "pilot" / "splits.json").exists()
 
 
@@ -102,10 +102,14 @@ def test_splits_cover_every_unit_without_overlap() -> None:
             assert splits.role_for(unit.unit_id) is role
             seen.append(unit.unit_id)
     assert len(seen) == len(set(seen)) == len(corpus.units)
-    assert [u.unit_id for u in buckets[SplitRole.HOLDOUT]] == [
+    holdout_ids = [u.unit_id for u in buckets[SplitRole.HOLDOUT]]
+    assert set(holdout_ids) >= {
         "matthew.13.31",
         "matthew.13.32",
-    ]
+        "matthew.10.26",
+        "luke.8.4",
+    }
+    assert len(holdout_ids) == 41
     assert [u.unit_id for u in buckets[SplitRole.OMISSION]] == [
         f"john.8.{v}" for v in range(1, 12)
     ]
@@ -153,6 +157,9 @@ def test_new_tei_fixtures_parse_nonempty() -> None:
         ("Matt_7_7-8.teiraw.xml", 2),
         ("Matt_13_31-32.teiraw.xml", 2),
         ("Luke_6_20-21.teiraw.xml", 2),
+        ("John_1_1-51.teiraw.xml", 51),
+        ("Matt_10_26-33.teiraw.xml", 8),
+        ("Luke_8_4-15.teiraw.xml", 12),
     ):
         units = parse_teiraw(NTVMR_FIXTURES / name)
         assert len(units) == expected_n
@@ -284,19 +291,17 @@ def test_cli_align_validate_and_benchmark() -> None:
 def test_default_splits_match_committed_canonical_artifact() -> None:
     committed = _canonical_splits()
     packaged = DEFAULT_SPLITS
-    assert committed.id == packaged.id == "horner-vaticanus-nt-split-v2"
+    assert committed.id == packaged.id == "horner-vaticanus-nt-split-v3"
     assert committed.pilot_corpus_id == packaged.pilot_corpus_id
     assert committed.unit_ids_for(SplitRole.TRAIN) == packaged.unit_ids_for(
         SplitRole.TRAIN
     )
-    assert committed.unit_ids_for(SplitRole.DEV) == [
-        "luke.6.20",
-        "luke.6.21",
-    ]
-    assert committed.unit_ids_for(SplitRole.HOLDOUT) == [
-        "matthew.13.31",
-        "matthew.13.32",
-    ]
+    assert "luke.6.20" in committed.unit_ids_for(SplitRole.DEV)
+    assert "john.3.1" in committed.unit_ids_for(SplitRole.DEV)
+    assert len(committed.unit_ids_for(SplitRole.DEV)) == 51
+    hold = committed.unit_ids_for(SplitRole.HOLDOUT)
+    assert "matthew.13.31" in hold and "matthew.10.26" in hold and "luke.8.4" in hold
+    assert len(hold) == 41
     # load_splits also accepts the NtCorpusSplit path directly.
     via_load = load_splits(SPLITS_PATH, omission_path=OMISSION_PATH)
     assert via_load.unit_ids_for(SplitRole.OMISSION) == [

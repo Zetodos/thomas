@@ -2,10 +2,12 @@
 """JAK-28 consumer of the JAK-33 canonical NT train/dev/holdout split.
 
 The authoritative artifact lives at
-``data/training/splits/horner-vaticanus-nt-split-v2.json`` (plus the John 8
+``data/training/splits/horner-vaticanus-nt-split-v3.json`` (plus the John 8
 omission fixture catalog). This module adapts those schemas into the runtime
 ``PilotSplits`` view used by validate/benchmark — it does **not** define a
 second competing split policy under ``data/sources/pilot/``.
+The archival JAK-33 v2 split remains at
+``data/training/splits/horner-vaticanus-nt-split-v2.json``.
 """
 
 from __future__ import annotations
@@ -237,6 +239,7 @@ def load_canonical_splits(
 def load_splits(path: Path, *, omission_path: Path | None = None) -> PilotSplits:
     """Load a JAK-33 ``NtCorpusSplit`` JSON (canonical training split)."""
     if omission_path is None:
+        from zetodos_thomas.ingest.holdouts import load_nt_split
         from zetodos_thomas.ingest.paths import resolve_omission_fixtures_path
 
         root: Path | None = None
@@ -244,7 +247,10 @@ def load_splits(path: Path, *, omission_path: Path | None = None) -> PilotSplits
             if (candidate / "pyproject.toml").is_file():
                 root = candidate
                 break
-        omission_path = resolve_omission_fixtures_path(root)
+        split = load_nt_split(path)
+        omission_path = resolve_omission_fixtures_path(
+            root, pilot_corpus_id=split.pilot_corpus_id
+        )
     return load_canonical_splits(path, omission_path)
 
 

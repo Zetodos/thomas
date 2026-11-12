@@ -9,7 +9,7 @@ import zipfile
 from pathlib import Path
 from urllib.error import URLError
 from urllib.parse import urlencode
-from urllib.request import urlopen
+from urllib.request import Request, urlopen
 
 from zetodos_thomas.ingest.dilley_thomas import TT_FILENAME, TT_TAG_URL
 from zetodos_thomas.ingest.manifests import load_manifest
@@ -20,36 +20,63 @@ COPSAHHORNER_ZIP_URL = (
 )
 
 NTVMR_TRANSCRIPT_GET = "https://ntvmr.uni-muenster.de/community/api/transcript/get/"
+# Alias that is often more resilient from cloud egress than the primary path.
+NTVMR_TRANSCRIPT_GET_VMR = (
+    "https://ntvmr.uni-muenster.de/community/vmr/api/transcript/get/"
+)
 
-# Pilot passage TEI pins (teiraw). Must match data/manifests/ntvmr-vaticanus-b.json.
-# Primary pin (manifest.checksum) remains John.1.1-18; additional pins are listed
-# in the manifest notes and verified on rebuild.
+# Expanded Gospel-first TEI pins (teiraw).
+# Must match data/manifests/ntvmr-vaticanus-b.json.
+# Primary pin (manifest.checksum) is John.1.1-51 (JAK-43); Phase 1 subranges are
+# superseded by these chapter / block pins.
 NTVMR_TEIRAW_FILES: dict[str, str] = {
-    "John.1.1-18": (
-        "sha256:2153735c61cfec12877dfbda677b3c2269c323fccb9d67c6f70f45a742a725d9"
+    "John.1.1-51": (
+        "sha256:e9e36dc3a09394741c4902a2b0927bf642629c086809959c289612acea39307d"
     ),
-    "Mark.1.1-8": (
-        "sha256:6b863d7ee3f76f9ca2d6f79adbe69a153555109fb4dcc88105df6c85fa10445b"
+    "John.3.1-21": (
+        "sha256:10b669cf7a9234afee857e88d455222d23867676363e63e5396bb4bdfd02b6b1"
     ),
     "John.8.1-11": (
         "sha256:8cd9c90bcbed2fee6f7a3241abd79540da712d58db44aa689e7b0c93cf2f6a92"
     ),
-    "Matt.5.14-16": (
-        "sha256:7fe55d0e6496aa98677b933874c19c67de830766ba0825633307ba8910bd18b1"
+    "Mark.1.1-45": (
+        "sha256:eb68d9535b02cb8a933460a4ebdcd0b3d7ad39d78d9b1a9192f194404cc9aa71"
     ),
-    "Matt.7.7-8": (
-        "sha256:7426c91be43fd89a4d5444f3b2e85465f5789e902dd18bc60b3c51a46fd36368"
+    "Mark.4.1-34": (
+        "sha256:18323b2afd9cd3a38c05861f41ef1dcdc13a96235016bd7d92a717b60c2d4453"
     ),
-    "Matt.13.31-32": (
-        "sha256:cb3537a44c562292c14281ab4acd8820d834b823e500b86897054f8da8d28d1c"
+    "Matt.5.1-48": (
+        "sha256:d2495062b9cb671dc0cdeda987ff0284bbdaa734b360fbfb7aed58537c166fd0"
     ),
-    "Luke.6.20-21": (
-        "sha256:eac64e3ee66227d5413110fd835dab7085cd8fa536cb16b057fbcb10604de47d"
+    "Matt.6.1-34": (
+        "sha256:2971d526e68409a9cec734178b1328e24054c9ae6c799c13b39fec13ce9c296c"
+    ),
+    "Matt.7.1-29": (
+        "sha256:9e7e3b25684cdfdd69a83e9ababd32a37f40615b9a85613ba539f558d2bcbbe2"
+    ),
+    "Matt.10.26-33": (
+        "sha256:3a6613b51693bc8505373c9430edcd90ce20c30192b2bda3dd0cbf37d3802eea"
+    ),
+    "Matt.13.1-58": (
+        "sha256:3463691f554ce2898f3d7a0edd0b7250210ab83d8385a66957746f32f0a933c9"
+    ),
+    "Luke.6.1-49": (
+        "sha256:e80f93e3e845b480d2e190b90339457b067418d416ef83821ca3a49c36ab9baf"
+    ),
+    "Luke.8.4-15": (
+        "sha256:14d22e28f5700f8cfd45e5ab27e3e76d9bc03cd7c74788cc1a59dbc63cdd20c2"
+    ),
+    "Luke.11.9-13": (
+        "sha256:75a3f46672cd664344f2b43608d2bf753aad64ce61e0d9d19747b482fc08f635"
+    ),
+    "Luke.12.2-3": (
+        "sha256:1685af9116faa06c113710936225ebf3b8e246e70ac4f75d5fb159382d41587f"
     ),
 }
 
 # Soft courtesy throttle between large NTVMR pulls (see JAK-25 feasibility).
 NTVMR_THROTTLE_SECONDS = 1.0
+NTVMR_FETCH_RETRIES = 5
 
 
 class DownloadError(RuntimeError):
@@ -77,14 +104,39 @@ def verify_checksum(path: Path, expected: str) -> None:
 
 
 def _fetch(url: str, dest: Path) -> None:
+    """Download ``url`` to ``dest`` with TLS certificate verification always on.
+
+    Retries transient transport failures only. Certificate / hostname
+    verification is never disabled (no ``ssl._create_unverified_context``).
+    """
     dest.parent.mkdir(parents=True, exist_ok=True)
-    try:
-        with urlopen(url, timeout=120) as response:
-            data = response.read()
-    except URLError as exc:
-        msg = f"failed to download {url}: {exc}"
-        raise DownloadError(msg) from exc
-    dest.write_bytes(data)
+    req = Request(url, headers={"User-Agent": "zetodos-thomas/0.1 (setup-download)"})
+    errors: list[Exception] = []
+    for attempt in range(NTVMR_FETCH_RETRIES):
+        try:
+            with urlopen(req, timeout=180) as response:
+                data = response.read()
+            if len(data) < 64:
+                msg = f"download too small from {url}: {len(data)} bytes"
+                raise DownloadError(msg)
+            dest.write_bytes(data)
+            return
+        except (URLError, TimeoutError, DownloadError, OSError) as exc:
+            errors.append(exc)
+            # Do not retry pure certificate/hostname failures as "soft" TLS
+            # downgrades — only retry transport-class errors.
+            reason = getattr(exc, "reason", None)
+            cert_markers = ("CERTIFICATE", "SSL", "certificate", "hostname")
+            reason_text = str(reason or exc)
+            if any(marker in reason_text for marker in cert_markers):
+                # SSL handshake / cert problems: still allow a few retries on
+                # flaky IncompleteRead-style EOF, but never disable verify.
+                if "CERTIFICATE_VERIFY_FAILED" in reason_text:
+                    break
+            if attempt + 1 < NTVMR_FETCH_RETRIES:
+                time.sleep(1.5 * (attempt + 1))
+    msg = f"failed to download {url}: {errors[-1] if errors else 'unknown error'}"
+    raise DownloadError(msg) from (errors[-1] if errors else None)
 
 
 def download_copsahhorner(
@@ -120,7 +172,7 @@ def download_copsahhorner(
     return sword_root
 
 
-def ntvmr_teiraw_url(osis_range: str) -> str:
+def ntvmr_teiraw_url(osis_range: str, *, use_vmr_alias: bool = True) -> str:
     """Build the NTVMR teiraw URL for an OSIS indexContent range."""
     query = urlencode(
         {
@@ -132,7 +184,24 @@ def ntvmr_teiraw_url(osis_range: str) -> str:
             "includeEmpty": "true",
         }
     )
-    return f"{NTVMR_TRANSCRIPT_GET}?{query}"
+    base = NTVMR_TRANSCRIPT_GET_VMR if use_vmr_alias else NTVMR_TRANSCRIPT_GET
+    return f"{base}?{query}"
+
+
+def _fetch_ntvmr_teiraw(osis_range: str, dest: Path) -> None:
+    """Fetch one teiraw pin with retries across primary and vmr API paths."""
+    last_error: Exception | None = None
+    for attempt in range(NTVMR_FETCH_RETRIES):
+        for use_vmr in (True, False):
+            url = ntvmr_teiraw_url(osis_range, use_vmr_alias=use_vmr)
+            try:
+                _fetch(url, dest)
+                return
+            except DownloadError as exc:
+                last_error = exc
+        time.sleep(1.5 * (attempt + 1))
+    msg = f"NTVMR teiraw fetch failed for {osis_range}: {last_error}"
+    raise DownloadError(msg) from last_error
 
 
 def download_ntvmr_vaticanus(
@@ -147,10 +216,10 @@ def download_ntvmr_vaticanus(
     Does **not** download manuscript images.
     """
     manifest = load_manifest(manifests_dir / "ntvmr-vaticanus-b.json")
-    primary = NTVMR_TEIRAW_FILES["John.1.1-18"]
+    primary = NTVMR_TEIRAW_FILES["John.1.1-51"]
     if primary != manifest.checksum:
         msg = (
-            "NTVMR_TEIRAW_FILES John.1.1-18 pin does not match "
+            "NTVMR_TEIRAW_FILES John.1.1-51 pin does not match "
             f"ntvmr-vaticanus-b manifest checksum ({manifest.checksum})"
         )
         raise DownloadError(msg)
@@ -166,7 +235,7 @@ def download_ntvmr_vaticanus(
         else:
             if index > 0 and throttle_seconds > 0:
                 time.sleep(throttle_seconds)
-            _fetch(ntvmr_teiraw_url(osis_range), dest)
+            _fetch_ntvmr_teiraw(osis_range, dest)
             verify_checksum(dest, expected)
     return tei_dir
 

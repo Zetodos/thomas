@@ -1,0 +1,95 @@
+{
+  "id": "thomas-7-blinded-eval-v1",
+  "title": "Blinded Thomas 7 reconstruction evaluation package (JAK-43 readiness)",
+  "schema_version": "1",
+  "owned_by": "JAK-43",
+  "consumed_by": [
+    "JAK-40",
+    "JAK-41"
+  ],
+  "id_scheme_version": "1",
+  "pilot_logion": 7,
+  "unit_id": "thomas.7",
+  "coptic_source_id": "dilley-thomas",
+  "coptic_corpus_id": "dilley-thomas-v6.2.0",
+  "greek_nt_spine_source_id": "ntvmr-vaticanus-b",
+  "review_status": "ready-for-independent-review",
+  "independent_review_follow_up": {
+    "status": "blocking-follow-up",
+    "blocks": [
+      "JAK-40",
+      "JAK-41"
+    ],
+    "gate": "zetodos_thomas.eval.review_gate.assert_eval_package_human_checked",
+    "required_before_scoring": [
+      "Independent reviewer name",
+      "Review date",
+      "Inspected witness/source version (Dilley corpus id + P.Oxy. 654 / dclp fragment pin)",
+      "Surviving-letter vs editorial-restoration scoring decisions recorded"
+    ],
+    "notes": "JAK-43 formally moves the 'independently reviewed evaluation data' acceptance criterion to this blocking follow-up. Do not relabel review_status as human-checked without a real review. JAK-40/41 scoring entry points must call the review gate."
+  },
+  "seal": {
+    "greek_witness_id": "poxy-654-dclp",
+    "greek_source_id": "dclp-poxy-654",
+    "manuscript_id": "P.Oxy. 654",
+    "corpus_role": "evaluation-witness",
+    "sealed_until": "JAK-40 scoring",
+    "leakage_rule": "Do not train or select reconstruction rules using P.Oxy. 654 / Thomas-7 Greek, direct Thomas-specific reconstructions, or manual mappings derived from that fragment. A general NT-learned correspondence that happens to predict the same Greek word is permissible.",
+    "notes": "Greek fragment text is intentionally omitted from this package. Resolve surviving letters only from the sealed fragment corpus at scoring time (JAK-40). Editorial restorations must not enter the scoring denominator."
+  },
+  "input": {
+    "coptic_unit": {
+      "unit_id": "thomas.7",
+      "original_text": "ⲡⲉϫⲉⲓ︤ⲥ︥ⲟⲩⲙⲁⲕⲁⲣⲓⲟⲥⲡⲉⲡⲙⲟⲩⲉⲓⲡⲁⲉⲓⲉⲧⲉⲡⲣⲱⲙⲉⲛⲁⲟⲩⲟⲙϥⲁⲩⲱⲛ̄ⲧⲉⲡⲙⲟⲩⲉⲓϣⲱⲡⲉⲣ̄ⲣⲱⲙⲉⲁⲩⲱϥⲃⲏⲧ·ⲛ̄ϭⲓⲡⲣⲱⲙⲉⲡⲁⲉⲓⲉⲧⲉⲡⲙⲟⲩⲉⲓⲛⲁⲟⲩⲟⲙϥⲁⲩⲱⲡⲙⲟⲩⲉⲓⲛⲁϣⲱⲡⲉⲣ̄ⲣⲱⲙⲉ",
+      "normalized_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ⲟⲩ ⲙⲁⲕⲁⲣⲓⲟⲥ ⲡⲉ ⲡ ⲙⲟⲩⲓ ⲡⲁⲓ ⲉⲧⲉ ⲡ ⲣⲱⲙⲉ ⲛⲁ ⲟⲩⲟⲙ ϥ ⲁⲩⲱ ⲛⲧⲉ ⲡ ⲙⲟⲩⲓ ϣⲱⲡⲉ ⲛ ⲣⲱⲙⲉ ⲁⲩⲱ ϥ ⲃⲏⲧ · ⲛϭⲓ ⲡ ⲣⲱⲙⲉ ⲡⲁⲓ ⲉⲧⲉ ⲡ ⲙⲟⲩⲓ ⲛⲁ ⲟⲩⲟⲙ ϥ ⲁⲩⲱ ⲡ ⲙⲟⲩⲓ ⲛⲁ ϣⲱⲡⲉ ⲣ ⲣⲱⲙⲉ",
+      "kind": "logion"
+    },
+    "loanword_clues": [
+      {
+        "evidence_id": "v1:evidence/thomas.7/L/makarios",
+        "coptic_surface": "ⲙⲁⲕⲁⲣⲓⲟⲥ",
+        "greek_lemma_hint": "μακάριος",
+        "status": "attested",
+        "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax."
+      }
+    ],
+    "allowed_training_stack": [
+      "horner-vaticanus-nt-pilot-v3",
+      "horner-vaticanus-nt-split-v3",
+      "NT-learned mappings excluding evaluation-witness Greek Thomas fragments"
+    ],
+    "forbidden_training_inputs": [
+      "poxy-654-dclp / dclp-poxy-654 Greek text",
+      "thomas.7 Greek fragment tokens or restorations",
+      "manual Coptic→Greek mappings derived from P.Oxy. 654"
+    ]
+  },
+  "scoring_rubric": {
+    "levels": [
+      "surviving-letter-agreement",
+      "lemma-recovery",
+      "inflection",
+      "word-order",
+      "phrase-structure",
+      "unsupported-additions"
+    ],
+    "rules": [
+      "Score surviving Greek letters independently of editorial restorations.",
+      "Fluent Greek is not automatically a better reconstruction.",
+      "Legitimate ancient textual variation is not automatic algorithmic error.",
+      "Compare against a word-for-word baseline on identical inputs (JAK-41).",
+      "No invented numeric pass/fail threshold before measuring the baseline."
+    ],
+    "reference_evidence_package": "data/evidence/pilot/thomas-7-17-30-77.json",
+    "reference_fragment_corpus": "data/sources/fragments/greek-thomas-fragments.json"
+  },
+  "review_checklist": [
+    "Confirm Coptic Dilley unit_id thomas.7 matches bundled Dilley corpus bytes.",
+    "Confirm Greek witness remains sealed in this package (no P.Oxy. 654 text inline).",
+    "Confirm evaluation_witness_exclusions on split v3 still list poxy-654-dclp covering thomas.7.",
+    "Confirm loanword clue is labeled clue-only, not morphology proof.",
+    "Independent reviewer signs review_status → human-checked before JAK-40 scoring run."
+  ],
+  "notes": "Prepared under JAK-43 so JAK-40/41 can score without improvised labels once independently reviewed. review_status remains ready-for-independent-review: the independently-reviewed acceptance criterion is a blocking follow-up gated by zetodos_thomas.eval.review_gate (see independent_review_follow_up and docs/eval-data-readiness.md). Do not relabel as human-checked without a real review."
+}

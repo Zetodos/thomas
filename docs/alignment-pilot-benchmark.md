@@ -2,16 +2,19 @@
 
 **Status:** Baseline measurement for PLAN.md Phases 1–2 — **no pass/fail threshold**.
 **Machine report:** [`data/sources/alignment/benchmark-report.json`](../data/sources/alignment/benchmark-report.json) (regenerate with `uv run thomas align benchmark`)
-**Splits:** Canonical artifact owned by **JAK-33** under [`data/training/splits/`](../data/training/splits/) (see [`docs/benchmark-holdouts.md`](benchmark-holdouts.md) once #11 is present). Do **not** maintain a second `data/sources/pilot/splits.json`.
+**Splits:** Canonical **v3** artifact owned by **JAK-43** under [`data/training/splits/horner-vaticanus-nt-split-v3.json`](../data/training/splits/horner-vaticanus-nt-split-v3.json) (see [`docs/eval-data-readiness.md`](eval-data-readiness.md)). Archival v2: JAK-33. Do **not** maintain a second `data/sources/pilot/splits.json`.
 **Reference gold:** [`data/sources/alignment/reference/horner-vaticanus-gold-sample-v1.json`](../data/sources/alignment/reference/horner-vaticanus-gold-sample-v1.json) — **provisional** (not adjudicated human review).
 **Greek spine:** NTVMR Vaticanus B\* only (GA 03 / `docID` 20003). **Never** mix WH/SBLGNT.
+**Segmentation:** Horner bound-group peeler `bound-group-v1` (JAK-43); default Dice path stays whitespace for gold comparability.
 
-## What was measured
+## What was measured (Phase 1 baseline; regenerate on v3)
 
 | Item | Value |
 | --- | --- |
-| Pilot units | 46 |
-| Nonempty positive pairs | 35 |
+| Corpus units (v3) | 407 (Phase 1 report below was on 46) |
+| Nonempty positive pairs (v3) | 396 |
+| Pilot units (Phase 1 numbers) | 46 |
+| Nonempty positive pairs (Phase 1) | 35 |
 | Omission fixtures (John 8:1–11) | 11 (excluded from positive denominators) |
 | Algorithm | Verse-level **type** Dice (once per type per verse) + mild positional prior |
 | Scoring coverage | 1-best for every left token (`min_dice=0`); only gold-annotated Sahidic left ids enter precision |

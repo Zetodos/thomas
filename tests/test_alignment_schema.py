@@ -60,7 +60,7 @@ def test_id_helpers_embed_scheme_version() -> None:
 def test_pilot_verse_pairing_still_loads() -> None:
     corpus = load_pilot_corpus(PILOT_PATH)
     assert corpus.greek_source_id == "ntvmr-vaticanus-b"
-    assert len(corpus.units) == 46
+    assert len(corpus.units) == 407
     john = next(u for u in corpus.units if u.unit_id == "john.1.1")
     assert john.greek.kind is UnitKind.VERSE
     assert "λογος" in john.greek.original_text

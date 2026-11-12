@@ -21,11 +21,18 @@ from zetodos_thomas.ingest.fragments import DEFAULT_FRAGMENT_CORPUS_FILENAME
 
 PILOT_FILENAME = "horner-vaticanus-nt-pilot.json"
 THOMAS_FILENAME = f"{THOMAS_CORPUS_ID}.json"
-NT_SPLIT_REL = Path("data/training/splits/horner-vaticanus-nt-split-v2.json")
-OMISSION_REL = Path("data/evidence/omissions/john-8-pa-omission-fixture-v1.json")
+NT_SPLIT_REL = Path("data/training/splits/horner-vaticanus-nt-split-v3.json")
+OMISSION_REL = Path("data/evidence/omissions/john-8-pa-omission-fixture-v3.json")
+OMISSION_REL_V2 = Path("data/evidence/omissions/john-8-pa-omission-fixture-v1.json")
 DIVERGENCE_REL = Path(
     "data/evidence/divergences/greek-thomas-fragment-divergences-v1.json"
 )
+
+# Map pilot_corpus_id → omission catalog relative path.
+OMISSION_REL_BY_PILOT_CORPUS: dict[str, Path] = {
+    "horner-vaticanus-nt-pilot-v3": OMISSION_REL,
+    "horner-vaticanus-nt-pilot-v2": OMISSION_REL_V2,
+}
 
 
 def find_repo_root(start: Path | None = None) -> Path:
@@ -159,9 +166,24 @@ def resolve_nt_split_path(repo_root: Path | None) -> Path:
     return _resolve_data_file(repo_root, NT_SPLIT_REL, bundled_nt_split_path())
 
 
-def resolve_omission_fixtures_path(repo_root: Path | None) -> Path:
-    """Prefer checkout omission fixtures; fall back to packaged artifact."""
-    return _resolve_data_file(repo_root, OMISSION_REL, bundled_omission_fixtures_path())
+def resolve_omission_fixtures_path(
+    repo_root: Path | None,
+    *,
+    pilot_corpus_id: str | None = None,
+) -> Path:
+    """Prefer checkout omission fixtures; fall back to packaged artifact.
+
+    Default is the v3 catalog. Pass ``pilot_corpus_id`` (e.g. from an
+    ``NtCorpusSplit``) to select the matching archival v2 catalog.
+    """
+    from zetodos_thomas.bundled import bundled_omission_fixtures_for_pilot
+
+    relative = OMISSION_REL_BY_PILOT_CORPUS.get(pilot_corpus_id or "", OMISSION_REL)
+    if pilot_corpus_id:
+        bundled = bundled_omission_fixtures_for_pilot(pilot_corpus_id)
+    else:
+        bundled = bundled_omission_fixtures_path()
+    return _resolve_data_file(repo_root, relative, bundled)
 
 
 def resolve_fragment_divergences_path(repo_root: Path | None) -> Path:

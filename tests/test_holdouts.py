@@ -19,6 +19,8 @@ from zetodos_thomas.bundled import (
 from zetodos_thomas.cli.app import app
 from zetodos_thomas.ingest.holdouts import (
     HoldoutValidationError,
+    assert_no_train_holdout_greek_ngram_leakage,
+    cross_split_greek_ngram_leaks,
     crosscheck_against_pilot,
     load_fragment_divergences,
     load_nt_split,
@@ -34,8 +36,13 @@ from zetodos_thomas.schemas.holdout import (
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-SPLIT_PATH = REPO_ROOT / "data/training/splits/horner-vaticanus-nt-split-v2.json"
-OMISSION_PATH = REPO_ROOT / "data/evidence/omissions/john-8-pa-omission-fixture-v1.json"
+SPLIT_PATH = REPO_ROOT / "data/training/splits/horner-vaticanus-nt-split-v3.json"
+OMISSION_PATH = REPO_ROOT / "data/evidence/omissions/john-8-pa-omission-fixture-v3.json"
+OMISSION_PATH_V2 = (
+    REPO_ROOT / "data/evidence/omissions/john-8-pa-omission-fixture-v1.json"
+)
+SPLIT_PATH_V2 = REPO_ROOT / "data/training/splits/horner-vaticanus-nt-split-v2.json"
+PILOT_PATH_V2 = REPO_ROOT / "data/sources/pilot/horner-vaticanus-nt-pilot-v2.json"
 DIVERGENCE_PATH = (
     REPO_ROOT / "data/evidence/divergences/greek-thomas-fragment-divergences-v1.json"
 )
@@ -50,27 +57,37 @@ def test_committed_holdout_artifacts_validate() -> None:
         divergence_path=DIVERGENCE_PATH,
         pilot=pilot,
     )
-    assert split.id == "horner-vaticanus-nt-split-v2"
-    assert split.owned_by == "JAK-33"
-    assert "JAK-28" in split.consumed_by
+    assert split.id == "horner-vaticanus-nt-split-v3"
+    assert split.owned_by == "JAK-43"
+    assert "JAK-36" in split.consumed_by
     assert split.greek_source_id == "ntvmr-vaticanus-b"
-    assert split.pilot_corpus_id == "horner-vaticanus-nt-pilot-v2"
-    assert pilot.id == "horner-vaticanus-nt-pilot-v2"
+    assert split.pilot_corpus_id == "horner-vaticanus-nt-pilot-v3"
+    assert pilot.id == "horner-vaticanus-nt-pilot-v3"
     assert split.secondary_ot_used is False
 
     train = [p for p in split.passages if p.role is PassageRole.TRAIN]
     holdout = [p for p in split.passages if p.role is PassageRole.HOLDOUT]
     dev = [p for p in split.passages if p.role is PassageRole.DEV]
-    assert {p.book for p in train} == {"john", "mark", "matthew"}
+    assert {p.book for p in train} >= {"john", "mark", "matthew", "luke"}
     assert any(p.book == "mark" for p in train)
-    assert len(holdout) == 1 and holdout[0].unit_ids == [
-        "matthew.13.31",
-        "matthew.13.32",
-    ]
-    assert len(dev) == 1 and dev[0].unit_ids == ["luke.6.20", "luke.6.21"]
+    hold_ids = [uid for p in holdout for uid in p.unit_ids]
+    assert "matthew.13.31" in hold_ids and "matthew.10.26" in hold_ids
+    assert "luke.8.4" in hold_ids
+    # Synoptic parallels grouped into holdout (Jake review 4544895956).
+    assert "luke.12.2" in hold_ids and "luke.12.3" in hold_ids
+    assert "mark.4.4" in hold_ids and "matthew.13.4" in hold_ids
+    assert len(hold_ids) == 41
+    train_ids = {uid for p in train for uid in p.unit_ids}
+    assert "luke.12.2" not in train_ids
+    assert len(train_ids) == 304
+    dev_ids = [uid for p in dev for uid in p.unit_ids]
+    assert "luke.6.20" in dev_ids and "john.3.1" in dev_ids
+    assert len(dev_ids) == 51
+    assert_no_train_holdout_greek_ngram_leakage(split, pilot)
+    assert cross_split_greek_ngram_leaks(split, pilot) == {}
 
     assert len(omissions.units) == 11
-    assert omissions.pilot_corpus_id == "horner-vaticanus-nt-pilot-v2"
+    assert omissions.pilot_corpus_id == "horner-vaticanus-nt-pilot-v3"
     assert {u.unit_id for u in omissions.units} == {f"john.8.{n}" for n in range(1, 12)}
     assert all(u.greek_empty and u.sahidic_empty for u in omissions.units)
 
@@ -82,13 +99,35 @@ def test_committed_holdout_artifacts_validate() -> None:
 
 
 def test_bundled_holdouts_match_checkout() -> None:
+    from zetodos_thomas.bundled import bundled_omission_fixtures_for_pilot
+
     for checkout, bundled in (
         (SPLIT_PATH, bundled_nt_split_path()),
         (OMISSION_PATH, bundled_omission_fixtures_path()),
         (DIVERGENCE_PATH, bundled_fragment_divergences_path()),
+        (
+            OMISSION_PATH_V2,
+            bundled_omission_fixtures_for_pilot("horner-vaticanus-nt-pilot-v2"),
+        ),
     ):
         assert checkout.read_bytes() == bundled.read_bytes()
     assert PILOT_PATH.read_bytes() == bundled_pilot_path().read_bytes()
+
+
+def test_archival_v2_split_loads_with_matching_omission() -> None:
+    """load_splits(v2) must pair the v2-compatible omission catalog."""
+    from zetodos_thomas.align.splits import load_splits
+
+    splits = load_splits(SPLIT_PATH_V2)
+    assert splits.pilot_corpus_id == "horner-vaticanus-nt-pilot-v2"
+    assert splits.id == "horner-vaticanus-nt-split-v2"
+    pilot = load_pilot_corpus(PILOT_PATH_V2)
+    validate_holdout_artifacts(
+        split_path=SPLIT_PATH_V2,
+        omission_path=OMISSION_PATH_V2,
+        divergence_path=DIVERGENCE_PATH,
+        pilot=pilot,
+    )
 
 
 def test_split_rejects_unit_role_overlap() -> None:
@@ -129,7 +168,7 @@ def test_cli_sources_validate_includes_holdouts() -> None:
     runner = CliRunner()
     result = runner.invoke(app, ["sources", "validate", "--repo-root", str(REPO_ROOT)])
     assert result.exit_code == 0, result.output
-    assert "holdouts horner-vaticanus-nt-split-v2" in result.output
+    assert "holdouts horner-vaticanus-nt-split-v3" in result.output
     assert "omissions=11" in result.output
 
 
@@ -186,7 +225,7 @@ def test_integrated_sources_validate_and_align_benchmark() -> None:
     runner = CliRunner()
     sources = runner.invoke(app, ["sources", "validate", "--repo-root", str(REPO_ROOT)])
     assert sources.exit_code == 0, sources.output
-    assert "horner-vaticanus-nt-split-v2" in sources.output
+    assert "horner-vaticanus-nt-split-v3" in sources.output
 
     out = REPO_ROOT / "data" / "sources" / "alignment" / "benchmark-report.json"
     bench = runner.invoke(
@@ -206,6 +245,6 @@ def test_integrated_sources_validate_and_align_benchmark() -> None:
     assert out.is_file()
     report = json.loads(out.read_text(encoding="utf-8"))
     assert report["pass_threshold"] is None
-    assert report["pilot_id"] == "horner-vaticanus-nt-pilot-v2"
+    assert report["pilot_id"] == "horner-vaticanus-nt-pilot-v3"
     assert report["human_reference"]["status"] == "provisional"
     assert "null_rate" not in report["lexical_baseline"]["null_alignments"]

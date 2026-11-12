@@ -1,0 +1,948 @@
+{
+  "id": "horner-vaticanus-nt-split-v3",
+  "title": "Horner × Vaticanus B* Greek–Sahidic NT train/dev/holdout split v3 (407-unit Gospel expansion)",
+  "schema_version": "1",
+  "greek_source_id": "ntvmr-vaticanus-b",
+  "sahidic_source_id": "copsahhorner",
+  "pilot_corpus_id": "horner-vaticanus-nt-pilot-v3",
+  "owned_by": "JAK-43",
+  "consumed_by": [
+    "JAK-36",
+    "JAK-28"
+  ],
+  "passages": [
+    {
+      "book": "john",
+      "chapter_from": 1,
+      "verse_from": 1,
+      "chapter_to": 1,
+      "verse_to": 51,
+      "unit_ids": [
+        "john.1.1",
+        "john.1.2",
+        "john.1.3",
+        "john.1.4",
+        "john.1.5",
+        "john.1.6",
+        "john.1.7",
+        "john.1.8",
+        "john.1.9",
+        "john.1.10",
+        "john.1.11",
+        "john.1.12",
+        "john.1.13",
+        "john.1.14",
+        "john.1.15",
+        "john.1.16",
+        "john.1.17",
+        "john.1.18",
+        "john.1.19",
+        "john.1.20",
+        "john.1.21",
+        "john.1.22",
+        "john.1.23",
+        "john.1.24",
+        "john.1.25",
+        "john.1.26",
+        "john.1.27",
+        "john.1.28",
+        "john.1.29",
+        "john.1.30",
+        "john.1.31",
+        "john.1.32",
+        "john.1.33",
+        "john.1.34",
+        "john.1.35",
+        "john.1.36",
+        "john.1.37",
+        "john.1.38",
+        "john.1.39",
+        "john.1.40",
+        "john.1.41",
+        "john.1.42",
+        "john.1.43",
+        "john.1.44",
+        "john.1.45",
+        "john.1.46",
+        "john.1.47",
+        "john.1.48",
+        "john.1.49",
+        "john.1.50",
+        "john.1.51"
+      ],
+      "role": "train",
+      "notes": "John 1 full chapter; nomina sacra; sayings-like density."
+    },
+    {
+      "book": "john",
+      "chapter_from": 3,
+      "verse_from": 1,
+      "chapter_to": 3,
+      "verse_to": 21,
+      "unit_ids": [
+        "john.3.1",
+        "john.3.2",
+        "john.3.3",
+        "john.3.4",
+        "john.3.5",
+        "john.3.6",
+        "john.3.7",
+        "john.3.8",
+        "john.3.9",
+        "john.3.10",
+        "john.3.11",
+        "john.3.12",
+        "john.3.13",
+        "john.3.14",
+        "john.3.15",
+        "john.3.16",
+        "john.3.17",
+        "john.3.18",
+        "john.3.19",
+        "john.3.20",
+        "john.3.21"
+      ],
+      "role": "dev",
+      "notes": "John 3 discourse block for pronoun/clause variation."
+    },
+    {
+      "book": "mark",
+      "chapter_from": 1,
+      "verse_from": 1,
+      "chapter_to": 1,
+      "verse_to": 45,
+      "unit_ids": [
+        "mark.1.1",
+        "mark.1.2",
+        "mark.1.3",
+        "mark.1.4",
+        "mark.1.5",
+        "mark.1.6",
+        "mark.1.7",
+        "mark.1.8",
+        "mark.1.9",
+        "mark.1.10",
+        "mark.1.11",
+        "mark.1.12",
+        "mark.1.13",
+        "mark.1.14",
+        "mark.1.15",
+        "mark.1.16",
+        "mark.1.17",
+        "mark.1.18",
+        "mark.1.19",
+        "mark.1.20",
+        "mark.1.21",
+        "mark.1.22",
+        "mark.1.23",
+        "mark.1.24",
+        "mark.1.25",
+        "mark.1.26",
+        "mark.1.27",
+        "mark.1.28",
+        "mark.1.29",
+        "mark.1.30",
+        "mark.1.31",
+        "mark.1.32",
+        "mark.1.33",
+        "mark.1.34",
+        "mark.1.35",
+        "mark.1.36",
+        "mark.1.37",
+        "mark.1.38",
+        "mark.1.39",
+        "mark.1.40",
+        "mark.1.41",
+        "mark.1.42",
+        "mark.1.43",
+        "mark.1.44",
+        "mark.1.45"
+      ],
+      "role": "train",
+      "notes": "Mark 1 full; loanwords; Mark 1:1 Sahidic book heading is paratext."
+    },
+    {
+      "book": "mark",
+      "chapter_from": 4,
+      "verse_from": 1,
+      "chapter_to": 4,
+      "verse_to": 3,
+      "unit_ids": [
+        "mark.4.1",
+        "mark.4.2",
+        "mark.4.3"
+      ],
+      "role": "train",
+      "notes": "Mark train block."
+    },
+    {
+      "book": "mark",
+      "chapter_from": 4,
+      "verse_from": 4,
+      "chapter_to": 4,
+      "verse_to": 4,
+      "unit_ids": [
+        "mark.4.4"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "mark",
+      "chapter_from": 4,
+      "verse_from": 5,
+      "chapter_to": 4,
+      "verse_to": 7,
+      "unit_ids": [
+        "mark.4.5",
+        "mark.4.6",
+        "mark.4.7"
+      ],
+      "role": "train",
+      "notes": "Mark train block."
+    },
+    {
+      "book": "mark",
+      "chapter_from": 4,
+      "verse_from": 8,
+      "chapter_to": 4,
+      "verse_to": 8,
+      "unit_ids": [
+        "mark.4.8"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "mark",
+      "chapter_from": 4,
+      "verse_from": 9,
+      "chapter_to": 4,
+      "verse_to": 18,
+      "unit_ids": [
+        "mark.4.9",
+        "mark.4.10",
+        "mark.4.11",
+        "mark.4.12",
+        "mark.4.13",
+        "mark.4.14",
+        "mark.4.15",
+        "mark.4.16",
+        "mark.4.17",
+        "mark.4.18"
+      ],
+      "role": "train",
+      "notes": "Mark train block."
+    },
+    {
+      "book": "mark",
+      "chapter_from": 4,
+      "verse_from": 19,
+      "chapter_to": 4,
+      "verse_to": 19,
+      "unit_ids": [
+        "mark.4.19"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "mark",
+      "chapter_from": 4,
+      "verse_from": 20,
+      "chapter_to": 4,
+      "verse_to": 34,
+      "unit_ids": [
+        "mark.4.20",
+        "mark.4.21",
+        "mark.4.22",
+        "mark.4.23",
+        "mark.4.24",
+        "mark.4.25",
+        "mark.4.26",
+        "mark.4.27",
+        "mark.4.28",
+        "mark.4.29",
+        "mark.4.30",
+        "mark.4.31",
+        "mark.4.32",
+        "mark.4.33",
+        "mark.4.34"
+      ],
+      "role": "train",
+      "notes": "Mark train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 5,
+      "verse_from": 1,
+      "chapter_to": 5,
+      "verse_to": 2,
+      "unit_ids": [
+        "matthew.5.1",
+        "matthew.5.2"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 5,
+      "verse_from": 3,
+      "chapter_to": 5,
+      "verse_to": 3,
+      "unit_ids": [
+        "matthew.5.3"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 5,
+      "verse_from": 4,
+      "chapter_to": 5,
+      "verse_to": 9,
+      "unit_ids": [
+        "matthew.5.4",
+        "matthew.5.5",
+        "matthew.5.6",
+        "matthew.5.7",
+        "matthew.5.8",
+        "matthew.5.9"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 5,
+      "verse_from": 10,
+      "chapter_to": 5,
+      "verse_to": 10,
+      "unit_ids": [
+        "matthew.5.10"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 5,
+      "verse_from": 11,
+      "chapter_to": 5,
+      "verse_to": 19,
+      "unit_ids": [
+        "matthew.5.11",
+        "matthew.5.12",
+        "matthew.5.13",
+        "matthew.5.14",
+        "matthew.5.15",
+        "matthew.5.16",
+        "matthew.5.17",
+        "matthew.5.18",
+        "matthew.5.19"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 5,
+      "verse_from": 20,
+      "chapter_to": 5,
+      "verse_to": 20,
+      "unit_ids": [
+        "matthew.5.20"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 5,
+      "verse_from": 21,
+      "chapter_to": 5,
+      "verse_to": 48,
+      "unit_ids": [
+        "matthew.5.21",
+        "matthew.5.22",
+        "matthew.5.23",
+        "matthew.5.24",
+        "matthew.5.25",
+        "matthew.5.26",
+        "matthew.5.27",
+        "matthew.5.28",
+        "matthew.5.29",
+        "matthew.5.30",
+        "matthew.5.31",
+        "matthew.5.32",
+        "matthew.5.33",
+        "matthew.5.34",
+        "matthew.5.35",
+        "matthew.5.36",
+        "matthew.5.37",
+        "matthew.5.38",
+        "matthew.5.39",
+        "matthew.5.40",
+        "matthew.5.41",
+        "matthew.5.42",
+        "matthew.5.43",
+        "matthew.5.44",
+        "matthew.5.45",
+        "matthew.5.46",
+        "matthew.5.47",
+        "matthew.5.48"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 6,
+      "verse_from": 1,
+      "chapter_to": 6,
+      "verse_to": 34,
+      "unit_ids": [
+        "matthew.6.1",
+        "matthew.6.2",
+        "matthew.6.3",
+        "matthew.6.4",
+        "matthew.6.5",
+        "matthew.6.6",
+        "matthew.6.7",
+        "matthew.6.8",
+        "matthew.6.9",
+        "matthew.6.10",
+        "matthew.6.11",
+        "matthew.6.12",
+        "matthew.6.13",
+        "matthew.6.14",
+        "matthew.6.15",
+        "matthew.6.16",
+        "matthew.6.17",
+        "matthew.6.18",
+        "matthew.6.19",
+        "matthew.6.20",
+        "matthew.6.21",
+        "matthew.6.22",
+        "matthew.6.23",
+        "matthew.6.24",
+        "matthew.6.25",
+        "matthew.6.26",
+        "matthew.6.27",
+        "matthew.6.28",
+        "matthew.6.29",
+        "matthew.6.30",
+        "matthew.6.31",
+        "matthew.6.32",
+        "matthew.6.33",
+        "matthew.6.34"
+      ],
+      "role": "train",
+      "notes": "Matthew 6 Sermon on the Mount continued."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 7,
+      "verse_from": 1,
+      "chapter_to": 7,
+      "verse_to": 20,
+      "unit_ids": [
+        "matthew.7.1",
+        "matthew.7.2",
+        "matthew.7.3",
+        "matthew.7.4",
+        "matthew.7.5",
+        "matthew.7.6",
+        "matthew.7.7",
+        "matthew.7.8",
+        "matthew.7.9",
+        "matthew.7.10",
+        "matthew.7.11",
+        "matthew.7.12",
+        "matthew.7.13",
+        "matthew.7.14",
+        "matthew.7.15",
+        "matthew.7.16",
+        "matthew.7.17",
+        "matthew.7.18",
+        "matthew.7.19",
+        "matthew.7.20"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 7,
+      "verse_from": 21,
+      "chapter_to": 7,
+      "verse_to": 21,
+      "unit_ids": [
+        "matthew.7.21"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 7,
+      "verse_from": 22,
+      "chapter_to": 7,
+      "verse_to": 29,
+      "unit_ids": [
+        "matthew.7.22",
+        "matthew.7.23",
+        "matthew.7.24",
+        "matthew.7.25",
+        "matthew.7.26",
+        "matthew.7.27",
+        "matthew.7.28",
+        "matthew.7.29"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 10,
+      "verse_from": 26,
+      "chapter_to": 10,
+      "verse_to": 33,
+      "unit_ids": [
+        "matthew.10.26",
+        "matthew.10.27",
+        "matthew.10.28",
+        "matthew.10.29",
+        "matthew.10.30",
+        "matthew.10.31",
+        "matthew.10.32",
+        "matthew.10.33"
+      ],
+      "role": "holdout",
+      "notes": "Hidden/revealed + confess sayings whole-passage holdout (Thomas-adjacent)."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 1,
+      "chapter_to": 13,
+      "verse_to": 3,
+      "unit_ids": [
+        "matthew.13.1",
+        "matthew.13.2",
+        "matthew.13.3"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 4,
+      "chapter_to": 13,
+      "verse_to": 4,
+      "unit_ids": [
+        "matthew.13.4"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 5,
+      "chapter_to": 13,
+      "verse_to": 7,
+      "unit_ids": [
+        "matthew.13.5",
+        "matthew.13.6",
+        "matthew.13.7"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 8,
+      "chapter_to": 13,
+      "verse_to": 8,
+      "unit_ids": [
+        "matthew.13.8"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 9,
+      "chapter_to": 13,
+      "verse_to": 10,
+      "unit_ids": [
+        "matthew.13.9",
+        "matthew.13.10"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 11,
+      "chapter_to": 13,
+      "verse_to": 11,
+      "unit_ids": [
+        "matthew.13.11"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 12,
+      "chapter_to": 13,
+      "verse_to": 19,
+      "unit_ids": [
+        "matthew.13.12",
+        "matthew.13.13",
+        "matthew.13.14",
+        "matthew.13.15",
+        "matthew.13.16",
+        "matthew.13.17",
+        "matthew.13.18",
+        "matthew.13.19"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 20,
+      "chapter_to": 13,
+      "verse_to": 20,
+      "unit_ids": [
+        "matthew.13.20"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 21,
+      "chapter_to": 13,
+      "verse_to": 21,
+      "unit_ids": [
+        "matthew.13.21"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 22,
+      "chapter_to": 13,
+      "verse_to": 23,
+      "unit_ids": [
+        "matthew.13.22",
+        "matthew.13.23"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 24,
+      "chapter_to": 13,
+      "verse_to": 30,
+      "unit_ids": [
+        "matthew.13.24",
+        "matthew.13.25",
+        "matthew.13.26",
+        "matthew.13.27",
+        "matthew.13.28",
+        "matthew.13.29",
+        "matthew.13.30"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 31,
+      "chapter_to": 13,
+      "verse_to": 33,
+      "unit_ids": [
+        "matthew.13.31",
+        "matthew.13.32",
+        "matthew.13.33"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 34,
+      "chapter_to": 13,
+      "verse_to": 43,
+      "unit_ids": [
+        "matthew.13.34",
+        "matthew.13.35",
+        "matthew.13.36",
+        "matthew.13.37",
+        "matthew.13.38",
+        "matthew.13.39",
+        "matthew.13.40",
+        "matthew.13.41",
+        "matthew.13.42",
+        "matthew.13.43"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 44,
+      "chapter_to": 13,
+      "verse_to": 45,
+      "unit_ids": [
+        "matthew.13.44",
+        "matthew.13.45"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 46,
+      "chapter_to": 13,
+      "verse_to": 46,
+      "unit_ids": [
+        "matthew.13.46"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 47,
+      "chapter_to": 13,
+      "verse_to": 47,
+      "unit_ids": [
+        "matthew.13.47"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    },
+    {
+      "book": "matthew",
+      "chapter_from": 13,
+      "verse_from": 48,
+      "chapter_to": 13,
+      "verse_to": 58,
+      "unit_ids": [
+        "matthew.13.48",
+        "matthew.13.49",
+        "matthew.13.50",
+        "matthew.13.51",
+        "matthew.13.52",
+        "matthew.13.53",
+        "matthew.13.54",
+        "matthew.13.55",
+        "matthew.13.56",
+        "matthew.13.57",
+        "matthew.13.58"
+      ],
+      "role": "train",
+      "notes": "Matthew train block."
+    },
+    {
+      "book": "luke",
+      "chapter_from": 6,
+      "verse_from": 1,
+      "chapter_to": 6,
+      "verse_to": 19,
+      "unit_ids": [
+        "luke.6.1",
+        "luke.6.2",
+        "luke.6.3",
+        "luke.6.4",
+        "luke.6.5",
+        "luke.6.6",
+        "luke.6.7",
+        "luke.6.8",
+        "luke.6.9",
+        "luke.6.10",
+        "luke.6.11",
+        "luke.6.12",
+        "luke.6.13",
+        "luke.6.14",
+        "luke.6.15",
+        "luke.6.16",
+        "luke.6.17",
+        "luke.6.18",
+        "luke.6.19"
+      ],
+      "role": "train",
+      "notes": "Luke 6 narrative before Sermon on the Plain (dev)."
+    },
+    {
+      "book": "luke",
+      "chapter_from": 6,
+      "verse_from": 20,
+      "chapter_to": 6,
+      "verse_to": 49,
+      "unit_ids": [
+        "luke.6.20",
+        "luke.6.21",
+        "luke.6.22",
+        "luke.6.23",
+        "luke.6.24",
+        "luke.6.25",
+        "luke.6.26",
+        "luke.6.27",
+        "luke.6.28",
+        "luke.6.29",
+        "luke.6.30",
+        "luke.6.31",
+        "luke.6.32",
+        "luke.6.33",
+        "luke.6.34",
+        "luke.6.35",
+        "luke.6.36",
+        "luke.6.37",
+        "luke.6.38",
+        "luke.6.39",
+        "luke.6.40",
+        "luke.6.41",
+        "luke.6.42",
+        "luke.6.43",
+        "luke.6.44",
+        "luke.6.45",
+        "luke.6.46",
+        "luke.6.47",
+        "luke.6.48",
+        "luke.6.49"
+      ],
+      "role": "dev",
+      "notes": "Sermon on the Plain expanded for Phase 2 tuning (was Luke 6:20-21 in v2)."
+    },
+    {
+      "book": "luke",
+      "chapter_from": 8,
+      "verse_from": 4,
+      "chapter_to": 8,
+      "verse_to": 15,
+      "unit_ids": [
+        "luke.8.4",
+        "luke.8.5",
+        "luke.8.6",
+        "luke.8.7",
+        "luke.8.8",
+        "luke.8.9",
+        "luke.8.10",
+        "luke.8.11",
+        "luke.8.12",
+        "luke.8.13",
+        "luke.8.14",
+        "luke.8.15"
+      ],
+      "role": "holdout",
+      "notes": "Parable of the sower whole-passage holdout."
+    },
+    {
+      "book": "luke",
+      "chapter_from": 11,
+      "verse_from": 9,
+      "chapter_to": 11,
+      "verse_to": 13,
+      "unit_ids": [
+        "luke.11.9",
+        "luke.11.10",
+        "luke.11.11",
+        "luke.11.12",
+        "luke.11.13"
+      ],
+      "role": "train",
+      "notes": "Luke ask/seek/knock parallel (Thomas-adjacent imperatives)."
+    },
+    {
+      "book": "luke",
+      "chapter_from": 12,
+      "verse_from": 2,
+      "chapter_to": 12,
+      "verse_to": 3,
+      "unit_ids": [
+        "luke.12.2",
+        "luke.12.3"
+      ],
+      "role": "holdout",
+      "notes": "Holdout passage including Synoptic/phrase-parallel leakage controls (JAK-43 Jake review): exact Greek 5-token sequences must not appear in train."
+    }
+  ],
+  "evaluation_witness_exclusions": [
+    {
+      "witness_id": "poxy-654-dclp",
+      "source_id": "dclp-poxy-654",
+      "manuscript_id": "P.Oxy. 654",
+      "corpus_role": "evaluation-witness",
+      "unit_ids": [
+        "thomas.1",
+        "thomas.2",
+        "thomas.3",
+        "thomas.4",
+        "thomas.5",
+        "thomas.6",
+        "thomas.7"
+      ],
+      "notes": "Greek Thomas fragment (incipit + logia 1–7). Hold out from Greek–Sahidic training mappings; JAK-34/40 pilot includes thomas.7. No P.Oxy. 654 leakage into train/rule selection (JAK-43)."
+    },
+    {
+      "witness_id": "poxy-1-dclp",
+      "source_id": "dclp-poxy-1",
+      "manuscript_id": "P.Oxy. 1",
+      "corpus_role": "evaluation-witness",
+      "unit_ids": [
+        "thomas.26",
+        "thomas.27",
+        "thomas.28",
+        "thomas.29",
+        "thomas.30",
+        "thomas.77",
+        "thomas.31",
+        "thomas.32",
+        "thomas.33"
+      ],
+      "notes": "Greek Thomas fragment (logia ~26–30, 77b, 31–33). Sequence/division diverges from Coptic. Hold out; JAK-34 pilot includes thomas.30 and thomas.77."
+    },
+    {
+      "witness_id": "poxy-655-dclp",
+      "source_id": "dclp-poxy-655",
+      "manuscript_id": "P.Oxy. 655",
+      "corpus_role": "evaluation-witness",
+      "unit_ids": [
+        "thomas.24",
+        "thomas.36",
+        "thomas.37",
+        "thomas.38",
+        "thomas.39"
+      ],
+      "notes": "Greek Thomas fragment (logia ~36–39; possible 24). Hold out from training mappings."
+    }
+  ],
+  "secondary_ot_used": false,
+  "secondary_ot_notes": "Secondary OT parallels are not part of this v3 split.",
+  "notes": "Canonical JAK-43 split for horner-vaticanus-nt-pilot-v3 (407 units; 396 nonempty + 11 John 8 PA omissions). Path: data/training/splits/horner-vaticanus-nt-split-v3.json. Archival Phase 1 split remains at horner-vaticanus-nt-split-v2.json. Do not maintain a second policy file under data/sources/pilot/splits.json. John 8:1–11 lives only in data/evidence/omissions/john-8-pa-omission-fixture-v3.json. Greek NT edition is Vaticanus B* only. Role unit counts (including any empty-side slots in range): train=304, dev=51, holdout=41. Nonempty positives: train=304, dev=51, holdout=41 (396 total). Synoptic/phrase parallel leakage: train and holdout share no exact Greek five-token sequences (Jake review 5867334924). Adequate to begin JAK-36 learning curves; sufficiency curves themselves remain JAK-36. P.Oxy. 654 / Thomas 7 Greek is evaluation-witness only — never train/rule selection."
+}

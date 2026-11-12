@@ -11,6 +11,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 
 from zetodos_thomas.align.paratext import filter_alignable_tokens
+from zetodos_thomas.align.segment_coptic import segmented_coptic_tokens
 from zetodos_thomas.align.tokenize import whitespace_tokens
 from zetodos_thomas.schemas.alignment import (
     AlignmentDocument,
@@ -18,6 +19,10 @@ from zetodos_thomas.schemas.alignment import (
     Token,
 )
 from zetodos_thomas.schemas.source import ParallelUnit
+
+# Default stays whitespace so Phase 1 gold / Dice numbers remain comparable.
+# JAK-36 should prefer ``coptic_segmentation="bound-group-v1"``.
+CopticSegmentation = str
 
 
 @dataclass(frozen=True)
@@ -75,13 +80,27 @@ class BenchmarkScores:
         }
 
 
-def _norm_tokens(unit: ParallelUnit) -> tuple[list[Token], list[Token]]:
-    left = filter_alignable_tokens(whitespace_tokens(unit.sahidic))
+def _norm_tokens(
+    unit: ParallelUnit,
+    *,
+    coptic_segmentation: CopticSegmentation = "whitespace",
+) -> tuple[list[Token], list[Token]]:
+    if coptic_segmentation == "whitespace":
+        left = filter_alignable_tokens(whitespace_tokens(unit.sahidic))
+    elif coptic_segmentation == "bound-group-v1":
+        left = filter_alignable_tokens(segmented_coptic_tokens(unit.sahidic))
+    else:
+        msg = f"unknown coptic_segmentation={coptic_segmentation!r}"
+        raise ValueError(msg)
     right = filter_alignable_tokens(whitespace_tokens(unit.greek))
     return left, right
 
 
-def fit_lexical_baseline(train_units: list[ParallelUnit]) -> LexicalBaselineModel:
+def fit_lexical_baseline(
+    train_units: list[ParallelUnit],
+    *,
+    coptic_segmentation: CopticSegmentation = "whitespace",
+) -> LexicalBaselineModel:
     """Fit co-occurrence Dice tables on nonempty train pairs.
 
     Uses verse-level type co-occurrence: each normalized token type is counted
@@ -94,7 +113,7 @@ def fit_lexical_baseline(train_units: list[ParallelUnit]) -> LexicalBaselineMode
             unit.greek.original_text.strip() and unit.sahidic.original_text.strip()
         ):
             continue
-        left, right = _norm_tokens(unit)
+        left, right = _norm_tokens(unit, coptic_segmentation=coptic_segmentation)
         if not left or not right:
             continue
         model.train_unit_ids.append(unit.unit_id)
@@ -116,6 +135,7 @@ def predict_links(
     units: list[ParallelUnit],
     *,
     min_dice: float = 0.05,
+    coptic_segmentation: CopticSegmentation = "whitespace",
 ) -> list[TokenLink]:
     """Propose 1-best Greek token for each alignable Sahidic token."""
     links: list[TokenLink] = []
@@ -124,7 +144,7 @@ def predict_links(
             unit.greek.original_text.strip() and unit.sahidic.original_text.strip()
         ):
             continue
-        left, right = _norm_tokens(unit)
+        left, right = _norm_tokens(unit, coptic_segmentation=coptic_segmentation)
         if not left or not right:
             continue
         # Track right-token usage lightly to reduce many-to-one collapse.

@@ -121,5 +121,5 @@
       "notes": ""
     }
   ],
-  "notes": "Listed separately from positive lexical/phrase pairs. Do not count toward usable training pairs or positive alignment precision/recall denominators. Do not fill empty firsthand with Westcott–Hort or SBLGNT. Useful as a shared-absence / omission regression fixture only. Pins pilot_corpus_id=horner-vaticanus-nt-pilot-v2 (JAK-33 canonical split v2)."
+  "notes": "Listed separately from positive lexical/phrase pairs. Do not count toward usable training pairs or positive alignment precision/recall denominators. Do not fill empty firsthand with Westcott–Hort or SBLGNT. Useful as a shared-absence / omission regression fixture only. Pins pilot_corpus_id=horner-vaticanus-nt-pilot-v2 (JAK-33 canonical split v2). Archival after JAK-43: pairs with horner-vaticanus-nt-split-v2 / horner-vaticanus-nt-pilot-v2. Active default omission catalog is john-8-pa-omission-fixture-v3.json."
 }
