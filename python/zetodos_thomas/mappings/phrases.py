@@ -40,14 +40,39 @@ from zetodos_thomas.schemas.source import PilotCorpus
 
 MAX_EXAMPLES = 3
 MIN_DUAL_UNITS = 2
-# Sparse families may keep dual-aligner rows with a single train unit.
+# Dual-aligner coincidence on a single verse is not enough to promote a
+# decoder-facing construction — especially for verbal morphology, where
+# bound-group peels invent false aux+verb pairs (Jake review on JAK-38).
 MIN_DUAL_UNITS_BY_FAMILY = {
     ConstructionFamily.NEGATION: 1,
-    ConstructionFamily.VERBAL: 1,
+    ConstructionFamily.VERBAL: 2,
     ConstructionFamily.ARTICLE: 2,
     ConstructionFamily.PRONOUN: 2,
 }
 MAX_PER_FAMILY = 12
+# Verses whose dual-aligner "verbal" hits are known false morphology and must
+# never be exported as reusable verbal constructions.
+VERBAL_FALSE_POSITIVE_UNITS = frozenset(
+    {
+        "matthew.5.40",  # ⲛⲧⲉ + ⲕϣⲧⲏⲛ ← possessive garment, not aux+verb
+        "matthew.5.48",  # ⲛⲧⲉ + ⲗⲓⲟⲥ ← split adjective ⲛⲧⲉⲗⲓⲟⲥ
+        "john.1.23",  # ⲛⲧⲉ + ϩⲓ ← not a credible verbal boundary
+    }
+)
+GREEK_PARTICLES = frozenset(
+    {
+        "δε",
+        "γαρ",
+        "μεν",
+        "αλλα",
+        "και",
+        "τε",
+        "ουν",
+        "γε",
+        "δη",
+        "αν",
+    }
+)
 GREEK_ART = frozenset(
     {
         "ο",
@@ -169,6 +194,35 @@ def _clean_greek(token: str) -> str:
 def _is_greek_pron(token: str) -> bool:
     t = _clean_greek(token)
     return any(t == stem or t.startswith(stem) for stem in GREEK_PRON_STEMS)
+
+
+def _looks_greek_verbal(tokens: Sequence[str]) -> bool:
+    """Heuristic: at least one non-function Greek token that could be verbal."""
+    for raw in tokens:
+        g = _clean_greek(raw)
+        if not g:
+            continue
+        if g in GREEK_ART or g in GREEK_NEG or g in GREEK_PARTICLES or _is_greek_pron(g):
+            continue
+        # Infinitives / common finite endings, or a contentful stem.
+        if g.endswith(("ειν", "σθαι", "ναι", "σαι", "αι")):
+            return True
+        if len(g) >= 5:
+            return True
+    return False
+
+
+def _coptic_second_looks_nonverbal(aux: str, second: str) -> bool:
+    """Reject peeled noun/adjective fragments after a false ⲛⲧⲉ/ϣⲁ split."""
+    if aux == "ⲛⲧⲉ" and (
+        second.startswith(("ⲕ", "ϥ", "ⲥ", "ⲧⲛ"))  # possessive clitic peels
+        or second in {"ϩⲓ", "ⲗⲓⲟⲥ", "ⲕϣⲧⲏⲛ"}
+        or (len(second) <= 4 and not second.startswith(("ⲣ", "ⲥⲱ", "ϫ", "ϯ")))
+    ):
+        return True
+    if aux == "ϣⲁ" and len(second) <= 2:
+        return True
+    return False
 
 
 def _assert_safe_unit(
@@ -391,26 +445,50 @@ def _extract_from_sentence(
         )
 
     # Verbal auxiliaries: ⲛⲁ / ϣⲁ / ⲛⲧⲉⲣⲉ / ⲛⲧⲉ + verb (bare ⲁ is too noisy).
-    for i, tok in enumerate(src):
-        if tok not in {"ⲛⲁ", "ϣⲁ", "ⲛⲧⲉⲣⲉ", "ⲛⲧⲉ"} or i + 1 >= len(src):
-            continue
-        if not aligned((i, i + 1)):
-            continue
-        lo, hi = greek_span((i, i + 1))
-        if hi - lo > 3:
-            continue
-        g_words = [_clean_greek(trg[j]) for j in range(lo, hi + 1)]
-        if tok == "ⲛⲧⲉⲣⲉ" and "οτε" not in g_words:
-            continue
-        yield _Hit(
-            family=ConstructionFamily.VERBAL,
-            coptic=tuple(src[i : i + 2]),
-            greek=tuple(trg[lo : hi + 1]),
-            unit_id=sentence.unit_id,
-            aligner=aligner,
-            coptic_token_ids=tuple(src_ids[i : i + 2]),
-            greek_token_ids=tuple(trg_ids[lo : hi + 1]),
-        )
+    # Dual-aligner agreement alone does not validate grammatical categories.
+    if sentence.unit_id in VERBAL_FALSE_POSITIVE_UNITS:
+        pass  # never emit verbal hits for known false-morphology verses
+    else:
+        for i, tok in enumerate(src):
+            if tok not in {"ⲛⲁ", "ϣⲁ", "ⲛⲧⲉⲣⲉ", "ⲛⲧⲉ"} or i + 1 >= len(src):
+                continue
+            second = src[i + 1]
+            if _coptic_second_looks_nonverbal(tok, second):
+                continue
+            if second in COPTIC_DET | COPTIC_INDEF | COPTIC_PARTICLE_LOANS | COPTIC_PRON:
+                continue
+            if not aligned((i, i + 1)):
+                continue
+            lo, hi = greek_span((i, i + 1))
+            if hi - lo > 3:
+                continue
+            g_tuple = tuple(trg[lo : hi + 1])
+            g_words = [_clean_greek(t) for t in g_tuple]
+            if tok == "ⲛⲧⲉⲣⲉ" and "οτε" not in g_words:
+                continue
+            if not _looks_greek_verbal(g_tuple):
+                continue
+            # Possessive/article Greek dominating the span → not aux+verb.
+            content = [
+                g
+                for g in g_words
+                if g
+                and g not in GREEK_ART
+                and g not in GREEK_NEG
+                and g not in GREEK_PARTICLES
+                and not _is_greek_pron(g)
+            ]
+            if not content:
+                continue
+            yield _Hit(
+                family=ConstructionFamily.VERBAL,
+                coptic=tuple(src[i : i + 2]),
+                greek=g_tuple,
+                unit_id=sentence.unit_id,
+                aligner=aligner,
+                coptic_token_ids=tuple(src_ids[i : i + 2]),
+                greek_token_ids=tuple(trg_ids[lo : hi + 1]),
+            )
 
 
 def accumulate_construction_observations(
@@ -609,6 +687,10 @@ def build_statistical_construction_table(
             "Pilot sayings 7/17/30/77 may prioritize constructions but never "
             "supply hidden Greek for training/verification shortcuts.",
             "Usable by JAK-39 decoder via construction_id + span/parallel ids.",
+            "Verbal family requires ≥2 dual-aligner train units plus verbal "
+            "morphology guards; one-off aux peels (e.g. Matt 5:40/5:48, "
+            "John 1:23) are omitted rather than promoted as reusable mappings. "
+            "If no verbal rows survive, reliable patterns are unrecovered yet.",
         ],
     )
 

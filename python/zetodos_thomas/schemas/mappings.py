@@ -80,13 +80,24 @@ class StatisticalConstruction(BaseModel):
 
 
 class SpotCheckRecord(BaseModel):
-    """Manual spot-check metadata for a verified loanword row."""
+    """Manual spot-check metadata for a verified loanword row.
+
+    ``result='pass'`` alone is not sufficient: TEI locus fields must identify
+    the checksum-pinned CCL entry that was inspected, and validate/write paths
+    re-check those fields against the TEI.
+    """
 
     checked_by: str
     checked_at_utc: str
     method: str
     result: str
     notes: str = ""
+    tei_entry_xml_id: str = ""
+    tei_form_xml_ids: list[str] = Field(default_factory=list)
+    tei_orth_attested: str = ""
+    tei_greek_lemma: str = ""
+    tei_greek_lemma_id: str = ""
+    parent_tei_sha256: str = ""
 
 
 class VerifiedLoanword(BaseModel):
@@ -112,7 +123,17 @@ class VerifiedLoanword(BaseModel):
     )
     illustrative_nt_span_ids: list[str] = Field(
         default_factory=list,
-        description="Optional JAK-32 span ids from NT gold (not Thomas Greek).",
+        description=(
+            "Optional JAK-32 span ids from NT gold (not Thomas Greek). "
+            "Never decoder-training exemplars; train-split only when present."
+        ),
+    )
+    illustrative_spans_are_non_training: bool = Field(
+        default=True,
+        description=(
+            "Illustrative NT spans must not enter decoder training / ablation "
+            "training stacks (JAK-38/JAK-39)."
+        ),
     )
     pilot_priority_notes: str = ""
     notes: str = ""

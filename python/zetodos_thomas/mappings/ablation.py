@@ -56,6 +56,8 @@ def build_ablation_packages(
         "holdout_dev_omission_as_training": True,
         "dioskoros_scrape": True,
         "statistical_pairs_as_verified_loanwords": True,
+        # Illustrative NT spans on loanword rows are references only.
+        "illustrative_nt_spans_as_training": True,
     }
     aligner_only = AblationPackage(
         id="ablation-nt-aligner-only-v1",
@@ -77,6 +79,7 @@ def build_ablation_packages(
             "(lexical candidates + phrase/construction mappings).",
             "Verified CCL/DDGLC loanwords are intentionally omitted.",
             "Keep both eflomal and fast_align active (adopted_aligner=null).",
+            "Illustrative NT spans (if any) are never training exemplars.",
             "Consumer: JAK-39 minimal decoder / Phase 2 feasibility report.",
         ],
     )
@@ -102,6 +105,8 @@ def build_ablation_packages(
             "separate L-evidence / constraints.",
             "Do not reclassify statistical rows as verified.",
             "Keep both eflomal and fast_align active (adopted_aligner=null).",
+            "Loanword illustrative_nt_span_ids are non-training references only; "
+            "decoder must not treat them as training exemplars.",
             "Consumer: JAK-39 minimal decoder / Phase 2 feasibility report.",
         ],
     )

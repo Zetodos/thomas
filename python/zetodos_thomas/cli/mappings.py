@@ -156,7 +156,11 @@ def write_loanwords_cmd(
         typer.secho(str(exc), fg=typer.colors.RED)
         raise typer.Exit(code=1) from exc
 
-    table = verified_loanword_table()
+    try:
+        table = verified_loanword_table(repo_root=root)
+    except (OSError, ValueError) as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
     out = output or default_verified_loanwords_path(root)
     write_verified_loanword_table(table, out, compact=compact)
     typer.echo(f"Wrote {out}")

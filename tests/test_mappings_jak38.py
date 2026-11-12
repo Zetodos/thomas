@@ -71,6 +71,122 @@ def _links(
     )
 
 
+def test_verbal_false_morphology_verses_not_promoted() -> None:
+    """Matt 5:40/5:48 and John 1:23 must not become reusable verbal mappings."""
+    from zetodos_thomas.mappings.phrases import VERBAL_FALSE_POSITIVE_UNITS
+
+    sents = [
+        _sentence(
+            "matthew.5.40",
+            ("ⲛⲧⲉ", "ⲕϣⲧⲏⲛ"),
+            ("σου", "λαβειν"),
+        ),
+        _sentence(
+            "matthew.5.48",
+            ("ⲛⲧⲉ", "ⲗⲓⲟⲥ"),
+            ("τελειοι",),
+        ),
+        _sentence(
+            "john.1.23",
+            ("ⲛⲧⲉ", "ϩⲓ"),
+            ("νατε", "την"),
+        ),
+        # A second identical false hit still must not promote (min dual units=2
+        # is necessary but insufficient without morphology guards).
+        _sentence(
+            "matthew.5.40b",
+            ("ⲛⲧⲉ", "ⲕϣⲧⲏⲛ"),
+            ("σου", "λαβειν"),
+        ),
+    ]
+    # Use real unit ids for the blocked set; extra unit uses a non-blocked id
+    # with the same peel pattern so dual-unit alone cannot promote it.
+    sents[3] = _sentence("mark.4.6", ("ⲛⲧⲉ", "ⲕϣⲧⲏⲛ"), ("σου", "λαβειν"))
+    pairs = {
+        s.unit_id: ((0, 0), (1, 1) if len(s.target_tokens) > 1 else (0, 0))
+        for s in sents
+    }
+    # Fix mark.4.6 pairs for 2-token greek... actually greek has 2 tokens for first
+    pairs["matthew.5.40"] = ((0, 0), (1, 1))
+    pairs["matthew.5.48"] = ((0, 0), (1, 0))
+    pairs["john.1.23"] = ((0, 0), (1, 1))
+    pairs["mark.4.6"] = ((0, 0), (1, 1))
+    table = build_statistical_construction_table(
+        {
+            "eflomal": _links(AlignerName.EFLOMAL, sents, pairs),
+            "fast_align": _links(AlignerName.FAST_ALIGN, sents, pairs),
+        },
+        min_dual_units=2,
+    )
+    verbals = [c for c in table.constructions if c.family is ConstructionFamily.VERBAL]
+    assert not verbals
+    for unit in VERBAL_FALSE_POSITIVE_UNITS:
+        assert all(unit not in c.source_unit_ids for c in table.constructions)
+
+
+def test_example_non_train_unit_rejected_by_validate() -> None:
+    sents = [
+        _sentence("john.1.1", ("ⲡ", "ϣⲁϫⲉ"), ("ο", "λογος")),
+        _sentence("john.1.2", ("ⲡ", "ϣⲁϫⲉ"), ("ο", "λογος")),
+    ]
+    pairs = {
+        "john.1.1": ((0, 0), (1, 1)),
+        "john.1.2": ((0, 0), (1, 1)),
+    }
+    table = build_statistical_construction_table(
+        {
+            "eflomal": _links(AlignerName.EFLOMAL, sents, pairs),
+            "fast_align": _links(AlignerName.FAST_ALIGN, sents, pairs),
+        },
+        min_dual_units=2,
+    )
+    assert table.constructions
+    # Mutate an example onto holdout membership.
+    row = table.constructions[0]
+    row.examples[0].unit_id = "matthew.13.31"
+    row.examples[0].coptic_span.unit_id = "matthew.13.31"
+    report = validate_statistical_construction_table(
+        table, train_unit_ids={"john.1.1", "john.1.2"}
+    )
+    assert not report.ok
+    assert any(i.code == "example_non_train_unit" for i in report.issues)
+
+
+def test_loanword_tei_mismatch_fails_validation() -> None:
+    loan = verified_loanword_table(repo_root=REPO_ROOT)
+    entry = loan.entries[0]
+    entry.ddglc_greek_lemma_id = "999999"
+    report = validate_verified_loanword_table(
+        loan, repo_root=REPO_ROOT, train_unit_ids=set()
+    )
+    assert not report.ok
+    assert any(i.code == "tei_field_mismatch" for i in report.issues)
+
+
+def test_illustrative_holdout_span_rejected() -> None:
+    loan = verified_loanword_table(repo_root=REPO_ROOT)
+    entry = next(e for e in loan.entries if e.loanword_id == "verified-euaggelion")
+    entry.illustrative_nt_span_ids.append(
+        "v1:ntvmr-vaticanus-b/matthew.13.31/s/parabolen"
+    )
+    from zetodos_thomas.align.splits import SplitRole, load_canonical_splits
+    from zetodos_thomas.ingest.paths import (
+        resolve_nt_split_path,
+        resolve_omission_fixtures_path,
+    )
+
+    splits = load_canonical_splits(
+        resolve_nt_split_path(REPO_ROOT),
+        resolve_omission_fixtures_path(REPO_ROOT),
+    )
+    train_ids = set(splits.unit_ids_for(SplitRole.TRAIN))
+    report = validate_verified_loanword_table(
+        loan, repo_root=REPO_ROOT, train_unit_ids=train_ids
+    )
+    assert not report.ok
+    assert any(i.code == "illustrative_non_train_unit" for i in report.issues)
+
+
 def test_statistical_vs_verified_are_separate_classes() -> None:
     sents = [
         _sentence("john.1.1", ("ⲡ", "ϣⲁϫⲉ", "ⲁⲛⲟⲕ"), ("ο", "λογος", "εγω")),
@@ -102,7 +218,7 @@ def test_statistical_vs_verified_are_separate_classes() -> None:
         ConstructionFamily.ARTICLE in families or ConstructionFamily.PRONOUN in families
     )
 
-    loan = verified_loanword_table()
+    loan = verified_loanword_table(repo_root=REPO_ROOT)
     assert loan.evidence_class is EvidenceClass.INDEPENDENTLY_VERIFIED
     assert all(
         e.evidence_class is EvidenceClass.INDEPENDENTLY_VERIFIED for e in loan.entries
@@ -111,9 +227,13 @@ def test_statistical_vs_verified_are_separate_classes() -> None:
     assert any(e.coptic_lemma == "ⲙⲁⲕⲁⲣⲓⲟⲥ" for e in loan.entries)
     # No Thomas / P.Oxy. Greek in illustrative spans.
     for e in loan.entries:
+        assert e.illustrative_spans_are_non_training is True
+        assert e.spot_check.tei_entry_xml_id == e.tla_entry_id
         for sid in e.illustrative_nt_span_ids:
             assert "thomas." not in sid.lower()
             assert "poxy" not in sid.lower()
+            assert "luke.6.20" not in sid
+            assert "matthew.13.31" not in sid
 
 
 def test_rejects_thomas_or_poxy_units_in_statistical_table() -> None:
@@ -177,7 +297,9 @@ def test_committed_artifacts_validate() -> None:
     )
     train_ids = set(splits.unit_ids_for(SplitRole.TRAIN))
     assert validate_statistical_construction_table(phrases, train_unit_ids=train_ids).ok
-    assert validate_verified_loanword_table(loan).ok
+    assert validate_verified_loanword_table(
+        loan, repo_root=REPO_ROOT, train_unit_ids=train_ids
+    ).ok
     report = validate_mappings_dir(REPO_ROOT, train_unit_ids=train_ids)
     assert report.ok, report.as_dict()
 
@@ -187,6 +309,12 @@ def test_committed_artifacts_validate() -> None:
     )
     assert phrases.summary["phase2_active_aligners"] == ["eflomal", "fast_align"]
     assert phrases.summary["adopted_aligner"] is None
+    # Known false verbal one-offs must be absent from the committed table.
+    blocked = {"matthew.5.40", "matthew.5.48", "john.1.23"}
+    for c in phrases.constructions:
+        if c.family is ConstructionFamily.VERBAL:
+            assert not (blocked & set(c.source_unit_ids))
+            assert len(c.source_unit_ids) >= 2
 
 
 def test_cli_mappings_validate() -> None:

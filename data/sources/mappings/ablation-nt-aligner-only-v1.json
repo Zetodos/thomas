@@ -19,6 +19,7 @@
     "holdout_dev_omission_as_training": true,
     "dioskoros_scrape": true,
     "statistical_pairs_as_verified_loanwords": true,
+    "illustrative_nt_spans_as_training": true,
     "verified_loanword_constraints": true
   },
   "phase2_active_aligners": [
@@ -29,7 +30,7 @@
   "decoder_consumer": "JAK-39",
   "provenance": {
     "owned_by": "JAK-38",
-    "created_at_utc": "2026-11-12T15:20:47Z",
+    "created_at_utc": "2026-11-12T20:14:11Z",
     "phase2_active_aligners": [
       "eflomal",
       "fast_align"
@@ -41,6 +42,7 @@
     "Arm A uses only statistical NT-aligner observations (lexical candidates + phrase/construction mappings).",
     "Verified CCL/DDGLC loanwords are intentionally omitted.",
     "Keep both eflomal and fast_align active (adopted_aligner=null).",
+    "Illustrative NT spans (if any) are never training exemplars.",
     "Consumer: JAK-39 minimal decoder / Phase 2 feasibility report."
   ]
 }

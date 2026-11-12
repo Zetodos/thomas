@@ -7,6 +7,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from zetodos_thomas.lexicon.candidates import FORBIDDEN_UNIT_MARKERS
+from zetodos_thomas.mappings.ccl_tei import (
+    PINNED_CCL_TEI_SHA256,
+    load_ccl_tei_index,
+    resolve_ccl_tei_path,
+    verify_loanword_against_tei,
+)
 from zetodos_thomas.schemas.ids import parse_parallel_id, parse_span_id, parse_token_id
 from zetodos_thomas.schemas.mappings import (
     AblationCondition,
@@ -144,6 +150,23 @@ def validate_statistical_construction_table(
                         f"forbidden example unit {ex.unit_id}",
                     )
                 )
+            if train_unit_ids is not None and ex.unit_id not in train_unit_ids:
+                issues.append(
+                    MappingValidationIssue(
+                        "error",
+                        "example_non_train_unit",
+                        f"example unit {ex.unit_id} not in train membership "
+                        f"({row.construction_id})",
+                    )
+                )
+            if ex.split_role.value != "train":
+                issues.append(
+                    MappingValidationIssue(
+                        "error",
+                        "example_split_role",
+                        f"example {ex.unit_id} split_role={ex.split_role}",
+                    )
+                )
             try:
                 parse_parallel_id(ex.parallel_id)
             except ValueError as exc:
@@ -164,6 +187,22 @@ def validate_statistical_construction_table(
                             "error",
                             "span_id_field_mismatch",
                             f"{span.span_id} vs fields",
+                        )
+                    )
+                if span.unit_id != ex.unit_id:
+                    issues.append(
+                        MappingValidationIssue(
+                            "error",
+                            "example_span_unit_mismatch",
+                            f"{span.span_id} unit vs example {ex.unit_id}",
+                        )
+                    )
+                if train_unit_ids is not None and span.unit_id not in train_unit_ids:
+                    issues.append(
+                        MappingValidationIssue(
+                            "error",
+                            "example_span_non_train",
+                            f"span unit {span.unit_id} not in train membership",
                         )
                     )
                 for tid in span.token_ids:
@@ -193,8 +232,12 @@ def validate_statistical_construction_table(
 
 def validate_verified_loanword_table(
     table: VerifiedLoanwordTable,
+    *,
+    repo_root: Path | None = None,
+    train_unit_ids: set[str] | None = None,
+    tei_path: Path | None = None,
 ) -> MappingValidationReport:
-    """Check independently_verified labeling, provenance, and spot-checks."""
+    """Check independently_verified labeling, TEI locus, and train-only spans."""
     issues: list[MappingValidationIssue] = []
     if table.evidence_class is not EvidenceClass.INDEPENDENTLY_VERIFIED:
         issues.append(
@@ -227,6 +270,28 @@ def validate_verified_loanword_table(
                     f"provenance.{key} required",
                 )
             )
+    if table.provenance.get("ccl_tei_sha256") not in {
+        PINNED_CCL_TEI_SHA256,
+        f"sha256:{PINNED_CCL_TEI_SHA256}",
+    }:
+        issues.append(
+            MappingValidationIssue(
+                "error",
+                "ccl_tei_sha_mismatch",
+                f"provenance.ccl_tei_sha256 must be {PINNED_CCL_TEI_SHA256}",
+            )
+        )
+
+    tei_index = None
+    if repo_root is not None or tei_path is not None:
+        try:
+            path = tei_path or resolve_ccl_tei_path(repo_root or Path.cwd())
+            tei_index = load_ccl_tei_index(path)
+        except (OSError, ValueError) as exc:
+            issues.append(
+                MappingValidationIssue("error", "tei_unavailable", str(exc))
+            )
+
     seen: set[str] = set()
     for entry in table.entries:
         if entry.evidence_class is not EvidenceClass.INDEPENDENTLY_VERIFIED:
@@ -262,7 +327,8 @@ def validate_verified_loanword_table(
                     f"{entry.loanword_id} missing DDGLC greek lemma id",
                 )
             )
-        if entry.spot_check.result != "pass":
+        spot = entry.spot_check
+        if spot.result != "pass":
             issues.append(
                 MappingValidationIssue(
                     "error",
@@ -270,7 +336,49 @@ def validate_verified_loanword_table(
                     entry.loanword_id,
                 )
             )
-        # No Thomas/P.Oxy Greek in illustrative spans.
+        if not spot.tei_entry_xml_id or spot.tei_entry_xml_id != entry.tla_entry_id:
+            issues.append(
+                MappingValidationIssue(
+                    "error",
+                    "spot_check_tei_locus",
+                    f"{entry.loanword_id} missing/mismatched tei_entry_xml_id",
+                )
+            )
+        if not spot.tei_greek_lemma or not spot.tei_greek_lemma_id:
+            issues.append(
+                MappingValidationIssue(
+                    "error",
+                    "spot_check_tei_greek",
+                    f"{entry.loanword_id} missing TEI greek lemma fields",
+                )
+            )
+        if not entry.illustrative_spans_are_non_training:
+            issues.append(
+                MappingValidationIssue(
+                    "error",
+                    "illustrative_must_be_non_training",
+                    entry.loanword_id,
+                )
+            )
+        if tei_index is not None:
+            mismatches = verify_loanword_against_tei(
+                tla_entry_id=entry.tla_entry_id,
+                coptic_lemma=entry.coptic_lemma,
+                coptic_forms=list(entry.coptic_forms),
+                greek_lemma=entry.greek_lemma,
+                ddglc_greek_lemma_id=entry.ddglc_greek_lemma_id,
+                ccl_form_ids=list(entry.ccl_form_ids),
+                tei_index=tei_index,
+            )
+            for msg in mismatches:
+                issues.append(
+                    MappingValidationIssue(
+                        "error",
+                        "tei_field_mismatch",
+                        f"{entry.loanword_id}: {msg}",
+                    )
+                )
+        # No Thomas/P.Oxy Greek in illustrative spans; train-only NT units.
         for sid in entry.illustrative_nt_span_ids:
             lowered = sid.lower()
             if "thomas." in lowered or "poxy" in lowered:
@@ -281,15 +389,25 @@ def validate_verified_loanword_table(
                         f"{entry.loanword_id} span {sid}",
                     )
                 )
-            else:
-                try:
-                    parse_span_id(sid)
-                except ValueError as exc:
-                    issues.append(
-                        MappingValidationIssue(
-                            "error", "bad_illustrative_span", str(exc)
-                        )
+                continue
+            try:
+                parsed = parse_span_id(sid)
+            except ValueError as exc:
+                issues.append(
+                    MappingValidationIssue(
+                        "error", "bad_illustrative_span", str(exc)
                     )
+                )
+                continue
+            if train_unit_ids is not None and parsed.unit_id not in train_unit_ids:
+                issues.append(
+                    MappingValidationIssue(
+                        "error",
+                        "illustrative_non_train_unit",
+                        f"{entry.loanword_id} illustrative span unit "
+                        f"{parsed.unit_id} not in train (dev/holdout forbidden)",
+                    )
+                )
 
     errors = [i for i in issues if i.severity == "error"]
     return MappingValidationReport(
@@ -316,6 +434,14 @@ def validate_ablation_package(package: AblationPackage) -> MappingValidationRepo
                 "error",
                 "adopted_aligner_must_be_null",
                 str(package.adopted_aligner),
+            )
+        )
+    if not package.excludes.get("illustrative_nt_spans_as_training"):
+        issues.append(
+            MappingValidationIssue(
+                "error",
+                "must_exclude_illustrative_spans_from_training",
+                "ablation excludes.illustrative_nt_spans_as_training must be true",
             )
         )
     includes = package.includes
@@ -393,7 +519,9 @@ def validate_mappings_dir(
         ok = False
     else:
         report = validate_verified_loanword_table(
-            load_verified_loanword_table(loan_path)
+            load_verified_loanword_table(loan_path),
+            repo_root=repo_root,
+            train_unit_ids=train_unit_ids,
         )
         issues.extend(report.issues)
         ok = ok and report.ok

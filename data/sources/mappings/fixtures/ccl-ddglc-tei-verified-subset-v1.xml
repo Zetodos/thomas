@@ -1,0 +1,2037 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- JAK-38 fixture: entry subset extracted from Comprehensive_Coptic_Lexicon-v1.2-2020.xml
+     pinned checksum sha256:ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d
+     Full TEI is setup-download only; this subset is for offline entry-level verification. -->
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+  <teiHeader>
+    <fileDesc>
+      <titleStmt><title>CCL/DDGLC TEI subset for JAK-38 verified loanwords</title></titleStmt>
+      <publicationStmt><p>Extracted from KELLIA CCL v1.2 for offline verification.</p></publicationStmt>
+      <sourceDesc><p>Parent TEI sha256:ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d</p></sourceDesc>
+    </fileDesc>
+  </teiHeader>
+  <text><body>
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C8062">
+            <ns0:form xml:id="CF18246" type="lemma">
+               <ns0:orth>ⲁⲅⲅⲉⲗⲟⲥ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF18247">
+               <ns0:orth>ⲁⲅⲅⲉⲗⲟ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18248">
+               <ns0:orth>ⲁⲅⲅⲉⲗⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18249">
+               <ns0:orth>ⲁⲅⲅⲉⲗⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18250">
+               <ns0:orth>ⲁⲅⲅⲉⲗⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18251">
+               <ns0:orth>ⲁⲅⲅⲉⲗⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18252">
+               <ns0:orth>ⲁⲅⲅⲉⲗⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18253">
+               <ns0:orth>ⲁⲅⲅⲉⲗⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18254">
+               <ns0:orth>ⲁⲅⲅⲉⲗⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">V</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18255">
+               <ns0:orth>ⲁⲅⲅⲉⲗⲱⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18256">
+               <ns0:orth>ⲁⲅⲉⲗⲗⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18257">
+               <ns0:orth>ⲁⲅⲉⲗⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18258">
+               <ns0:orth>ⲁⲅⲉⲗⲱⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18259">
+               <ns0:orth>ⲁⲕⲉⲗⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18260">
+               <ns0:orth>ⲁⲛⲅⲉⲗⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18261">
+               <ns0:orth>ⲉⲅⲅⲉⲗⲱⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Subst.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">11</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">ἄγγελος</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">messenger, angel</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">noun</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 7b; Preisigke 1:6</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS8999">
+               <ns0:ref type="coptic_usage::cu_ID">423</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">messenger, envoy (general, or specific sense unclear)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9000">
+               <ns0:ref type="coptic_usage::cu_ID">216</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">angel (referent: benevolent superhuman being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9001">
+               <ns0:ref type="coptic_usage::cu_ID">7652</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">angel (inverted attributive, nominal referent; referent: benevolent superhuman
+     being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9002">
+               <ns0:ref type="coptic_usage::cu_ID">11710</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">angel (attributive: referent: benevolent superhuman being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9003">
+               <ns0:ref type="coptic_usage::cu_ID">3905</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">angel (referent: superhuman being, disposition unclear)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9004">
+               <ns0:ref type="coptic_usage::cu_ID">1464</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">angel (referent: malevolent superhuman being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9005">
+               <ns0:ref type="coptic_usage::cu_ID">2154</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">emissary (referent: image of the divine Adam)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9006">
+               <ns0:ref type="coptic_usage::cu_ID">15203</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">s.o.'s (guardian) angel (believed to assume the likeness of his ward) (referent:
+     benevolent superhuman being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9007">
+               <ns0:ref type="coptic_usage::cu_ID">9596</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">"angel" (of a sanctuary/monastery) (referent: the saint of a locus sanctus, often
+     specifically in his capacity as intercessor before God)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C8126">
+            <ns0:form xml:id="CF18503" type="lemma">
+               <ns0:orth>ⲁⲓⲧⲉⲓ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF18504">
+               <ns0:orth>ⲁⲓⲇⲓ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18505">
+               <ns0:orth>ⲁⲓⲇⲓ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18506">
+               <ns0:orth>ⲁⲓⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18507">
+               <ns0:orth>ⲁⲓⲧⲉⲓ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18508">
+               <ns0:orth>ⲁⲓⲧⲉⲓ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18509">
+               <ns0:orth>ⲁⲓⲧⲉⲓ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18510">
+               <ns0:orth>ⲁⲓⲧⲓ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18511">
+               <ns0:orth>ⲁⲓⲧⲓ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18512">
+               <ns0:orth>ⲁⲓⲧⲓ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18513">
+               <ns0:orth>ⲁⲓⲧⲓ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18514">
+               <ns0:orth>ⲉϫⲓⲛ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18515">
+               <ns0:orth>ⲉϯ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18516">
+               <ns0:orth>ⲉϯ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18517">
+               <ns0:orth>ⲉϯ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18518">
+               <ns0:orth>ⲉⲓⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18519">
+               <ns0:orth>ⲉⲓⲧⲉⲓ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18520">
+               <ns0:orth>ⲉⲓⲧⲓ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18521">
+               <ns0:orth>ⲉⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18522">
+               <ns0:orth>ⲉⲧⲉⲓ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18523">
+               <ns0:orth>ⲉⲧⲉⲓ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18524">
+               <ns0:orth>ⲉⲧⲉⲓ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18525">
+               <ns0:orth>ⲉⲧⲓ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18526">
+               <ns0:orth>ⲉⲧⲓ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18527">
+               <ns0:orth>ⲉⲧⲓⲛ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18528">
+               <ns0:orth>ⲏⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18529">
+               <ns0:orth>ⲏⲧⲉⲓ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Vb.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">54</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">αἰτέω</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">to ask (s.o. for s.th.)</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">verb</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 44a; Preisigke 1:36</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS9129">
+               <ns0:ref type="coptic_usage::cu_ID">5463</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask, demand (object: none)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9130">
+               <ns0:ref type="coptic_usage::cu_ID">5462</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask, request of s.o.</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9131">
+               <ns0:ref type="coptic_usage::cu_ID">5464</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask for, demand s.o.</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9132">
+               <ns0:ref type="coptic_usage::cu_ID">3731</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask for, demand s.th.</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9133">
+               <ns0:ref type="coptic_usage::cu_ID">2033</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask s.th. from s.o.</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9134">
+               <ns0:ref type="coptic_usage::cu_ID">5466</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask s.th. for oneself from s.o. (object1: dativus ethicus; object2: person
+     asked)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9135">
+               <ns0:ref type="coptic_usage::cu_ID">344</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask s.o. (for) s.th.</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9136">
+               <ns0:ref type="coptic_usage::cu_ID">4643</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask s.o. about s.th.</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9137">
+               <ns0:ref type="coptic_usage::cu_ID">5468</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask s.o. that (object2: direct statement (action))</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9138">
+               <ns0:ref type="coptic_usage::cu_ID">8522</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask s.o. (implied: for s.th.) on behalf of s.o.</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9139">
+               <ns0:ref type="coptic_usage::cu_ID">10385</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask s.o. for s.o.</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9140">
+               <ns0:ref type="coptic_usage::cu_ID">11278</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask for s.th. (object: direct statement)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9141">
+               <ns0:ref type="coptic_usage::cu_ID">5007</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask for s.th. (object: dependent clause)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9142">
+               <ns0:ref type="coptic_usage::cu_ID">7245</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask s.o. to do s.th. (object2: purpose clause)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9143">
+               <ns0:ref type="coptic_usage::cu_ID">6430</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask for s.th., so that s.th. (object2: purpose clause)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9144">
+               <ns0:ref type="coptic_usage::cu_ID">6432</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask for s.th. on behalf of s.o., so that s.th. (object3: purpose clause)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9145">
+               <ns0:ref type="coptic_usage::cu_ID">15459</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask s.o. because of s.th. to do s.th. (object3: purpose clause)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9146">
+               <ns0:ref type="coptic_usage::cu_ID">5472</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask, inquire s.o. of s.th. (object2: direct statement (content of question))</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9147">
+               <ns0:ref type="coptic_usage::cu_ID">5465</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to petition, pray to, entreat s.o.</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9148">
+               <ns0:ref type="coptic_usage::cu_ID">6404</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">to ask for, demand s.th. (object: a celestial being to be emanated by a superior
+     generative force)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C8179">
+            <ns0:form xml:id="CF18776" type="lemma">
+               <ns0:orth>ⲁⲗⲗⲁ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF18777">
+               <ns0:orth>ⲁⲗⲁ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18778">
+               <ns0:orth>ⲁⲗⲗ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18779">
+               <ns0:orth>ⲁⲗⲗⲁ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18780">
+               <ns0:orth>ⲁⲗⲗⲁ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18781">
+               <ns0:orth>ⲁⲗⲗⲁ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18782">
+               <ns0:orth>ⲁⲗⲗⲁ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18783">
+               <ns0:orth>ⲁⲗⲗⲁ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18784">
+               <ns0:orth>ⲁⲗⲗⲁ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18785">
+               <ns0:orth>ⲁⲗⲗⲁ</ns0:orth>
+               <ns0:usg type="geo">V</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18786">
+               <ns0:orth>ⲁⲗⲗⲁ</ns0:orth>
+               <ns0:usg type="geo">W</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF18787">
+               <ns0:orth>ⲁⲗⲗⲁⲁ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Konj.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">95</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">ἀλλά</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">but, yet, rather</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">conjunction</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 67b</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS9249">
+               <ns0:ref type="coptic_usage::cu_ID">58</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">but, yet, rather, instead (general, or more specific sense unclear)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9250">
+               <ns0:ref type="coptic_usage::cu_ID">4256</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">but, yet, rather (introducing response to a rhetorical question)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS9251">
+               <ns0:ref type="coptic_usage::cu_ID">1934</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">So!; now, then! (abandonment of inquiry, leading to course of action)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C8657">
+            <ns0:form xml:id="CF20474" type="lemma">
+               <ns0:orth>ⲅⲁⲣ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF20475">
+               <ns0:orth>ⲅⲁⲣ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20476">
+               <ns0:orth>ⲅⲁⲣ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20477">
+               <ns0:orth>ⲅⲁⲣ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20478">
+               <ns0:orth>ⲅⲁⲣ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20479">
+               <ns0:orth>ⲅⲁⲣ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20480">
+               <ns0:orth>ⲅⲁⲣ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20481">
+               <ns0:orth>ⲅⲁⲣ</ns0:orth>
+               <ns0:usg type="geo">V</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20482">
+               <ns0:orth>ⲅⲁⲣ</ns0:orth>
+               <ns0:usg type="geo">W</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20483">
+               <ns0:orth>ⲕⲁⲣ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Partikel</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">415</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">γάρ</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">for, then, because</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">particle</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 338b</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS10231">
+               <ns0:ref type="coptic_usage::cu_ID">59</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">for, because</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS10232">
+               <ns0:ref type="coptic_usage::cu_ID">2854</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">then, next, thus</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS10233">
+               <ns0:ref type="coptic_usage::cu_ID">3012</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">indeed, truly (asseverative / emphatic)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS10234">
+               <ns0:ref type="coptic_usage::cu_ID">450</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">so, then, because, therefore (marker of inference)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS10235">
+               <ns0:ref type="coptic_usage::cu_ID">10674</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">yet, but, although (concessive)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS10236">
+               <ns0:ref type="coptic_usage::cu_ID">15542</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">so, then, now (functions like δέ) (marking shift in narrative, or change in subject;
+     introducing new content)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C8719">
+            <ns0:form xml:id="CF20757" type="lemma">
+               <ns0:orth>ⲇⲉ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF20758">
+               <ns0:orth>ⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20759">
+               <ns0:orth>ⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20760">
+               <ns0:orth>ⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20761">
+               <ns0:orth>ⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20762">
+               <ns0:orth>ⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20763">
+               <ns0:orth>ⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20764">
+               <ns0:orth>ⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">V</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20765">
+               <ns0:orth>ⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">W</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20766">
+               <ns0:orth>ⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20767">
+               <ns0:orth>ⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20768">
+               <ns0:orth>ⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF20769">
+               <ns0:orth>ⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Partikel</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">458</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">δέ</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">but, and, so, then</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">particle</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 371b</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS10371">
+               <ns0:ref type="coptic_usage::cu_ID">70</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">and, so, then, for (marking shift in narrative, or change in subject; introducing new
+     content)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS10372">
+               <ns0:ref type="coptic_usage::cu_ID">283</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">but, on the other hand, nonetheless (adversative)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS10373">
+               <ns0:ref type="coptic_usage::cu_ID">1371</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">for (explanatory, where one would expect γάρ)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS10374">
+               <ns0:ref type="coptic_usage::cu_ID">3813</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">especially, in particular, even (emphatic)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS10375">
+               <ns0:ref type="coptic_usage::cu_ID">1425</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">and...: (marking a list or set)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C9059">
+            <ns0:form xml:id="CF22411" type="lemma">
+               <ns0:orth>ⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF22412">
+               <ns0:orth>ⲉⲟⲩⲁⲛⲅⲅⲉⲗⲓⲟⲛ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22413">
+               <ns0:orth>ⲉⲟⲩⲁⲛⲅⲉⲗⲓⲱⲛ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22414">
+               <ns0:orth>ⲉⲩⲁⲅ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22415">
+               <ns0:orth>ⲉⲩⲁⲅⲅⲉⲗⲓⲟ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22416">
+               <ns0:orth>ⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22417">
+               <ns0:orth>ⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22418">
+               <ns0:orth>ⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22419">
+               <ns0:orth>ⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22420">
+               <ns0:orth>ⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22421">
+               <ns0:orth>ⲉⲩⲁⲅⲅⲉⲗⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22422">
+               <ns0:orth>ⲉⲩⲁⲅⲅⲉⲗⲗⲓⲟⲛ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22423">
+               <ns0:orth>ⲉⲩⲁⲅⲅⲉⲗⲗⲓⲟⲛ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF22424">
+               <ns0:orth>ⲉⲩⲁⲛⲅⲉⲗⲓⲟⲛ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Subst.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">809</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">εὐαγγέλιον</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">good news, gospel</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">noun</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 705a; Preisigke 1:607</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS11157">
+               <ns0:ref type="coptic_usage::cu_ID">264</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">gospel, good news (Christian; referent: message, abstract)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS11158">
+               <ns0:ref type="coptic_usage::cu_ID">1656</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">Gospel (Christian; referent: book or work, a text)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS11159">
+               <ns0:ref type="coptic_usage::cu_ID">4051</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">Gospel (title of canonical work by Mani)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C9517">
+            <ns0:form xml:id="CF24208" type="lemma">
+               <ns0:orth>ⲕⲟⲥⲙⲟⲥ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF24209">
+               <ns0:orth>ⲕ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24210">
+               <ns0:orth>ⲕ︦ⲙ︦ⲥ︦</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24211">
+               <ns0:orth>ⲕⲟⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24212">
+               <ns0:orth>ⲕⲟⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24213">
+               <ns0:orth>ⲕⲟⲥⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24214">
+               <ns0:orth>ⲕⲟⲥⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24215">
+               <ns0:orth>ⲕⲟⲥⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24216">
+               <ns0:orth>ⲕⲟⲥⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24217">
+               <ns0:orth>ⲕⲟⲥⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24218">
+               <ns0:orth>ⲕⲟⲥⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24219">
+               <ns0:orth>ⲕⲟⲥⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">V</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24220">
+               <ns0:orth>ⲕⲟⲥⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">W</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24221">
+               <ns0:orth>ⲕⲟⲥⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">V</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24222">
+               <ns0:orth>ⲕⲱⲥⲙⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Subst.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">1192</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">κόσμος</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">order, ornament, world, universe</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">noun</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 985a; Preisigke 1:828</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS12108">
+               <ns0:ref type="coptic_usage::cu_ID">402</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">adornment, ornament</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12109">
+               <ns0:ref type="coptic_usage::cu_ID">2124</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">order, organization</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12110">
+               <ns0:ref type="coptic_usage::cu_ID">3888</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">expanse, wealth</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12111">
+               <ns0:ref type="coptic_usage::cu_ID">206</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">(the) world, (the) universe</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12112">
+               <ns0:ref type="coptic_usage::cu_ID">7988</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">(the) world, (the) universe (inverted attributive, nominal referent)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12113">
+               <ns0:ref type="coptic_usage::cu_ID">9631</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">(the) world, (the) universe (in a pejorative sense)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12114">
+               <ns0:ref type="coptic_usage::cu_ID">9632</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">(the) world, (the) universe (in a pejorative sense; inverted attributive; nominal
+     referent)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12115">
+               <ns0:ref type="coptic_usage::cu_ID">3375</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">worlds (plurale tantum - celestial, cosmic expanses)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12116">
+               <ns0:ref type="coptic_usage::cu_ID">6763</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">world (lit. "worlds") (plurale tantum - terrestrial cosmos)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12117">
+               <ns0:ref type="coptic_usage::cu_ID">6462</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">world, age, era</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12118">
+               <ns0:ref type="coptic_usage::cu_ID">7698</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">worldly, terrestrial (attributive)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C9683">
+            <ns0:form xml:id="CF24841" type="lemma">
+               <ns0:orth>ⲙⲁⲑⲏⲧⲏⲥ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF24842">
+               <ns0:orth>ⲙⲁⲑⲉⲧⲏⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24843">
+               <ns0:orth>ⲙⲁⲑⲏⲧ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24844">
+               <ns0:orth>ⲙⲁⲑⲏⲧⲏⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24845">
+               <ns0:orth>ⲙⲁⲑⲏⲧⲏⲥ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24846">
+               <ns0:orth>ⲙⲁⲑⲏⲧⲏⲥ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24847">
+               <ns0:orth>ⲙⲁⲑⲏⲧⲏⲥ</ns0:orth>
+               <ns0:usg type="geo">W</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24848">
+               <ns0:orth>ⲙⲁⲑⲏⲧⲏⲥ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24849">
+               <ns0:orth>ⲙⲁⲑⲏⲧⲏⲥ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24850">
+               <ns0:orth>ⲙⲁⲑⲧ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24851">
+               <ns0:orth>ⲙⲁⲑⲩⲧⲏⲥ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24852">
+               <ns0:orth>ⲙⲁⲑⲩⲧⲏⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24853">
+               <ns0:orth>ⲙⲁⲡⲑⲏⲧⲏⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Subst.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">1334</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">μαθητής</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">learner, pupil, disciple</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">noun</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 1072b; Preisigke 2:46</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS12460">
+               <ns0:ref type="coptic_usage::cu_ID">4593</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">disciple, follower</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12461">
+               <ns0:ref type="coptic_usage::cu_ID">152</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">disciple, follower (of Jesus)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12462">
+               <ns0:ref type="coptic_usage::cu_ID">4488</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">disciple, follower (not of Jesus)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C9689">
+            <ns0:form xml:id="CF24876" type="lemma">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲓⲟⲥ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF24877">
+               <ns0:orth>ⲙⲁⲅⲁⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24878">
+               <ns0:orth>ⲙⲁⲅⲁⲣⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24879">
+               <ns0:orth>ⲙⲁⲅⲁⲣⲓⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24880">
+               <ns0:orth>ⲙⲁⲕ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24881">
+               <ns0:orth>ⲙⲁⲕⲁ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24882">
+               <ns0:orth>ⲙⲁⲕⲁⲣ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24883">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲁⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24884">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24885">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲉⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24886">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲉⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24887">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲉⲱⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24888">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲓ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24889">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲓⲟ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24890">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲓⲟⲛ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24891">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24892">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24893">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24894">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24895">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24896">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲓⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24897">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲟ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24898">
+               <ns0:orth>ⲙⲁⲕⲁⲣⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24899">
+               <ns0:orth>ⲙⲁⲕⲣⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24900">
+               <ns0:orth>ⲙⲁⲕⲣⲓⲟⲥ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF24901">
+               <ns0:orth>ⲙⲕ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Subst.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">1336</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">μακάριος</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">blessed, happy</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">adjective</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 1073b; Preisigke 2:46</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS12478">
+               <ns0:ref type="coptic_usage::cu_ID">301</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">blessed (general, or specific sense unclear)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12479">
+               <ns0:ref type="coptic_usage::cu_ID">5341</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">blessed (attributive; general, or specific sense unclear)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12480">
+               <ns0:ref type="coptic_usage::cu_ID">7948</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">blessed (inverted attributive, attributive referent)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12481">
+               <ns0:ref type="coptic_usage::cu_ID">11772</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">deceased, the late, lit. blessed one</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12482">
+               <ns0:ref type="coptic_usage::cu_ID">7024</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">deceased, late (lit.: blessed) ones = parents or other/earlier forebears (plurale tantum)
+     (substantive)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12483">
+               <ns0:ref type="coptic_usage::cu_ID">5806</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">deceased, the late, lit. blessed (attributive)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12484">
+               <ns0:ref type="coptic_usage::cu_ID">7821</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">deceased, the late, lit. blessed (inverted attributive; attributive referent)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12485">
+               <ns0:ref type="coptic_usage::cu_ID">5807</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">blessed one (epithet of benevolent celestial agents, saints, and biblical
+     figures)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12486">
+               <ns0:ref type="coptic_usage::cu_ID">2329</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">blessed (attributive; epithet of benevolent celestial beings)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12487">
+               <ns0:ref type="coptic_usage::cu_ID">7431</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">Blessed One (of human beings)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS12488">
+               <ns0:ref type="coptic_usage::cu_ID">2134</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">Blessed One (benevolent celestial hypostasis)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C9959">
+            <ns0:form xml:id="CF25965" type="lemma">
+               <ns0:orth>ⲟⲩⲇⲉ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF25966">
+               <ns0:orth>ⲟⲩⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25967">
+               <ns0:orth>ⲟⲩⲇ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25968">
+               <ns0:orth>ⲟⲩⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25969">
+               <ns0:orth>ⲟⲩⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25970">
+               <ns0:orth>ⲟⲩⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25971">
+               <ns0:orth>ⲟⲩⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25972">
+               <ns0:orth>ⲟⲩⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25973">
+               <ns0:orth>ⲟⲩⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25974">
+               <ns0:orth>ⲟⲩⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">V</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25975">
+               <ns0:orth>ⲟⲩⲇⲉ</ns0:orth>
+               <ns0:usg type="geo">W</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25976">
+               <ns0:orth>ⲟⲩⲇⲏ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25977">
+               <ns0:orth>ⲟⲩⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25978">
+               <ns0:orth>ⲟⲩⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25979">
+               <ns0:orth>ⲟⲩⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25980">
+               <ns0:orth>ⲟⲩⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF25981">
+               <ns0:orth>ⲟⲩⲧⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Konj.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">1592</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">οὐδέ</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">nor, and not, not even</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">conjunction</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 1268b</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS13007">
+               <ns0:ref type="coptic_usage::cu_ID">93</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">nor, and not</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13008">
+               <ns0:ref type="coptic_usage::cu_ID">364</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">not even</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C10032">
+            <ns0:form xml:id="CF26233" type="lemma">
+               <ns0:orth>ⲡⲁⲣⲁⲃⲟⲗⲏ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF26234">
+               <ns0:orth>ⲡⲁⲣⲁⲃⲟⲗⲏ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF26235">
+               <ns0:orth>ⲡⲁⲣⲁⲃⲟⲗⲏ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF26236">
+               <ns0:orth>ⲡⲁⲣⲁⲃⲟⲗⲏ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF26237">
+               <ns0:orth>ⲡⲁⲣⲁⲃⲟⲗⲏ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF26238">
+               <ns0:orth>ⲡⲁⲣⲁⲃⲟⲗⲏ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF26239">
+               <ns0:orth>ⲡⲁⲣⲁⲃⲟⲗⲏ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF26240">
+               <ns0:orth>ⲡⲁⲣⲁⲃⲟⲗⲏⲟⲩ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Subst.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">2558</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">παραβολή</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">juxtaposition, comparison</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">noun</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 1305b; Preisigke 2:234</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS13134">
+               <ns0:ref type="coptic_usage::cu_ID">88</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">parable, proverb, maxim</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13135">
+               <ns0:ref type="coptic_usage::cu_ID">1148</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">caricature (derogatory/mocking comparison)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C10220">
+            <ns0:form xml:id="CF27013" type="lemma">
+               <ns0:orth>ⲡⲛⲉⲩⲙⲁ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF27014">
+               <ns0:orth>ⲡⲁ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27015">
+               <ns0:orth>ⲡ︤ⲁ︥</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27016">
+               <ns0:orth>ⲡ︤ⲙ︦ⲁ︥</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27017">
+               <ns0:orth>ⲡⲛⲁ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27018">
+               <ns0:orth>ⲡⲛⲁ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27019">
+               <ns0:orth>ⲡⲛⲁ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27020">
+               <ns0:orth>ⲡⲛⲁ̄</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27021">
+               <ns0:orth>ⲡⲛ︤ⲁ︥</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27022">
+               <ns0:orth>ⲡⲛ︤ⲁ︥</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27023">
+               <ns0:orth>ⲡⲛ︤ⲁ︥</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27024">
+               <ns0:orth>ⲡ︤ⲛ︦ⲁ︥</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27025">
+               <ns0:orth>ⲡ︤ⲛ︦ⲁ︥</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27026">
+               <ns0:orth>ⲡ︤ⲛ︦ⲁ︥</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27027">
+               <ns0:orth>ⲡ︤ⲛ︦ⲁ︥</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27028">
+               <ns0:orth>ⲡ︤ⲛ︦ⲁ︥</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27029">
+               <ns0:orth>ⲡ︤ⲛ︦ⲁ︥</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27030">
+               <ns0:orth>ⲡⲛⲉⲟⲩⲙⲁ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27031">
+               <ns0:orth>ⲡⲛⲉⲩⲙⲁ</ns0:orth>
+               <ns0:usg type="geo">V</ns0:usg>
+            </ns0:form>
+
+            <ns0:gramGrp>
+               <ns0:pos>Subst.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">1775</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">πνεῦμα</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">blast, wind, breath, spirit</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">noun</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 1424a; Preisigke 2:325</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS13622">
+               <ns0:ref type="coptic_usage::cu_ID">124</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13623">
+               <ns0:ref type="coptic_usage::cu_ID">9870</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spiritual (attributive)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13624">
+               <ns0:ref type="coptic_usage::cu_ID">9770</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit (inverted attributive; nominal referent)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13625">
+               <ns0:ref type="coptic_usage::cu_ID">2921</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">Spirit (of God) (epithet for the supreme Deity or His activity)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13626">
+               <ns0:ref type="coptic_usage::cu_ID">7960</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">Spirit (of God) (epithet for the supreme Deity or His activity; inverted attributive,
+     nominal referent)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13627">
+               <ns0:ref type="coptic_usage::cu_ID">1521</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit, breath, wind (creative, vivifying, or cosmogonic)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13628">
+               <ns0:ref type="coptic_usage::cu_ID">1594</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">inspiration, spirit (of prophecy, revelation, or vision)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13629">
+               <ns0:ref type="coptic_usage::cu_ID">6236</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit (of Life; bestows salvation)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13630">
+               <ns0:ref type="coptic_usage::cu_ID">1396</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit (property or manifestation of God; more specific sense unclear)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13631">
+               <ns0:ref type="coptic_usage::cu_ID">2138</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit (benevolent superhuman being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13632">
+               <ns0:ref type="coptic_usage::cu_ID">7653</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spiritual (attributive; benevolent superhuman being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13633">
+               <ns0:ref type="coptic_usage::cu_ID">8005</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit (inverted attributive, nominal referent; benevolent superhuman being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13634">
+               <ns0:ref type="coptic_usage::cu_ID">2791</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">demon, spirit (malevolent superhuman being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13635">
+               <ns0:ref type="coptic_usage::cu_ID">8851</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">demon, spirit of s.th. (malevolent superhuman being; object: abstraction)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13636">
+               <ns0:ref type="coptic_usage::cu_ID">1531</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">Despised / Counterfeit / Opposing Spirit (malevolent superhuman being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13637">
+               <ns0:ref type="coptic_usage::cu_ID">6238</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit (superhuman being, disposition unclear)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13638">
+               <ns0:ref type="coptic_usage::cu_ID">2990</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit, sense, feeling, essence of s.th.</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13639">
+               <ns0:ref type="coptic_usage::cu_ID">10105</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit, soul (of the dead) (post-mortem)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13640">
+               <ns0:ref type="coptic_usage::cu_ID">815</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">wind</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13641">
+               <ns0:ref type="coptic_usage::cu_ID">7457</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">windy, of wind (attributive)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13642">
+               <ns0:ref type="coptic_usage::cu_ID">7794</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">windy, superfluous, superficial (attributive)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13643">
+               <ns0:ref type="coptic_usage::cu_ID">111</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">breath</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13644">
+               <ns0:ref type="coptic_usage::cu_ID">816</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">soul, mind, spirit (principle of mind and self)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13645">
+               <ns0:ref type="coptic_usage::cu_ID">2679</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit (vivifying, as part of the human being; in opposition to ψυχή and/or σῶμα or
+     σάρξ)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13646">
+               <ns0:ref type="coptic_usage::cu_ID">7475</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit (attributive; vivifying, as part of the human being; in opposition to ψυχή and/or
+     σῶμα)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13647">
+               <ns0:ref type="coptic_usage::cu_ID">9867</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">spirit (as opposed to ψυχή and/or σάρξ, σῶμα)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13648">
+               <ns0:ref type="coptic_usage::cu_ID">1331</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">consciousness, awareness, spirit (rational faculty in humans)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13649">
+               <ns0:ref type="coptic_usage::cu_ID">1606</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">life, breath, spirit (vivifying, animating; that which bestows life)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13650">
+               <ns0:ref type="coptic_usage::cu_ID">9983</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">fellowship, company, belonging</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS13651">
+               <ns0:ref type="coptic_usage::cu_ID">3013</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">person</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C10421">
+            <ns0:form xml:id="CF27869" type="lemma">
+               <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF27870">
+               <ns0:orth>ⲥⲁⲣⲁⲝ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27871">
+               <ns0:orth>ⲥⲁⲣⲉⲝ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27872">
+               <ns0:orth>ⲥⲁⲣⲉⲝ</ns0:orth>
+               <ns0:usg type="geo">V</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27873">
+               <ns0:orth>ⲥⲁⲣⲏⲝ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27874">
+               <ns0:orth>ⲥⲁⲣⲕⲥ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27875">
+               <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27876">
+               <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27877">
+               <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27878">
+               <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27879">
+               <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27880">
+               <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
+               <ns0:usg type="geo">V</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27881">
+               <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27882">
+               <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
+               <ns0:usg type="geo">W</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27883">
+               <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27884">
+               <ns0:orth>ⲥⲁⲣⲝ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27885">
+               <ns0:orth>ⲥⲏⲣⲁⲝ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF27886">
+               <ns0:orth>ⲥⲩⲣⲝ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Subst.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">1937</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">σάρξ</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">flesh</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">noun</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 1585a; Preisigke 2:451</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS14070">
+               <ns0:ref type="coptic_usage::cu_ID">129</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">flesh</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS14071">
+               <ns0:ref type="coptic_usage::cu_ID">1566</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">human flesh ([part of] the human body; or simply, a human being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS14072">
+               <ns0:ref type="coptic_usage::cu_ID">7485</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">human flesh (attributive; [part of] the human body; or simply, a human being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS14073">
+               <ns0:ref type="coptic_usage::cu_ID">7965</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">human flesh (inverted attributive, nominal referent; referent: [part of] the human body;
+     or simply, a human being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS14074">
+               <ns0:ref type="coptic_usage::cu_ID">10605</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">flesh, kind, family (plural)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS14075">
+               <ns0:ref type="coptic_usage::cu_ID">1653</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">living being; animal (as opposed to living plants)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS14076">
+               <ns0:ref type="coptic_usage::cu_ID">6544</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">flesh (part of the human being; in opposition to πνεῦμα and/or ψυχή)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS14077">
+               <ns0:ref type="coptic_usage::cu_ID">11808</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">human flesh (inverted attributive, attributive referent; referent: [part of] the human
+     body; or simply, a human being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+<ns0:entry xmlns:ns0="http://www.tei-c.org/ns/1.0" xml:id="C11031">
+            <ns0:form xml:id="CF30301" type="lemma">
+               <ns0:orth>ⲯⲩⲭⲏ</ns0:orth>
+            </ns0:form>
+            <ns0:form xml:id="CF30302">
+               <ns0:orth>ⲫⲩⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30303">
+               <ns0:orth>ⲯⲓⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30304">
+               <ns0:orth>ⲯⲓⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30305">
+               <ns0:orth>ⲯⲩⲭϩ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30306">
+               <ns0:orth>ⲯⲩⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">A</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30307">
+               <ns0:orth>ⲯⲩⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30308">
+               <ns0:orth>ⲯⲩⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">L</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30309">
+               <ns0:orth>ⲯⲩⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30310">
+               <ns0:orth>ⲯⲩⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">B</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30311">
+               <ns0:orth>ⲯⲩⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30312">
+               <ns0:orth>ⲯⲩⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">V</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30313">
+               <ns0:orth>ⲯⲩⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">W</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30314">
+               <ns0:orth>ⲯⲩⲭⲏⲟⲩ</ns0:orth>
+               <ns0:usg type="geo">M</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30315">
+               <ns0:orth>ⲯⲩⲭⲏⲩ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30316">
+               <ns0:orth>ⲯⲩⲭⲟⲟⲩⲉ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30317">
+               <ns0:orth>ⲯⲩⲭⲩ</ns0:orth>
+               <ns0:usg type="geo">F</ns0:usg>
+            </ns0:form>
+            <ns0:form xml:id="CF30318">
+               <ns0:orth>ⲯⲭⲏ</ns0:orth>
+               <ns0:usg type="geo">S</ns0:usg>
+            </ns0:form>
+            <ns0:gramGrp>
+               <ns0:pos>Subst.</ns0:pos>
+            </ns0:gramGrp>
+            <ns0:etym>
+               <ns0:ref type="greek_lemma::grl_ID">2433</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_lemma">ψυχή</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_meaning">life, spirit, soul, self</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_pos">noun</ns0:ref>
+               <ns0:ref type="greek_lemma::grl_ref">LSJ 2026b; Preisigke 2:773</ns0:ref>
+            </ns0:etym>
+            <ns0:sense xml:id="CS15365">
+               <ns0:ref type="coptic_usage::cu_ID">642</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">life, life-force</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15366">
+               <ns0:ref type="coptic_usage::cu_ID">1122</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">soul, life (principle / substance of life)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15367">
+               <ns0:ref type="coptic_usage::cu_ID">7530</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">psychic, of soul (attributive)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15368">
+               <ns0:ref type="coptic_usage::cu_ID">1485</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">soul ("psychic" substance animating bodies, as opposed to πνεῦμα and/or σῶμα)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15369">
+               <ns0:ref type="coptic_usage::cu_ID">7931</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">soul ("psychic" substance animating bodies, as opposed to πνεῦμα and/or σῶμα; inverted
+     attributive, nominal referent)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15370">
+               <ns0:ref type="coptic_usage::cu_ID">9138</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">soul ("psychic" substance animating bodies, as opposed to πνεῦμα and/or σῶμα; inverted
+     attributive, attributive referent)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15371">
+               <ns0:ref type="coptic_usage::cu_ID">5992</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">(world-)soul (terrestrial hypostasis; an aeon)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15372">
+               <ns0:ref type="coptic_usage::cu_ID">775</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">creature, created living being</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15373">
+               <ns0:ref type="coptic_usage::cu_ID">1330</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">livelihood</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15374">
+               <ns0:ref type="coptic_usage::cu_ID">9745</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">ensouled, animate (attributive)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15375">
+               <ns0:ref type="coptic_usage::cu_ID">641</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">person, human being</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15376">
+               <ns0:ref type="coptic_usage::cu_ID">3620</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">soul, mind (consciousness, inner self; seat of thought and action)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15377">
+               <ns0:ref type="coptic_usage::cu_ID">5984</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">attention, awareness</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15378">
+               <ns0:ref type="coptic_usage::cu_ID">72</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">(I greet you with all my [± heart and]) soul</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15379">
+               <ns0:ref type="coptic_usage::cu_ID">1105</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">soul (context: salvation, post-mortem existence)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15380">
+               <ns0:ref type="coptic_usage::cu_ID">8316</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">soul (inverted attributive, nominal referent; context: salvation, post-mortem
+     existence)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15381">
+               <ns0:ref type="coptic_usage::cu_ID">1690</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">soul (pre-existing before birth)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15382">
+               <ns0:ref type="coptic_usage::cu_ID">1689</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">soul (undergoing metasomatosis)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15383">
+               <ns0:ref type="coptic_usage::cu_ID">3717</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">soul, spirit (superhuman being)</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+            <ns0:sense xml:id="CS15384">
+               <ns0:ref type="coptic_usage::cu_ID">1121</ns0:ref>
+               <ns0:cit type="translation">
+                  <ns0:quote xml:lang="en">-self, oneself</ns0:quote>
+                  <ns0:bibl>DDGLC</ns0:bibl>
+               </ns0:cit>
+            </ns0:sense>
+         </ns0:entry>
+         
+  </body></text>
+</TEI>
