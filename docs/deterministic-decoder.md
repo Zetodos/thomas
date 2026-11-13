@@ -104,6 +104,7 @@ uv run thomas decode ranking-rules
 
 ## Out of scope
 
-JAK-40 blinded reconstruction scoring, Phase 3 approved-model freeze, inferred
-lemma opt-in (removed from v1 request schema), full morphology generation,
-alternatives UI, website export, Ollama on this path.
+Phase 3 approved-model freeze, inferred lemma opt-in (removed from v1 request
+schema), full morphology generation, alternatives UI, website export, Ollama on
+this path. Blinded Thomas 7 / holdout scoring: [`docs/blinded-reconstruction.md`](blinded-reconstruction.md)
+(JAK-40).

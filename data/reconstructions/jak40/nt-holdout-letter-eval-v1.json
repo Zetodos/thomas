@@ -1,0 +1,814 @@
+{
+  "id": "jak40-nt-holdout-letter-eval-v1",
+  "title": "NT holdout letter evaluation (JAK-40; provisional gold)",
+  "owned_by": "JAK-40",
+  "schema_version": "1",
+  "reconstruction_package_id": "jak40-blinded-reconstruction-v1",
+  "eval_package_id": "horner-vaticanus-nt-holdout",
+  "review_status": "provisional-draft",
+  "official": false,
+  "gold": null,
+  "scores": [],
+  "nt_holdout_letter_scores": [
+    {
+      "unit_id": "mark.4.4",
+      "official": false,
+      "hypothesis_letters": "καιεπεσενοδονκαιανεβησαν",
+      "gold_surviving_letters": "καιεγενετοεντωσπειρεινομενεπεσενπαρατηνοδονκαιηλθενταπετεινακαικατεφαγεναυτο",
+      "true_positives": 21,
+      "predicted_denominator": 24,
+      "gold_denominator": 76,
+      "precision": 0.875,
+      "recall": 0.27631578947368424,
+      "f1": 0.42,
+      "longest_common_subsequence": 21,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "mark.4.8",
+      "official": false,
+      "hypothesis_letters": "αλλαεπεσενκαιανεβησανεπικαικαι",
+      "gold_surviving_letters": "καιαλλαεπεσενειστηνγηντηνκαληνκαιεδιδουκαρποναναβαινοντακαιαυξανομενακαιεφερενειστριακοντακαιενεξηκοντακαιενεκατον",
+      "true_positives": 26,
+      "predicted_denominator": 30,
+      "gold_denominator": 114,
+      "precision": 0.8666666666666667,
+      "recall": 0.22807017543859648,
+      "f1": 0.3611111111111111,
+      "longest_common_subsequence": 26,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "mark.4.19",
+      "official": false,
+      "hypothesis_letters": "καικαιεισκαιουχεκ",
+      "gold_surviving_letters": "καιαιμεριμναιτουαιωνοσκαιηαπατητουπλουτουκαιαιπεριταλοιπαεπιθυμιαιεισπορευομεναισυνπνειγουσιντονλογονκαιακαρποσγεινεται",
+      "true_positives": 15,
+      "predicted_denominator": 17,
+      "gold_denominator": 119,
+      "precision": 0.8823529411764706,
+      "recall": 0.12605042016806722,
+      "f1": 0.22058823529411764,
+      "longest_common_subsequence": 15,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.5.3",
+      "official": false,
+      "hypothesis_letters": "οτιοτιηβασιλεια",
+      "gold_surviving_letters": "μακαριοιοιπτωχοιτωπνευματιοτιαυτωνεστινηβασιλειατωνουρανων",
+      "true_positives": 15,
+      "predicted_denominator": 15,
+      "gold_denominator": 58,
+      "precision": 1.0,
+      "recall": 0.25862068965517243,
+      "f1": 0.4109589041095891,
+      "longest_common_subsequence": 15,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.5.10",
+      "official": false,
+      "hypothesis_letters": "οτιηβασιλεια",
+      "gold_surviving_letters": "μακαριοιοιδεδιωγμενοιενεκαδικαιοσυνησοτιαυτωνεστινηβασιλειατωνουρανων",
+      "true_positives": 12,
+      "predicted_denominator": 12,
+      "gold_denominator": 69,
+      "precision": 1.0,
+      "recall": 0.17391304347826086,
+      "f1": 0.29629629629629634,
+      "longest_common_subsequence": 12,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.5.20",
+      "official": false,
+      "hypothesis_letters": "λεγωγαρλεγωυμινοτιεισ",
+      "gold_surviving_letters": "λεγωγαρυμινοτιεανμηπερισσευσηυμωνηδικαιοσυνηπλειοντωνγραμματεωνκαιφαρεισαιωνουμηεισελθητεειστηνβασιλειαντωνουρανων",
+      "true_positives": 18,
+      "predicted_denominator": 21,
+      "gold_denominator": 114,
+      "precision": 0.8571428571428571,
+      "recall": 0.15789473684210525,
+      "f1": 0.26666666666666666,
+      "longest_common_subsequence": 18,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.7.21",
+      "official": false,
+      "hypothesis_letters": "ουχλεγωταυταοτικεκεεισαλλο",
+      "gold_surviving_letters": "ουπασολεγωνμοικεκεεισελευσεταιειστηνβασιλειαντωνουρανωναλλοποιωντοθεληματουπατροσμουτουεντοισουρανοισ",
+      "true_positives": 19,
+      "predicted_denominator": 26,
+      "gold_denominator": 101,
+      "precision": 0.7307692307692307,
+      "recall": 0.18811881188118812,
+      "f1": 0.2992125984251968,
+      "longest_common_subsequence": 19,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.10.26",
+      "official": false,
+      "hypothesis_letters": "ουνγαρουχφανερωθηκαιουχφανερωθη",
+      "gold_surviving_letters": "μηουνφοβηθητεαυτουσουδενγαρεστινκεκαλυμμενονοουκαποκαλυφθησεταικαικρυπτονοουγνωσθησεται",
+      "true_positives": 20,
+      "predicted_denominator": 31,
+      "gold_denominator": 87,
+      "precision": 0.6451612903225806,
+      "recall": 0.22988505747126436,
+      "f1": 0.3389830508474576,
+      "longest_common_subsequence": 20,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.10.27",
+      "official": false,
+      "hypothesis_letters": "καικαιαυτουκαι",
+      "gold_surviving_letters": "ολεγωυμινεντησκοτιαειπατεεντωφωτικαιοειστοουσακουετεκηρυξατεεπιτωνδωματων",
+      "true_positives": 12,
+      "predicted_denominator": 14,
+      "gold_denominator": 73,
+      "precision": 0.8571428571428571,
+      "recall": 0.1643835616438356,
+      "f1": 0.2758620689655173,
+      "longest_common_subsequence": 12,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.10.28",
+      "official": false,
+      "hypothesis_letters": "δεαυτουσδεκαιεν",
+      "gold_surviving_letters": "καιμηφοβηθητεαποτωναποκτεινοντωντοσωματηνδεψυχηνμηδυναμενωναποκτειναιφοβεισθεδεμαλλοντονδυναμενονκαιψυχηνκαισωμααπολεσαιενγεεννη",
+      "true_positives": 13,
+      "predicted_denominator": 15,
+      "gold_denominator": 128,
+      "precision": 0.8666666666666667,
+      "recall": 0.1015625,
+      "f1": 0.18181818181818182,
+      "longest_common_subsequence": 13,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.10.29",
+      "official": false,
+      "hypothesis_letters": "ουχδυοαυτουσουχεκκαιεκαυτουσεπι",
+      "gold_surviving_letters": "ουχιδυοστρουθιαασσαριουπωλειταικαιενεξαυτωνουπεσειταιεπιτηνγηνανευτουπατροσυμων",
+      "true_positives": 26,
+      "predicted_denominator": 31,
+      "gold_denominator": 79,
+      "precision": 0.8387096774193549,
+      "recall": 0.3291139240506329,
+      "f1": 0.47272727272727266,
+      "longest_common_subsequence": 26,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.10.30",
+      "official": false,
+      "hypothesis_letters": "δεπαντα",
+      "gold_surviving_letters": "υμωνδεκαιαιτριχεστησκεφαλησπασαιηριθμημεναιεισιν",
+      "true_positives": 6,
+      "predicted_denominator": 7,
+      "gold_denominator": 48,
+      "precision": 0.8571428571428571,
+      "recall": 0.125,
+      "f1": 0.21818181818181817,
+      "longest_common_subsequence": 6,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.10.31",
+      "official": false,
+      "hypothesis_letters": "ουν",
+      "gold_surviving_letters": "μηουνφοβεισθεπολλωνστρουθιωνδιαφερετευμεισ",
+      "true_positives": 3,
+      "predicted_denominator": 3,
+      "gold_denominator": 42,
+      "precision": 1.0,
+      "recall": 0.07142857142857142,
+      "f1": 0.13333333333333333,
+      "longest_common_subsequence": 3,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.10.32",
+      "official": false,
+      "hypothesis_letters": "ουνεκομολογησωαρκετονεκειεκ",
+      "gold_surviving_letters": "πασουνοστισομολογησειενεμοιεμπροσθεντωνανθρωπωνομολογησωκαγωεναυτωεμπροσθεντουπρσμουτουεντοισουρανοισ",
+      "true_positives": 21,
+      "predicted_denominator": 27,
+      "gold_denominator": 101,
+      "precision": 0.7777777777777778,
+      "recall": 0.2079207920792079,
+      "f1": 0.328125,
+      "longest_common_subsequence": 21,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.10.33",
+      "official": false,
+      "hypothesis_letters": "δεεμουεκαρκετονκαιεκ",
+      "gold_surviving_letters": "οστισδεαρνησηταιμεεμπροσθεντωνανθρωπωναρνησομαικαγωαυτονεμπροσθεντουπατροσμουτουεντοισουρανοισ",
+      "true_positives": 15,
+      "predicted_denominator": 20,
+      "gold_denominator": 94,
+      "precision": 0.75,
+      "recall": 0.1595744680851064,
+      "f1": 0.26315789473684215,
+      "longest_common_subsequence": 15,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.4",
+      "official": false,
+      "hypothesis_letters": "εγενετοδεεπεσενσπαρεισανεβησαν",
+      "gold_surviving_letters": "καιεντωσπειρειναυτοναμενεπεσενπαρατηνοδονκαιελθονταταπετεινακατεφαγεναυτα",
+      "true_positives": 21,
+      "predicted_denominator": 30,
+      "gold_denominator": 73,
+      "precision": 0.7,
+      "recall": 0.2876712328767123,
+      "f1": 0.40776699029126207,
+      "longest_common_subsequence": 21,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.8",
+      "official": false,
+      "hypothesis_letters": "αλλαδεεπεσενεπιδεδε",
+      "gold_surviving_letters": "αλλαδεεπεσενειστηνγηντηνκαληνκαιεδιδουκαρπονομενεκατονοδεεξηκονταοδετριακοντα",
+      "true_positives": 18,
+      "predicted_denominator": 19,
+      "gold_denominator": 77,
+      "precision": 0.9473684210526315,
+      "recall": 0.23376623376623376,
+      "f1": 0.375,
+      "longest_common_subsequence": 18,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.11",
+      "official": false,
+      "hypothesis_letters": "δελεγειοτιδε",
+      "gold_surviving_letters": "οδεαποκριθεισειπεναυτοισοτιυμινδεδοταιγνωναιταμυστηριατησβασιλειαστωνουρανωνεκεινοισδεουδεδοται",
+      "true_positives": 10,
+      "predicted_denominator": 12,
+      "gold_denominator": 95,
+      "precision": 0.8333333333333334,
+      "recall": 0.10526315789473684,
+      "f1": 0.18691588785046728,
+      "longest_common_subsequence": 10,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.20",
+      "official": false,
+      "hypothesis_letters": "δεκαι",
+      "gold_surviving_letters": "οδεεπιταπετρωδησπαρεισουτοσεστινοτονλογονακουωνκαιευθυσμεταχαρασλαμβανωναυτον",
+      "true_positives": 5,
+      "predicted_denominator": 5,
+      "gold_denominator": 77,
+      "precision": 1.0,
+      "recall": 0.06493506493506493,
+      "f1": 0.12195121951219512,
+      "longest_common_subsequence": 5,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.22",
+      "official": false,
+      "hypothesis_letters": "δε",
+      "gold_surviving_letters": "οδεειστασακανθασσπαρεισουτοσεστινοτονλογονακουωνκαιημεριμνατουαιωνοσκαιηαπατητουπλουτουσυνπνειγειτονλογονκαιακαρποσγεινεται",
+      "true_positives": 2,
+      "predicted_denominator": 2,
+      "gold_denominator": 123,
+      "precision": 1.0,
+      "recall": 0.016260162601626018,
+      "f1": 0.032,
+      "longest_common_subsequence": 2,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.23",
+      "official": false,
+      "hypothesis_letters": "δεαυτονδεδε",
+      "gold_surviving_letters": "οδεεπιτηνκαληνγηνσπαρεισουτοσεστινοτονλογονακουωνκαισυνιεισοσδηκαρποφορεικαιποιειομενεκατονοδεεξηκονταοδετριακοντα",
+      "true_positives": 11,
+      "predicted_denominator": 11,
+      "gold_denominator": 114,
+      "precision": 1.0,
+      "recall": 0.09649122807017543,
+      "f1": 0.176,
+      "longest_common_subsequence": 11,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.31",
+      "official": false,
+      "hypothesis_letters": "αφεισαυτοισπασεπιπασασλεγωνλεγωνοτιωμοιωθηλεγωεν",
+      "gold_surviving_letters": "αλληνπαραβοληνπαρεθηκεναυτοισλεγωνομοιαεστινηβασιλειατωνουρανωνκοκκωσιναπεωσονλαβωνανθρωποσεσπειρενεντωαγρωαυτου",
+      "true_positives": 29,
+      "predicted_denominator": 48,
+      "gold_denominator": 112,
+      "precision": 0.6041666666666666,
+      "recall": 0.25892857142857145,
+      "f1": 0.3625,
+      "longest_common_subsequence": 29,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.32",
+      "official": false,
+      "hypothesis_letters": "ηπανταδεωστε",
+      "gold_surviving_letters": "ομεικροτερονμενεστινπαντωντωνσπερματωνοτανδεαυξηθημειζοντωνλαχανωνεστινκαιγινεταιδενδρονωστεελθεινταπετεινατουουρανουκαικατασκηνοινεντοισκλαδοισαυτου",
+      "true_positives": 11,
+      "predicted_denominator": 12,
+      "gold_denominator": 149,
+      "precision": 0.9166666666666666,
+      "recall": 0.0738255033557047,
+      "f1": 0.13664596273291924,
+      "longest_common_subsequence": 11,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.33",
+      "official": false,
+      "hypothesis_letters": "αυτοισπασασλεγωνλεγωνοτιωμοιωθη",
+      "gold_surviving_letters": "αλληνπαραβοληνελαλησεναυτοισομοιαεστινηβασιλειατωνουρανωνζυμηηνλαβουσαγυνηενεκρυψενεισαλευρουσατατριαεωσουεζυμωθηολον",
+      "true_positives": 25,
+      "predicted_denominator": 31,
+      "gold_denominator": 117,
+      "precision": 0.8064516129032258,
+      "recall": 0.21367521367521367,
+      "f1": 0.3378378378378379,
+      "longest_common_subsequence": 25,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.44",
+      "official": false,
+      "hypothesis_letters": "ωμοιωθηφιλιπποσαυτουκαιεκεκαυτω",
+      "gold_surviving_letters": "ομοιαεστινηβασιλειατωνουρανωνθησαυρωκεκρυμμενωεντωαγρωονευρωνανθρωποσεκρυψενκαιαποτησχαρασαυτουυπαγεικαιπωλειοσαεχεικαιαγοραζειτοναγρονεκεινον",
+      "true_positives": 24,
+      "predicted_denominator": 31,
+      "gold_denominator": 142,
+      "precision": 0.7741935483870968,
+      "recall": 0.16901408450704225,
+      "f1": 0.27745664739884396,
+      "longest_common_subsequence": 24,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.45",
+      "official": false,
+      "hypothesis_letters": "πασωμοιωθηανθρωπω",
+      "gold_surviving_letters": "παλινομοιαεστινηβασιλειατωνουρανωνεμπορωζητουντικαλουσμαργαρειτασ",
+      "true_positives": 12,
+      "predicted_denominator": 17,
+      "gold_denominator": 65,
+      "precision": 0.7058823529411765,
+      "recall": 0.18461538461538463,
+      "f1": 0.2926829268292683,
+      "longest_common_subsequence": 12,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "matthew.13.47",
+      "official": false,
+      "hypothesis_letters": "βασιλειαωμοιωθηεισ",
+      "gold_surviving_letters": "παλινομοιαεστινηβασιλειατωνουρανωνσαγηνηβληθεισηειστηνθαλασσανκαιεκπαντοσγενουσσυναγαγουση",
+      "true_positives": 16,
+      "predicted_denominator": 18,
+      "gold_denominator": 90,
+      "precision": 0.8888888888888888,
+      "recall": 0.17777777777777778,
+      "f1": 0.2962962962962963,
+      "longest_common_subsequence": 16,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.4",
+      "official": false,
+      "hypothesis_letters": "δεθησαυριζεπροσλεγειαυτοισ",
+      "gold_surviving_letters": "συνιοντοσδεοχλουπολλουκαιτωνκαταπολινεπιπορευομενωνπροσαυτονειπενδιαπαραβολησ",
+      "true_positives": 15,
+      "predicted_denominator": 26,
+      "gold_denominator": 77,
+      "precision": 0.5769230769230769,
+      "recall": 0.19480519480519481,
+      "f1": 0.29126213592233013,
+      "longest_common_subsequence": 15,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.5",
+      "official": false,
+      "hypothesis_letters": "οτιηλθενεκκαιφιλιπποσ",
+      "gold_surviving_letters": "εξηλθενοσπειρωντουσπειραιτονσποροναυτουκαιεντωσπειρειναυτοναμενεπεσενπαρατηνοδονκαικατεπατηθηκαιταπετεινατουουρανουκατεφαγεναυτα",
+      "true_positives": 14,
+      "predicted_denominator": 21,
+      "gold_denominator": 128,
+      "precision": 0.6666666666666666,
+      "recall": 0.109375,
+      "f1": 0.1879194630872483,
+      "longest_common_subsequence": 14,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.6",
+      "official": false,
+      "hypothesis_letters": "δεφιλιπποσκαιεξηρανθηοτι",
+      "gold_surviving_letters": "καιετερονκατεπεσενεπιπετρανκαιφυενεξηρανθηδιατομηεχεινικμαδα",
+      "true_positives": 16,
+      "predicted_denominator": 24,
+      "gold_denominator": 60,
+      "precision": 0.6666666666666666,
+      "recall": 0.26666666666666666,
+      "f1": 0.3809523809523809,
+      "longest_common_subsequence": 16,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.7",
+      "official": false,
+      "hypothesis_letters": "αλλαδεεπεσενκαιαπεπνιξαν",
+      "gold_surviving_letters": "καιετερονεπεσενενμεσωτωνακανθωνκαισυμφυεισαιαιακανθαιαπεπνιξαναυτο",
+      "true_positives": 20,
+      "predicted_denominator": 24,
+      "gold_denominator": 66,
+      "precision": 0.8333333333333334,
+      "recall": 0.30303030303030304,
+      "f1": 0.4444444444444444,
+      "longest_common_subsequence": 20,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.8",
+      "official": false,
+      "hypothesis_letters": "αλλαδεεπεσενκαιεκδελεγωναυτουσοοτιεκειωταακουετω",
+      "gold_surviving_letters": "καιετερονεπεσενειστηνγηντηναγαθηνκαιφυενεποιησενκαρπονεκατονταπλασειοναταυταλεγωνεφωνειοεχωνωταακουεινακουετω",
+      "true_positives": 34,
+      "predicted_denominator": 48,
+      "gold_denominator": 109,
+      "precision": 0.7083333333333334,
+      "recall": 0.3119266055045872,
+      "f1": 0.43312101910828027,
+      "longest_common_subsequence": 34,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.9",
+      "official": false,
+      "hypothesis_letters": "μαθηταιδεοτιτοη",
+      "gold_surviving_letters": "επηρωτωνδεαυτονοιμαθηταιαυτουτισαυτηειηπαραβολη",
+      "true_positives": 13,
+      "predicted_denominator": 15,
+      "gold_denominator": 47,
+      "precision": 0.8666666666666667,
+      "recall": 0.2765957446808511,
+      "f1": 0.4193548387096774,
+      "longest_common_subsequence": 13,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.10",
+      "official": false,
+      "hypothesis_letters": "δελεγειαυτοισοτιδειναιδωσινκαι",
+      "gold_surviving_letters": "οδεειπενυμινδεδοταιγνωναιταμυστηριατησβασιλειαστουθυτοισδελοιποισενπαραβολαισιναβλεποντεσμηβλεπωσινκαιακουοντεσμησυνιωσιν",
+      "true_positives": 26,
+      "predicted_denominator": 30,
+      "gold_denominator": 121,
+      "precision": 0.8666666666666667,
+      "recall": 0.21487603305785125,
+      "f1": 0.34437086092715236,
+      "longest_common_subsequence": 26,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.11",
+      "official": false,
+      "hypothesis_letters": "δεηκοσμοσο",
+      "gold_surviving_letters": "εστινδεαυτηηπαραβοληοσποροσεστινολογοστουθυ",
+      "true_positives": 8,
+      "predicted_denominator": 10,
+      "gold_denominator": 43,
+      "precision": 0.8,
+      "recall": 0.18604651162790697,
+      "f1": 0.3018867924528302,
+      "longest_common_subsequence": 8,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.12",
+      "official": false,
+      "hypothesis_letters": "δεεισινεκοτι",
+      "gold_surviving_letters": "οιδεπαρατηνοδονεισινοιακουσαντεσειταερχεταιοδιαβολοσκαιαιρειτονλογοναποτησκαρδιασαυτωνιναμηπιστευσαντεσσωθωσιν",
+      "true_positives": 12,
+      "predicted_denominator": 12,
+      "gold_denominator": 110,
+      "precision": 1.0,
+      "recall": 0.10909090909090909,
+      "f1": 0.19672131147540983,
+      "longest_common_subsequence": 12,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.13",
+      "official": false,
+      "hypothesis_letters": "δεεισινοτανδεεκειδεφανερωθη",
+      "gold_surviving_letters": "οιδεπιτησπετρασοιοτανακουσωσινμεταχαρασδεχονταιτονλογονκαιαυτοιριζανουκεχουσινοιπροσκαιρονπιστευουσινκαιενκαιρωπειρασμουαφιστανται",
+      "true_positives": 20,
+      "predicted_denominator": 27,
+      "gold_denominator": 130,
+      "precision": 0.7407407407407407,
+      "recall": 0.15384615384615385,
+      "f1": 0.25477707006369427,
+      "longest_common_subsequence": 20,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.14",
+      "official": false,
+      "hypothesis_letters": "δεεισιναυτουσκαιεκουδε",
+      "gold_surviving_letters": "τοδεειστασακανθασπεσονουτοιεισινοιακουσαντεσκαιυπομεριμνωνκαιπλουτουκαιηδονωντουβιουπορευομενοισυνπνειγονταικαιουτελεσφορουσιν",
+      "true_positives": 21,
+      "predicted_denominator": 22,
+      "gold_denominator": 126,
+      "precision": 0.9545454545454546,
+      "recall": 0.16666666666666666,
+      "f1": 0.28378378378378377,
+      "longest_common_subsequence": 21,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.8.15",
+      "official": false,
+      "hypothesis_letters": "δεεισινκαι",
+      "gold_surviving_letters": "τοδεεντηκαληγηουτοιεισινοιτινεσενκαρδιακαληκαιαγαθηακουσαντεστονλογονκατεχουσινκαικαρποφορουσινενυπομονη",
+      "true_positives": 10,
+      "predicted_denominator": 10,
+      "gold_denominator": 104,
+      "precision": 1.0,
+      "recall": 0.09615384615384616,
+      "f1": 0.17543859649122806,
+      "longest_common_subsequence": 10,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.12.2",
+      "official": false,
+      "hypothesis_letters": "δεεκουχκαιαυτουουδε",
+      "gold_surviving_letters": "ουδενδεσυγκεκαλυμμενονεστινοουκαποκαλυφθησεταικαικρυπτονοουγνωσθησεται",
+      "true_positives": 16,
+      "predicted_denominator": 19,
+      "gold_denominator": 70,
+      "precision": 0.8421052631578947,
+      "recall": 0.22857142857142856,
+      "f1": 0.35955056179775274,
+      "longest_common_subsequence": 16,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    },
+    {
+      "unit_id": "luke.12.3",
+      "official": false,
+      "hypothesis_letters": "καικαι",
+      "gold_surviving_letters": "ανθωνοσαεντησκοτιαειπατεεντωφωτιακουσθησεταικαιοπροστοουσελαλησατεεντοισταμειοισκηρυχθησεταιεπιτωνδωματων",
+      "true_positives": 6,
+      "predicted_denominator": 6,
+      "gold_denominator": 105,
+      "precision": 1.0,
+      "recall": 0.05714285714285714,
+      "f1": 0.1081081081081081,
+      "longest_common_subsequence": 6,
+      "review_status": "provisional-draft",
+      "notes": [
+        "NT holdout letter agreement vs Vaticanus B* at eval time only.",
+        "Greek text was not available to the blinded reconstruct path.",
+        "greek_source_id=ntvmr-vaticanus-b"
+      ]
+    }
+  ],
+  "artifact_digests": {},
+  "blinding": {
+    "greek_loaded_during_reconstruction": false,
+    "greek_loaded_at_scoring": true,
+    "nt_holdout_only": true
+  },
+  "summary": {
+    "n_scores": 41,
+    "official": false,
+    "mean_recall": 0.17938707507427218
+  },
+  "provenance": {
+    "owned_by": "JAK-40",
+    "llm": false,
+    "network": false
+  },
+  "notes": [
+    "NT holdout letter scores use Vaticanus B* at eval time only.",
+    "Gold remains provisional-draft until human-checked (JAK-41 gate).",
+    "Train/dev passages are not scored as holdout."
+  ]
+}
