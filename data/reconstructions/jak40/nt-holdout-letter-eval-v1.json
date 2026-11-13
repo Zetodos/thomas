@@ -3,7 +3,7 @@
   "title": "NT holdout letter evaluation (JAK-40; provisional gold)",
   "owned_by": "JAK-40",
   "schema_version": "1",
-  "reconstruction_package_id": "jak40-blinded-reconstruction-v1",
+  "reconstruction_package_id": "jak40-blinded-reconstruction-nt-holdout-v1",
   "eval_package_id": "horner-vaticanus-nt-holdout",
   "review_status": "provisional-draft",
   "official": false,

@@ -9,7 +9,12 @@ from pathlib import Path
 import typer
 
 from zetodos_thomas.eval.blinded_reconstruct import (
+    COMMITTED_ARTIFACT_MAX_BYTES,
+    DEFAULT_NT_RECON_REL,
+    DEFAULT_THOMAS_RECON_REL,
+    BlindedReconstructError,
     reconstruct_blinded_package,
+    write_committed_reconstruction_artifacts,
     write_reconstruction_package,
 )
 from zetodos_thomas.eval.surviving_letters import (
@@ -31,7 +36,8 @@ eval_app = typer.Typer(
     no_args_is_help=True,
 )
 
-DEFAULT_RECON_REL = Path("data/reconstructions/jak40/blinded-reconstruction-v1.json")
+DEFAULT_RECON_REL = DEFAULT_THOMAS_RECON_REL
+DEFAULT_NT_RECON_PATH = DEFAULT_NT_RECON_REL
 DEFAULT_SCORE_REL = Path(
     "data/reconstructions/jak40/thomas-7-surviving-letter-eval-v1.json"
 )
@@ -77,11 +83,19 @@ def reconstruct_cmd(
         "--thomas-only/--with-nt-holdouts",
         help="Reconstruct Thomas 7 only (skip NT holdout Sahidic).",
     ),
+    commit_split: bool = typer.Option(
+        True,
+        "--commit-split/--single-file",
+        help=(
+            "Default: write Thomas 7 + NT holdout sibling files under the "
+            "1024 KiB large-file hook. --single-file writes one JSON via -o."
+        ),
+    ),
     output: Path | None = typer.Option(
         None,
         "--output",
         "-o",
-        help="Write BlindedReconstructionPackage JSON.",
+        help="Single-file BlindedReconstructionPackage path (--single-file).",
     ),
     compact: bool = typer.Option(False, "--compact/--pretty"),
 ) -> None:
@@ -94,6 +108,17 @@ def reconstruct_cmd(
 
     condition = _parse_condition(ablation)
     try:
+        if commit_split and not thomas_only and output is None:
+            digests = write_committed_reconstruction_artifacts(root, ablation=condition)
+            typer.echo(f"Wrote {root / DEFAULT_RECON_REL}")
+            typer.echo(f"Wrote {root / DEFAULT_NT_RECON_PATH}")
+            typer.echo(
+                f"thomas_sha256={digests['thomas'][:12]}… "
+                f"nt_sha256={digests['nt_holdout'][:12]}… "
+                f"ablation={condition.value} greek_consulted=False"
+            )
+            return
+
         package = reconstruct_blinded_package(
             root,
             ablation=condition,
@@ -104,7 +129,17 @@ def reconstruct_cmd(
         raise typer.Exit(code=1) from exc
 
     out = output or (root / DEFAULT_RECON_REL)
-    digest = write_reconstruction_package(package, out)
+    # Enforce the 1 MiB commit hook for paths under data/reconstructions/jak40/.
+    under_commit_dir = "data/reconstructions/jak40" in str(out).replace("\\", "/")
+    try:
+        digest = write_reconstruction_package(
+            package,
+            out,
+            max_bytes=COMMITTED_ARTIFACT_MAX_BYTES if under_commit_dir else None,
+        )
+    except BlindedReconstructError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
     typer.echo(f"Wrote {out}")
     typer.echo(
         f"units={package.summary.get('unit_count')} "
@@ -231,7 +266,12 @@ def score_nt_holdouts_cmd(
         typer.secho(str(exc), fg=typer.colors.RED)
         raise typer.Exit(code=1) from exc
 
-    recon_path = reconstruction or (root / DEFAULT_RECON_REL)
+    recon_path = reconstruction or (root / DEFAULT_NT_RECON_PATH)
+    if not recon_path.is_file():
+        # Fall back to combined/single-file Thomas+NT package if present.
+        fallback = root / DEFAULT_RECON_REL
+        if fallback.is_file():
+            recon_path = fallback
     if not recon_path.is_file():
         typer.secho(f"missing reconstruction: {recon_path}", fg=typer.colors.RED)
         raise typer.Exit(code=1)

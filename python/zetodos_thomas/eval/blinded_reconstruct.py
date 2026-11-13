@@ -371,18 +371,156 @@ def reconstruct_blinded_package(
     )
 
 
+# Pre-commit ``check-added-large-files --maxkb=1024``; keep headroom.
+COMMITTED_ARTIFACT_MAX_BYTES = 1024 * 1024
+
+DEFAULT_THOMAS_RECON_REL = Path(
+    "data/reconstructions/jak40/blinded-reconstruction-v1.json"
+)
+DEFAULT_NT_RECON_REL = Path(
+    "data/reconstructions/jak40/nt-holdout-blinded-reconstruction-v1.json"
+)
+# Committed NT package uses top-1 only so the JSON stays under the large-file hook.
+COMMITTED_NT_MAX_CANDIDATES = 1
+
+
 def write_reconstruction_package(
     package: BlindedReconstructionPackage,
     path: Path,
+    *,
+    max_bytes: int | None = COMMITTED_ARTIFACT_MAX_BYTES,
 ) -> str:
-    """Write package JSON; return sha256 of bytes written."""
+    """Write package JSON; return sha256 of bytes written.
+
+    When ``max_bytes`` is set (default 1 MiB), refuse oversized commits so
+    ``check-added-large-files`` stays green.
+    """
     path.parent.mkdir(parents=True, exist_ok=True)
     text = (
         json.dumps(package.model_dump(mode="json"), ensure_ascii=False, indent=2) + "\n"
     )
     data = text.encode("utf-8")
+    if max_bytes is not None and len(data) > max_bytes:
+        msg = (
+            f"reconstruction artifact {path} is {len(data)} bytes "
+            f"(limit {max_bytes}); split Thomas vs NT holdouts or lower "
+            "max_candidates_per_span before committing"
+        )
+        raise BlindedReconstructError(msg)
     path.write_bytes(data)
     return _sha256_bytes(data)
+
+
+def _retitle_package(
+    package: BlindedReconstructionPackage,
+    *,
+    package_id: str,
+    title: str,
+    extra_notes: list[str],
+) -> BlindedReconstructionPackage:
+    n_cand = sum(
+        u.decode_result.summary.get("spans_with_candidates", 0) for u in package.units
+    )
+    n_abs = sum(
+        u.decode_result.summary.get("spans_abstained", 0) for u in package.units
+    )
+    thomas_n = sum(
+        1 for u in package.units if u.target_kind is BlindedTargetKind.THOMAS_PILOT
+    )
+    holdout_n = sum(
+        1 for u in package.units if u.target_kind is BlindedTargetKind.NT_HOLDOUT
+    )
+    return package.model_copy(
+        update={
+            "id": package_id,
+            "title": title,
+            "summary": {
+                **package.summary,
+                "unit_count": len(package.units),
+                "thomas_units": thomas_n,
+                "nt_holdout_units": holdout_n,
+                "spans_with_candidates": n_cand,
+                "spans_abstained": n_abs,
+                "word_for_word_units": len(package.word_for_word_baseline),
+            },
+            "blinding": {
+                **package.blinding,
+                "nt_holdout_unit_count": holdout_n,
+            },
+            "notes": [*package.notes, *extra_notes],
+        }
+    )
+
+
+def write_committed_reconstruction_artifacts(
+    repo_root: Path | None = None,
+    *,
+    ablation: AblationCondition | str = (
+        AblationCondition.NT_ALIGNER_PLUS_VERIFIED_LOANWORDS
+    ),
+    thomas_path: Path | None = None,
+    nt_path: Path | None = None,
+) -> dict[str, str]:
+    """Write split committed artifacts under the large-file hook limit.
+
+    * Thomas 7: full multi-candidate decode (primary pilot artifact).
+    * NT holdouts: separate file with ``max_candidates_per_span=1`` so the
+      JSON stays under 1024 KiB while remaining schema-valid and regenerable.
+    """
+    root = require_repo_root(repo_root)
+    thomas_out = thomas_path or (root / DEFAULT_THOMAS_RECON_REL)
+    nt_out = nt_path or (root / DEFAULT_NT_RECON_REL)
+
+    thomas_pkg = reconstruct_blinded_package(
+        root,
+        ablation=ablation,
+        include_nt_holdouts=False,
+        max_candidates_per_span=5,
+        include_word_for_word=True,
+    )
+    thomas_pkg = _retitle_package(
+        thomas_pkg,
+        package_id="jak40-blinded-reconstruction-v1",
+        title="Blinded Thomas 7 reconstruction (JAK-40)",
+        extra_notes=[
+            "Committed artifact is Thomas 7 only; NT holdouts are a sibling file.",
+        ],
+    )
+
+    nt_pkg = reconstruct_blinded_package(
+        root,
+        ablation=ablation,
+        include_nt_holdouts=True,
+        max_candidates_per_span=COMMITTED_NT_MAX_CANDIDATES,
+        include_word_for_word=True,
+    )
+    nt_units = [
+        u for u in nt_pkg.units if u.target_kind is BlindedTargetKind.NT_HOLDOUT
+    ]
+    nt_base = [
+        b
+        for b in nt_pkg.word_for_word_baseline
+        if any(u.unit_id == b.unit_id for u in nt_units)
+    ]
+    nt_pkg = nt_pkg.model_copy(
+        update={"units": nt_units, "word_for_word_baseline": nt_base}
+    )
+    nt_pkg = _retitle_package(
+        nt_pkg,
+        package_id="jak40-blinded-reconstruction-nt-holdout-v1",
+        title="Blinded NT holdout reconstructions (JAK-40)",
+        extra_notes=[
+            f"Committed with max_candidates_per_span={COMMITTED_NT_MAX_CANDIDATES} "
+            "to stay under check-added-large-files (1024 KiB).",
+            "Regenerate offline with a higher --max-candidates if more ranks needed.",
+        ],
+    )
+
+    digests = {
+        "thomas": write_reconstruction_package(thomas_pkg, thomas_out),
+        "nt_holdout": write_reconstruction_package(nt_pkg, nt_out),
+    }
+    return digests
 
 
 def package_summary(package: BlindedReconstructionPackage) -> dict[str, Any]:

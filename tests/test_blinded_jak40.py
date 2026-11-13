@@ -103,7 +103,8 @@ def test_blinded_thomas7_reconstruct_no_fragment_greek() -> None:
     # makarios loanword clue should surface under arm B
     want = greek_letters_only("μακαριος")
     assert any(
-        s is not None and want in greek_letters_only(s) for s in unit.top1_greek_surfaces
+        s is not None and want in greek_letters_only(s)
+        for s in unit.top1_greek_surfaces
     )
     blob = json.dumps(package.model_dump(mode="json"), ensure_ascii=False)
     assert "ἔσται. μα" not in blob
@@ -253,13 +254,25 @@ def test_cli_score_gate_report(tmp_path: Path) -> None:
 
 def test_committed_artifacts_exist_and_validate() -> None:
     recon_path = RECON_DIR / "blinded-reconstruction-v1.json"
+    nt_path = RECON_DIR / "nt-holdout-blinded-reconstruction-v1.json"
     assert recon_path.is_file(), "run eval reconstruct to refresh committed artifact"
+    assert nt_path.is_file()
+    # Large-file hook: each committed JSON must stay ≤ 1024 KiB.
+    assert recon_path.stat().st_size <= 1024 * 1024
+    assert nt_path.stat().st_size <= 1024 * 1024
     package = json.loads(recon_path.read_text(encoding="utf-8"))
     assert package["owned_by"] == "JAK-40"
     assert package["blinding"]["greek_consulted_during_reconstruction"] is False
+    assert package["summary"]["thomas_units"] == 1
+    assert package["summary"]["nt_holdout_units"] == 0
+    nt_pkg = json.loads(nt_path.read_text(encoding="utf-8"))
+    assert nt_pkg["summary"]["nt_holdout_units"] >= 30
+    assert nt_pkg["summary"]["thomas_units"] == 0
     runner = CliRunner()
     val = runner.invoke(app, ["eval", "validate-reconstruction", str(recon_path)])
     assert val.exit_code == 0, val.output
+    val_nt = runner.invoke(app, ["eval", "validate-reconstruction", str(nt_path)])
+    assert val_nt.exit_code == 0, val_nt.output
     score_path = RECON_DIR / "thomas-7-surviving-letter-eval-v1.json"
     assert score_path.is_file()
     score = json.loads(score_path.read_text(encoding="utf-8"))

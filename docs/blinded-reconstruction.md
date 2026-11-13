@@ -34,7 +34,8 @@ Use `--allow-unreviewed` only for harness smoke (`official=false`), or
 
 | Path | Role |
 | --- | --- |
-| [`data/reconstructions/jak40/blinded-reconstruction-v1.json`](../data/reconstructions/jak40/blinded-reconstruction-v1.json) | Blinded decode + word-for-word baseline |
+| [`data/reconstructions/jak40/blinded-reconstruction-v1.json`](../data/reconstructions/jak40/blinded-reconstruction-v1.json) | Thomas 7 blinded decode + word-for-word baseline |
+| [`data/reconstructions/jak40/nt-holdout-blinded-reconstruction-v1.json`](../data/reconstructions/jak40/nt-holdout-blinded-reconstruction-v1.json) | NT holdout decode (top-1; split for ≤1024 KiB hook) |
 | [`data/reconstructions/jak40/thomas-7-surviving-letter-eval-v1.json`](../data/reconstructions/jak40/thomas-7-surviving-letter-eval-v1.json) | Thomas 7 surviving-letter report (or gate-blocked stub) |
 | [`data/reconstructions/jak40/nt-holdout-letter-eval-v1.json`](../data/reconstructions/jak40/nt-holdout-letter-eval-v1.json) | NT holdout letter agreement (provisional gold) |
 
@@ -51,8 +52,8 @@ decoder-vs-baseline comparison gate live in **JAK-41**.
 ## CLI
 
 ```bash
-# Blinded reconstruct (Coptic only; offline)
-uv run thomas eval reconstruct -o data/reconstructions/jak40/blinded-reconstruction-v1.json
+# Blinded reconstruct (Coptic only; offline) — writes Thomas + NT sibling files
+uv run thomas eval reconstruct
 
 # Thomas 7 surviving-letter score (opens P.Oxy. 654 here only)
 uv run thomas eval score-thomas7 --gate-report \
@@ -65,10 +66,12 @@ uv run thomas eval score-thomas7 --allow-unreviewed \
 
 # NT holdouts vs Vaticanus at eval time
 uv run thomas eval score-nt-holdouts \
-  -r data/reconstructions/jak40/blinded-reconstruction-v1.json
+  -r data/reconstructions/jak40/nt-holdout-blinded-reconstruction-v1.json
 
 uv run thomas eval validate-reconstruction \
   data/reconstructions/jak40/blinded-reconstruction-v1.json
+uv run thomas eval validate-reconstruction \
+  data/reconstructions/jak40/nt-holdout-blinded-reconstruction-v1.json
 ```
 
 ## Leakage controls

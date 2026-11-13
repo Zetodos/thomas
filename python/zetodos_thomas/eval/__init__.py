@@ -4,6 +4,7 @@
 from zetodos_thomas.eval.blinded_reconstruct import (
     BlindedReconstructError,
     reconstruct_blinded_package,
+    write_committed_reconstruction_artifacts,
     write_reconstruction_package,
 )
 from zetodos_thomas.eval.review_gate import (
@@ -28,5 +29,6 @@ __all__ = [
     "require_human_checked_review_status",
     "score_thomas7_surviving",
     "try_score_thomas7_or_gate_report",
+    "write_committed_reconstruction_artifacts",
     "write_reconstruction_package",
 ]
