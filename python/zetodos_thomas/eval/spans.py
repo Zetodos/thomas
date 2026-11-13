@@ -9,6 +9,7 @@ ingest has no SCRIPTORIUM per-token orig↔norm pairs yet).
 from __future__ import annotations
 
 import re
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 
 from zetodos_thomas.align.paratext import filter_alignable_tokens
@@ -21,6 +22,7 @@ from zetodos_thomas.schemas.decode import DecodeSpanInput
 from zetodos_thomas.schemas.ids import ID_SCHEME_VERSION
 from zetodos_thomas.schemas.ids import span_id as mint_v1_span_id
 from zetodos_thomas.schemas.ids import token_id as mint_v1_token_id
+from zetodos_thomas.schemas.mappings import StatisticalConstruction
 from zetodos_thomas.schemas.source import TextUnit
 
 DILLEY_SOURCE_ID = "dilley-thomas"
@@ -237,12 +239,14 @@ def windows_to_decode_spans(
 
 
 def construction_patterns_from_model(
-    constructions_by_pattern: dict[tuple[str, ...], list[object]],
+    constructions_by_pattern: Mapping[
+        tuple[str, ...], Sequence[StatisticalConstruction]
+    ],
 ) -> dict[tuple[str, ...], str]:
     """Map Coptic pattern → first construction_id (stable lexicographic)."""
     out: dict[tuple[str, ...], str] = {}
     for pattern, rows in constructions_by_pattern.items():
-        ids = sorted(getattr(row, "construction_id") for row in rows)  # noqa: B009
+        ids = sorted(row.construction_id for row in rows)
         if ids:
             out[pattern] = ids[0]
     return out
