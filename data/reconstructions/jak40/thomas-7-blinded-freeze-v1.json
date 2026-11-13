@@ -1,0 +1,50 @@
+{
+  "id": "jak40-thomas7-blinded-freeze-v1",
+  "owned_by": "JAK-40",
+  "reconstruction_package_id": "jak40-blinded-reconstruction-v1",
+  "unit_id": "thomas.7",
+  "reconstruction_sha256": "f3fd90a0b0af143a2150224dda975ae0e3ed5648a03cd6d8276853acaa092d9c",
+  "ablation_condition": "nt_aligner_plus_verified_loanwords",
+  "ranking_rules_id": "jak39-stable-ranking-v1",
+  "evidence_provenance": {
+    "ablation_path": "/agent/repos/thomas/data/sources/mappings/ablation-nt-aligner-plus-loanwords-v1.json",
+    "lexical_path": "/agent/repos/thomas/data/sources/lexicon/coptic-greek-lexical-candidates-v1.json",
+    "constructions_path": "/agent/repos/thomas/data/sources/mappings/statistical-phrase-constructions-v1.json",
+    "loanwords_path": "/agent/repos/thomas/data/sources/mappings/verified-loanwords-ccl-ddglc-v1.json",
+    "loanwords_emit_candidates": true,
+    "phase2_active_aligners": [
+      "eflomal",
+      "fast_align"
+    ],
+    "adopted_aligner": null,
+    "owned_by": "JAK-39",
+    "artifact_digests": {
+      "lexical_sha256": "f142bab608f7532783bec220ed4f5199a980b1ca7ebed0e53467d9e3192b759e",
+      "constructions_sha256": "64641200f8a32eaaeb8f298f0599df679fb987d51f008f4d649b562417dde989",
+      "loanwords_sha256": "472b0b19ab3147030ca6f1c37943b2fb39d482d6a92ae7dcb0608405dd6f2a61",
+      "ablation_sha256": "52566caedc3f92af5410727355fef66d019d0d984d861e75ab57c0c580ae37c4"
+    },
+    "evidence_provenance": {
+      "pilot_corpus_id": "horner-vaticanus-nt-pilot-v3",
+      "split_id": "horner-vaticanus-nt-split-v3",
+      "greek_source_id": "ntvmr-vaticanus-b",
+      "sahidic_source_id": "copsahhorner",
+      "coptic_segmentation": "bound-group-v1",
+      "bitext_checksum_sha256": "4467a9534c1bd2d426390a5f844ae0a49ddc98118d0d076f8291f4a0a6a31d03"
+    },
+    "lexical_table_id": "coptic-greek-lexical-candidates-v1",
+    "constructions_table_id": "statistical-phrase-constructions-v1",
+    "loanwords_table_id": "verified-loanwords-ccl-ddglc-v1",
+    "validation": "jak37_jak38_fail_closed"
+  },
+  "artifact_digests": {
+    "dilley_thomas_sha256": "a5b5849405ae0db6412127d74820d633ed4cdfa7912d81b05f73d88fee33303a",
+    "pilot_corpus_sha256": "4f82df7f4f797839447f8afedc9b2b0794cd683d4f8599fcb83d04f9aea92845",
+    "nt_split_sha256": "7c1ec2bf2ee840c7a03c448ea46df608b884638c7fcd16cf7aa70bf7f71c30db"
+  },
+  "sealed_before_fragment_load": true,
+  "notes": [
+    "Frozen before any P.Oxy. / fragment corpus load.",
+    "Official scoring must verify this digest and Thomas-7 identity."
+  ]
+}

@@ -50,6 +50,8 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`docs/phrase-loanword-mappings.md`](docs/phrase-loanword-mappings.md) | Statistical constructions + verified loanwords + ablation (JAK-38) |
 | [`data/sources/mappings/`](data/sources/mappings/) | Phrase/construction + CCL/DDGLC loanword + ablation JSON (JAK-38) |
 | [`docs/deterministic-decoder.md`](docs/deterministic-decoder.md) | Minimal deterministic decoder, ranking, abstention (JAK-39) |
+| [`docs/blinded-reconstruction.md`](docs/blinded-reconstruction.md) | Blinded Thomas 7 / NT holdout reconstruct + surviving-letter eval (JAK-40) |
+| [`data/reconstructions/jak40/`](data/reconstructions/jak40/) | Blinded reconstruction + eval artifacts (JAK-40) |
 
 ## Never ship (summary)
 
@@ -105,7 +107,7 @@ uv run ty check
 uv run pytest
 ```
 
-The `thomas` console script exposes `sources validate|download|build-pilot|build-thomas|build-fragments`, `align validate|benchmark|eflomal-probe|aligner-probe|setup-aligners|statistical-eval`, `lexicon generate-candidates|validate-candidates`, `mappings …`, and `decode run|validate|ranking-rules`. Further subcommands live in [`PLAN.md`](PLAN.md). Statistical aligner notes: [`docs/statistical-aligner-comparison.md`](docs/statistical-aligner-comparison.md). Lexical candidates: [`docs/lexical-candidates.md`](docs/lexical-candidates.md). Decoder: [`docs/deterministic-decoder.md`](docs/deterministic-decoder.md).
+The `thomas` console script exposes `sources validate|download|build-pilot|build-thomas|build-fragments`, `align validate|benchmark|eflomal-probe|aligner-probe|setup-aligners|statistical-eval`, `lexicon generate-candidates|validate-candidates`, `mappings …`, `decode run|validate|ranking-rules`, and `eval reconstruct|score-thomas7|score-nt-holdouts|validate-reconstruction`. Further subcommands live in [`PLAN.md`](PLAN.md). Statistical aligner notes: [`docs/statistical-aligner-comparison.md`](docs/statistical-aligner-comparison.md). Lexical candidates: [`docs/lexical-candidates.md`](docs/lexical-candidates.md). Decoder: [`docs/deterministic-decoder.md`](docs/deterministic-decoder.md). Blinded eval: [`docs/blinded-reconstruction.md`](docs/blinded-reconstruction.md).
 
 Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web/` only (not started yet).
 

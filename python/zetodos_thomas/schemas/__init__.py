@@ -11,6 +11,15 @@ from zetodos_thomas.schemas.alignment import (
     ThomasCorpus,
     Token,
 )
+from zetodos_thomas.schemas.blinded import (
+    BlindedReconstructionPackage,
+    BlindedTargetKind,
+    BlindedUnitReconstruction,
+    SurvivingLetterEvalReport,
+    SurvivingLetterGold,
+    SurvivingLetterScore,
+    WordForWordUnitBaseline,
+)
 from zetodos_thomas.schemas.decode import (
     AbstentionReason,
     CandidateEvidenceRef,
@@ -103,6 +112,9 @@ __all__ = [
     "AgreementDegree",
     "AlignmentDocument",
     "AvailabilityMode",
+    "BlindedReconstructionPackage",
+    "BlindedTargetKind",
+    "BlindedUnitReconstruction",
     "CandidateEvidenceRef",
     "ConfidenceEstimate",
     "ConstructionFamily",
@@ -154,6 +166,9 @@ __all__ = [
     "SplitMembership",
     "StatisticalConstruction",
     "StatisticalConstructionTable",
+    "SurvivingLetterEvalReport",
+    "SurvivingLetterGold",
+    "SurvivingLetterScore",
     "TextUnit",
     "ThomasCorpus",
     "Token",
@@ -162,6 +177,7 @@ __all__ = [
     "VerifiedLoanwordTable",
     "WitnessAlignment",
     "WitnessAlignmentKind",
+    "WordForWordUnitBaseline",
     "parallel_id",
     "parse_parallel_id",
     "parse_span_id",

@@ -95,13 +95,16 @@ select = [
 "python/zetodos_thomas/lexicon/**" = ["RUF001"]
 "python/zetodos_thomas/mappings/**" = ["RUF001"]
 "python/zetodos_thomas/reconstruct/**" = ["RUF001"]
+"python/zetodos_thomas/eval/**" = ["RUF001"]
 "python/zetodos_thomas/schemas/lexicon.py" = ["RUF001"]
 "python/zetodos_thomas/schemas/mappings.py" = ["RUF001"]
 "python/zetodos_thomas/schemas/decode.py" = ["RUF001"]
+"python/zetodos_thomas/schemas/blinded.py" = ["RUF001"]
 "python/zetodos_thomas/cli/align.py" = ["B008", "RUF001"]
 "python/zetodos_thomas/cli/lexicon.py" = ["B008", "RUF001"]
 "python/zetodos_thomas/cli/mappings.py" = ["B008", "RUF001"]
 "python/zetodos_thomas/cli/decode.py" = ["B008", "RUF001"]
+"python/zetodos_thomas/cli/eval_cmd.py" = ["B008", "RUF001"]
 
 [tool.ruff.format]
 quote-style = "double"
