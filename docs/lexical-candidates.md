@@ -76,4 +76,4 @@ uv run thomas lexicon validate-candidates
 Offline validation does not require aligner binaries when the committed table
 is present.
 
-No LLM on this path. Phrase/loanword mappings: [`docs/phrase-loanword-mappings.md`](phrase-loanword-mappings.md) (JAK-38). Out of scope here: decoder (JAK-39), Ollama.
+No LLM on this path. Phrase/loanword mappings: [`docs/phrase-loanword-mappings.md`](phrase-loanword-mappings.md) (JAK-38). Decoder: [`docs/deterministic-decoder.md`](deterministic-decoder.md) (JAK-39). Out of scope here: Ollama.

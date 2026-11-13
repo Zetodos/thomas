@@ -34,5 +34,5 @@ Bundled verified loanword subset (data/sources/mappings/verified-loanwords-ccl-d
     lexical subset. DIOSKOROS is not used.
 
 See data/manifests/*.json, docs/horner-vaticanus-alignment-notes.md,
-docs/id-scheme.md, docs/greek-thomas-fragments.md, and
-docs/phrase-loanword-mappings.md.
+docs/id-scheme.md, docs/greek-thomas-fragments.md,
+docs/phrase-loanword-mappings.md, and docs/deterministic-decoder.md.

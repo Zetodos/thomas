@@ -69,5 +69,5 @@ uv run thomas mappings validate
 ```
 
 Offline validation does not require aligner binaries when committed artifacts
-are present. No LLM on this path. Out of scope: JAK-39 decoder, full Phase 3
+are present. No LLM on this path. Decoder consumer: [`docs/deterministic-decoder.md`](deterministic-decoder.md) (JAK-39). Out of scope here: full Phase 3
 construction grammar, DIOSKOROS, website.
