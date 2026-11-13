@@ -102,3 +102,6 @@ uv run thomas align benchmark
 
 Blinded reconstruction / surviving-letter harness (JAK-40):
 [`docs/blinded-reconstruction.md`](blinded-reconstruction.md).
+
+Phase 2 feasibility gate vs word-for-word baseline (JAK-41):
+[`docs/phase2-feasibility-report.md`](phase2-feasibility-report.md).

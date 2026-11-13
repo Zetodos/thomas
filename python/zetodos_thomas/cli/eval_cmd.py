@@ -36,7 +36,7 @@ from zetodos_thomas.schemas.mappings import AblationCondition
 
 eval_app = typer.Typer(
     name="eval",
-    help="Blinded reconstruction + surviving-letter evaluation (JAK-40).",
+    help="Blinded reconstruction, surviving-letter eval, feasibility gate (JAK-40/41).",
     no_args_is_help=True,
 )
 
@@ -365,3 +365,108 @@ def validate_reconstruction_cmd(
     if not report["ok"]:
         raise typer.Exit(code=1)
     typer.echo("OK: JAK-40 blinded reconstruction validation passed")
+
+
+@eval_app.command("feasibility-report")
+def feasibility_report_cmd(
+    repo_root: Path | None = typer.Option(
+        None,
+        "--repo-root",
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+    ),
+    thomas_reconstruction: Path | None = typer.Option(
+        None,
+        "--thomas-reconstruction",
+        exists=True,
+        dir_okay=False,
+        readable=True,
+        help="JAK-40 Thomas 7 BlindedReconstructionPackage JSON.",
+    ),
+    nt_reconstruction: Path | None = typer.Option(
+        None,
+        "--nt-reconstruction",
+        exists=True,
+        dir_okay=False,
+        readable=True,
+        help="JAK-40 NT holdout BlindedReconstructionPackage JSON.",
+    ),
+    output: Path | None = typer.Option(
+        None,
+        "--output",
+        "-o",
+        help="Write FeasibilityReport JSON.",
+    ),
+    write_doc: Path | None = typer.Option(
+        None,
+        "--write-doc",
+        help="Markdown report path (defaults with --doc).",
+    ),
+    doc: bool = typer.Option(
+        True,
+        "--doc/--no-doc",
+        help="Also write docs/phase2-feasibility-report.md (or --write-doc path).",
+    ),
+    include_ablation_arms: bool = typer.Option(
+        True,
+        "--ablation-arms/--skip-ablation-arms",
+        help="Reconstruct both JAK-38 ablation arms for NT comparison.",
+    ),
+) -> None:
+    """Compare decoder vs word-for-word baseline; emit Phase 2 gate report (JAK-41)."""
+    from zetodos_thomas.eval.feasibility import (
+        DEFAULT_DOC_REL,
+        DEFAULT_METRICS_REL,
+        build_feasibility_report,
+        write_feasibility_artifacts,
+    )
+
+    try:
+        root = require_repo_root(repo_root)
+    except FileNotFoundError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+
+    try:
+        report = build_feasibility_report(
+            root,
+            thomas_recon_path=thomas_reconstruction,
+            nt_recon_path=nt_reconstruction,
+            include_ablation_arms=include_ablation_arms,
+        )
+    except (OSError, ValueError, KeyError) as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+
+    metrics_out = output or (root / DEFAULT_METRICS_REL)
+    doc_out: Path | None = None
+    if doc:
+        doc_out = write_doc or (root / DEFAULT_DOC_REL)
+    elif write_doc is not None:
+        doc_out = write_doc
+
+    under_commit = "data/reconstructions/jak41" in str(metrics_out).replace("\\", "/")
+    try:
+        digests = write_feasibility_artifacts(
+            report,
+            metrics_path=metrics_out,
+            doc_path=doc_out,
+            max_bytes=1024 * 1024 if under_commit else None,
+        )
+    except ValueError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+
+    typer.echo(f"Wrote {metrics_out}")
+    if doc_out is not None:
+        typer.echo(f"Wrote {doc_out}")
+    typer.echo(
+        f"gate={report.gate_recommendation.value} "
+        f"nt_units={report.summary.get('nt_units_scored')} "
+        f"decoder_f1={report.summary.get('decoder_mean_letter_f1')} "
+        f"baseline_f1={report.summary.get('baseline_mean_letter_f1')} "
+        f"thomas7_blocked={report.thomas7_gate.gate_blocked} "
+        f"sha256={digests['metrics_sha256'][:12]}…"
+    )

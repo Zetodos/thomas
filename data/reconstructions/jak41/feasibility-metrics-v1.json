@@ -1,0 +1,4340 @@
+{
+  "id": "jak41-feasibility-metrics-v1",
+  "title": "Phase 2 feasibility metrics vs word-for-word baseline (JAK-41)",
+  "owned_by": "JAK-41",
+  "schema_version": "1",
+  "gate_recommendation": "pause_and_improve",
+  "gate_rationale": [
+    "Official Thomas 7 surviving-letter scores are gate-blocked (review_status='ready-for-independent-review'); cannot claim G-witness feasibility on a completed human-checked gold.",
+    "NT holdout gold remains 'provisional-draft' — useful for relative decoder-vs-baseline comparison, not as a final OKR.",
+    "NT holdout macro mean letter F1 for decoder≈0.1187 (baseline≈0.1029; delta≈+0.0158).",
+    "Lemma-proxy recall remains low (decoder≈0.0567; baseline≈0.0518).",
+    "Jake Phase 2 note: corpus/morphology gaps are still the likely limiting factors; absolute recovery is far from production-scale.",
+    "Decoder is only marginally better than the elementary word-for-word baseline on identical inputs — not yet a clear architecture win.",
+    "Ollama (JAK-42) stays deferred: limitation is evidence/eval readiness and morphology/corpus depth, not a demonstrated need for LLM fill-in."
+  ],
+  "thomas7_gate": {
+    "eval_package_id": "thomas-7-blinded-eval-v1",
+    "review_status": "ready-for-independent-review",
+    "official_surviving_letter_scores": false,
+    "gate_blocked": true,
+    "freeze_present": true,
+    "human_checked_required": true,
+    "notes": [
+      "Official Thomas 7 surviving-letter scores require human-checked + freeze.",
+      "ready-for-independent-review is packaged readiness only — not completed review.",
+      "eval package 'thomas-7-blinded-eval-v1' has review_status='ready-for-independent-review'; JAK-40/41 scoring requires review_status='human-checked' after an independent review (reviewer, date, inspected witness/source version, surviving-letter-vs-restoration decisions). 'ready-for-independent-review' is packaged readiness only — not a completed review. Formal follow-up: complete independent review before scoring (tracked under JAK-43 eval-readiness; do not invent human-checked)."
+    ]
+  },
+  "nt_holdout_review_status": "provisional-draft",
+  "primary_ablation": "nt_aligner_plus_verified_loanwords",
+  "decoder_aggregate": {
+    "system": "decoder",
+    "n_units": 41,
+    "mean_letter_precision": 0.1583966592271511,
+    "mean_letter_recall": 0.09491016840147812,
+    "mean_letter_f1": 0.11872319479873392,
+    "mean_surface_exact_recall": 0.05674651079294713,
+    "mean_lemma_proxy_recall": 0.05674651079294713,
+    "mean_lemma_lcs_recall": 0.24676694904974314,
+    "mean_coverage": 0.6921772637262416,
+    "mean_abstention_rate": 0.3047464486207133,
+    "pooled_letter": {
+      "numerator": 355,
+      "denominator": 3833,
+      "value": 0.0926167492825463,
+      "definition": "pooled letter TP / pooled gold letters (recall-oriented)"
+    },
+    "pooled_surface_exact": {
+      "numerator": 43,
+      "denominator": 805,
+      "value": 0.05341614906832298,
+      "definition": ""
+    },
+    "pooled_lemma_proxy": {
+      "numerator": 43,
+      "denominator": 805,
+      "value": 0.05341614906832298,
+      "definition": ""
+    },
+    "total_additions": 21,
+    "total_omissions": 220,
+    "total_construction_spans": 3,
+    "total_construction_phrase_hits": 1,
+    "letter_f1_unit_wins_vs_other": 21,
+    "notes": [
+      "Macro means average per-unit ratios; pooled rows use summed denominators.",
+      "No invented pass/fail threshold (PLAN.md Phase 2)."
+    ]
+  },
+  "word_for_word_aggregate": {
+    "system": "word_for_word",
+    "n_units": 41,
+    "mean_letter_precision": 0.11740117774183993,
+    "mean_letter_recall": 0.09198478654284512,
+    "mean_letter_f1": 0.10287570802184783,
+    "mean_surface_exact_recall": 0.05177877360585268,
+    "mean_lemma_proxy_recall": 0.05177877360585268,
+    "mean_lemma_lcs_recall": 0.20530607879357599,
+    "mean_coverage": 0.7512911030077701,
+    "mean_abstention_rate": 0.24870889699222995,
+    "pooled_letter": {
+      "numerator": 337,
+      "denominator": 3833,
+      "value": 0.08792068875554396,
+      "definition": "pooled letter TP / pooled gold letters (recall-oriented)"
+    },
+    "pooled_surface_exact": {
+      "numerator": 38,
+      "denominator": 805,
+      "value": 0.04720496894409938,
+      "definition": ""
+    },
+    "pooled_lemma_proxy": {
+      "numerator": 38,
+      "denominator": 805,
+      "value": 0.04720496894409938,
+      "definition": ""
+    },
+    "total_additions": 32,
+    "total_omissions": 186,
+    "total_construction_spans": 0,
+    "total_construction_phrase_hits": 0,
+    "letter_f1_unit_wins_vs_other": 20,
+    "notes": [
+      "Macro means average per-unit ratios; pooled rows use summed denominators.",
+      "No invented pass/fail threshold (PLAN.md Phase 2)."
+    ]
+  },
+  "ablation_arms": [
+    {
+      "ablation_condition": "nt_aligner_only",
+      "aggregate": {
+        "system": "decoder",
+        "n_units": 41,
+        "mean_letter_precision": 0.1583966592271511,
+        "mean_letter_recall": 0.09491016840147812,
+        "mean_letter_f1": 0.11872319479873392,
+        "mean_surface_exact_recall": 0.05674651079294713,
+        "mean_lemma_proxy_recall": 0.05674651079294713,
+        "mean_lemma_lcs_recall": 0.24676694904974314,
+        "mean_coverage": 0.6921772637262416,
+        "mean_abstention_rate": 0.3047464486207133,
+        "pooled_letter": {
+          "numerator": 355,
+          "denominator": 3833,
+          "value": 0.0926167492825463,
+          "definition": "pooled letter TP / pooled gold letters (recall-oriented)"
+        },
+        "pooled_surface_exact": {
+          "numerator": 43,
+          "denominator": 805,
+          "value": 0.05341614906832298,
+          "definition": ""
+        },
+        "pooled_lemma_proxy": {
+          "numerator": 43,
+          "denominator": 805,
+          "value": 0.05341614906832298,
+          "definition": ""
+        },
+        "total_additions": 21,
+        "total_omissions": 220,
+        "total_construction_spans": 3,
+        "total_construction_phrase_hits": 1,
+        "letter_f1_unit_wins_vs_other": 21,
+        "notes": [
+          "Macro means average per-unit ratios; pooled rows use summed denominators.",
+          "No invented pass/fail threshold (PLAN.md Phase 2)."
+        ]
+      },
+      "vs_word_for_word_mean_letter_f1_delta": 0.01584748677688609,
+      "notes": [
+        "Arm reconstructed offline with ablation=nt_aligner_only.",
+        "Identical Coptic holdout inputs; Greek loaded only at scoring.",
+        "max_candidates_per_span=1 for compact arm comparison."
+      ]
+    },
+    {
+      "ablation_condition": "nt_aligner_plus_verified_loanwords",
+      "aggregate": {
+        "system": "decoder",
+        "n_units": 41,
+        "mean_letter_precision": 0.1583966592271511,
+        "mean_letter_recall": 0.09491016840147812,
+        "mean_letter_f1": 0.11872319479873392,
+        "mean_surface_exact_recall": 0.05674651079294713,
+        "mean_lemma_proxy_recall": 0.05674651079294713,
+        "mean_lemma_lcs_recall": 0.24676694904974314,
+        "mean_coverage": 0.6921772637262416,
+        "mean_abstention_rate": 0.3047464486207133,
+        "pooled_letter": {
+          "numerator": 355,
+          "denominator": 3833,
+          "value": 0.0926167492825463,
+          "definition": "pooled letter TP / pooled gold letters (recall-oriented)"
+        },
+        "pooled_surface_exact": {
+          "numerator": 43,
+          "denominator": 805,
+          "value": 0.05341614906832298,
+          "definition": ""
+        },
+        "pooled_lemma_proxy": {
+          "numerator": 43,
+          "denominator": 805,
+          "value": 0.05341614906832298,
+          "definition": ""
+        },
+        "total_additions": 21,
+        "total_omissions": 220,
+        "total_construction_spans": 3,
+        "total_construction_phrase_hits": 1,
+        "letter_f1_unit_wins_vs_other": 21,
+        "notes": [
+          "Macro means average per-unit ratios; pooled rows use summed denominators.",
+          "No invented pass/fail threshold (PLAN.md Phase 2)."
+        ]
+      },
+      "vs_word_for_word_mean_letter_f1_delta": 0.01584748677688609,
+      "notes": [
+        "Arm reconstructed offline with ablation=nt_aligner_plus_verified_loanwords.",
+        "Identical Coptic holdout inputs; Greek loaded only at scoring.",
+        "max_candidates_per_span=1 for compact arm comparison."
+      ]
+    }
+  ],
+  "unit_metrics": [
+    {
+      "unit_id": "luke.12.2",
+      "system": "decoder",
+      "letter_true_positives": 9,
+      "letter_predicted_denominator": 27,
+      "letter_gold_denominator": 70,
+      "letter_precision": 0.3333333333333333,
+      "letter_recall": 0.12857142857142856,
+      "letter_f1": 0.18556701030927833,
+      "incidental_global_lcs": 19,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 12,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 12,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 12,
+        "value": 0.25,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 6,
+      "predicted_tokens": 9,
+      "gold_tokens": 12,
+      "additions": 0,
+      "omissions": 3,
+      "coptic_surfaces": 13,
+      "predicted_non_null_spans": 8,
+      "coverage": 0.6153846153846154,
+      "abstention_rate": 0.38461538461538464,
+      "mean_top1_uncertainty": 0.15625,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.12.2",
+      "system": "word_for_word",
+      "letter_true_positives": 6,
+      "letter_predicted_denominator": 30,
+      "letter_gold_denominator": 70,
+      "letter_precision": 0.2,
+      "letter_recall": 0.08571428571428572,
+      "letter_f1": 0.12000000000000001,
+      "incidental_global_lcs": 22,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 12,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 12,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 12,
+        "value": 0.25,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 5,
+      "predicted_tokens": 8,
+      "gold_tokens": 12,
+      "additions": 0,
+      "omissions": 4,
+      "coptic_surfaces": 13,
+      "predicted_non_null_spans": 8,
+      "coverage": 0.6153846153846154,
+      "abstention_rate": 0.3846153846153846,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.12.3",
+      "system": "decoder",
+      "letter_true_positives": 3,
+      "letter_predicted_denominator": 36,
+      "letter_gold_denominator": 105,
+      "letter_precision": 0.08333333333333333,
+      "letter_recall": 0.02857142857142857,
+      "letter_f1": 0.0425531914893617,
+      "incidental_global_lcs": 29,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 24,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 24,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 24,
+        "value": 0.20833333333333334,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 8,
+      "predicted_tokens": 11,
+      "gold_tokens": 24,
+      "additions": 0,
+      "omissions": 13,
+      "coptic_surfaces": 20,
+      "predicted_non_null_spans": 11,
+      "coverage": 0.55,
+      "abstention_rate": 0.45,
+      "mean_top1_uncertainty": 0.18863636363636366,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.12.3",
+      "system": "word_for_word",
+      "letter_true_positives": 5,
+      "letter_predicted_denominator": 56,
+      "letter_gold_denominator": 105,
+      "letter_precision": 0.08928571428571429,
+      "letter_recall": 0.047619047619047616,
+      "letter_f1": 0.06211180124223601,
+      "incidental_global_lcs": 32,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 24,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 24,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 24,
+        "value": 0.125,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 8,
+      "predicted_tokens": 13,
+      "gold_tokens": 24,
+      "additions": 0,
+      "omissions": 11,
+      "coptic_surfaces": 20,
+      "predicted_non_null_spans": 13,
+      "coverage": 0.65,
+      "abstention_rate": 0.35,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.10",
+      "system": "decoder",
+      "letter_true_positives": 20,
+      "letter_predicted_denominator": 95,
+      "letter_gold_denominator": 121,
+      "letter_precision": 0.21052631578947367,
+      "letter_recall": 0.1652892561983471,
+      "letter_f1": 0.1851851851851852,
+      "incidental_global_lcs": 54,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 3,
+        "denominator": 25,
+        "value": 0.12,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 3,
+        "denominator": 25,
+        "value": 0.12,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 10,
+        "denominator": 25,
+        "value": 0.4,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 16,
+      "predicted_tokens": 25,
+      "gold_tokens": 25,
+      "additions": 0,
+      "omissions": 0,
+      "coptic_surfaces": 34,
+      "predicted_non_null_spans": 25,
+      "coverage": 0.7352941176470589,
+      "abstention_rate": 0.24242424242424243,
+      "mean_top1_uncertainty": 0.146,
+      "construction_spans": 1,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.10",
+      "system": "word_for_word",
+      "letter_true_positives": 8,
+      "letter_predicted_denominator": 119,
+      "letter_gold_denominator": 121,
+      "letter_precision": 0.06722689075630252,
+      "letter_recall": 0.06611570247933884,
+      "letter_f1": 0.06666666666666668,
+      "incidental_global_lcs": 62,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 25,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 25,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 9,
+        "denominator": 25,
+        "value": 0.36,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 15,
+      "predicted_tokens": 28,
+      "gold_tokens": 25,
+      "additions": 3,
+      "omissions": 0,
+      "coptic_surfaces": 34,
+      "predicted_non_null_spans": 28,
+      "coverage": 0.8235294117647058,
+      "abstention_rate": 0.17647058823529416,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.11",
+      "system": "decoder",
+      "letter_true_positives": 3,
+      "letter_predicted_denominator": 38,
+      "letter_gold_denominator": 43,
+      "letter_precision": 0.07894736842105263,
+      "letter_recall": 0.06976744186046512,
+      "letter_f1": 0.07407407407407408,
+      "incidental_global_lcs": 17,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 12,
+        "value": 0.16666666666666666,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 12,
+        "value": 0.16666666666666666,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 6,
+        "denominator": 12,
+        "value": 0.5,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 5,
+      "predicted_tokens": 12,
+      "gold_tokens": 12,
+      "additions": 0,
+      "omissions": 0,
+      "coptic_surfaces": 13,
+      "predicted_non_null_spans": 11,
+      "coverage": 0.8461538461538461,
+      "abstention_rate": 0.08333333333333333,
+      "mean_top1_uncertainty": 0.18636363636363634,
+      "construction_spans": 1,
+      "construction_phrase_hits": 1,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.11",
+      "system": "word_for_word",
+      "letter_true_positives": 4,
+      "letter_predicted_denominator": 42,
+      "letter_gold_denominator": 43,
+      "letter_precision": 0.09523809523809523,
+      "letter_recall": 0.09302325581395349,
+      "letter_f1": 0.09411764705882353,
+      "incidental_global_lcs": 19,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 12,
+        "value": 0.08333333333333333,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 12,
+        "value": 0.08333333333333333,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 12,
+        "value": 0.25,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 6,
+      "predicted_tokens": 12,
+      "gold_tokens": 12,
+      "additions": 0,
+      "omissions": 0,
+      "coptic_surfaces": 13,
+      "predicted_non_null_spans": 12,
+      "coverage": 0.9230769230769231,
+      "abstention_rate": 0.07692307692307687,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.12",
+      "system": "decoder",
+      "letter_true_positives": 5,
+      "letter_predicted_denominator": 38,
+      "letter_gold_denominator": 110,
+      "letter_precision": 0.13157894736842105,
+      "letter_recall": 0.045454545454545456,
+      "letter_f1": 0.06756756756756757,
+      "incidental_global_lcs": 26,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 24,
+        "value": 0.041666666666666664,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 24,
+        "value": 0.041666666666666664,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 24,
+        "value": 0.16666666666666666,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 8,
+      "predicted_tokens": 11,
+      "gold_tokens": 24,
+      "additions": 0,
+      "omissions": 13,
+      "coptic_surfaces": 20,
+      "predicted_non_null_spans": 11,
+      "coverage": 0.55,
+      "abstention_rate": 0.45,
+      "mean_top1_uncertainty": 0.1409090909090909,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.12",
+      "system": "word_for_word",
+      "letter_true_positives": 3,
+      "letter_predicted_denominator": 67,
+      "letter_gold_denominator": 110,
+      "letter_precision": 0.04477611940298507,
+      "letter_recall": 0.02727272727272727,
+      "letter_f1": 0.033898305084745756,
+      "incidental_global_lcs": 43,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 24,
+        "value": 0.041666666666666664,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 24,
+        "value": 0.041666666666666664,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 24,
+        "value": 0.16666666666666666,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 9,
+      "predicted_tokens": 13,
+      "gold_tokens": 24,
+      "additions": 0,
+      "omissions": 11,
+      "coptic_surfaces": 20,
+      "predicted_non_null_spans": 13,
+      "coverage": 0.65,
+      "abstention_rate": 0.35,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.13",
+      "system": "decoder",
+      "letter_true_positives": 4,
+      "letter_predicted_denominator": 44,
+      "letter_gold_denominator": 130,
+      "letter_precision": 0.09090909090909091,
+      "letter_recall": 0.03076923076923077,
+      "letter_f1": 0.04597701149425288,
+      "incidental_global_lcs": 29,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 27,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 27,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 27,
+        "value": 0.1111111111111111,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 10,
+      "predicted_tokens": 14,
+      "gold_tokens": 27,
+      "additions": 0,
+      "omissions": 13,
+      "coptic_surfaces": 26,
+      "predicted_non_null_spans": 14,
+      "coverage": 0.5384615384615384,
+      "abstention_rate": 0.46153846153846156,
+      "mean_top1_uncertainty": 0.15,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.13",
+      "system": "word_for_word",
+      "letter_true_positives": 5,
+      "letter_predicted_denominator": 65,
+      "letter_gold_denominator": 130,
+      "letter_precision": 0.07692307692307693,
+      "letter_recall": 0.038461538461538464,
+      "letter_f1": 0.05128205128205129,
+      "incidental_global_lcs": 37,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 27,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 27,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 27,
+        "value": 0.14814814814814814,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 10,
+      "predicted_tokens": 17,
+      "gold_tokens": 27,
+      "additions": 0,
+      "omissions": 10,
+      "coptic_surfaces": 26,
+      "predicted_non_null_spans": 17,
+      "coverage": 0.6538461538461539,
+      "abstention_rate": 0.34615384615384615,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.14",
+      "system": "decoder",
+      "letter_true_positives": 10,
+      "letter_predicted_denominator": 69,
+      "letter_gold_denominator": 126,
+      "letter_precision": 0.14492753623188406,
+      "letter_recall": 0.07936507936507936,
+      "letter_f1": 0.10256410256410256,
+      "incidental_global_lcs": 42,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 24,
+        "value": 0.08333333333333333,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 24,
+        "value": 0.08333333333333333,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 24,
+        "value": 0.125,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 10,
+      "predicted_tokens": 19,
+      "gold_tokens": 24,
+      "additions": 0,
+      "omissions": 5,
+      "coptic_surfaces": 29,
+      "predicted_non_null_spans": 19,
+      "coverage": 0.6551724137931034,
+      "abstention_rate": 0.3448275862068966,
+      "mean_top1_uncertainty": 0.17500000000000002,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.14",
+      "system": "word_for_word",
+      "letter_true_positives": 16,
+      "letter_predicted_denominator": 102,
+      "letter_gold_denominator": 126,
+      "letter_precision": 0.1568627450980392,
+      "letter_recall": 0.12698412698412698,
+      "letter_f1": 0.14035087719298245,
+      "incidental_global_lcs": 54,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 3,
+        "denominator": 24,
+        "value": 0.125,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 3,
+        "denominator": 24,
+        "value": 0.125,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 6,
+        "denominator": 24,
+        "value": 0.25,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 13,
+      "predicted_tokens": 21,
+      "gold_tokens": 24,
+      "additions": 0,
+      "omissions": 3,
+      "coptic_surfaces": 29,
+      "predicted_non_null_spans": 21,
+      "coverage": 0.7241379310344828,
+      "abstention_rate": 0.27586206896551724,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.15",
+      "system": "decoder",
+      "letter_true_positives": 10,
+      "letter_predicted_denominator": 57,
+      "letter_gold_denominator": 104,
+      "letter_precision": 0.17543859649122806,
+      "letter_recall": 0.09615384615384616,
+      "letter_f1": 0.12422360248447205,
+      "incidental_global_lcs": 32,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 22,
+        "value": 0.09090909090909091,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 22,
+        "value": 0.09090909090909091,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 22,
+        "value": 0.22727272727272727,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 8,
+      "predicted_tokens": 16,
+      "gold_tokens": 22,
+      "additions": 0,
+      "omissions": 6,
+      "coptic_surfaces": 23,
+      "predicted_non_null_spans": 16,
+      "coverage": 0.6956521739130435,
+      "abstention_rate": 0.30434782608695654,
+      "mean_top1_uncertainty": 0.171875,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.15",
+      "system": "word_for_word",
+      "letter_true_positives": 15,
+      "letter_predicted_denominator": 97,
+      "letter_gold_denominator": 104,
+      "letter_precision": 0.15463917525773196,
+      "letter_recall": 0.14423076923076922,
+      "letter_f1": 0.1492537313432836,
+      "incidental_global_lcs": 50,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 3,
+        "denominator": 22,
+        "value": 0.13636363636363635,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 3,
+        "denominator": 22,
+        "value": 0.13636363636363635,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 6,
+        "denominator": 22,
+        "value": 0.2727272727272727,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 9,
+      "predicted_tokens": 19,
+      "gold_tokens": 22,
+      "additions": 0,
+      "omissions": 3,
+      "coptic_surfaces": 23,
+      "predicted_non_null_spans": 19,
+      "coverage": 0.8260869565217391,
+      "abstention_rate": 0.17391304347826086,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.4",
+      "system": "decoder",
+      "letter_true_positives": 1,
+      "letter_predicted_denominator": 31,
+      "letter_gold_denominator": 77,
+      "letter_precision": 0.03225806451612903,
+      "letter_recall": 0.012987012987012988,
+      "letter_f1": 0.018518518518518517,
+      "incidental_global_lcs": 19,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 14,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 14,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 14,
+        "value": 0.21428571428571427,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 5,
+      "predicted_tokens": 7,
+      "gold_tokens": 14,
+      "additions": 0,
+      "omissions": 7,
+      "coptic_surfaces": 12,
+      "predicted_non_null_spans": 7,
+      "coverage": 0.5833333333333334,
+      "abstention_rate": 0.4166666666666667,
+      "mean_top1_uncertainty": 0.19642857142857142,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.4",
+      "system": "word_for_word",
+      "letter_true_positives": 0,
+      "letter_predicted_denominator": 36,
+      "letter_gold_denominator": 77,
+      "letter_precision": 0.0,
+      "letter_recall": 0.0,
+      "letter_f1": null,
+      "incidental_global_lcs": 22,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 14,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 14,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 14,
+        "value": 0.21428571428571427,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 5,
+      "predicted_tokens": 7,
+      "gold_tokens": 14,
+      "additions": 0,
+      "omissions": 7,
+      "coptic_surfaces": 12,
+      "predicted_non_null_spans": 7,
+      "coverage": 0.5833333333333334,
+      "abstention_rate": 0.41666666666666663,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.5",
+      "system": "decoder",
+      "letter_true_positives": 3,
+      "letter_predicted_denominator": 39,
+      "letter_gold_denominator": 128,
+      "letter_precision": 0.07692307692307693,
+      "letter_recall": 0.0234375,
+      "letter_f1": 0.03592814371257485,
+      "incidental_global_lcs": 29,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 28,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 28,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 28,
+        "value": 0.17857142857142858,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 6,
+      "predicted_tokens": 12,
+      "gold_tokens": 28,
+      "additions": 0,
+      "omissions": 16,
+      "coptic_surfaces": 19,
+      "predicted_non_null_spans": 12,
+      "coverage": 0.631578947368421,
+      "abstention_rate": 0.3684210526315789,
+      "mean_top1_uncertainty": 0.14791666666666667,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.5",
+      "system": "word_for_word",
+      "letter_true_positives": 1,
+      "letter_predicted_denominator": 40,
+      "letter_gold_denominator": 128,
+      "letter_precision": 0.025,
+      "letter_recall": 0.0078125,
+      "letter_f1": 0.011904761904761904,
+      "incidental_global_lcs": 28,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 28,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 28,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 28,
+        "value": 0.14285714285714285,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 5,
+      "predicted_tokens": 12,
+      "gold_tokens": 28,
+      "additions": 0,
+      "omissions": 16,
+      "coptic_surfaces": 19,
+      "predicted_non_null_spans": 12,
+      "coverage": 0.631578947368421,
+      "abstention_rate": 0.368421052631579,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.6",
+      "system": "decoder",
+      "letter_true_positives": 10,
+      "letter_predicted_denominator": 36,
+      "letter_gold_denominator": 60,
+      "letter_precision": 0.2777777777777778,
+      "letter_recall": 0.16666666666666666,
+      "letter_f1": 0.20833333333333334,
+      "incidental_global_lcs": 23,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 13,
+        "value": 0.07692307692307693,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 13,
+        "value": 0.07692307692307693,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 13,
+        "value": 0.23076923076923078,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 4,
+      "predicted_tokens": 8,
+      "gold_tokens": 13,
+      "additions": 0,
+      "omissions": 5,
+      "coptic_surfaces": 13,
+      "predicted_non_null_spans": 8,
+      "coverage": 0.6153846153846154,
+      "abstention_rate": 0.38461538461538464,
+      "mean_top1_uncertainty": 0.20625000000000002,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.6",
+      "system": "word_for_word",
+      "letter_true_positives": 12,
+      "letter_predicted_denominator": 61,
+      "letter_gold_denominator": 60,
+      "letter_precision": 0.19672131147540983,
+      "letter_recall": 0.2,
+      "letter_f1": 0.19834710743801653,
+      "incidental_global_lcs": 25,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 13,
+        "value": 0.07692307692307693,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 13,
+        "value": 0.07692307692307693,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 2,
+        "denominator": 13,
+        "value": 0.15384615384615385,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 7,
+      "predicted_tokens": 10,
+      "gold_tokens": 13,
+      "additions": 0,
+      "omissions": 3,
+      "coptic_surfaces": 13,
+      "predicted_non_null_spans": 10,
+      "coverage": 0.7692307692307693,
+      "abstention_rate": 0.23076923076923073,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.7",
+      "system": "decoder",
+      "letter_true_positives": 8,
+      "letter_predicted_denominator": 34,
+      "letter_gold_denominator": 66,
+      "letter_precision": 0.23529411764705882,
+      "letter_recall": 0.12121212121212122,
+      "letter_f1": 0.16,
+      "incidental_global_lcs": 24,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 13,
+        "value": 0.07692307692307693,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 13,
+        "value": 0.07692307692307693,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 13,
+        "value": 0.23076923076923078,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 5,
+      "predicted_tokens": 8,
+      "gold_tokens": 13,
+      "additions": 0,
+      "omissions": 5,
+      "coptic_surfaces": 12,
+      "predicted_non_null_spans": 8,
+      "coverage": 0.6666666666666666,
+      "abstention_rate": 0.3333333333333333,
+      "mean_top1_uncertainty": 0.178125,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.7",
+      "system": "word_for_word",
+      "letter_true_positives": 9,
+      "letter_predicted_denominator": 60,
+      "letter_gold_denominator": 66,
+      "letter_precision": 0.15,
+      "letter_recall": 0.13636363636363635,
+      "letter_f1": 0.14285714285714282,
+      "incidental_global_lcs": 35,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 13,
+        "value": 0.07692307692307693,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 13,
+        "value": 0.07692307692307693,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 13,
+        "value": 0.3076923076923077,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 8,
+      "predicted_tokens": 11,
+      "gold_tokens": 13,
+      "additions": 0,
+      "omissions": 2,
+      "coptic_surfaces": 12,
+      "predicted_non_null_spans": 11,
+      "coverage": 0.9166666666666666,
+      "abstention_rate": 0.08333333333333337,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.8",
+      "system": "decoder",
+      "letter_true_positives": 23,
+      "letter_predicted_denominator": 80,
+      "letter_gold_denominator": 109,
+      "letter_precision": 0.2875,
+      "letter_recall": 0.21100917431192662,
+      "letter_f1": 0.2433862433862434,
+      "incidental_global_lcs": 44,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 3,
+        "denominator": 21,
+        "value": 0.14285714285714285,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 3,
+        "denominator": 21,
+        "value": 0.14285714285714285,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 6,
+        "denominator": 21,
+        "value": 0.2857142857142857,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 12,
+      "predicted_tokens": 25,
+      "gold_tokens": 21,
+      "additions": 4,
+      "omissions": 0,
+      "coptic_surfaces": 32,
+      "predicted_non_null_spans": 25,
+      "coverage": 0.78125,
+      "abstention_rate": 0.21875,
+      "mean_top1_uncertainty": 0.184,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.8",
+      "system": "word_for_word",
+      "letter_true_positives": 14,
+      "letter_predicted_denominator": 132,
+      "letter_gold_denominator": 109,
+      "letter_precision": 0.10606060606060606,
+      "letter_recall": 0.12844036697247707,
+      "letter_f1": 0.11618257261410789,
+      "incidental_global_lcs": 56,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 21,
+        "value": 0.09523809523809523,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 21,
+        "value": 0.09523809523809523,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 6,
+        "denominator": 21,
+        "value": 0.2857142857142857,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 16,
+      "predicted_tokens": 28,
+      "gold_tokens": 21,
+      "additions": 7,
+      "omissions": 0,
+      "coptic_surfaces": 32,
+      "predicted_non_null_spans": 28,
+      "coverage": 0.875,
+      "abstention_rate": 0.125,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.9",
+      "system": "decoder",
+      "letter_true_positives": 5,
+      "letter_predicted_denominator": 21,
+      "letter_gold_denominator": 47,
+      "letter_precision": 0.23809523809523808,
+      "letter_recall": 0.10638297872340426,
+      "letter_f1": 0.14705882352941177,
+      "incidental_global_lcs": 14,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 10,
+        "value": 0.1,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 10,
+        "value": 0.1,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 1,
+        "denominator": 10,
+        "value": 0.1,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 5,
+      "predicted_tokens": 6,
+      "gold_tokens": 10,
+      "additions": 0,
+      "omissions": 4,
+      "coptic_surfaces": 8,
+      "predicted_non_null_spans": 6,
+      "coverage": 0.75,
+      "abstention_rate": 0.25,
+      "mean_top1_uncertainty": 0.19583333333333333,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "luke.8.9",
+      "system": "word_for_word",
+      "letter_true_positives": 2,
+      "letter_predicted_denominator": 34,
+      "letter_gold_denominator": 47,
+      "letter_precision": 0.058823529411764705,
+      "letter_recall": 0.0425531914893617,
+      "letter_f1": 0.04938271604938272,
+      "incidental_global_lcs": 13,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 10,
+        "value": 0.1,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 10,
+        "value": 0.1,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 1,
+        "denominator": 10,
+        "value": 0.1,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 4,
+      "predicted_tokens": 6,
+      "gold_tokens": 10,
+      "additions": 0,
+      "omissions": 4,
+      "coptic_surfaces": 8,
+      "predicted_non_null_spans": 6,
+      "coverage": 0.75,
+      "abstention_rate": 0.25,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "mark.4.19",
+      "system": "decoder",
+      "letter_true_positives": 8,
+      "letter_predicted_denominator": 39,
+      "letter_gold_denominator": 119,
+      "letter_precision": 0.20512820512820512,
+      "letter_recall": 0.06722689075630252,
+      "letter_f1": 0.10126582278481014,
+      "incidental_global_lcs": 32,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 23,
+        "value": 0.08695652173913043,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 23,
+        "value": 0.08695652173913043,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 6,
+        "denominator": 23,
+        "value": 0.2608695652173913,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 6,
+      "predicted_tokens": 13,
+      "gold_tokens": 23,
+      "additions": 0,
+      "omissions": 10,
+      "coptic_surfaces": 22,
+      "predicted_non_null_spans": 12,
+      "coverage": 0.5454545454545454,
+      "abstention_rate": 0.45454545454545453,
+      "mean_top1_uncertainty": 0.11666666666666668,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "mark.4.19",
+      "system": "word_for_word",
+      "letter_true_positives": 11,
+      "letter_predicted_denominator": 51,
+      "letter_gold_denominator": 119,
+      "letter_precision": 0.21568627450980393,
+      "letter_recall": 0.09243697478991597,
+      "letter_f1": 0.12941176470588237,
+      "incidental_global_lcs": 37,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 23,
+        "value": 0.08695652173913043,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 23,
+        "value": 0.08695652173913043,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 6,
+        "denominator": 23,
+        "value": 0.2608695652173913,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 6,
+      "predicted_tokens": 14,
+      "gold_tokens": 23,
+      "additions": 0,
+      "omissions": 9,
+      "coptic_surfaces": 22,
+      "predicted_non_null_spans": 14,
+      "coverage": 0.6363636363636364,
+      "abstention_rate": 0.36363636363636365,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "mark.4.4",
+      "system": "decoder",
+      "letter_true_positives": 6,
+      "letter_predicted_denominator": 43,
+      "letter_gold_denominator": 76,
+      "letter_precision": 0.13953488372093023,
+      "letter_recall": 0.07894736842105263,
+      "letter_f1": 0.10084033613445377,
+      "incidental_global_lcs": 31,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 18,
+        "value": 0.05555555555555555,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 18,
+        "value": 0.05555555555555555,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 18,
+        "value": 0.2777777777777778,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 5,
+      "predicted_tokens": 10,
+      "gold_tokens": 18,
+      "additions": 0,
+      "omissions": 8,
+      "coptic_surfaces": 13,
+      "predicted_non_null_spans": 10,
+      "coverage": 0.7692307692307693,
+      "abstention_rate": 0.23076923076923078,
+      "mean_top1_uncertainty": 0.2,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "mark.4.4",
+      "system": "word_for_word",
+      "letter_true_positives": 4,
+      "letter_predicted_denominator": 51,
+      "letter_gold_denominator": 76,
+      "letter_precision": 0.0784313725490196,
+      "letter_recall": 0.05263157894736842,
+      "letter_f1": 0.06299212598425197,
+      "incidental_global_lcs": 26,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 18,
+        "value": 0.05555555555555555,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 18,
+        "value": 0.05555555555555555,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 18,
+        "value": 0.16666666666666666,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 5,
+      "predicted_tokens": 11,
+      "gold_tokens": 18,
+      "additions": 0,
+      "omissions": 7,
+      "coptic_surfaces": 13,
+      "predicted_non_null_spans": 11,
+      "coverage": 0.8461538461538461,
+      "abstention_rate": 0.15384615384615385,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "mark.4.8",
+      "system": "decoder",
+      "letter_true_positives": 9,
+      "letter_predicted_denominator": 47,
+      "letter_gold_denominator": 114,
+      "letter_precision": 0.19148936170212766,
+      "letter_recall": 0.07894736842105263,
+      "letter_f1": 0.11180124223602485,
+      "incidental_global_lcs": 34,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 24,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 24,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 24,
+        "value": 0.20833333333333334,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 9,
+      "predicted_tokens": 12,
+      "gold_tokens": 24,
+      "additions": 0,
+      "omissions": 12,
+      "coptic_surfaces": 17,
+      "predicted_non_null_spans": 12,
+      "coverage": 0.7058823529411765,
+      "abstention_rate": 0.29411764705882354,
+      "mean_top1_uncertainty": 0.20625000000000002,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "mark.4.8",
+      "system": "word_for_word",
+      "letter_true_positives": 6,
+      "letter_predicted_denominator": 68,
+      "letter_gold_denominator": 114,
+      "letter_precision": 0.08823529411764706,
+      "letter_recall": 0.05263157894736842,
+      "letter_f1": 0.06593406593406592,
+      "incidental_global_lcs": 45,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 24,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 24,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 24,
+        "value": 0.16666666666666666,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 9,
+      "predicted_tokens": 12,
+      "gold_tokens": 24,
+      "additions": 0,
+      "omissions": 12,
+      "coptic_surfaces": 17,
+      "predicted_non_null_spans": 12,
+      "coverage": 0.7058823529411765,
+      "abstention_rate": 0.2941176470588235,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.26",
+      "system": "decoder",
+      "letter_true_positives": 11,
+      "letter_predicted_denominator": 47,
+      "letter_gold_denominator": 87,
+      "letter_precision": 0.23404255319148937,
+      "letter_recall": 0.12643678160919541,
+      "letter_f1": 0.16417910447761197,
+      "incidental_global_lcs": 26,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 16,
+        "value": 0.125,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 16,
+        "value": 0.125,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 16,
+        "value": 0.25,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 7,
+      "predicted_tokens": 12,
+      "gold_tokens": 16,
+      "additions": 0,
+      "omissions": 4,
+      "coptic_surfaces": 16,
+      "predicted_non_null_spans": 10,
+      "coverage": 0.625,
+      "abstention_rate": 0.375,
+      "mean_top1_uncertainty": 0.175,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.26",
+      "system": "word_for_word",
+      "letter_true_positives": 7,
+      "letter_predicted_denominator": 38,
+      "letter_gold_denominator": 87,
+      "letter_precision": 0.18421052631578946,
+      "letter_recall": 0.08045977011494253,
+      "letter_f1": 0.112,
+      "incidental_global_lcs": 28,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 16,
+        "value": 0.0625,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 16,
+        "value": 0.0625,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 16,
+        "value": 0.25,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 5,
+      "predicted_tokens": 10,
+      "gold_tokens": 16,
+      "additions": 0,
+      "omissions": 6,
+      "coptic_surfaces": 16,
+      "predicted_non_null_spans": 10,
+      "coverage": 0.625,
+      "abstention_rate": 0.375,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.27",
+      "system": "decoder",
+      "letter_true_positives": 8,
+      "letter_predicted_denominator": 51,
+      "letter_gold_denominator": 73,
+      "letter_precision": 0.1568627450980392,
+      "letter_recall": 0.1095890410958904,
+      "letter_f1": 0.12903225806451613,
+      "incidental_global_lcs": 37,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 3,
+        "denominator": 20,
+        "value": 0.15,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 3,
+        "denominator": 20,
+        "value": 0.15,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 10,
+        "denominator": 20,
+        "value": 0.5,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 4,
+      "predicted_tokens": 16,
+      "gold_tokens": 20,
+      "additions": 0,
+      "omissions": 4,
+      "coptic_surfaces": 21,
+      "predicted_non_null_spans": 16,
+      "coverage": 0.7619047619047619,
+      "abstention_rate": 0.23809523809523808,
+      "mean_top1_uncertainty": 0.146875,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.27",
+      "system": "word_for_word",
+      "letter_true_positives": 8,
+      "letter_predicted_denominator": 71,
+      "letter_gold_denominator": 73,
+      "letter_precision": 0.11267605633802817,
+      "letter_recall": 0.1095890410958904,
+      "letter_f1": 0.1111111111111111,
+      "incidental_global_lcs": 34,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 20,
+        "value": 0.1,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 20,
+        "value": 0.1,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 7,
+        "denominator": 20,
+        "value": 0.35,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 7,
+      "predicted_tokens": 17,
+      "gold_tokens": 20,
+      "additions": 0,
+      "omissions": 3,
+      "coptic_surfaces": 21,
+      "predicted_non_null_spans": 17,
+      "coverage": 0.8095238095238095,
+      "abstention_rate": 0.19047619047619047,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.28",
+      "system": "decoder",
+      "letter_true_positives": 5,
+      "letter_predicted_denominator": 51,
+      "letter_gold_denominator": 128,
+      "letter_precision": 0.09803921568627451,
+      "letter_recall": 0.0390625,
+      "letter_f1": 0.0558659217877095,
+      "incidental_global_lcs": 34,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 26,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 26,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 26,
+        "value": 0.19230769230769232,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 7,
+      "predicted_tokens": 16,
+      "gold_tokens": 26,
+      "additions": 0,
+      "omissions": 10,
+      "coptic_surfaces": 29,
+      "predicted_non_null_spans": 16,
+      "coverage": 0.5517241379310345,
+      "abstention_rate": 0.4482758620689655,
+      "mean_top1_uncertainty": 0.1859375,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.28",
+      "system": "word_for_word",
+      "letter_true_positives": 3,
+      "letter_predicted_denominator": 77,
+      "letter_gold_denominator": 128,
+      "letter_precision": 0.03896103896103896,
+      "letter_recall": 0.0234375,
+      "letter_f1": 0.029268292682926828,
+      "incidental_global_lcs": 39,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 26,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 26,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 26,
+        "value": 0.11538461538461539,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 8,
+      "predicted_tokens": 17,
+      "gold_tokens": 26,
+      "additions": 0,
+      "omissions": 9,
+      "coptic_surfaces": 29,
+      "predicted_non_null_spans": 17,
+      "coverage": 0.5862068965517241,
+      "abstention_rate": 0.4137931034482759,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.29",
+      "system": "decoder",
+      "letter_true_positives": 15,
+      "letter_predicted_denominator": 71,
+      "letter_gold_denominator": 79,
+      "letter_precision": 0.2112676056338028,
+      "letter_recall": 0.189873417721519,
+      "letter_f1": 0.2,
+      "incidental_global_lcs": 41,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 18,
+        "value": 0.05555555555555555,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 18,
+        "value": 0.05555555555555555,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 18,
+        "value": 0.2777777777777778,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 13,
+      "predicted_tokens": 21,
+      "gold_tokens": 18,
+      "additions": 3,
+      "omissions": 0,
+      "coptic_surfaces": 25,
+      "predicted_non_null_spans": 20,
+      "coverage": 0.8,
+      "abstention_rate": 0.2,
+      "mean_top1_uncertainty": 0.17375000000000002,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.29",
+      "system": "word_for_word",
+      "letter_true_positives": 8,
+      "letter_predicted_denominator": 84,
+      "letter_gold_denominator": 79,
+      "letter_precision": 0.09523809523809523,
+      "letter_recall": 0.10126582278481013,
+      "letter_f1": 0.09815950920245399,
+      "incidental_global_lcs": 38,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 18,
+        "value": 0.1111111111111111,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 18,
+        "value": 0.1111111111111111,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 18,
+        "value": 0.2777777777777778,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 9,
+      "predicted_tokens": 20,
+      "gold_tokens": 18,
+      "additions": 2,
+      "omissions": 0,
+      "coptic_surfaces": 25,
+      "predicted_non_null_spans": 20,
+      "coverage": 0.8,
+      "abstention_rate": 0.19999999999999996,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.30",
+      "system": "decoder",
+      "letter_true_positives": 0,
+      "letter_predicted_denominator": 11,
+      "letter_gold_denominator": 48,
+      "letter_precision": 0.0,
+      "letter_recall": 0.0,
+      "letter_f1": null,
+      "incidental_global_lcs": 9,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 10,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 10,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 2,
+        "denominator": 10,
+        "value": 0.2,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 1,
+      "predicted_tokens": 4,
+      "gold_tokens": 10,
+      "additions": 0,
+      "omissions": 6,
+      "coptic_surfaces": 7,
+      "predicted_non_null_spans": 4,
+      "coverage": 0.5714285714285714,
+      "abstention_rate": 0.42857142857142855,
+      "mean_top1_uncertainty": 0.175,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.30",
+      "system": "word_for_word",
+      "letter_true_positives": 4,
+      "letter_predicted_denominator": 17,
+      "letter_gold_denominator": 48,
+      "letter_precision": 0.23529411764705882,
+      "letter_recall": 0.08333333333333333,
+      "letter_f1": 0.12307692307692308,
+      "incidental_global_lcs": 10,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 10,
+        "value": 0.1,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 10,
+        "value": 0.1,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 2,
+        "denominator": 10,
+        "value": 0.2,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 1,
+      "predicted_tokens": 4,
+      "gold_tokens": 10,
+      "additions": 0,
+      "omissions": 6,
+      "coptic_surfaces": 7,
+      "predicted_non_null_spans": 4,
+      "coverage": 0.5714285714285714,
+      "abstention_rate": 0.4285714285714286,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.31",
+      "system": "decoder",
+      "letter_true_positives": 4,
+      "letter_predicted_denominator": 19,
+      "letter_gold_denominator": 42,
+      "letter_precision": 0.21052631578947367,
+      "letter_recall": 0.09523809523809523,
+      "letter_f1": 0.13114754098360656,
+      "incidental_global_lcs": 13,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 7,
+        "value": 0.14285714285714285,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 7,
+        "value": 0.14285714285714285,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 2,
+        "denominator": 7,
+        "value": 0.2857142857142857,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 2,
+      "predicted_tokens": 5,
+      "gold_tokens": 7,
+      "additions": 0,
+      "omissions": 2,
+      "coptic_surfaces": 10,
+      "predicted_non_null_spans": 5,
+      "coverage": 0.5,
+      "abstention_rate": 0.5,
+      "mean_top1_uncertainty": 0.16499999999999998,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.31",
+      "system": "word_for_word",
+      "letter_true_positives": 6,
+      "letter_predicted_denominator": 30,
+      "letter_gold_denominator": 42,
+      "letter_precision": 0.2,
+      "letter_recall": 0.14285714285714285,
+      "letter_f1": 0.16666666666666666,
+      "incidental_global_lcs": 15,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 7,
+        "value": 0.14285714285714285,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 7,
+        "value": 0.14285714285714285,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 2,
+        "denominator": 7,
+        "value": 0.2857142857142857,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 3,
+      "predicted_tokens": 6,
+      "gold_tokens": 7,
+      "additions": 0,
+      "omissions": 1,
+      "coptic_surfaces": 10,
+      "predicted_non_null_spans": 6,
+      "coverage": 0.6,
+      "abstention_rate": 0.4,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.32",
+      "system": "decoder",
+      "letter_true_positives": 8,
+      "letter_predicted_denominator": 95,
+      "letter_gold_denominator": 101,
+      "letter_precision": 0.08421052631578947,
+      "letter_recall": 0.07920792079207921,
+      "letter_f1": 0.08163265306122448,
+      "incidental_global_lcs": 61,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 22,
+        "value": 0.045454545454545456,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 22,
+        "value": 0.045454545454545456,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 7,
+        "denominator": 22,
+        "value": 0.3181818181818182,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 13,
+      "predicted_tokens": 23,
+      "gold_tokens": 22,
+      "additions": 1,
+      "omissions": 0,
+      "coptic_surfaces": 28,
+      "predicted_non_null_spans": 23,
+      "coverage": 0.8214285714285714,
+      "abstention_rate": 0.17857142857142858,
+      "mean_top1_uncertainty": 0.17391304347826086,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.32",
+      "system": "word_for_word",
+      "letter_true_positives": 5,
+      "letter_predicted_denominator": 124,
+      "letter_gold_denominator": 101,
+      "letter_precision": 0.04032258064516129,
+      "letter_recall": 0.04950495049504951,
+      "letter_f1": 0.04444444444444444,
+      "incidental_global_lcs": 60,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 22,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 22,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 8,
+        "denominator": 22,
+        "value": 0.36363636363636365,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 13,
+      "predicted_tokens": 26,
+      "gold_tokens": 22,
+      "additions": 4,
+      "omissions": 0,
+      "coptic_surfaces": 28,
+      "predicted_non_null_spans": 26,
+      "coverage": 0.9285714285714286,
+      "abstention_rate": 0.0714285714285714,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.33",
+      "system": "decoder",
+      "letter_true_positives": 28,
+      "letter_predicted_denominator": 68,
+      "letter_gold_denominator": 94,
+      "letter_precision": 0.4117647058823529,
+      "letter_recall": 0.2978723404255319,
+      "letter_f1": 0.345679012345679,
+      "incidental_global_lcs": 46,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 3,
+        "denominator": 18,
+        "value": 0.16666666666666666,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 3,
+        "denominator": 18,
+        "value": 0.16666666666666666,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 6,
+        "denominator": 18,
+        "value": 0.3333333333333333,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 6,
+      "predicted_tokens": 17,
+      "gold_tokens": 18,
+      "additions": 0,
+      "omissions": 1,
+      "coptic_surfaces": 23,
+      "predicted_non_null_spans": 17,
+      "coverage": 0.7391304347826086,
+      "abstention_rate": 0.2608695652173913,
+      "mean_top1_uncertainty": 0.1647058823529412,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.10.33",
+      "system": "word_for_word",
+      "letter_true_positives": 12,
+      "letter_predicted_denominator": 88,
+      "letter_gold_denominator": 94,
+      "letter_precision": 0.13636363636363635,
+      "letter_recall": 0.1276595744680851,
+      "letter_f1": 0.13186813186813187,
+      "incidental_global_lcs": 51,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 3,
+        "denominator": 18,
+        "value": 0.16666666666666666,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 3,
+        "denominator": 18,
+        "value": 0.16666666666666666,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 7,
+        "denominator": 18,
+        "value": 0.3888888888888889,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 9,
+      "predicted_tokens": 19,
+      "gold_tokens": 18,
+      "additions": 1,
+      "omissions": 0,
+      "coptic_surfaces": 23,
+      "predicted_non_null_spans": 19,
+      "coverage": 0.8260869565217391,
+      "abstention_rate": 0.17391304347826086,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.11",
+      "system": "decoder",
+      "letter_true_positives": 12,
+      "letter_predicted_denominator": 84,
+      "letter_gold_denominator": 95,
+      "letter_precision": 0.14285714285714285,
+      "letter_recall": 0.12631578947368421,
+      "letter_f1": 0.1340782122905028,
+      "incidental_global_lcs": 49,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 3,
+        "denominator": 19,
+        "value": 0.15789473684210525,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 3,
+        "denominator": 19,
+        "value": 0.15789473684210525,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 19,
+        "value": 0.2631578947368421,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 13,
+      "predicted_tokens": 20,
+      "gold_tokens": 19,
+      "additions": 1,
+      "omissions": 0,
+      "coptic_surfaces": 25,
+      "predicted_non_null_spans": 20,
+      "coverage": 0.8,
+      "abstention_rate": 0.16666666666666666,
+      "mean_top1_uncertainty": 0.14250000000000002,
+      "construction_spans": 1,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.11",
+      "system": "word_for_word",
+      "letter_true_positives": 15,
+      "letter_predicted_denominator": 86,
+      "letter_gold_denominator": 95,
+      "letter_precision": 0.1744186046511628,
+      "letter_recall": 0.15789473684210525,
+      "letter_f1": 0.16574585635359115,
+      "incidental_global_lcs": 45,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 19,
+        "value": 0.05263157894736842,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 19,
+        "value": 0.05263157894736842,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 19,
+        "value": 0.21052631578947367,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 14,
+      "predicted_tokens": 21,
+      "gold_tokens": 19,
+      "additions": 2,
+      "omissions": 0,
+      "coptic_surfaces": 25,
+      "predicted_non_null_spans": 21,
+      "coverage": 0.84,
+      "abstention_rate": 0.16000000000000003,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.20",
+      "system": "decoder",
+      "letter_true_positives": 6,
+      "letter_predicted_denominator": 70,
+      "letter_gold_denominator": 77,
+      "letter_precision": 0.08571428571428572,
+      "letter_recall": 0.07792207792207792,
+      "letter_f1": 0.08163265306122448,
+      "incidental_global_lcs": 35,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 18,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 18,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 6,
+        "denominator": 18,
+        "value": 0.3333333333333333,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 11,
+      "predicted_tokens": 19,
+      "gold_tokens": 18,
+      "additions": 1,
+      "omissions": 0,
+      "coptic_surfaces": 21,
+      "predicted_non_null_spans": 19,
+      "coverage": 0.9047619047619048,
+      "abstention_rate": 0.09523809523809523,
+      "mean_top1_uncertainty": 0.17894736842105263,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.20",
+      "system": "word_for_word",
+      "letter_true_positives": 8,
+      "letter_predicted_denominator": 97,
+      "letter_gold_denominator": 77,
+      "letter_precision": 0.08247422680412371,
+      "letter_recall": 0.1038961038961039,
+      "letter_f1": 0.09195402298850575,
+      "incidental_global_lcs": 36,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 18,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 18,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 18,
+        "value": 0.2777777777777778,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 11,
+      "predicted_tokens": 20,
+      "gold_tokens": 18,
+      "additions": 2,
+      "omissions": 0,
+      "coptic_surfaces": 21,
+      "predicted_non_null_spans": 20,
+      "coverage": 0.9523809523809523,
+      "abstention_rate": 0.04761904761904767,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.22",
+      "system": "decoder",
+      "letter_true_positives": 4,
+      "letter_predicted_denominator": 58,
+      "letter_gold_denominator": 123,
+      "letter_precision": 0.06896551724137931,
+      "letter_recall": 0.032520325203252036,
+      "letter_f1": 0.04419889502762431,
+      "incidental_global_lcs": 37,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 28,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 28,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 28,
+        "value": 0.17857142857142858,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 9,
+      "predicted_tokens": 14,
+      "gold_tokens": 28,
+      "additions": 0,
+      "omissions": 14,
+      "coptic_surfaces": 23,
+      "predicted_non_null_spans": 14,
+      "coverage": 0.6086956521739131,
+      "abstention_rate": 0.391304347826087,
+      "mean_top1_uncertainty": 0.19285714285714287,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.22",
+      "system": "word_for_word",
+      "letter_true_positives": 11,
+      "letter_predicted_denominator": 86,
+      "letter_gold_denominator": 123,
+      "letter_precision": 0.12790697674418605,
+      "letter_recall": 0.08943089430894309,
+      "letter_f1": 0.10526315789473685,
+      "incidental_global_lcs": 41,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 28,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 28,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 28,
+        "value": 0.14285714285714285,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 10,
+      "predicted_tokens": 16,
+      "gold_tokens": 28,
+      "additions": 0,
+      "omissions": 12,
+      "coptic_surfaces": 23,
+      "predicted_non_null_spans": 16,
+      "coverage": 0.6956521739130435,
+      "abstention_rate": 0.30434782608695654,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.23",
+      "system": "decoder",
+      "letter_true_positives": 10,
+      "letter_predicted_denominator": 82,
+      "letter_gold_denominator": 114,
+      "letter_precision": 0.12195121951219512,
+      "letter_recall": 0.08771929824561403,
+      "letter_f1": 0.1020408163265306,
+      "incidental_global_lcs": 46,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 29,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 29,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 9,
+        "denominator": 29,
+        "value": 0.3103448275862069,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 13,
+      "predicted_tokens": 23,
+      "gold_tokens": 29,
+      "additions": 0,
+      "omissions": 6,
+      "coptic_surfaces": 31,
+      "predicted_non_null_spans": 23,
+      "coverage": 0.7419354838709677,
+      "abstention_rate": 0.25806451612903225,
+      "mean_top1_uncertainty": 0.18152173913043476,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.23",
+      "system": "word_for_word",
+      "letter_true_positives": 14,
+      "letter_predicted_denominator": 127,
+      "letter_gold_denominator": 114,
+      "letter_precision": 0.11023622047244094,
+      "letter_recall": 0.12280701754385964,
+      "letter_f1": 0.11618257261410787,
+      "incidental_global_lcs": 57,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 29,
+        "value": 0.034482758620689655,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 29,
+        "value": 0.034482758620689655,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 9,
+        "denominator": 29,
+        "value": 0.3103448275862069,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 18,
+      "predicted_tokens": 26,
+      "gold_tokens": 29,
+      "additions": 0,
+      "omissions": 3,
+      "coptic_surfaces": 31,
+      "predicted_non_null_spans": 26,
+      "coverage": 0.8387096774193549,
+      "abstention_rate": 0.16129032258064513,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.31",
+      "system": "decoder",
+      "letter_true_positives": 9,
+      "letter_predicted_denominator": 85,
+      "letter_gold_denominator": 112,
+      "letter_precision": 0.10588235294117647,
+      "letter_recall": 0.08035714285714286,
+      "letter_f1": 0.09137055837563453,
+      "incidental_global_lcs": 48,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 21,
+        "value": 0.047619047619047616,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 21,
+        "value": 0.047619047619047616,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 21,
+        "value": 0.19047619047619047,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 13,
+      "predicted_tokens": 20,
+      "gold_tokens": 21,
+      "additions": 0,
+      "omissions": 1,
+      "coptic_surfaces": 25,
+      "predicted_non_null_spans": 20,
+      "coverage": 0.8,
+      "abstention_rate": 0.2,
+      "mean_top1_uncertainty": 0.18875000000000003,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.31",
+      "system": "word_for_word",
+      "letter_true_positives": 17,
+      "letter_predicted_denominator": 92,
+      "letter_gold_denominator": 112,
+      "letter_precision": 0.18478260869565216,
+      "letter_recall": 0.15178571428571427,
+      "letter_f1": 0.16666666666666666,
+      "incidental_global_lcs": 46,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 21,
+        "value": 0.047619047619047616,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 21,
+        "value": 0.047619047619047616,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 21,
+        "value": 0.14285714285714285,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 16,
+      "predicted_tokens": 21,
+      "gold_tokens": 21,
+      "additions": 0,
+      "omissions": 0,
+      "coptic_surfaces": 25,
+      "predicted_non_null_spans": 21,
+      "coverage": 0.84,
+      "abstention_rate": 0.16000000000000003,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.32",
+      "system": "decoder",
+      "letter_true_positives": 8,
+      "letter_predicted_denominator": 42,
+      "letter_gold_denominator": 149,
+      "letter_precision": 0.19047619047619047,
+      "letter_recall": 0.053691275167785234,
+      "letter_f1": 0.08376963350785341,
+      "incidental_global_lcs": 34,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 29,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 29,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 29,
+        "value": 0.13793103448275862,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 7,
+      "predicted_tokens": 14,
+      "gold_tokens": 29,
+      "additions": 0,
+      "omissions": 15,
+      "coptic_surfaces": 27,
+      "predicted_non_null_spans": 14,
+      "coverage": 0.5185185185185185,
+      "abstention_rate": 0.48148148148148145,
+      "mean_top1_uncertainty": 0.19107142857142856,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.32",
+      "system": "word_for_word",
+      "letter_true_positives": 3,
+      "letter_predicted_denominator": 82,
+      "letter_gold_denominator": 149,
+      "letter_precision": 0.036585365853658534,
+      "letter_recall": 0.020134228187919462,
+      "letter_f1": 0.025974025974025972,
+      "incidental_global_lcs": 48,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 29,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 29,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 3,
+        "denominator": 29,
+        "value": 0.10344827586206896,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 12,
+      "predicted_tokens": 17,
+      "gold_tokens": 29,
+      "additions": 0,
+      "omissions": 12,
+      "coptic_surfaces": 27,
+      "predicted_non_null_spans": 17,
+      "coverage": 0.6296296296296297,
+      "abstention_rate": 0.37037037037037035,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.33",
+      "system": "decoder",
+      "letter_true_positives": 15,
+      "letter_predicted_denominator": 60,
+      "letter_gold_denominator": 117,
+      "letter_precision": 0.25,
+      "letter_recall": 0.1282051282051282,
+      "letter_f1": 0.1694915254237288,
+      "incidental_global_lcs": 37,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 23,
+        "value": 0.043478260869565216,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 23,
+        "value": 0.043478260869565216,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 2,
+        "denominator": 23,
+        "value": 0.08695652173913043,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 9,
+      "predicted_tokens": 15,
+      "gold_tokens": 23,
+      "additions": 0,
+      "omissions": 8,
+      "coptic_surfaces": 24,
+      "predicted_non_null_spans": 15,
+      "coverage": 0.625,
+      "abstention_rate": 0.375,
+      "mean_top1_uncertainty": 0.18000000000000002,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.33",
+      "system": "word_for_word",
+      "letter_true_positives": 6,
+      "letter_predicted_denominator": 69,
+      "letter_gold_denominator": 117,
+      "letter_precision": 0.08695652173913043,
+      "letter_recall": 0.05128205128205128,
+      "letter_f1": 0.06451612903225808,
+      "incidental_global_lcs": 35,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 23,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 23,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 1,
+        "denominator": 23,
+        "value": 0.043478260869565216,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 11,
+      "predicted_tokens": 15,
+      "gold_tokens": 23,
+      "additions": 0,
+      "omissions": 8,
+      "coptic_surfaces": 24,
+      "predicted_non_null_spans": 15,
+      "coverage": 0.625,
+      "abstention_rate": 0.375,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.4",
+      "system": "decoder",
+      "letter_true_positives": 4,
+      "letter_predicted_denominator": 45,
+      "letter_gold_denominator": 73,
+      "letter_precision": 0.08888888888888889,
+      "letter_recall": 0.0547945205479452,
+      "letter_f1": 0.06779661016949151,
+      "incidental_global_lcs": 28,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 17,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 17,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 2,
+        "denominator": 17,
+        "value": 0.11764705882352941,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 6,
+      "predicted_tokens": 10,
+      "gold_tokens": 17,
+      "additions": 0,
+      "omissions": 7,
+      "coptic_surfaces": 14,
+      "predicted_non_null_spans": 10,
+      "coverage": 0.7142857142857143,
+      "abstention_rate": 0.2857142857142857,
+      "mean_top1_uncertainty": 0.2,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.4",
+      "system": "word_for_word",
+      "letter_true_positives": 5,
+      "letter_predicted_denominator": 60,
+      "letter_gold_denominator": 73,
+      "letter_precision": 0.08333333333333333,
+      "letter_recall": 0.0684931506849315,
+      "letter_f1": 0.07518796992481204,
+      "incidental_global_lcs": 28,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 17,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 17,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 1,
+        "denominator": 17,
+        "value": 0.058823529411764705,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 7,
+      "predicted_tokens": 11,
+      "gold_tokens": 17,
+      "additions": 0,
+      "omissions": 6,
+      "coptic_surfaces": 14,
+      "predicted_non_null_spans": 11,
+      "coverage": 0.7857142857142857,
+      "abstention_rate": 0.2142857142857143,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.44",
+      "system": "decoder",
+      "letter_true_positives": 11,
+      "letter_predicted_denominator": 106,
+      "letter_gold_denominator": 142,
+      "letter_precision": 0.10377358490566038,
+      "letter_recall": 0.07746478873239436,
+      "letter_f1": 0.08870967741935484,
+      "incidental_global_lcs": 61,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 30,
+        "value": 0.03333333333333333,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 30,
+        "value": 0.03333333333333333,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 30,
+        "value": 0.16666666666666666,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 15,
+      "predicted_tokens": 29,
+      "gold_tokens": 30,
+      "additions": 0,
+      "omissions": 1,
+      "coptic_surfaces": 38,
+      "predicted_non_null_spans": 29,
+      "coverage": 0.7631578947368421,
+      "abstention_rate": 0.23684210526315788,
+      "mean_top1_uncertainty": 0.17672413793103448,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.44",
+      "system": "word_for_word",
+      "letter_true_positives": 18,
+      "letter_predicted_denominator": 135,
+      "letter_gold_denominator": 142,
+      "letter_precision": 0.13333333333333333,
+      "letter_recall": 0.1267605633802817,
+      "letter_f1": 0.1299638989169675,
+      "incidental_global_lcs": 59,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 30,
+        "value": 0.03333333333333333,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 30,
+        "value": 0.03333333333333333,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 30,
+        "value": 0.16666666666666666,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 20,
+      "predicted_tokens": 31,
+      "gold_tokens": 30,
+      "additions": 1,
+      "omissions": 0,
+      "coptic_surfaces": 38,
+      "predicted_non_null_spans": 31,
+      "coverage": 0.8157894736842105,
+      "abstention_rate": 0.1842105263157895,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.45",
+      "system": "decoder",
+      "letter_true_positives": 8,
+      "letter_predicted_denominator": 45,
+      "letter_gold_denominator": 65,
+      "letter_precision": 0.17777777777777778,
+      "letter_recall": 0.12307692307692308,
+      "letter_f1": 0.14545454545454545,
+      "incidental_global_lcs": 29,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 11,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 11,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 1,
+        "denominator": 11,
+        "value": 0.09090909090909091,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 7,
+      "predicted_tokens": 10,
+      "gold_tokens": 11,
+      "additions": 0,
+      "omissions": 1,
+      "coptic_surfaces": 16,
+      "predicted_non_null_spans": 10,
+      "coverage": 0.625,
+      "abstention_rate": 0.375,
+      "mean_top1_uncertainty": 0.20750000000000002,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.45",
+      "system": "word_for_word",
+      "letter_true_positives": 9,
+      "letter_predicted_denominator": 50,
+      "letter_gold_denominator": 65,
+      "letter_precision": 0.18,
+      "letter_recall": 0.13846153846153847,
+      "letter_f1": 0.15652173913043477,
+      "incidental_global_lcs": 24,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 11,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 11,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 0,
+        "denominator": 11,
+        "value": 0.0,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 9,
+      "predicted_tokens": 11,
+      "gold_tokens": 11,
+      "additions": 0,
+      "omissions": 0,
+      "coptic_surfaces": 16,
+      "predicted_non_null_spans": 11,
+      "coverage": 0.6875,
+      "abstention_rate": 0.3125,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.47",
+      "system": "decoder",
+      "letter_true_positives": 3,
+      "letter_predicted_denominator": 37,
+      "letter_gold_denominator": 90,
+      "letter_precision": 0.08108108108108109,
+      "letter_recall": 0.03333333333333333,
+      "letter_f1": 0.04724409448818898,
+      "incidental_global_lcs": 25,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 17,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 17,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 2,
+        "denominator": 17,
+        "value": 0.11764705882352941,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 6,
+      "predicted_tokens": 9,
+      "gold_tokens": 17,
+      "additions": 0,
+      "omissions": 8,
+      "coptic_surfaces": 15,
+      "predicted_non_null_spans": 9,
+      "coverage": 0.6,
+      "abstention_rate": 0.4,
+      "mean_top1_uncertainty": 0.19166666666666668,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.47",
+      "system": "word_for_word",
+      "letter_true_positives": 2,
+      "letter_predicted_denominator": 38,
+      "letter_gold_denominator": 90,
+      "letter_precision": 0.05263157894736842,
+      "letter_recall": 0.022222222222222223,
+      "letter_f1": 0.03125,
+      "incidental_global_lcs": 26,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 17,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 17,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 2,
+        "denominator": 17,
+        "value": 0.11764705882352941,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 7,
+      "predicted_tokens": 9,
+      "gold_tokens": 17,
+      "additions": 0,
+      "omissions": 8,
+      "coptic_surfaces": 15,
+      "predicted_non_null_spans": 9,
+      "coverage": 0.6,
+      "abstention_rate": 0.4,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.8",
+      "system": "decoder",
+      "letter_true_positives": 15,
+      "letter_predicted_denominator": 52,
+      "letter_gold_denominator": 77,
+      "letter_precision": 0.28846153846153844,
+      "letter_recall": 0.19480519480519481,
+      "letter_f1": 0.23255813953488372,
+      "incidental_global_lcs": 31,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 3,
+        "denominator": 20,
+        "value": 0.15,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 3,
+        "denominator": 20,
+        "value": 0.15,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 6,
+        "denominator": 20,
+        "value": 0.3,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 9,
+      "predicted_tokens": 15,
+      "gold_tokens": 20,
+      "additions": 0,
+      "omissions": 5,
+      "coptic_surfaces": 21,
+      "predicted_non_null_spans": 15,
+      "coverage": 0.7142857142857143,
+      "abstention_rate": 0.2857142857142857,
+      "mean_top1_uncertainty": 0.185,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.13.8",
+      "system": "word_for_word",
+      "letter_true_positives": 8,
+      "letter_predicted_denominator": 78,
+      "letter_gold_denominator": 77,
+      "letter_precision": 0.10256410256410256,
+      "letter_recall": 0.1038961038961039,
+      "letter_f1": 0.1032258064516129,
+      "incidental_global_lcs": 32,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 20,
+        "value": 0.1,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 20,
+        "value": 0.1,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 5,
+        "denominator": 20,
+        "value": 0.25,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 11,
+      "predicted_tokens": 16,
+      "gold_tokens": 20,
+      "additions": 0,
+      "omissions": 4,
+      "coptic_surfaces": 21,
+      "predicted_non_null_spans": 16,
+      "coverage": 0.7619047619047619,
+      "abstention_rate": 0.23809523809523814,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.5.10",
+      "system": "decoder",
+      "letter_true_positives": 4,
+      "letter_predicted_denominator": 45,
+      "letter_gold_denominator": 69,
+      "letter_precision": 0.08888888888888889,
+      "letter_recall": 0.057971014492753624,
+      "letter_f1": 0.07017543859649124,
+      "incidental_global_lcs": 32,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 12,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 12,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 12,
+        "value": 0.3333333333333333,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 8,
+      "predicted_tokens": 11,
+      "gold_tokens": 12,
+      "additions": 0,
+      "omissions": 1,
+      "coptic_surfaces": 15,
+      "predicted_non_null_spans": 11,
+      "coverage": 0.7333333333333333,
+      "abstention_rate": 0.26666666666666666,
+      "mean_top1_uncertainty": 0.15681818181818183,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.5.10",
+      "system": "word_for_word",
+      "letter_true_positives": 14,
+      "letter_predicted_denominator": 53,
+      "letter_gold_denominator": 69,
+      "letter_precision": 0.2641509433962264,
+      "letter_recall": 0.2028985507246377,
+      "letter_f1": 0.22950819672131148,
+      "incidental_global_lcs": 32,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 1,
+        "denominator": 12,
+        "value": 0.08333333333333333,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 1,
+        "denominator": 12,
+        "value": 0.08333333333333333,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 1,
+        "denominator": 12,
+        "value": 0.08333333333333333,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 8,
+      "predicted_tokens": 11,
+      "gold_tokens": 12,
+      "additions": 0,
+      "omissions": 1,
+      "coptic_surfaces": 15,
+      "predicted_non_null_spans": 11,
+      "coverage": 0.7333333333333333,
+      "abstention_rate": 0.2666666666666667,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.5.20",
+      "system": "decoder",
+      "letter_true_positives": 10,
+      "letter_predicted_denominator": 66,
+      "letter_gold_denominator": 114,
+      "letter_precision": 0.15151515151515152,
+      "letter_recall": 0.08771929824561403,
+      "letter_f1": 0.1111111111111111,
+      "incidental_global_lcs": 48,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 23,
+        "value": 0.08695652173913043,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 23,
+        "value": 0.08695652173913043,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 7,
+        "denominator": 23,
+        "value": 0.30434782608695654,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 8,
+      "predicted_tokens": 17,
+      "gold_tokens": 23,
+      "additions": 0,
+      "omissions": 6,
+      "coptic_surfaces": 22,
+      "predicted_non_null_spans": 17,
+      "coverage": 0.7727272727272727,
+      "abstention_rate": 0.22727272727272727,
+      "mean_top1_uncertainty": 0.13970588235294118,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.5.20",
+      "system": "word_for_word",
+      "letter_true_positives": 11,
+      "letter_predicted_denominator": 77,
+      "letter_gold_denominator": 114,
+      "letter_precision": 0.14285714285714285,
+      "letter_recall": 0.09649122807017543,
+      "letter_f1": 0.11518324607329843,
+      "incidental_global_lcs": 44,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 3,
+        "denominator": 23,
+        "value": 0.13043478260869565,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 3,
+        "denominator": 23,
+        "value": 0.13043478260869565,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 23,
+        "value": 0.17391304347826086,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 7,
+      "predicted_tokens": 18,
+      "gold_tokens": 23,
+      "additions": 0,
+      "omissions": 5,
+      "coptic_surfaces": 22,
+      "predicted_non_null_spans": 18,
+      "coverage": 0.8181818181818182,
+      "abstention_rate": 0.18181818181818177,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.5.3",
+      "system": "decoder",
+      "letter_true_positives": 4,
+      "letter_predicted_denominator": 55,
+      "letter_gold_denominator": 58,
+      "letter_precision": 0.07272727272727272,
+      "letter_recall": 0.06896551724137931,
+      "letter_f1": 0.07079646017699115,
+      "incidental_global_lcs": 37,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 12,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 12,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 4,
+        "denominator": 12,
+        "value": 0.3333333333333333,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 9,
+      "predicted_tokens": 15,
+      "gold_tokens": 12,
+      "additions": 3,
+      "omissions": 0,
+      "coptic_surfaces": 17,
+      "predicted_non_null_spans": 15,
+      "coverage": 0.8823529411764706,
+      "abstention_rate": 0.11764705882352941,
+      "mean_top1_uncertainty": 0.15333333333333332,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.5.3",
+      "system": "word_for_word",
+      "letter_true_positives": 5,
+      "letter_predicted_denominator": 70,
+      "letter_gold_denominator": 58,
+      "letter_precision": 0.07142857142857142,
+      "letter_recall": 0.08620689655172414,
+      "letter_f1": 0.078125,
+      "incidental_global_lcs": 35,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 0,
+        "denominator": 12,
+        "value": 0.0,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 0,
+        "denominator": 12,
+        "value": 0.0,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 1,
+        "denominator": 12,
+        "value": 0.08333333333333333,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 11,
+      "predicted_tokens": 15,
+      "gold_tokens": 12,
+      "additions": 3,
+      "omissions": 0,
+      "coptic_surfaces": 17,
+      "predicted_non_null_spans": 15,
+      "coverage": 0.8823529411764706,
+      "abstention_rate": 0.11764705882352944,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.7.21",
+      "system": "decoder",
+      "letter_true_positives": 16,
+      "letter_predicted_denominator": 118,
+      "letter_gold_denominator": 101,
+      "letter_precision": 0.13559322033898305,
+      "letter_recall": 0.15841584158415842,
+      "letter_f1": 0.14611872146118723,
+      "incidental_global_lcs": 69,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 25,
+        "value": 0.08,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 25,
+        "value": 0.08,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 13,
+        "denominator": 25,
+        "value": 0.52,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 15,
+      "predicted_tokens": 33,
+      "gold_tokens": 25,
+      "additions": 8,
+      "omissions": 0,
+      "coptic_surfaces": 33,
+      "predicted_non_null_spans": 32,
+      "coverage": 0.9696969696969697,
+      "abstention_rate": 0.030303030303030304,
+      "mean_top1_uncertainty": 0.15859375,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    },
+    {
+      "unit_id": "matthew.7.21",
+      "system": "word_for_word",
+      "letter_true_positives": 17,
+      "letter_predicted_denominator": 128,
+      "letter_gold_denominator": 101,
+      "letter_precision": 0.1328125,
+      "letter_recall": 0.16831683168316833,
+      "letter_f1": 0.148471615720524,
+      "incidental_global_lcs": 65,
+      "letter_metric_kind": "token-positional-letter-v1",
+      "surface_exact": {
+        "numerator": 2,
+        "denominator": 25,
+        "value": 0.08,
+        "definition": "exact positional surface hits / gold tokens"
+      },
+      "lemma_proxy": {
+        "numerator": 2,
+        "denominator": 25,
+        "value": 0.08,
+        "definition": "positional lemma-proxy hits / gold tokens"
+      },
+      "lemma_lcs": {
+        "numerator": 10,
+        "denominator": 25,
+        "value": 0.4,
+        "definition": "lemma-proxy LCS length / gold tokens"
+      },
+      "near_miss_tokens": 15,
+      "predicted_tokens": 32,
+      "gold_tokens": 25,
+      "additions": 7,
+      "omissions": 0,
+      "coptic_surfaces": 33,
+      "predicted_non_null_spans": 32,
+      "coverage": 0.9696969696969697,
+      "abstention_rate": 0.030303030303030276,
+      "mean_top1_uncertainty": null,
+      "construction_spans": 0,
+      "construction_phrase_hits": 0,
+      "notes": [
+        "Gold consulted at scoring time only (identical Coptic inputs).",
+        "lemma_proxy uses JAK-37 NFD-strip heuristic — not MorphGNT.",
+        "incidental_global_lcs is diagnostic only."
+      ]
+    }
+  ],
+  "failure_modes": [
+    {
+      "category": "morphology_underdetermination",
+      "unit_id": "(corpus)",
+      "system": null,
+      "detail": "JAK-37 lemma proxies are accent-stripped surfaces, not MorphGNT lemmas; surface_exact and lemma_proxy often coincide, so inflection errors are under-measured.",
+      "evidence": {
+        "lemma_method": "nfd_strip_combining_marks_v1",
+        "near_miss_tokens_decoder": 339
+      }
+    },
+    {
+      "category": "false_equivalence",
+      "unit_id": "mark.4.4",
+      "system": "decoder",
+      "detail": "Frequent Greek function word predicted where gold differs (bag co-occurrence / NT prior risk).",
+      "evidence": {
+        "index": 2,
+        "hypothesis": "το",
+        "gold": "εν",
+        "coptic": "ϥϫⲟ,"
+      }
+    },
+    {
+      "category": "nt_overcopy_risk",
+      "unit_id": "mark.4.4",
+      "system": "decoder",
+      "detail": "High Coptic coverage with low letter F1 — emitting familiar NT Greek that does not match this holdout.",
+      "evidence": {
+        "coverage": 0.7692307692307693,
+        "letter_f1": 0.10084033613445377,
+        "baseline_letter_f1": 0.06299212598425197
+      }
+    },
+    {
+      "category": "additions_omissions",
+      "unit_id": "luke.8.4",
+      "system": "decoder",
+      "detail": "Lowest letter-F1 holdout unit — length/content mismatch.",
+      "evidence": {
+        "letter_f1": 0.018518518518518517,
+        "additions": 0,
+        "omissions": 7,
+        "abstention_rate": 0.4166666666666667
+      }
+    },
+    {
+      "category": "fluent_greek_not_success",
+      "unit_id": "thomas.7",
+      "system": "decoder",
+      "detail": "Fluent or NT-like Greek must not be treated as reconstruction success; surviving-letter / multi-level metrics are authoritative.",
+      "evidence": {
+        "official_thomas7_surviving_letter": false,
+        "note": "Gate blocked until human-checked (JAK-40/43)."
+      }
+    },
+    {
+      "category": "fragment_divergence",
+      "unit_id": "thomas.7",
+      "system": null,
+      "detail": "P.Oxy. 654 Thomas 7 lines mix sparse surviving letters with restorations; restorations stay out of gold. Official agreement deferred until independent review.",
+      "evidence": {
+        "lines": [
+          "main.40",
+          "main.41",
+          "main.42"
+        ]
+      }
+    },
+    {
+      "category": "coverage_vs_fidelity",
+      "unit_id": "(nt_holdouts)",
+      "system": null,
+      "detail": "Word-for-word baseline covers more Coptic surfaces but does not beat decoder letter F1 — coverage ≠ fidelity.",
+      "evidence": {
+        "decoder_mean_coverage": 0.6921772637262416,
+        "baseline_mean_coverage": 0.7512911030077701,
+        "decoder_mean_letter_f1": 0.11872319479873392,
+        "baseline_mean_letter_f1": 0.10287570802184783
+      }
+    },
+    {
+      "category": "thomas7_side_by_side",
+      "unit_id": "thomas.7",
+      "system": null,
+      "detail": "Blinded Thomas 7 decoder vs word-for-word on identical Dilley Coptic; official surviving-letter comparison deferred.",
+      "evidence": {
+        "decoder_non_null": 26,
+        "baseline_non_null": 25,
+        "coptic_surfaces": 42,
+        "decoder_top1": [
+          null,
+          null,
+          "το",
+          "μακαριος",
+          "ο",
+          "ο",
+          null,
+          null,
+          "ουκ",
+          "ο",
+          "ανθρωπος",
+          null,
+          null,
+          "ο",
+          "και",
+          "σου",
+          "ο",
+          null,
+          "εσεσθε",
+          "ο",
+          "ανθρωπος",
+          "και",
+          "ο",
+          null,
+          null,
+          "ο",
+          "ο",
+          "ανθρωπος",
+          null,
+          "ουκ",
+          "ο",
+          null,
+          null,
+          null,
+          "ο",
+          "και",
+          "ο",
+          null,
+          null,
+          "εσεσθε",
+          null,
+          "ανθρωπος"
+        ],
+        "baseline_predictions": [
+          null,
+          null,
+          "και",
+          null,
+          "ο",
+          "το",
+          null,
+          null,
+          "υμιν",
+          "το",
+          "ανθρωπος",
+          null,
+          null,
+          "αυτος",
+          "και",
+          "μετ",
+          "το",
+          null,
+          "εσεσθε",
+          "και",
+          "ανθρωπος",
+          "και",
+          "αυτος",
+          null,
+          null,
+          "ο",
+          "το",
+          "ανθρωπος",
+          null,
+          "υμιν",
+          "το",
+          null,
+          null,
+          null,
+          "αυτος",
+          "και",
+          "το",
+          null,
+          null,
+          "εσεσθε",
+          null,
+          "ανθρωπος"
+        ],
+        "identical_coptic": true
+      }
+    }
+  ],
+  "metric_definitions": {
+    "letter_agreement": "Token-positional Greek letter F1/precision/recall (``token-positional-letter-v1``). Global LCS is diagnostic only.",
+    "surface_exact": "Positional exact match after letter-fold (casefold + strip diacritics + letters only). Recall = exact hits / gold tokens.",
+    "lemma_proxy": "Positional match of JAK-37 ``infer_greek_lemma`` proxies (NFD strip combining marks). Not MorphGNT lemmas.",
+    "lemma_lcs": "Longest common subsequence length of lemma-proxy sequences / gold token count — order-preserving content recovery beyond strict index.",
+    "near_miss_tokens": "Positional pairs with shared letters but not exact surface match (weak morphology / near-miss signal under the letter-fold proxy).",
+    "word_order": "Captured jointly by positional lemma_proxy recall and lemma_lcs recall; fluent reordering that loses position lowers positional scores even when LCS stays high.",
+    "phrase_fidelity": "For multi-token JAK-38 construction spans: whether the predicted Greek surface sequence appears as a contiguous gold subsequence (letter-folded). Baseline is always singleton 1:1.",
+    "additions_omissions": "additions = unpaired hypothesis tokens; omissions = unpaired gold tokens (length mismatch after flattening non-null predictions).",
+    "uncertainty": "Decoder abstention rate + mean top-1 candidate uncertainty when candidates exist. Baseline uncertainty is coverage-only (null = unseen).",
+    "surviving_letter_thomas7": "Official Thomas 7 surviving-letter agreement requires ``review_status=human-checked`` + freeze pin (JAK-40). Gate-blocked status is reported honestly; not invented."
+  },
+  "identical_inputs": {
+    "nt_holdout_units": 41,
+    "thomas_pilot_units": 1,
+    "coptic_surfaces_matched": true,
+    "letter_f1_wins": {
+      "decoder": 21,
+      "word_for_word": 20,
+      "ties": 0
+    },
+    "source_packages": {
+      "thomas": "jak40-blinded-reconstruction-v1",
+      "nt_holdout": "jak40-blinded-reconstruction-nt-holdout-v1"
+    }
+  },
+  "leakage_safeguards": {
+    "greek_consulted_during_reconstruction": true,
+    "train_dev_not_scored_as_holdout": true,
+    "poxy_654_sealed_until_scoring": true,
+    "adopted_aligner": null,
+    "phase2_active_aligners": [
+      "eflomal",
+      "fast_align"
+    ],
+    "llm": false,
+    "network": false,
+    "thomas7_official_gate": {
+      "eval_package_id": "thomas-7-blinded-eval-v1",
+      "review_status": "ready-for-independent-review",
+      "official_surviving_letter_scores": false,
+      "gate_blocked": true,
+      "freeze_present": true,
+      "human_checked_required": true,
+      "notes": [
+        "Official Thomas 7 surviving-letter scores require human-checked + freeze.",
+        "ready-for-independent-review is packaged readiness only — not completed review.",
+        "eval package 'thomas-7-blinded-eval-v1' has review_status='ready-for-independent-review'; JAK-40/41 scoring requires review_status='human-checked' after an independent review (reviewer, date, inspected witness/source version, surviving-letter-vs-restoration decisions). 'ready-for-independent-review' is packaged readiness only — not a completed review. Formal follow-up: complete independent review before scoring (tracked under JAK-43 eval-readiness; do not invent human-checked)."
+      ]
+    }
+  },
+  "artifact_digests": {
+    "thomas_reconstruction_sha256": "15c9692c49d3224a27963616d5fe4403c7c1863b8c9fbd922a4a2e715b0fbf5c",
+    "nt_holdout_reconstruction_sha256": "a957823d32072eb292851e0b23779cb1ceaac0e340a6e90420e099aa3ceed846",
+    "thomas7_eval_package_sha256": "46ea3ebe1ba34ed2c52516d1ac32387527ec285b822c99696c6315176f53873d",
+    "thomas7_freeze_sha256": "bafa5ba7aaf8083089a935b1a02413c163f56fadaf943380a3d9a40246c89394"
+  },
+  "summary": {
+    "gate_recommendation": "pause_and_improve",
+    "nt_units_scored": 41,
+    "decoder_mean_letter_f1": 0.11872319479873392,
+    "baseline_mean_letter_f1": 0.10287570802184783,
+    "decoder_mean_lemma_proxy_recall": 0.05674651079294713,
+    "baseline_mean_lemma_proxy_recall": 0.05177877360585268,
+    "thomas7_gate_blocked": true,
+    "ablation_arms": [
+      "nt_aligner_only",
+      "nt_aligner_plus_verified_loanwords"
+    ]
+  },
+  "provenance": {
+    "owned_by": "JAK-41",
+    "consumes": [
+      "JAK-40",
+      "JAK-39",
+      "JAK-38",
+      "JAK-37",
+      "JAK-28"
+    ],
+    "llm": false,
+    "network": false,
+    "phase2_active_aligners": [
+      "eflomal",
+      "fast_align"
+    ],
+    "adopted_aligner": null
+  },
+  "notes": [
+    "Phase 2 decision gate input for Jake — does not auto-start Phase 3.",
+    "Word-for-word baseline uses the same Coptic surfaces as JAK-40 decode.",
+    "NT holdout gold is provisional-draft Vaticanus B* at eval time.",
+    "Official Thomas 7 surviving-letter scores remain human-checked gated.",
+    "Fluent Greek is not treated as success.",
+    "JAK-42 Ollama stays deferred pending a concrete non-LLM limitation."
+  ]
+}

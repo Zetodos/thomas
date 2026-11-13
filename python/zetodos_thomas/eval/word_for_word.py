@@ -1,8 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Elementary train-only word-for-word baseline (JAK-28 lineage; JAK-40).
+"""Elementary train-only word-for-word baseline (JAK-28 lineage; JAK-40/41).
 
 Predicts Greek from Coptic using train co-occurrence argmax — never opens the
-holdout / Thomas Greek witness. Comparison vs decoder lives in JAK-41.
+holdout / Thomas Greek witness. Decoder comparison: ``eval.feasibility`` (JAK-41).
 """
 
 from __future__ import annotations
@@ -62,6 +62,6 @@ def baseline_for_unit(
             "Train-cooccurrence argmax; target Greek never consulted.",
             f"covered_surfaces={n_hit}/{len(coptic_surfaces)}",
             f"segmentation={segmentation or 'unspecified'}",
-            "Decoder comparison deferred to JAK-41.",
+            "Compared to decoder in JAK-41 feasibility metrics on identical inputs.",
         ],
     )
