@@ -95,6 +95,26 @@ def validate_decode_result(result: DecodeResult) -> DecodeValidationReport:
                 "decode provenance must not claim llm=true",
             )
         )
+    # Digests are mandatory for fail-closed loads from committed JAK-37/38
+    # artifacts; fixture models used in unit tests may omit them.
+    if result.provenance.get("validation") == "jak37_jak38_fail_closed":
+        digests = result.provenance.get("artifact_digests")
+        if not isinstance(digests, dict) or not digests.get("lexical_sha256"):
+            issues.append(
+                DecodeValidationIssue(
+                    "error",
+                    "missing_artifact_digests",
+                    "decode provenance must record immutable artifact digests",
+                )
+            )
+        if not result.provenance.get("evidence_provenance"):
+            issues.append(
+                DecodeValidationIssue(
+                    "error",
+                    "missing_evidence_provenance",
+                    "decode provenance must record shared evidence provenance",
+                )
+            )
 
     for span in result.spans:
         try:
@@ -151,6 +171,15 @@ def validate_decode_result(result: DecodeResult) -> DecodeValidationReport:
                     "error",
                     "ranking_order",
                     f"{span.span_id}: candidates not sorted by ranking_key",
+                )
+            )
+        greek_seqs = [tuple(c.greek_surfaces) for c in span.candidates]
+        if len(greek_seqs) != len(set(greek_seqs)):
+            issues.append(
+                DecodeValidationIssue(
+                    "error",
+                    "duplicate_greek_hypothesis",
+                    f"{span.span_id}: duplicate greek_surfaces among candidates",
                 )
             )
         for cand in span.candidates:

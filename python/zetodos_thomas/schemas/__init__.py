@@ -19,6 +19,7 @@ from zetodos_thomas.schemas.decode import (
     DecoderEvidenceKind,
     DecodeSpanInput,
     GreekCandidate,
+    GreekFormKind,
     SpanDecodeResult,
     SpanDecodeStatus,
 )
@@ -124,6 +125,7 @@ __all__ = [
     "FragmentToken",
     "FragmentTranscription",
     "GreekCandidate",
+    "GreekFormKind",
     "InferredLemmaCandidate",
     "LexicalCandidateTable",
     "LexicalLayer",

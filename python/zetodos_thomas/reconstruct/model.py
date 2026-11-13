@@ -3,17 +3,24 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from zetodos_thomas.align.splits import SplitRole, load_canonical_splits
+from zetodos_thomas.ingest.paths import (
+    resolve_nt_split_path,
+    resolve_omission_fixtures_path,
+)
 from zetodos_thomas.lexicon.candidates import (
     DEFAULT_PHASE2_ALIGNERS,
     default_table_path,
     load_lexical_candidate_table,
 )
 from zetodos_thomas.lexicon.lemmas import infer_greek_lemma
+from zetodos_thomas.lexicon.validate import validate_lexical_candidate_table
 from zetodos_thomas.mappings.ablation import default_ablation_paths
 from zetodos_thomas.mappings.loanwords import (
     default_verified_loanwords_path,
@@ -22,6 +29,10 @@ from zetodos_thomas.mappings.loanwords import (
 from zetodos_thomas.mappings.phrases import (
     default_statistical_constructions_path,
     load_statistical_construction_table,
+)
+from zetodos_thomas.mappings.validate import (
+    validate_statistical_construction_table,
+    validate_verified_loanword_table,
 )
 from zetodos_thomas.schemas.lexicon import (
     LexicalCandidateTable,
@@ -38,6 +49,14 @@ from zetodos_thomas.schemas.mappings import (
 )
 
 PHASE2_ALIGNERS = tuple(a.value for a in DEFAULT_PHASE2_ALIGNERS)
+PROVENANCE_KEYS = (
+    "pilot_corpus_id",
+    "split_id",
+    "greek_source_id",
+    "sahidic_source_id",
+    "coptic_segmentation",
+    "bitext_checksum_sha256",
+)
 
 
 @dataclass
@@ -149,6 +168,89 @@ def _resolve_rel(repo_root: Path, rel: str | None) -> Path | None:
     return path
 
 
+def _sha256_file(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(1024 * 1024), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _prov_get(table_prov: dict[str, Any], key: str) -> object:
+    return table_prov.get(key)
+
+
+def assert_compatible_provenance(
+    lexical: LexicalCandidateTable,
+    constructions: StatisticalConstructionTable,
+) -> dict[str, Any]:
+    """Fail closed when JAK-37/38 provenance / split fingerprints disagree."""
+    lex_p = lexical.provenance or {}
+    con_p = constructions.provenance or {}
+    shared: dict[str, Any] = {}
+    for key in PROVENANCE_KEYS:
+        lv = _prov_get(lex_p, key)
+        cv = _prov_get(con_p, key)
+        if lv is None and cv is None:
+            msg = f"missing provenance key on both tables: {key}"
+            raise ValueError(msg)
+        if lv is None or cv is None:
+            msg = (
+                f"provenance key {key!r} missing on "
+                f"{'lexical' if lv is None else 'constructions'} table"
+            )
+            raise ValueError(msg)
+        if lv != cv:
+            msg = (
+                f"provenance mismatch for {key!r}: lexical={lv!r} constructions={cv!r}"
+            )
+            raise ValueError(msg)
+        shared[key] = lv
+    return shared
+
+
+def validate_decode_evidence(
+    *,
+    repo_root: Path,
+    lexical: LexicalCandidateTable,
+    constructions: StatisticalConstructionTable,
+    loanwords: VerifiedLoanwordTable | None,
+    require_loanword_tei: bool,
+) -> set[str]:
+    """Run JAK-37/38 validators; return train unit ids used."""
+    splits = load_canonical_splits(
+        resolve_nt_split_path(repo_root),
+        resolve_omission_fixtures_path(repo_root),
+    )
+    train_unit_ids = set(splits.unit_ids_for(SplitRole.TRAIN))
+
+    lex_report = validate_lexical_candidate_table(
+        lexical, train_unit_ids=train_unit_ids
+    )
+    if not lex_report.ok:
+        issues = "; ".join(f"{i.code}:{i.message}" for i in lex_report.issues[:8])
+        msg = f"lexical candidate validation failed: {issues}"
+        raise ValueError(msg)
+
+    phrase_report = validate_statistical_construction_table(
+        constructions, train_unit_ids=train_unit_ids
+    )
+    if not phrase_report.ok:
+        issues = "; ".join(f"{i.code}:{i.message}" for i in phrase_report.issues[:8])
+        msg = f"statistical construction validation failed: {issues}"
+        raise ValueError(msg)
+
+    if loanwords is not None and require_loanword_tei:
+        loan_report = validate_verified_loanword_table(
+            loanwords, repo_root=repo_root, train_unit_ids=train_unit_ids
+        )
+        if not loan_report.ok:
+            issues = "; ".join(f"{i.code}:{i.message}" for i in loan_report.issues[:8])
+            msg = f"verified loanword validation failed: {issues}"
+            raise ValueError(msg)
+    return train_unit_ids
+
+
 def load_decode_model(
     repo_root: Path,
     *,
@@ -157,8 +259,13 @@ def load_decode_model(
     lexical_path: Path | None = None,
     constructions_path: Path | None = None,
     loanwords_path: Path | None = None,
+    skip_validation: bool = False,
 ) -> DecodeModel:
-    """Load committed JAK-37/38 artifacts for one ablation arm."""
+    """Load committed JAK-37/38 artifacts for one ablation arm.
+
+    Fails closed on JAK-37/38 validation errors and provenance/split mismatches
+    unless ``skip_validation`` is set (tests only).
+    """
     cond = (
         condition
         if isinstance(condition, AblationCondition)
@@ -224,6 +331,27 @@ def load_decode_model(
         msg = "arm B requires verified loanwords artifact"
         raise ValueError(msg)
 
+    shared_prov = assert_compatible_provenance(lexical, constructions)
+    if not skip_validation:
+        validate_decode_evidence(
+            repo_root=repo_root,
+            lexical=lexical,
+            constructions=constructions,
+            loanwords=loanwords,
+            require_loanword_tei=(
+                cond is AblationCondition.NT_ALIGNER_PLUS_VERIFIED_LOANWORDS
+                or loanwords is not None
+            ),
+        )
+
+    artifact_digests = {
+        "lexical_sha256": _sha256_file(lex_path),
+        "constructions_sha256": _sha256_file(phrase_path),
+    }
+    if loan_path is not None and loan_path.is_file():
+        artifact_digests["loanwords_sha256"] = _sha256_file(loan_path)
+    artifact_digests["ablation_sha256"] = _sha256_file(package_path)
+
     model = DecodeModel(
         condition=cond,
         package=package,
@@ -241,6 +369,12 @@ def load_decode_model(
             "phase2_active_aligners": list(PHASE2_ALIGNERS),
             "adopted_aligner": None,
             "owned_by": "JAK-39",
+            "artifact_digests": artifact_digests,
+            "evidence_provenance": shared_prov,
+            "lexical_table_id": lexical.id,
+            "constructions_table_id": constructions.id,
+            "loanwords_table_id": (loanwords.id if loanwords is not None else None),
+            "validation": "jak37_jak38_fail_closed",
         },
     )
     return index_decode_model(model)

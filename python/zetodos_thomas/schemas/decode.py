@@ -30,10 +30,19 @@ class AbstentionReason(StrEnum):
 
     EMPTY_SPAN = "empty_span"
     NO_ATTESTED_EVIDENCE = "no_attested_evidence"
+    INSUFFICIENT_EVIDENCE = "insufficient_evidence"
     CONSTRUCTION_ID_UNKNOWN = "construction_id_unknown"
     CONSTRUCTION_PATTERN_MISMATCH = "construction_pattern_mismatch"
     ABLATION_EXCLUDES_LOANWORDS = "ablation_excludes_loanwords"
     FORBIDDEN_QUERY_UNIT = "forbidden_query_unit"
+    INPUT_ID_INCONSISTENT = "input_id_inconsistent"
+
+
+class GreekFormKind(StrEnum):
+    """Whether a hypothesis is an attested surface or a lemma-level clue."""
+
+    ATTESTED_SURFACE = "attested_surface"
+    LEMMA_CLUE = "lemma_clue"
 
 
 class DecodeSpanInput(BaseModel):
@@ -61,14 +70,6 @@ class DecodeRequest(BaseModel):
     unit_id: str
     spans: list[DecodeSpanInput] = Field(min_length=1)
     max_candidates_per_span: int = Field(default=5, ge=1, le=50)
-    include_inferred_lemmas: bool = Field(
-        default=False,
-        description=(
-            "When true, allow inferred-lemma proxies as low-priority candidates. "
-            "Default false: attested observed wordforms / constructions / "
-            "verified loanwords only."
-        ),
-    )
     provenance: dict[str, Any] = Field(default_factory=dict)
     notes: list[str] = Field(default_factory=list)
 
@@ -88,6 +89,7 @@ class GreekCandidate(BaseModel):
 
     rank: int = Field(ge=1)
     greek_surfaces: list[str] = Field(min_length=1)
+    form_kind: GreekFormKind = GreekFormKind.ATTESTED_SURFACE
     score: float
     uncertainty: float = Field(ge=0.0, le=1.0)
     evidence: list[CandidateEvidenceRef] = Field(min_length=1)
