@@ -23,6 +23,14 @@ class BlindedTargetKind(StrEnum):
     NT_HOLDOUT = "nt_holdout"
 
 
+class UnclearLetterPolicy(StrEnum):
+    """How ``certainty=unclear`` surviving letters enter the primary gold."""
+
+    EXCLUDE = "exclude"
+    INCLUDE = "include"
+    SENSITIVITY_ONLY = "sensitivity_only"
+
+
 class BlindedUnitReconstruction(BaseModel):
     """One unit's blinded decode (Coptic in → Greek hypotheses / abstentions)."""
 
@@ -30,10 +38,16 @@ class BlindedUnitReconstruction(BaseModel):
     target_kind: BlindedTargetKind
     source_id: str
     coptic_surfaces: list[str]
+    segmentation: str = ""
+    id_scheme_version: str = "1"
     decode_result: DecodeResult
     top1_greek_surfaces: list[str | None] = Field(
         default_factory=list,
         description="Per-span top-1 Greek surface sequence, or null when abstained.",
+    )
+    covering_span_kinds: list[str] = Field(
+        default_factory=list,
+        description="Per selected covering span: construction|singleton.",
     )
     notes: list[str] = Field(default_factory=list)
 
@@ -47,6 +61,7 @@ class WordForWordUnitBaseline(BaseModel):
     coptic_surfaces: list[str]
     predicted_greek: list[str | None]
     method: str = "train-cooccurrence-argmax-v1"
+    segmentation: str = ""
     notes: list[str] = Field(default_factory=list)
 
 
@@ -73,6 +88,30 @@ class BlindedReconstructionPackage(BaseModel):
     notes: list[str] = Field(default_factory=list)
 
 
+class BlindedFreezeRecord(BaseModel):
+    """Pre-unseal pin for an official Thomas 7 reconstruction artifact."""
+
+    id: str = "jak40-thomas7-blinded-freeze-v1"
+    owned_by: str = "JAK-40"
+    reconstruction_package_id: str
+    unit_id: str = "thomas.7"
+    reconstruction_sha256: str
+    ablation_condition: AblationCondition
+    ranking_rules_id: str
+    evidence_provenance: dict[str, Any] = Field(default_factory=dict)
+    artifact_digests: dict[str, str] = Field(default_factory=dict)
+    sealed_before_fragment_load: bool = True
+    notes: list[str] = Field(default_factory=list)
+
+
+class SurvivingLetterToken(BaseModel):
+    """One surviving fragment token with certainty preserved."""
+
+    text: str
+    certainty: str | None = None
+    letters: str = ""
+
+
 class SurvivingLetterSpan(BaseModel):
     """Surviving letters from one fragment line (restorations excluded)."""
 
@@ -80,8 +119,11 @@ class SurvivingLetterSpan(BaseModel):
     n: str
     surviving_text: str
     surviving_letters: str
+    clear_letters: str = ""
+    unclear_letters: str = ""
     restoration_text: str = ""
     lacuna_count: int = 0
+    surviving_tokens: list[SurvivingLetterToken] = Field(default_factory=list)
 
 
 class SurvivingLetterGold(BaseModel):
@@ -94,7 +136,12 @@ class SurvivingLetterGold(BaseModel):
     spans: list[SurvivingLetterSpan]
     surviving_text: str
     surviving_letters: str
+    clear_letters: str = ""
+    unclear_letters: str = ""
     restoration_letters_excluded: str
+    unclear_policy: UnclearLetterPolicy = UnclearLetterPolicy.EXCLUDE
+    primary_gold_letters: str = ""
+    clear_runs_by_line: list[str] = Field(default_factory=list)
     notes: list[str] = Field(default_factory=list)
 
 
@@ -111,8 +158,11 @@ class SurvivingLetterScore(BaseModel):
     precision: float | None
     recall: float | None
     f1: float | None
-    longest_common_subsequence: int
+    incidental_global_lcs: int = 0
+    metric_kind: str = "gap-aware-ordered-runs-v1"
     review_status: str
+    unclear_policy: str = UnclearLetterPolicy.EXCLUDE.value
+    sensitivity_include_unclear: dict[str, Any] = Field(default_factory=dict)
     notes: list[str] = Field(default_factory=list)
 
 
@@ -127,6 +177,7 @@ class SurvivingLetterEvalReport(BaseModel):
     eval_package_id: str
     review_status: str
     official: bool
+    freeze_verified: bool = False
     gold: SurvivingLetterGold | None = None
     scores: list[SurvivingLetterScore] = Field(default_factory=list)
     nt_holdout_letter_scores: list[SurvivingLetterScore] = Field(default_factory=list)

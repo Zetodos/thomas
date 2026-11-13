@@ -59,6 +59,8 @@
         "ⲣ",
         "ⲣⲱⲙⲉ"
       ],
+      "segmentation": "dilley-normalized-whitespace-v1",
+      "id_scheme_version": "1",
       "decode_result": {
         "id": "decode-result:jak40-blinded-thomas.7",
         "title": "Blinded decode thomas.7",
@@ -69,7 +71,7 @@
         "unit_id": "thomas.7",
         "spans": [
           {
-            "span_id": "v1:decode-input/thomas.7/s/0",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t0-0",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲡⲉϫⲉ"
@@ -79,10 +81,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t0-0",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/0"
+              ],
+              "surfaces": [
+                "ⲡⲉϫⲉ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/1",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t1-1",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲓⲏⲥⲟⲩⲥ"
@@ -92,10 +104,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t1-1",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/1"
+              ],
+              "surfaces": [
+                "ⲓⲏⲥⲟⲩⲥ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/2",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t2-2",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲟⲩ"
@@ -266,10 +288,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t2-2",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/2"
+              ],
+              "surfaces": [
+                "ⲟⲩ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/3",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t3-3",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲙⲁⲕⲁⲣⲓⲟⲥ"
@@ -313,10 +345,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t3-3",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/3"
+              ],
+              "surfaces": [
+                "ⲙⲁⲕⲁⲣⲓⲟⲥ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/4",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t4-4",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲡⲉ"
@@ -487,10 +529,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t4-4",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/4"
+              ],
+              "surfaces": [
+                "ⲡⲉ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/5",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t5-5",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲡ"
@@ -661,10 +713,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t5-5",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/5"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/6",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t6-6",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲙⲟⲩⲓ"
@@ -674,10 +736,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t6-6",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/6"
+              ],
+              "surfaces": [
+                "ⲙⲟⲩⲓ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/7",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t7-7",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲡⲁⲓ"
@@ -687,10 +759,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t7-7",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/7"
+              ],
+              "surfaces": [
+                "ⲡⲁⲓ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/8",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t8-8",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲉⲧⲉ"
@@ -861,10 +943,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t8-8",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/8"
+              ],
+              "surfaces": [
+                "ⲉⲧⲉ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/9",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t9-9",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲡ"
@@ -1035,10 +1127,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t9-9",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/9"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/10",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t10-10",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲣⲱⲙⲉ"
@@ -1145,10 +1247,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t10-10",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/10"
+              ],
+              "surfaces": [
+                "ⲣⲱⲙⲉ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/11",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t11-11",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲛⲁ"
@@ -1158,10 +1270,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t11-11",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/11"
+              ],
+              "surfaces": [
+                "ⲛⲁ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/12",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t12-12",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲟⲩⲟⲙ"
@@ -1171,10 +1293,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t12-12",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/12"
+              ],
+              "surfaces": [
+                "ⲟⲩⲟⲙ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/13",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t13-13",
             "unit_id": "thomas.7",
             "surfaces": [
               "ϥ"
@@ -1249,10 +1381,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t13-13",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/13"
+              ],
+              "surfaces": [
+                "ϥ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/14",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t14-14",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲁⲩⲱ"
@@ -1327,10 +1469,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t14-14",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/14"
+              ],
+              "surfaces": [
+                "ⲁⲩⲱ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/15",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t15-15",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲛⲧⲉ"
@@ -1501,10 +1653,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t15-15",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/15"
+              ],
+              "surfaces": [
+                "ⲛⲧⲉ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/16",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t16-16",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲡ"
@@ -1675,10 +1837,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t16-16",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/16"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/17",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t17-17",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲙⲟⲩⲓ"
@@ -1688,10 +1860,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t17-17",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/17"
+              ],
+              "surfaces": [
+                "ⲙⲟⲩⲓ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/18",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t18-18",
             "unit_id": "thomas.7",
             "surfaces": [
               "ϣⲱⲡⲉ"
@@ -1766,10 +1948,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t18-18",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/18"
+              ],
+              "surfaces": [
+                "ϣⲱⲡⲉ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/19",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t19-19",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲛ"
@@ -1940,10 +2132,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t19-19",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/19"
+              ],
+              "surfaces": [
+                "ⲛ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/20",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t20-20",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲣⲱⲙⲉ"
@@ -2050,10 +2252,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t20-20",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/20"
+              ],
+              "surfaces": [
+                "ⲣⲱⲙⲉ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/21",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t21-21",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲁⲩⲱ"
@@ -2128,10 +2340,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t21-21",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/21"
+              ],
+              "surfaces": [
+                "ⲁⲩⲱ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/22",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t22-22",
             "unit_id": "thomas.7",
             "surfaces": [
               "ϥ"
@@ -2206,10 +2428,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t22-22",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/22"
+              ],
+              "surfaces": [
+                "ϥ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/23",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t23-23",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲃⲏⲧ"
@@ -2219,10 +2451,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t23-23",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/23"
+              ],
+              "surfaces": [
+                "ⲃⲏⲧ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/24",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t24-24",
             "unit_id": "thomas.7",
             "surfaces": [
               "·"
@@ -2232,10 +2474,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t24-24",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/24"
+              ],
+              "surfaces": [
+                "·"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/25",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t25-25",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲛϭⲓ"
@@ -2406,10 +2658,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t25-25",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/25"
+              ],
+              "surfaces": [
+                "ⲛϭⲓ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/26",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t26-26",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲡ"
@@ -2580,10 +2842,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t26-26",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/26"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/27",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t27-27",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲣⲱⲙⲉ"
@@ -2690,10 +2962,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t27-27",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/27"
+              ],
+              "surfaces": [
+                "ⲣⲱⲙⲉ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/28",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t28-28",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲡⲁⲓ"
@@ -2703,10 +2985,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t28-28",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/28"
+              ],
+              "surfaces": [
+                "ⲡⲁⲓ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/29",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t29-29",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲉⲧⲉ"
@@ -2877,10 +3169,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t29-29",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/29"
+              ],
+              "surfaces": [
+                "ⲉⲧⲉ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/30",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t30-30",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲡ"
@@ -3051,10 +3353,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t30-30",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/30"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/31",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t31-31",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲙⲟⲩⲓ"
@@ -3064,10 +3376,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t31-31",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/31"
+              ],
+              "surfaces": [
+                "ⲙⲟⲩⲓ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/32",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t32-32",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲛⲁ"
@@ -3077,10 +3399,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t32-32",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/32"
+              ],
+              "surfaces": [
+                "ⲛⲁ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/33",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t33-33",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲟⲩⲟⲙ"
@@ -3090,10 +3422,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t33-33",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/33"
+              ],
+              "surfaces": [
+                "ⲟⲩⲟⲙ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/34",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t34-34",
             "unit_id": "thomas.7",
             "surfaces": [
               "ϥ"
@@ -3168,10 +3510,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t34-34",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/34"
+              ],
+              "surfaces": [
+                "ϥ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/35",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t35-35",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲁⲩⲱ"
@@ -3246,10 +3598,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t35-35",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/35"
+              ],
+              "surfaces": [
+                "ⲁⲩⲱ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/36",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t36-36",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲡ"
@@ -3420,10 +3782,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t36-36",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/36"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/37",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t37-37",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲙⲟⲩⲓ"
@@ -3433,10 +3805,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t37-37",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/37"
+              ],
+              "surfaces": [
+                "ⲙⲟⲩⲓ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/38",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t38-38",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲛⲁ"
@@ -3446,10 +3828,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t38-38",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/38"
+              ],
+              "surfaces": [
+                "ⲛⲁ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/39",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t39-39",
             "unit_id": "thomas.7",
             "surfaces": [
               "ϣⲱⲡⲉ"
@@ -3524,10 +3916,20 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t39-39",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/39"
+              ],
+              "surfaces": [
+                "ϣⲱⲡⲉ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/40",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t40-40",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲣ"
@@ -3537,10 +3939,20 @@
             "candidates": [],
             "abstention_reason": "no_attested_evidence",
             "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t40-40",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/40"
+              ],
+              "surfaces": [
+                "ⲣ"
+              ]
+            }
           },
           {
-            "span_id": "v1:decode-input/thomas.7/s/41",
+            "span_id": "v1:dilley-thomas/thomas.7/s/t41-41",
             "unit_id": "thomas.7",
             "surfaces": [
               "ⲣⲱⲙⲉ"
@@ -3647,7 +4059,17 @@
             ],
             "abstention_reason": null,
             "abstention_detail": "",
-            "input_span": null
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t41-41",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/41"
+              ],
+              "surfaces": [
+                "ⲣⲱⲙⲉ"
+              ]
+            }
           }
         ],
         "ranking_rules_id": "jak39-stable-ranking-v1",
@@ -3706,7 +4128,9 @@
           "Keep-both aligners: eflomal + fast_align (adopted_aligner=null).",
           "Verified loanwords are lemma-level L-clues below attested surfaces.",
           "Blinded reconstruction input (JAK-40): Coptic only.",
-          "P.Oxy. / evaluation Greek must not be consulted on this path."
+          "P.Oxy. / evaluation Greek must not be consulted on this path.",
+          "segmentation=dilley-normalized-whitespace-v1",
+          "Covering spans include multi-token JAK-38 constructions when matched."
         ]
       },
       "top1_greek_surfaces": [
@@ -3753,9 +4177,56 @@
         null,
         "ανθρωπος"
       ],
+      "covering_span_kinds": [
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton"
+      ],
       "notes": [
         "Blinded: no evaluation Greek consulted during decode.",
-        "ablation=nt_aligner_plus_verified_loanwords"
+        "ablation=nt_aligner_plus_verified_loanwords",
+        "segmentation=dilley-normalized-whitespace-v1",
+        "multi_token_construction_spans=0",
+        "covering_spans=42"
       ]
     }
   ],
@@ -3811,51 +4282,53 @@
       "predicted_greek": [
         null,
         null,
-        "τι",
-        null,
-        "ην",
-        null,
-        null,
-        "οστις",
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
         "και",
         null,
+        "ο",
+        "το",
         null,
         null,
-        "εγενετο",
+        "υμιν",
+        "το",
+        "ανθρωπος",
         null,
         null,
+        "αυτος",
         "και",
+        "μετ",
+        "το",
         null,
-        null,
-        null,
-        null,
-        null,
-        null,
-        "οστις",
-        null,
-        null,
-        null,
-        null,
-        null,
-        null,
+        "εσεσθε",
         "και",
+        "ανθρωπος",
+        "και",
+        "αυτος",
+        null,
+        null,
+        "ο",
+        "το",
+        "ανθρωπος",
+        null,
+        "υμιν",
+        "το",
         null,
         null,
         null,
-        "εγενετο",
+        "αυτος",
+        "και",
+        "το",
         null,
-        null
+        null,
+        "εσεσθε",
+        null,
+        "ανθρωπος"
       ],
       "method": "train-cooccurrence-argmax-v1",
+      "segmentation": "dilley-normalized-whitespace-v1",
       "notes": [
         "Train-cooccurrence argmax; target Greek never consulted.",
-        "covered_surfaces=9/42",
+        "covered_surfaces=25/42",
+        "segmentation=dilley-normalized-whitespace-v1",
         "Decoder comparison deferred to JAK-41."
       ]
     }
@@ -3904,7 +4377,10 @@
     "nt_holdout_unit_count": 0,
     "train_dev_not_scored_as_holdout": true,
     "omission_fixtures_excluded": true,
-    "fragment_corpus_opened": false
+    "fragment_corpus_opened": false,
+    "dilley_segmentation": "dilley-normalized-whitespace-v1",
+    "horner_segmentation": "bound-group-v1",
+    "multi_token_construction_spans": 0
   },
   "summary": {
     "unit_count": 1,
@@ -3913,7 +4389,8 @@
     "spans_with_candidates": 26,
     "spans_abstained": 16,
     "word_for_word_units": 1,
-    "ablation_condition": "nt_aligner_plus_verified_loanwords"
+    "ablation_condition": "nt_aligner_plus_verified_loanwords",
+    "multi_token_construction_spans": 0
   },
   "provenance": {
     "owned_by": "JAK-40",
@@ -3926,14 +4403,17 @@
     ],
     "adopted_aligner": null,
     "pilot_corpus_id": null,
-    "split_id": null
+    "split_id": null,
+    "coptic_segmentation_train": null
   },
   "notes": [
     "Blinded reconstruction: Coptic Dilley thomas.7 + NT holdout Sahidic only.",
     "P.Oxy. 654 Greek is not consulted on this path (evaluation witness).",
     "Dual aligners kept (eflomal + fast_align); adopted_aligner=null.",
     "No LLM on the reconstruction path.",
-    "Word-for-word baseline is train-cooccurrence argmax for JAK-41 compare.",
+    "NT uses bound-group-v1; Dilley uses dilley-normalized-whitespace-v1.",
+    "Covering spans apply multi-token JAK-38 constructions when matched.",
+    "Word-for-word baseline uses train-parity bound-group-v1 cooccurrence.",
     "Committed artifact is Thomas 7 only; NT holdouts are a sibling file."
   ]
 }

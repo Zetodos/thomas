@@ -10,6 +10,7 @@ import typer
 
 from zetodos_thomas.eval.blinded_reconstruct import (
     COMMITTED_ARTIFACT_MAX_BYTES,
+    DEFAULT_FREEZE_REL,
     DEFAULT_NT_RECON_REL,
     DEFAULT_THOMAS_RECON_REL,
     BlindedReconstructError,
@@ -21,6 +22,9 @@ from zetodos_thomas.eval.surviving_letters import (
     score_nt_unit_letters,
     score_thomas7_surviving,
     try_score_thomas7_or_gate_report,
+)
+from zetodos_thomas.eval.validate_reconstruction import (
+    validate_reconstruction_path,
 )
 from zetodos_thomas.ingest.paths import require_repo_root
 from zetodos_thomas.schemas.blinded import (
@@ -112,9 +116,11 @@ def reconstruct_cmd(
             digests = write_committed_reconstruction_artifacts(root, ablation=condition)
             typer.echo(f"Wrote {root / DEFAULT_RECON_REL}")
             typer.echo(f"Wrote {root / DEFAULT_NT_RECON_PATH}")
+            typer.echo(f"Wrote {root / DEFAULT_FREEZE_REL}")
             typer.echo(
                 f"thomas_sha256={digests['thomas'][:12]}… "
                 f"nt_sha256={digests['nt_holdout'][:12]}… "
+                f"freeze={digests['freeze'][:12]}… "
                 f"ablation={condition.value} greek_consulted=False"
             )
             return
@@ -339,36 +345,23 @@ def validate_reconstruction_cmd(
         readable=True,
         help="BlindedReconstructionPackage JSON.",
     ),
+    repo_root: Path | None = typer.Option(
+        None,
+        "--repo-root",
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+    ),
 ) -> None:
-    """Validate blinded reconstruction schema + blinding invariants."""
-    payload = json.loads(path.read_text(encoding="utf-8"))
-    package = BlindedReconstructionPackage.model_validate(payload)
-    problems: list[str] = []
-    if package.owned_by != "JAK-40":
-        problems.append(f"owned_by must be JAK-40 (got {package.owned_by!r})")
-    if package.blinding.get("greek_consulted_during_reconstruction") is not False:
-        problems.append("greek_consulted_during_reconstruction must be false")
-    if package.blinding.get("fragment_corpus_opened") is not False:
-        problems.append("fragment_corpus_opened must be false")
-    if package.adopted_aligner is not None:
-        problems.append("adopted_aligner must be null")
-    if set(package.phase2_active_aligners) != {"eflomal", "fast_align"}:
-        problems.append("phase2_active_aligners must be eflomal+fast_align")
-    if package.provenance.get("llm") is not False:
-        problems.append("provenance.llm must be false")
-    blob = path.read_text(encoding="utf-8").lower()
-    for marker in ("poxy-654", "dclp-poxy-654"):
-        # Digests / notes may mention sealed witness ids; raw Greek letter runs
-        # from the fragment transcription must not appear.
-        _ = marker
-    # Fragment Greek content markers that must not leak into reconstruct JSON:
-    forbidden_snippets = ("μακάριός ἐστιν ὁ λέων", "ἔσται. μα")
-    for snip in forbidden_snippets:
-        if snip in path.read_text(encoding="utf-8"):
-            problems.append(f"forbidden fragment Greek snippet present: {snip!r}")
-    report = {"ok": not problems, "problems": problems, "id": package.id}
+    """Validate blinded reconstruction schema + structured integrity checks."""
+    try:
+        root = require_repo_root(repo_root)
+    except FileNotFoundError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+    report = validate_reconstruction_path(path, repo_root=root)
     typer.echo(json.dumps(report, indent=2, ensure_ascii=False))
-    if problems:
+    if not report["ok"]:
         raise typer.Exit(code=1)
     typer.echo("OK: JAK-40 blinded reconstruction validation passed")
-    _ = blob

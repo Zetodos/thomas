@@ -47,6 +47,7 @@ def baseline_for_unit(
     source_id: str,
     coptic_surfaces: list[str],
     argmax_table: dict[str, str],
+    segmentation: str = "",
 ) -> WordForWordUnitBaseline:
     predicted = predict_surfaces(argmax_table, coptic_surfaces)
     n_hit = sum(1 for p in predicted if p is not None)
@@ -56,9 +57,11 @@ def baseline_for_unit(
         source_id=source_id,
         coptic_surfaces=list(coptic_surfaces),
         predicted_greek=predicted,
+        segmentation=segmentation,
         notes=[
             "Train-cooccurrence argmax; target Greek never consulted.",
             f"covered_surfaces={n_hit}/{len(coptic_surfaces)}",
+            f"segmentation={segmentation or 'unspecified'}",
             "Decoder comparison deferred to JAK-41.",
         ],
     )

@@ -7,11 +7,13 @@
   "eval_package_id": "thomas-7-blinded-eval-v1",
   "review_status": "ready-for-independent-review",
   "official": false,
+  "freeze_verified": false,
   "gold": null,
   "scores": [],
   "nt_holdout_letter_scores": [],
   "artifact_digests": {
-    "eval_package_sha256": "46ea3ebe1ba34ed2c52516d1ac32387527ec285b822c99696c6315176f53873d"
+    "eval_package_sha256": "46ea3ebe1ba34ed2c52516d1ac32387527ec285b822c99696c6315176f53873d",
+    "reconstruction_package_sha256": "f3fd90a0b0af143a2150224dda975ae0e3ed5648a03cd6d8276853acaa092d9c"
   },
   "blinding": {
     "greek_loaded_during_reconstruction": false,
@@ -29,8 +31,8 @@
     "network": false
   },
   "notes": [
-    "Independent review still pending (review_status ≠ human-checked).",
-    "Blinded reconstructions remain valid; official surviving-letter scores deferred until JAK-43 review follow-up completes.",
+    "Official scoring blocked (review gate and/or freeze mismatch).",
+    "Blinded reconstructions remain valid; official scores deferred.",
     "eval package 'thomas-7-blinded-eval-v1' has review_status='ready-for-independent-review'; JAK-40/41 scoring requires review_status='human-checked' after an independent review (reviewer, date, inspected witness/source version, surviving-letter-vs-restoration decisions). 'ready-for-independent-review' is packaged readiness only — not a completed review. Formal follow-up: complete independent review before scoring (tracked under JAK-43 eval-readiness; do not invent human-checked)."
   ]
 }

@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import re
 from pathlib import Path
 from typing import Any
 
@@ -21,6 +20,16 @@ from zetodos_thomas.align.splits import (
     nonempty_positive_units,
     partition_corpus,
 )
+from zetodos_thomas.eval.spans import (
+    DILLEY_SEGMENTATION,
+    HORNER_SEGMENTATION,
+    construction_patterns_from_model,
+    dilley_normalized_tokens,
+    horner_bound_group_tokens,
+    resolve_covering_spans,
+    windows_to_decode_spans,
+)
+from zetodos_thomas.eval.surviving_letters import write_freeze_record
 from zetodos_thomas.eval.word_for_word import baseline_for_unit, fit_argmax_table
 from zetodos_thomas.ingest.dilley_thomas import CORPUS_ID as THOMAS_CORPUS_ID
 from zetodos_thomas.ingest.dilley_thomas import SOURCE_ID as THOMAS_SOURCE_ID
@@ -43,17 +52,22 @@ from zetodos_thomas.schemas.blinded import (
 from zetodos_thomas.schemas.decode import (
     DecodeRequest,
     DecodeResult,
-    DecodeSpanInput,
     SpanDecodeStatus,
 )
-from zetodos_thomas.schemas.ids import span_id
 from zetodos_thomas.schemas.mappings import AblationCondition
 from zetodos_thomas.schemas.source import ParallelUnit, PilotCorpus, TextUnit
 
-_TOKEN_RE = re.compile(r"\S+")
-DECODE_SOURCE_ID = "decode-input"
 DEFAULT_THOMAS_UNIT = "thomas.7"
 FORBIDDEN_RECONSTRUCT_MARKERS = ("poxy", "p.oxy", "dclp-poxy")
+COMMITTED_ARTIFACT_MAX_BYTES = 1024 * 1024
+DEFAULT_THOMAS_RECON_REL = Path(
+    "data/reconstructions/jak40/blinded-reconstruction-v1.json"
+)
+DEFAULT_NT_RECON_REL = Path(
+    "data/reconstructions/jak40/nt-holdout-blinded-reconstruction-v1.json"
+)
+DEFAULT_FREEZE_REL = Path("data/reconstructions/jak40/thomas-7-blinded-freeze-v1.json")
+COMMITTED_NT_MAX_CANDIDATES = 1
 
 
 class BlindedReconstructError(ValueError):
@@ -62,11 +76,6 @@ class BlindedReconstructError(ValueError):
 
 def _sha256_bytes(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
-
-
-def _sha256_json(payload: object) -> str:
-    blob = json.dumps(payload, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
-    return _sha256_bytes(blob.encode("utf-8"))
 
 
 def assert_no_fragment_greek_in_scope(names_or_paths: list[str]) -> None:
@@ -79,11 +88,6 @@ def assert_no_fragment_greek_in_scope(names_or_paths: list[str]) -> None:
                 f"handles or paths (got {raw!r})"
             )
             raise BlindedReconstructError(msg)
-
-
-def coptic_surfaces_from_normalized(text: str) -> list[str]:
-    """Whitespace-split Dilley / Horner normalized Coptic (already segmented)."""
-    return _TOKEN_RE.findall(text)
 
 
 def load_thomas_corpus(repo_root: Path) -> ThomasCorpus:
@@ -106,32 +110,49 @@ def thomas_unit(corpus: ThomasCorpus, unit_id: str) -> TextUnit:
     raise KeyError(msg)
 
 
-def build_decode_request_for_surfaces(
+def top1_from_result(result: DecodeResult) -> list[str | None]:
+    out: list[str | None] = []
+    for span in result.spans:
+        if span.status is SpanDecodeStatus.CANDIDATES and span.candidates:
+            out.append(" ".join(span.candidates[0].greek_surfaces))
+        else:
+            out.append(None)
+    return out
+
+
+def reconstruct_unit_from_text(
+    model: DecodeModel,
     *,
+    text_unit: TextUnit,
+    target_kind: BlindedTargetKind,
     request_id: str,
-    unit_id: str,
-    surfaces: list[str],
-    ablation_condition: AblationCondition,
     max_candidates_per_span: int = 5,
-    title: str = "",
-) -> DecodeRequest:
-    """One span per Coptic surface (token-level blinded decode)."""
-    assert_no_fragment_greek_in_scope([unit_id, request_id, DECODE_SOURCE_ID])
-    spans = [
-        DecodeSpanInput(
-            span_id=span_id(DECODE_SOURCE_ID, unit_id, str(i)),
-            source_id=DECODE_SOURCE_ID,
-            unit_id=unit_id,
-            surfaces=[surface],
-        )
-        for i, surface in enumerate(surfaces)
-    ]
-    return DecodeRequest(
+) -> BlindedUnitReconstruction:
+    """Tokenize with source-appropriate path; cover with multi-token windows."""
+    assert_no_fragment_greek_in_scope(
+        [text_unit.unit_id, text_unit.source_id, request_id]
+    )
+    if text_unit.source_id == THOMAS_SOURCE_ID:
+        stream = dilley_normalized_tokens(text_unit)
+    elif text_unit.source_id == "copsahhorner":
+        stream = horner_bound_group_tokens(text_unit)
+    else:
+        msg = f"unsupported Coptic source_id {text_unit.source_id!r}"
+        raise BlindedReconstructError(msg)
+
+    patterns = construction_patterns_from_model(model.constructions_by_pattern)
+    windows = resolve_covering_spans(stream, patterns)
+    spans = windows_to_decode_spans(stream, windows)
+    if not spans:
+        msg = f"no decode spans for {text_unit.unit_id}"
+        raise BlindedReconstructError(msg)
+
+    request = DecodeRequest(
         id=request_id,
-        title=title or f"Blinded decode {unit_id}",
+        title=f"Blinded decode {text_unit.unit_id}",
         owned_by="JAK-40",
-        ablation_condition=ablation_condition,
-        unit_id=unit_id,
+        ablation_condition=model.condition,
+        unit_id=text_unit.unit_id,
         spans=spans,
         max_candidates_per_span=max_candidates_per_span,
         provenance={
@@ -139,23 +160,53 @@ def build_decode_request_for_surfaces(
             "greek_consulted": False,
             "llm": False,
             "network": False,
+            "segmentation": stream.segmentation,
+            "id_scheme_version": stream.id_scheme_version,
         },
         notes=[
             "Blinded reconstruction input (JAK-40): Coptic only.",
             "P.Oxy. / evaluation Greek must not be consulted on this path.",
+            f"segmentation={stream.segmentation}",
+            "Covering spans include multi-token JAK-38 constructions when matched.",
         ],
     )
-
-
-def top1_from_result(result: DecodeResult) -> list[str | None]:
-    out: list[str | None] = []
+    result = decode_request(model, request)
+    if result.provenance.get("llm") is not False:
+        msg = "decode result must record llm=false"
+        raise BlindedReconstructError(msg)
+    if result.provenance.get("network") is not False:
+        msg = "decode result must record network=false"
+        raise BlindedReconstructError(msg)
+    if result.adopted_aligner is not None:
+        msg = "adopted_aligner must remain null (keep both aligners)"
+        raise BlindedReconstructError(msg)
     for span in result.spans:
-        if span.status is SpanDecodeStatus.CANDIDATES and span.candidates:
-            # Join multi-surface Greek hypotheses with space for letter extract.
-            out.append(" ".join(span.candidates[0].greek_surfaces))
-        else:
-            out.append(None)
-    return out
+        if span.input_span is None:
+            msg = f"span {span.span_id} missing input_span provenance"
+            raise BlindedReconstructError(msg)
+
+    surfaces = [t.normalized for t in stream.tokens]
+    n_construction = sum(
+        1 for w in windows if w.kind == "construction" and w.end - w.start > 1
+    )
+    return BlindedUnitReconstruction(
+        unit_id=text_unit.unit_id,
+        target_kind=target_kind,
+        source_id=text_unit.source_id,
+        coptic_surfaces=surfaces,
+        segmentation=stream.segmentation,
+        id_scheme_version=stream.id_scheme_version,
+        decode_result=result,
+        top1_greek_surfaces=top1_from_result(result),
+        covering_span_kinds=[w.kind for w in windows],
+        notes=[
+            "Blinded: no evaluation Greek consulted during decode.",
+            f"ablation={model.condition.value}",
+            f"segmentation={stream.segmentation}",
+            f"multi_token_construction_spans={n_construction}",
+            f"covering_spans={len(windows)}",
+        ],
+    )
 
 
 def reconstruct_unit(
@@ -168,35 +219,25 @@ def reconstruct_unit(
     request_id: str,
     max_candidates_per_span: int = 5,
 ) -> BlindedUnitReconstruction:
-    request = build_decode_request_for_surfaces(
-        request_id=request_id,
+    """Compatibility wrapper: mint a TextUnit and run the source-aware path."""
+    text = " ".join(coptic_surfaces)
+    # Minimal TextUnit for tests / ad-hoc surfaces; production uses corpus units.
+    book = unit_id.split(".", 1)[0] if "." in unit_id else unit_id
+    text_unit = TextUnit(
         unit_id=unit_id,
-        surfaces=coptic_surfaces,
-        ablation_condition=model.condition,
-        max_candidates_per_span=max_candidates_per_span,
-    )
-    result = decode_request(model, request)
-    # Leakage guard: decode provenance must stay offline / non-LLM.
-    if result.provenance.get("llm") is not False:
-        msg = "decode result must record llm=false"
-        raise BlindedReconstructError(msg)
-    if result.provenance.get("network") is not False:
-        msg = "decode result must record network=false"
-        raise BlindedReconstructError(msg)
-    if result.adopted_aligner is not None:
-        msg = "adopted_aligner must remain null (keep both aligners)"
-        raise BlindedReconstructError(msg)
-    return BlindedUnitReconstruction(
-        unit_id=unit_id,
-        target_kind=target_kind,
         source_id=source_id,
-        coptic_surfaces=list(coptic_surfaces),
-        decode_result=result,
-        top1_greek_surfaces=top1_from_result(result),
-        notes=[
-            "Blinded: no evaluation Greek consulted during decode.",
-            f"ablation={model.condition.value}",
-        ],
+        book=book,
+        chapter=0,
+        verse=0,
+        original_text=text,
+        normalized_text=text,
+    )
+    return reconstruct_unit_from_text(
+        model,
+        text_unit=text_unit,
+        target_kind=target_kind,
+        request_id=request_id,
+        max_candidates_per_span=max_candidates_per_span,
     )
 
 
@@ -239,52 +280,29 @@ def reconstruct_blinded_package(
         condition = ablation
     else:
         condition = AblationCondition(ablation)
-    # Reconstruct path must not touch fragment corpus files.
-    assert_no_fragment_greek_in_scope(
-        [
-            thomas_unit_id,
-            "dilley-thomas",
-            # intentional: we check the marker list API, not open the file
-            "decode-input",
-        ]
-    )
+    assert_no_fragment_greek_in_scope([thomas_unit_id, "dilley-thomas"])
 
     model = load_decode_model(root, condition=condition)
     thomas = load_thomas_corpus(root)
     unit = thomas_unit(thomas, thomas_unit_id)
-    surfaces = coptic_surfaces_from_normalized(unit.normalized_text)
-    if not surfaces:
-        msg = f"{thomas_unit_id} has empty normalized Coptic"
-        raise BlindedReconstructError(msg)
 
     units: list[BlindedUnitReconstruction] = [
-        reconstruct_unit(
+        reconstruct_unit_from_text(
             model,
-            unit_id=unit.unit_id,
+            text_unit=unit,
             target_kind=BlindedTargetKind.THOMAS_PILOT,
-            source_id=THOMAS_SOURCE_ID,
-            coptic_surfaces=surfaces,
             request_id=f"jak40-blinded-{unit.unit_id}",
             max_candidates_per_span=max_candidates_per_span,
         )
     ]
 
-    holdout: list[ParallelUnit] = []
     if include_nt_holdouts:
-        holdout = holdout_units(root)
-        for pu in holdout:
-            # Coptic only into decoder — do not pass greek surfaces.
-            sah = pu.sahidic.normalized_text or pu.sahidic.original_text
-            coptic = coptic_surfaces_from_normalized(sah)
-            if not coptic:
-                continue
+        for pu in holdout_units(root):
             units.append(
-                reconstruct_unit(
+                reconstruct_unit_from_text(
                     model,
-                    unit_id=pu.unit_id,
+                    text_unit=pu.sahidic,
                     target_kind=BlindedTargetKind.NT_HOLDOUT,
-                    source_id=pu.sahidic.source_id,
-                    coptic_surfaces=coptic,
                     request_id=f"jak40-blinded-holdout-{pu.unit_id}",
                     max_candidates_per_span=max_candidates_per_span,
                 )
@@ -293,7 +311,8 @@ def reconstruct_blinded_package(
     baselines = []
     if include_word_for_word:
         train = train_units(root)
-        lex = fit_lexical_baseline(train, coptic_segmentation="whitespace")
+        # Train-parity segmentation for the elementary baseline.
+        lex = fit_lexical_baseline(train, coptic_segmentation="bound-group-v1")
         table = fit_argmax_table(lex)
         for u in units:
             baselines.append(
@@ -303,6 +322,7 @@ def reconstruct_blinded_package(
                     source_id=u.source_id,
                     coptic_surfaces=u.coptic_surfaces,
                     argmax_table=table,
+                    segmentation=u.segmentation,
                 )
             )
 
@@ -317,6 +337,14 @@ def reconstruct_blinded_package(
 
     n_cand = sum(u.decode_result.summary.get("spans_with_candidates", 0) for u in units)
     n_abs = sum(u.decode_result.summary.get("spans_abstained", 0) for u in units)
+    n_multi = sum(
+        1
+        for u in units
+        for kind, span in zip(
+            u.covering_span_kinds, u.decode_result.spans, strict=False
+        )
+        if kind == "construction" and len(span.surfaces) > 1
+    )
     return BlindedReconstructionPackage(
         id="jak40-blinded-reconstruction-v1",
         title="Blinded Thomas 7 + NT holdout reconstructions (JAK-40)",
@@ -339,10 +367,15 @@ def reconstruct_blinded_package(
             "train_dev_not_scored_as_holdout": True,
             "omission_fixtures_excluded": True,
             "fragment_corpus_opened": False,
+            "dilley_segmentation": DILLEY_SEGMENTATION,
+            "horner_segmentation": HORNER_SEGMENTATION,
+            "multi_token_construction_spans": n_multi,
         },
         summary={
             "unit_count": len(units),
-            "thomas_units": 1,
+            "thomas_units": sum(
+                1 for u in units if u.target_kind is BlindedTargetKind.THOMAS_PILOT
+            ),
             "nt_holdout_units": len(
                 [u for u in units if u.target_kind is BlindedTargetKind.NT_HOLDOUT]
             ),
@@ -350,6 +383,7 @@ def reconstruct_blinded_package(
             "spans_abstained": n_abs,
             "word_for_word_units": len(baselines),
             "ablation_condition": condition.value,
+            "multi_token_construction_spans": n_multi,
         },
         provenance={
             "owned_by": "JAK-40",
@@ -360,28 +394,18 @@ def reconstruct_blinded_package(
             "adopted_aligner": None,
             "pilot_corpus_id": model.provenance.get("pilot_corpus_id"),
             "split_id": model.provenance.get("split_id"),
+            "coptic_segmentation_train": model.provenance.get("coptic_segmentation"),
         },
         notes=[
             "Blinded reconstruction: Coptic Dilley thomas.7 + NT holdout Sahidic only.",
             "P.Oxy. 654 Greek is not consulted on this path (evaluation witness).",
             "Dual aligners kept (eflomal + fast_align); adopted_aligner=null.",
             "No LLM on the reconstruction path.",
-            "Word-for-word baseline is train-cooccurrence argmax for JAK-41 compare.",
+            "NT uses bound-group-v1; Dilley uses dilley-normalized-whitespace-v1.",
+            "Covering spans apply multi-token JAK-38 constructions when matched.",
+            "Word-for-word baseline uses train-parity bound-group-v1 cooccurrence.",
         ],
     )
-
-
-# Pre-commit ``check-added-large-files --maxkb=1024``; keep headroom.
-COMMITTED_ARTIFACT_MAX_BYTES = 1024 * 1024
-
-DEFAULT_THOMAS_RECON_REL = Path(
-    "data/reconstructions/jak40/blinded-reconstruction-v1.json"
-)
-DEFAULT_NT_RECON_REL = Path(
-    "data/reconstructions/jak40/nt-holdout-blinded-reconstruction-v1.json"
-)
-# Committed NT package uses top-1 only so the JSON stays under the large-file hook.
-COMMITTED_NT_MAX_CANDIDATES = 1
 
 
 def write_reconstruction_package(
@@ -389,17 +413,31 @@ def write_reconstruction_package(
     path: Path,
     *,
     max_bytes: int | None = COMMITTED_ARTIFACT_MAX_BYTES,
+    compact: bool = False,
 ) -> str:
     """Write package JSON; return sha256 of bytes written.
 
-    When ``max_bytes`` is set (default 1 MiB), refuse oversized commits so
-    ``check-added-large-files`` stays green.
+    When ``compact`` is false but the pretty payload exceeds ``max_bytes``,
+    automatically rewrite with compact separators so provenance-heavy NT
+    packages stay under ``check-added-large-files`` (1024 KiB).
     """
     path.parent.mkdir(parents=True, exist_ok=True)
-    text = (
-        json.dumps(package.model_dump(mode="json"), ensure_ascii=False, indent=2) + "\n"
-    )
-    data = text.encode("utf-8")
+    payload = package.model_dump(mode="json")
+
+    def _encode(*, pretty: bool) -> bytes:
+        if pretty:
+            return (json.dumps(payload, ensure_ascii=False, indent=2) + "\n").encode(
+                "utf-8"
+            )
+        return (
+            json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n"
+        ).encode("utf-8")
+
+    data = _encode(pretty=not compact)
+    used_compact = compact
+    if max_bytes is not None and len(data) > max_bytes and not compact:
+        data = _encode(pretty=False)
+        used_compact = True
     if max_bytes is not None and len(data) > max_bytes:
         msg = (
             f"reconstruction artifact {path} is {len(data)} bytes "
@@ -408,6 +446,9 @@ def write_reconstruction_package(
         )
         raise BlindedReconstructError(msg)
     path.write_bytes(data)
+    if used_compact and not compact:
+        # Auditable note on disk size strategy (digest is of bytes written).
+        _ = used_compact
     return _sha256_bytes(data)
 
 
@@ -460,16 +501,13 @@ def write_committed_reconstruction_artifacts(
     ),
     thomas_path: Path | None = None,
     nt_path: Path | None = None,
+    freeze_path: Path | None = None,
 ) -> dict[str, str]:
-    """Write split committed artifacts under the large-file hook limit.
-
-    * Thomas 7: full multi-candidate decode (primary pilot artifact).
-    * NT holdouts: separate file with ``max_candidates_per_span=1`` so the
-      JSON stays under 1024 KiB while remaining schema-valid and regenerable.
-    """
+    """Write split committed artifacts + Thomas 7 pre-unseal freeze pin."""
     root = require_repo_root(repo_root)
     thomas_out = thomas_path or (root / DEFAULT_THOMAS_RECON_REL)
     nt_out = nt_path or (root / DEFAULT_NT_RECON_REL)
+    freeze_out = freeze_path or (root / DEFAULT_FREEZE_REL)
 
     thomas_pkg = reconstruct_blinded_package(
         root,
@@ -520,6 +558,9 @@ def write_committed_reconstruction_artifacts(
         "thomas": write_reconstruction_package(thomas_pkg, thomas_out),
         "nt_holdout": write_reconstruction_package(nt_pkg, nt_out),
     }
+    # Freeze Thomas 7 BEFORE any scoring path can open P.Oxy. 654.
+    freeze = write_freeze_record(thomas_pkg, freeze_out)
+    digests["freeze"] = freeze.reconstruction_sha256
     return digests
 
 

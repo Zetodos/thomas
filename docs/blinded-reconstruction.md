@@ -36,18 +36,28 @@ Use `--allow-unreviewed` only for harness smoke (`official=false`), or
 | --- | --- |
 | [`data/reconstructions/jak40/blinded-reconstruction-v1.json`](../data/reconstructions/jak40/blinded-reconstruction-v1.json) | Thomas 7 blinded decode + word-for-word baseline |
 | [`data/reconstructions/jak40/nt-holdout-blinded-reconstruction-v1.json`](../data/reconstructions/jak40/nt-holdout-blinded-reconstruction-v1.json) | NT holdout decode (top-1; split for ≤1024 KiB hook) |
+| [`data/reconstructions/jak40/thomas-7-blinded-freeze-v1.json`](../data/reconstructions/jak40/thomas-7-blinded-freeze-v1.json) | Pre-unseal digest pin for official Thomas 7 scoring |
 | [`data/reconstructions/jak40/thomas-7-surviving-letter-eval-v1.json`](../data/reconstructions/jak40/thomas-7-surviving-letter-eval-v1.json) | Thomas 7 surviving-letter report (or gate-blocked stub) |
 | [`data/reconstructions/jak40/nt-holdout-letter-eval-v1.json`](../data/reconstructions/jak40/nt-holdout-letter-eval-v1.json) | NT holdout letter agreement (provisional gold) |
 
 Each reconstruction unit records ranked candidates / abstentions from JAK-39,
-`artifact_digests`, and `blinding.greek_consulted_during_reconstruction=false`.
+source token provenance (`input_span` + real Dilley/Horner ids), covering spans
+(including multi-token JAK-38 constructions when matched), `artifact_digests`,
+and `blinding.greek_consulted_during_reconstruction=false`.
+
+NT holdouts use train-parity `bound-group-v1` (v2 ids); Dilley Thomas uses
+`dilley-normalized-whitespace-v1`. Whitespace-unsplit Mark 4:4 groups such as
+`ⲛⲧⲉⲣⲉϥϫⲟ,` and `ⲛϭⲓⲛϩⲁⲗⲁⲧⲉ` are therefore split before decode.
 
 ## Metrics (elementary)
 
-Letter agreement uses LCS over accent-stripped lowercase Greek **letters**.
-Precision / recall / F1 are reported with explicit denominators. No invented
-pass/fail threshold (Jake). Multi-level lemma / order / phrase metrics and the
-decoder-vs-baseline comparison gate live in **JAK-41**.
+Thomas 7 uses **gap-aware ordered-run** letter agreement (restorations / unclear
+as gaps). NT holdouts use **token-positional** letter agreement. Global LCS is
+retained only as `incidental_global_lcs` (diagnostic — not gate precision/F1).
+Unclear papyrus letters are excluded from primary gold by default (sensitivity
+reported separately). No invented pass/fail threshold (Jake). Multi-level lemma /
+order / phrase metrics and the decoder-vs-baseline comparison gate live in
+**JAK-41**.
 
 ## CLI
 
