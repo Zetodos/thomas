@@ -95,6 +95,7 @@ def test_committed_manifests_validate() -> None:
     manifests = validate_manifests_dir(MANIFESTS_DIR)
     ids = {m.id for m in manifests}
     assert ids == {
+        "ccl-ddglc-tei",
         "copsahhorner",
         "dilley-thomas",
         "ntvmr-vaticanus-b",

@@ -41,7 +41,7 @@ Adopted redistributable core (JAK-15 Done). Pin versions at ingest. Sahidica is 
 | Westcott–Hort 1881 (Robinson) | not default | Documented unused fallback only; **not** in default manifests/CLI |
 | SCRIPTORIUM `sahidic.ot` | `setup-download` / `bundled` | CC BY-SA 4.0 (secondary) |
 | **Swete LXX** (First1KGreek / nathans/lxx-swete) | `setup-download` | CC BY-SA 4.0 (JAK-18); not Rahlfs-Hanhart; Rahlfs 1935 not preferred |
-| **CCL / DDGLC TEI** | `setup-download` / `bundled` | CC BY-SA 4.0 (JAK-19); do not wait on DIOSKOROS; no scrape |
+| **CCL / DDGLC TEI** | `setup-download` / minimal verified subset `bundled` | CC BY-SA 4.0 (JAK-19); manifest `ccl-ddglc-tei`; JAK-38 ships spot-checked subset only; do not wait on DIOSKOROS; no scrape |
 | WEB English passages | `bundled` (passages) | Public domain; trademark care |
 
 ### Attribution — Dilley / SCRIPTORIUM Coptic Thomas (CC BY 4.0)

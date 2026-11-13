@@ -1,0 +1,613 @@
+{
+  "id": "verified-loanwords-ccl-ddglc-v1",
+  "title": "Minimal independently verified Greek-loanword correspondences (CCL/DDGLC; JAK-38)",
+  "owned_by": "JAK-38",
+  "schema_version": "1",
+  "evidence_class": "independently_verified",
+  "license": "CC-BY-SA-4.0",
+  "entries": [
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-makarios",
+      "coptic_lemma": "ⲙⲁⲕⲁⲣⲓⲟⲥ",
+      "coptic_forms": [
+        "ⲙⲁⲕⲁⲣⲓⲟⲥ",
+        "ⲙⲁⲕⲁⲣⲓⲟⲛ"
+      ],
+      "greek_lemma": "μακάριος",
+      "greek_lemma_normalized": "μακαριος",
+      "greek_pos": "adjective",
+      "greek_meaning": "blessed, happy",
+      "tla_entry_id": "C9689",
+      "ddglc_greek_lemma_id": "1336",
+      "ccl_form_ids": [
+        "CF24876"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C9689",
+        "tei_form_xml_ids": [
+          "CF24876"
+        ],
+        "tei_orth_attested": "ⲙⲁⲕⲁⲣⲓⲟⲥ",
+        "tei_greek_lemma": "μακάριος",
+        "tei_greek_lemma_id": "1336",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "Motivated by Thomas 7 Coptic ⲙⲁⲕⲁⲣⲓⲟⲥ (L clue). Do not consult P.Oxy. 654 Greek when verifying this row.",
+      "notes": "DDGLC sense bibl present on CCL TEI entry."
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-euaggelion",
+      "coptic_lemma": "ⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ",
+      "coptic_forms": [
+        "ⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ",
+        "ⲉⲩⲁⲅ"
+      ],
+      "greek_lemma": "εὐαγγέλιον",
+      "greek_lemma_normalized": "ευαγγελιον",
+      "greek_pos": "noun",
+      "greek_meaning": "good news, gospel",
+      "tla_entry_id": "C9059",
+      "ddglc_greek_lemma_id": "809",
+      "ccl_form_ids": [
+        "CF22411"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C9059",
+        "tei_form_xml_ids": [
+          "CF22411"
+        ],
+        "tei_orth_attested": "ⲉⲩⲁⲅⲅⲉⲗⲓⲟⲛ",
+        "tei_greek_lemma": "εὐαγγέλιον",
+        "tei_greek_lemma_id": "809",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [
+        "v1:copsahhorner/mark.1.1/s/euaggelion",
+        "v1:ntvmr-vaticanus-b/mark.1.1/s/euaggeliou"
+      ],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": "NT gold sample also tags this as loanword (illustrative only)."
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-mathetes",
+      "coptic_lemma": "ⲙⲁⲑⲏⲧⲏⲥ",
+      "coptic_forms": [
+        "ⲙⲁⲑⲏⲧⲏⲥ",
+        "ⲙⲁⲑⲏⲧ"
+      ],
+      "greek_lemma": "μαθητής",
+      "greek_lemma_normalized": "μαθητης",
+      "greek_pos": "noun",
+      "greek_meaning": "learner, pupil, disciple",
+      "tla_entry_id": "C9683",
+      "ddglc_greek_lemma_id": "1334",
+      "ccl_form_ids": [
+        "CF24841"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C9683",
+        "tei_form_xml_ids": [
+          "CF24841"
+        ],
+        "tei_orth_attested": "ⲙⲁⲑⲏⲧⲏⲥ",
+        "tei_greek_lemma": "μαθητής",
+        "tei_greek_lemma_id": "1334",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-aitei",
+      "coptic_lemma": "ⲁⲓⲧⲉⲓ",
+      "coptic_forms": [
+        "ⲁⲓⲧⲉⲓ",
+        "ⲁⲓⲧⲉ"
+      ],
+      "greek_lemma": "αἰτέω",
+      "greek_lemma_normalized": "αιτεω",
+      "greek_pos": "verb",
+      "greek_meaning": "to ask (s.o. for s.th.)",
+      "tla_entry_id": "C8126",
+      "ddglc_greek_lemma_id": "54",
+      "ccl_form_ids": [
+        "CF18503"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C8126",
+        "tei_form_xml_ids": [
+          "CF18503"
+        ],
+        "tei_orth_attested": "ⲁⲓⲧⲉⲓ",
+        "tei_greek_lemma": "αἰτέω",
+        "tei_greek_lemma_id": "54",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [
+        "v1:copsahhorner/matthew.7.7/s/aitei",
+        "v1:ntvmr-vaticanus-b/matthew.7.7/s/aiteite"
+      ],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-parabole",
+      "coptic_lemma": "ⲡⲁⲣⲁⲃⲟⲗⲏ",
+      "coptic_forms": [
+        "ⲡⲁⲣⲁⲃⲟⲗⲏ"
+      ],
+      "greek_lemma": "παραβολή",
+      "greek_lemma_normalized": "παραβολη",
+      "greek_pos": "noun",
+      "greek_meaning": "juxtaposition, comparison; parable",
+      "tla_entry_id": "C10032",
+      "ddglc_greek_lemma_id": "2558",
+      "ccl_form_ids": [
+        "CF26233"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C10032",
+        "tei_form_xml_ids": [
+          "CF26233"
+        ],
+        "tei_orth_attested": "ⲡⲁⲣⲁⲃⲟⲗⲏ",
+        "tei_greek_lemma": "παραβολή",
+        "tei_greek_lemma_id": "2558",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-de",
+      "coptic_lemma": "ⲇⲉ",
+      "coptic_forms": [
+        "ⲇⲉ"
+      ],
+      "greek_lemma": "δέ",
+      "greek_lemma_normalized": "δε",
+      "greek_pos": "particle",
+      "greek_meaning": "but, and, so, then",
+      "tla_entry_id": "C8719",
+      "ddglc_greek_lemma_id": "458",
+      "ccl_form_ids": [
+        "CF20757"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C8719",
+        "tei_form_xml_ids": [
+          "CF20757"
+        ],
+        "tei_orth_attested": "ⲇⲉ",
+        "tei_greek_lemma": "δέ",
+        "tei_greek_lemma_id": "458",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-gar",
+      "coptic_lemma": "ⲅⲁⲣ",
+      "coptic_forms": [
+        "ⲅⲁⲣ"
+      ],
+      "greek_lemma": "γάρ",
+      "greek_lemma_normalized": "γαρ",
+      "greek_pos": "particle",
+      "greek_meaning": "for, then, because",
+      "tla_entry_id": "C8657",
+      "ddglc_greek_lemma_id": "415",
+      "ccl_form_ids": [
+        "CF20474"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C8657",
+        "tei_form_xml_ids": [
+          "CF20474"
+        ],
+        "tei_orth_attested": "ⲅⲁⲣ",
+        "tei_greek_lemma": "γάρ",
+        "tei_greek_lemma_id": "415",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-alla",
+      "coptic_lemma": "ⲁⲗⲗⲁ",
+      "coptic_forms": [
+        "ⲁⲗⲗⲁ"
+      ],
+      "greek_lemma": "ἀλλά",
+      "greek_lemma_normalized": "αλλα",
+      "greek_pos": "conjunction",
+      "greek_meaning": "but, yet, rather",
+      "tla_entry_id": "C8179",
+      "ddglc_greek_lemma_id": "95",
+      "ccl_form_ids": [
+        "CF18776"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C8179",
+        "tei_form_xml_ids": [
+          "CF18776"
+        ],
+        "tei_orth_attested": "ⲁⲗⲗⲁ",
+        "tei_greek_lemma": "ἀλλά",
+        "tei_greek_lemma_id": "95",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-oude",
+      "coptic_lemma": "ⲟⲩⲇⲉ",
+      "coptic_forms": [
+        "ⲟⲩⲇⲉ"
+      ],
+      "greek_lemma": "οὐδέ",
+      "greek_lemma_normalized": "ουδε",
+      "greek_pos": "conjunction",
+      "greek_meaning": "nor, and not, not even",
+      "tla_entry_id": "C9959",
+      "ddglc_greek_lemma_id": "1592",
+      "ccl_form_ids": [
+        "CF25965"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C9959",
+        "tei_form_xml_ids": [
+          "CF25965"
+        ],
+        "tei_orth_attested": "ⲟⲩⲇⲉ",
+        "tei_greek_lemma": "οὐδέ",
+        "tei_greek_lemma_id": "1592",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-psyche",
+      "coptic_lemma": "ⲯⲩⲭⲏ",
+      "coptic_forms": [
+        "ⲯⲩⲭⲏ"
+      ],
+      "greek_lemma": "ψυχή",
+      "greek_lemma_normalized": "ψυχη",
+      "greek_pos": "noun",
+      "greek_meaning": "life, spirit, soul, self",
+      "tla_entry_id": "C11031",
+      "ddglc_greek_lemma_id": "2433",
+      "ccl_form_ids": [
+        "CF30301"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C11031",
+        "tei_form_xml_ids": [
+          "CF30301"
+        ],
+        "tei_orth_attested": "ⲯⲩⲭⲏ",
+        "tei_greek_lemma": "ψυχή",
+        "tei_greek_lemma_id": "2433",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-kosmos",
+      "coptic_lemma": "ⲕⲟⲥⲙⲟⲥ",
+      "coptic_forms": [
+        "ⲕⲟⲥⲙⲟⲥ"
+      ],
+      "greek_lemma": "κόσμος",
+      "greek_lemma_normalized": "κοσμος",
+      "greek_pos": "noun",
+      "greek_meaning": "order, ornament, world, universe",
+      "tla_entry_id": "C9517",
+      "ddglc_greek_lemma_id": "1192",
+      "ccl_form_ids": [
+        "CF24208"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C9517",
+        "tei_form_xml_ids": [
+          "CF24208"
+        ],
+        "tei_orth_attested": "ⲕⲟⲥⲙⲟⲥ",
+        "tei_greek_lemma": "κόσμος",
+        "tei_greek_lemma_id": "1192",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-pneuma",
+      "coptic_lemma": "ⲡⲛⲉⲩⲙⲁ",
+      "coptic_forms": [
+        "ⲡⲛⲉⲩⲙⲁ"
+      ],
+      "greek_lemma": "πνεῦμα",
+      "greek_lemma_normalized": "πνευμα",
+      "greek_pos": "noun",
+      "greek_meaning": "blast, wind, breath, spirit",
+      "tla_entry_id": "C10220",
+      "ddglc_greek_lemma_id": "1775",
+      "ccl_form_ids": [
+        "CF27013"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C10220",
+        "tei_form_xml_ids": [
+          "CF27013"
+        ],
+        "tei_orth_attested": "ⲡⲛⲉⲩⲙⲁ",
+        "tei_greek_lemma": "πνεῦμα",
+        "tei_greek_lemma_id": "1775",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-sarx",
+      "coptic_lemma": "ⲥⲁⲣⲝ",
+      "coptic_forms": [
+        "ⲥⲁⲣⲝ"
+      ],
+      "greek_lemma": "σάρξ",
+      "greek_lemma_normalized": "σαρξ",
+      "greek_pos": "noun",
+      "greek_meaning": "flesh",
+      "tla_entry_id": "C10421",
+      "ddglc_greek_lemma_id": "1937",
+      "ccl_form_ids": [
+        "CF27869"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C10421",
+        "tei_form_xml_ids": [
+          "CF27869"
+        ],
+        "tei_orth_attested": "ⲥⲁⲣⲝ",
+        "tei_greek_lemma": "σάρξ",
+        "tei_greek_lemma_id": "1937",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    },
+    {
+      "evidence_class": "independently_verified",
+      "loanword_id": "verified-angelos",
+      "coptic_lemma": "ⲁⲅⲅⲉⲗⲟⲥ",
+      "coptic_forms": [
+        "ⲁⲅⲅⲉⲗⲟⲥ",
+        "ⲁⲅⲅⲉⲗⲟ"
+      ],
+      "greek_lemma": "ἄγγελος",
+      "greek_lemma_normalized": "αγγελος",
+      "greek_pos": "noun",
+      "greek_meaning": "messenger, angel",
+      "tla_entry_id": "C8062",
+      "ddglc_greek_lemma_id": "11",
+      "ccl_form_ids": [
+        "CF18246"
+      ],
+      "license": "CC-BY-SA-4.0",
+      "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+      "source_manifest_id": "ccl-ddglc-tei",
+      "spot_check": {
+        "checked_by": "jak-38-ccl-tei-verify",
+        "checked_at_utc": "2026-11-12T20:34:42Z",
+        "method": "Reproducible check against checksum-pinned CCL TEI v1.2 entry: xml:id (TLA C-id), form xml:id(s), orth, greek_lemma::grl_ID, greek_lemma::grl_lemma. Constructor does not certify pass without TEI match.",
+        "result": "pass",
+        "notes": "Lexical correspondence only; inflection not entailed.",
+        "tei_entry_xml_id": "C8062",
+        "tei_form_xml_ids": [
+          "CF18246"
+        ],
+        "tei_orth_attested": "ⲁⲅⲅⲉⲗⲟⲥ",
+        "tei_greek_lemma": "ἄγγελος",
+        "tei_greek_lemma_id": "11",
+        "parent_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d"
+      },
+      "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax.",
+      "illustrative_nt_span_ids": [],
+      "illustrative_spans_are_non_training": true,
+      "pilot_priority_notes": "",
+      "notes": ""
+    }
+  ],
+  "provenance": {
+    "owned_by": "JAK-38",
+    "created_at_utc": "2026-11-12T20:34:42Z",
+    "policy": "JAK-19",
+    "source_manifest_id": "ccl-ddglc-tei",
+    "ccl_release": "Comprehensive Coptic Lexicon v1.2 (2020)",
+    "ccl_tei_filename": "Comprehensive_Coptic_Lexicon-v1.2-2020.xml",
+    "ccl_tei_source_url": "https://raw.githubusercontent.com/KELLIA/dictionary/master/xml/Comprehensive_Coptic_Lexicon-v1.2-2020.xml",
+    "ccl_tei_sha256": "ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d",
+    "ccl_tei_subset_sha256": "fc1bc945980acc70428ff6bfcd87b864b6f0209d8c04a26aa9baa536f3f40cd6",
+    "ccl_tei_verification_path": "data/sources/mappings/fixtures/ccl-ddglc-tei-verified-subset-v1.xml",
+    "ccl_tei_subset_fixture": "data/sources/mappings/fixtures/ccl-ddglc-tei-verified-subset-v1.xml",
+    "doi": "10.17169/refubium-27566",
+    "license": "CC-BY-SA-4.0",
+    "attribution": "Comprehensive Coptic Lexicon v1.2 — Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; BBAW Thesaurus Linguae Aegyptiae; DDGLC (Freie Universität Berlin). CC BY-SA 4.0. DOI https://doi.org/10.17169/refubium-27566",
+    "dioskoros": "Not used; JAK-19 forbids waiting on / scraping DIOSKOROS."
+  },
+  "summary": {
+    "entry_count": 14,
+    "evidence_class": "independently_verified",
+    "license": "CC-BY-SA-4.0",
+    "tei_verified": true
+  },
+  "notes": [
+    "Independently verified lexical evidence — not statistical.",
+    "Do not merge into NT-aligner training observations.",
+    "CC BY-SA 4.0 ShareAlike applies to this adapted lexical subset.",
+    "Greek loanword ≠ proof of reconstructed Greek inflection.",
+    "Illustrative NT span ids (when present) are JAK-32 handles from train-split NT gold only — not Thomas fragment Greek, and never decoder-training exemplars (illustrative_spans_are_non_training).",
+    "Usable by JAK-39 as hard constraints / stronger L-evidence.",
+    "Certification requires TEI field match; spot_check.result=pass alone is insufficient."
+  ]
+}

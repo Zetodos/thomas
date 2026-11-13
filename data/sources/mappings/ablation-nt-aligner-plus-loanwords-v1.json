@@ -1,0 +1,48 @@
+{
+  "id": "ablation-nt-aligner-plus-loanwords-v1",
+  "title": "Ablation arm B: NT aligner statistical stack + verified loanwords (JAK-38)",
+  "owned_by": "JAK-38",
+  "schema_version": "1",
+  "condition": "nt_aligner_plus_verified_loanwords",
+  "includes": {
+    "lexical_candidates": "data/sources/lexicon/coptic-greek-lexical-candidates-v1.json",
+    "statistical_phrase_constructions": "data/sources/mappings/statistical-phrase-constructions-v1.json",
+    "train_link_artifacts": {
+      "eflomal": "data/sources/lexicon/eflomal-train-links-v1.json",
+      "fast_align": "data/sources/lexicon/fast_align-train-links-v1.json"
+    },
+    "verified_loanwords": "data/sources/mappings/verified-loanwords-ccl-ddglc-v1.json"
+  },
+  "excludes": {
+    "thomas_7_greek": true,
+    "poxy_654": true,
+    "holdout_dev_omission_as_training": true,
+    "dioskoros_scrape": true,
+    "statistical_pairs_as_verified_loanwords": true,
+    "illustrative_nt_spans_as_training": true,
+    "verified_loanword_constraints": false
+  },
+  "phase2_active_aligners": [
+    "eflomal",
+    "fast_align"
+  ],
+  "adopted_aligner": null,
+  "decoder_consumer": "JAK-39",
+  "provenance": {
+    "owned_by": "JAK-38",
+    "created_at_utc": "2026-11-12T20:14:11Z",
+    "phase2_active_aligners": [
+      "eflomal",
+      "fast_align"
+    ],
+    "adopted_aligner": null,
+    "decision": "Run both arms: NT-aligner-only vs NT-aligner + independently verified CCL/DDGLC loanwords."
+  },
+  "notes": [
+    "Arm B adds independently verified CCL/DDGLC loanwords as separate L-evidence / constraints.",
+    "Do not reclassify statistical rows as verified.",
+    "Keep both eflomal and fast_align active (adopted_aligner=null).",
+    "Loanword illustrative_nt_span_ids are non-training references only; decoder must not treat them as training exemplars.",
+    "Consumer: JAK-39 minimal decoder / Phase 2 feasibility report."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "id": "ccl-ddglc-tei",
+  "title": "Comprehensive Coptic Lexicon TEI (incl. DDGLC Greek loanwords)",
+  "version": "1.2-2020",
+  "url": "https://raw.githubusercontent.com/KELLIA/dictionary/master/xml/Comprehensive_Coptic_Lexicon-v1.2-2020.xml",
+  "spdx_or_custom": "CC-BY-SA-4.0",
+  "attribution": "Burns, Dylan Michael; Feder, Frank; John, Katrin; Kupreyev, Maxim; Akademienvorhaben Strukturen und Transformationen des Wortschatzes der ägyptischen Sprache (BBAW / Thesaurus Linguae Aegyptiae); Database and Dictionary of Greek Loanwords in Coptic (DDGLC), Freie Universität Berlin. Licensed CC BY-SA 4.0.",
+  "mode": "setup-download",
+  "checksum": "sha256:ace84fce11b76386a6adb9888b2cb947056954fc9fe9c04aa0676b1f595fd43d",
+  "notes": "Default Coptic + Greek-loanword lexical source (JAK-19 Done). Pin KELLIA dictionary xml/Comprehensive_Coptic_Lexicon-v1.2-2020.xml (CCL v1.2). Refubium DOI 10.17169/refubium-27566. Rights separation: lexicon data CC BY-SA 4.0; KELLIA dictionary UI/software Apache-2.0 — do not conflate. Phase 2 ships only a minimal, manually spot-checked verified loanword subset under data/sources/mappings/verified-loanwords-ccl-ddglc-v1.json (JAK-38); do not bundle the full TEI by default. Do not wait on DIOSKOROS; no scrape. TLA entry ids (C…) and DDGLC greek_lemma::grl_ID values are preserved on verified rows. ShareAlike applies to adapted lexical exports (JAK-16).",
+  "editor": "Burns / Feder / John / Kupreyev; BBAW TLA; DDGLC FU Berlin",
+  "language": "cop",
+  "dialect": "multi-dialect (Sahidic prioritized in subset)",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "local_path": "data/downloads/ccl-ddglc/",
+  "redistributable": true,
+  "gate": null,
+  "module_name": null,
+  "sword_version_date": null,
+  "text_source": "Comprehensive Coptic Lexicon TEI XML (BBAW Egyptian-Coptic + DDGLC Greek loanwords)",
+  "counterpart_source_id": null
+}

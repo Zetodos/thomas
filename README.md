@@ -47,6 +47,8 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`docs/statistical-aligner-comparison.md`](docs/statistical-aligner-comparison.md) | eflomal vs fast_align; Jake keep-both (JAK-36) |
 | [`docs/lexical-candidates.md`](docs/lexical-candidates.md) | Coptic→Greek lexical candidate layers (JAK-37) |
 | [`data/sources/lexicon/`](data/sources/lexicon/) | Lexical candidate table + train-link JSON (JAK-37) |
+| [`docs/phrase-loanword-mappings.md`](docs/phrase-loanword-mappings.md) | Statistical constructions + verified loanwords + ablation (JAK-38) |
+| [`data/sources/mappings/`](data/sources/mappings/) | Phrase/construction + CCL/DDGLC loanword + ablation JSON (JAK-38) |
 
 ## Never ship (summary)
 
