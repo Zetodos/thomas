@@ -8,7 +8,11 @@ from pathlib import Path
 import typer
 
 from zetodos_thomas.dictionary.run import run_parallel_dictionary
-from zetodos_thomas.dictionary.wider import run_gospel_dictionary, run_nt_dictionary
+from zetodos_thomas.dictionary.wider import (
+    run_gospel_dictionary,
+    run_nt_dictionary,
+    run_ot_dictionary,
+)
 from zetodos_thomas.ingest.paths import require_repo_root
 
 dictionary_app = typer.Typer(
@@ -130,6 +134,43 @@ def build_nt_cmd(
     metrics = run_nt_dictionary(root, output_dir=output)
     typer.echo(
         "parallel-dict-v3 "
+        f"loanword_exact_match_rate={metrics['loanword_exact_match_rate']} "
+        f"loanword_stem_match_rate={metrics['loanword_stem_match_rate']} "
+        f"content_type_recall={metrics['content_type_recall']} "
+        f"content_emission_precision={metrics['content_emission_precision']} "
+        f"train_sentences={metrics['train_sentences']} "
+        f"approach_sufficient={metrics['approach_sufficient']}"
+    )
+    typer.echo(str(metrics["approach_sufficient_reason"]))
+
+
+@dictionary_app.command("build-ot")
+def build_ot_cmd(
+    repo_root: Path | None = typer.Option(
+        None,
+        "--repo-root",
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+    ),
+    output: Path | None = typer.Option(
+        None,
+        "--output",
+        "-o",
+        file_okay=False,
+        dir_okay=True,
+    ),
+) -> None:
+    """Re-fit on Horner x Vaticanus plus Sahidic OT x Swete, then score.
+
+    OT and Swete are CC BY-SA 4.0. Dev, holdout, and omission stay out.
+    No handwritten glosses. Thomas Greek is read only at score time.
+    """
+    root = require_repo_root(repo_root)
+    metrics = run_ot_dictionary(root, output_dir=output)
+    typer.echo(
+        "parallel-dict-v4 "
         f"loanword_exact_match_rate={metrics['loanword_exact_match_rate']} "
         f"loanword_stem_match_rate={metrics['loanword_stem_match_rate']} "
         f"content_type_recall={metrics['content_type_recall']} "

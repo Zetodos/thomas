@@ -239,7 +239,15 @@ def _write_outputs(
             "Fragment Greek was not an input."
         ),
     }
-    _dump(dest / "dictionary.json", dictionary_payload)
+    dictionary_path = dest / "dictionary.json"
+    _dump(dictionary_path, dictionary_payload)
+    if dictionary_path.stat().st_size > 950_000:
+        dictionary_payload["greek_types"] = []
+        dictionary_payload["greek_types_omitted"] = (
+            "Omitted so the artifact stays under the repository size hook. "
+            "greek_type_count is retained. Snap was decided before this write."
+        )
+        _dump(dictionary_path, dictionary_payload)
     _dump(dest / "thomas-reconstruction.json", reconstruction)
     # Metrics include an evaluation audit. Do not feed this file back into training.
     _dump(dest / "metrics.json", metrics)

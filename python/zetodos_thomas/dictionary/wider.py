@@ -26,6 +26,7 @@ from zetodos_thomas.dictionary.build import (
 )
 from zetodos_thomas.dictionary.diagnose import load_nt_splits, nt_dev_snap_diagnostic
 from zetodos_thomas.dictionary.orthography import fold_coptic, fold_greek
+from zetodos_thomas.dictionary.ot_bitext import OT_LICENSE, SWETE_COMMIT
 from zetodos_thomas.dictionary.run import (
     VERSION as V1_VERSION,
 )
@@ -607,6 +608,7 @@ def run_gospel_dictionary(
     download: bool = True,
     prepared: PilotCorpus | None = None,
     version: str | None = None,
+    extra_train: list[Any] | None = None,
 ) -> dict[str, Any]:
     """Align a Horner x Vaticanus corpus with both aligners, then score."""
     root = repo_root
@@ -630,7 +632,14 @@ def run_gospel_dictionary(
         corpus_id=corpus.id,
     )
     bundle = build_bitext(corpus, splits)
-    train = bundle.sentences_for(SplitRole.TRAIN)
+    train = list(bundle.sentences_for(SplitRole.TRAIN))
+    for sentence in extra_train or []:
+        if sentence.split_role != SplitRole.TRAIN.value or not str(
+            sentence.unit_id
+        ).startswith("ot."):
+            msg = f"extra training sentence is not an OT train pair: {sentence.unit_id}"
+            raise DictionaryBuildError(msg)
+        train.append(sentence)
     holdout_ids = set(splits.unit_ids_for(SplitRole.HOLDOUT))
     omission_ids = set(splits.unit_ids_for(SplitRole.OMISSION))
     train_ids = [sentence.unit_id for sentence in train]
@@ -661,6 +670,10 @@ def run_gospel_dictionary(
             "greek_tokenization": bundle.greek_tokenization,
             "greek_source_id": GREEK_SOURCE_ID,
             "sahidic_source_id": SAHIDIC_SOURCE_ID,
+            "ot_train_sentences": len(extra_train or []),
+            "nt_train_sentences": len(train) - len(extra_train or []),
+            "license": OT_LICENSE if extra_train else "CC-BY-4.0",
+            "swete_commit": SWETE_COMMIT if extra_train else "",
         },
         version=fit_version,
     )
@@ -681,6 +694,36 @@ def run_gospel_dictionary(
         output_dir or (root / "data" / "reconstructions" / fit_version),
         diagnostic=diagnostic,
         train_sentences=len(train),
+    )
+
+
+def run_ot_dictionary(
+    repo_root: Path,
+    *,
+    output_dir: Path | None = None,
+) -> dict[str, Any]:
+    """Fit NT plus Sahidic OT and Swete. Both OT texts are CC BY-SA 4.0."""
+    from zetodos_thomas.dictionary.ot_bitext import iter_ot_sentences
+
+    root = repo_root
+    ot_sentences = iter_ot_sentences(
+        root / "data" / "downloads" / "sahidic-ot" / "sahidic.ot_TT.zip",
+        root / "data" / "downloads" / "lxx-swete" / "repo" / "data",
+    )
+    if len(ot_sentences) < 1000:
+        msg = f"OT verse pairs are too few to be a real parallel ({len(ot_sentences)})"
+        raise DictionaryBuildError(msg)
+    corpus = build_nt_corpus(
+        sword_root=root / "data" / "downloads" / "sword",
+        tei_dirs=[gospel_tei_dir(root), nt_tei_dir(root)],
+    )
+    return run_gospel_dictionary(
+        root,
+        output_dir=output_dir,
+        download=False,
+        prepared=corpus,
+        version="parallel-dict-v4",
+        extra_train=ot_sentences,
     )
 
 
