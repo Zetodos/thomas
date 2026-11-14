@@ -25,7 +25,10 @@ from zetodos_thomas.eval.feasibility import (
 )
 from zetodos_thomas.eval.letters import greek_letters_only
 from zetodos_thomas.eval.validate_reconstruction import ReconstructionValidationError
-from zetodos_thomas.schemas.blinded import BlindedTargetKind
+from zetodos_thomas.schemas.blinded import (
+    BlindedTargetKind,
+    BlindedUnitReconstruction,
+)
 from zetodos_thomas.schemas.decode import (
     DecodeResult,
     SpanDecodeResult,
@@ -148,8 +151,7 @@ def test_reordering_regression_edit_ops() -> None:
     assert len(alignment.matches) < 2
 
 
-def _construction_decode_unit() -> object:
-    from zetodos_thomas.schemas.blinded import BlindedUnitReconstruction
+def _construction_decode_unit() -> BlindedUnitReconstruction:
     from zetodos_thomas.schemas.decode import (
         AbstentionReason,
         CandidateEvidenceRef,
