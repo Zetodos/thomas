@@ -41,7 +41,12 @@ from zetodos_thomas.ingest.copsahhorner import read_verse
 from zetodos_thomas.ingest.download import DownloadError, fetch_ntvmr_teiraw
 from zetodos_thomas.ingest.ntvmr_vaticanus import SOURCE_ID as GREEK_SOURCE_ID
 from zetodos_thomas.ingest.ntvmr_vaticanus import parse_teiraw
-from zetodos_thomas.integrations.aligners.types import AlignerName, AlignmentLinks
+from zetodos_thomas.integrations.aligners.eflomal_adapter import align_eflomal
+from zetodos_thomas.integrations.aligners.types import (
+    AlignerName,
+    AlignmentLinks,
+    DirectionalAlignment,
+)
 from zetodos_thomas.lexicon.candidates import align_train_sentences
 from zetodos_thomas.schemas.source import ParallelUnit, PilotCorpus, TextUnit
 
@@ -541,6 +546,102 @@ def observed_links_from_alignments(
     return observed, plain_context
 
 
+def stable_eflomal_links(
+    first: AlignmentLinks,
+    second: AlignmentLinks,
+) -> tuple[AlignmentLinks, dict[str, int]]:
+    """Keep an eflomal link only when a second independent sample agrees.
+
+    The Gibbs sampler is not seeded. Low-count case endings flip between
+    runs. Intersecting two samples drops those flips before the dictionary
+    is built. fast_align is unchanged.
+    """
+    if len(first.symmetrized) != len(second.symmetrized):
+        msg = "eflomal samples differ in sentence count"
+        raise DictionaryBuildError(msg)
+    stable: list[DirectionalAlignment] = []
+    kept = 0
+    dropped = 0
+    for left, right in zip(first.symmetrized, second.symmetrized, strict=True):
+        if left.unit_id != right.unit_id:
+            msg = "eflomal sample unit ids diverged"
+            raise DictionaryBuildError(msg)
+        both = tuple(sorted(set(left.pairs) & set(right.pairs)))
+        dropped += len(set(left.pairs) - set(both))
+        kept += len(both)
+        stable.append(DirectionalAlignment(unit_id=left.unit_id, pairs=both))
+    notes = [
+        *first.notes,
+        "eflomal links kept only when two independent samples agree.",
+        f"stable_links={kept} dropped_from_first={dropped}",
+    ]
+    links = AlignmentLinks(
+        aligner=first.aligner,
+        sentences=first.sentences,
+        forward=first.forward,
+        reverse=first.reverse,
+        symmetrized=stable,
+        symmetrization=first.symmetrization,
+        config=first.config,
+        notes=notes,
+    )
+    return links, {"stable_links": kept, "dropped_from_first": dropped}
+
+
+def phrase_table_from_alignments(
+    by_aligner: dict[str, AlignmentLinks],
+) -> dict[tuple[str, ...], tuple[tuple[str, ...], int, float]]:
+    """Coptic spans both aligners map onto the same contiguous Greek span."""
+    eflomal = by_aligner["eflomal"]
+    fast = by_aligner["fast_align"]
+    counts: dict[tuple[str, ...], dict[tuple[str, ...], int]] = defaultdict(
+        lambda: defaultdict(int)
+    )
+    pair_count = min(len(eflomal.sentences), len(fast.sentences))
+    for index in range(pair_count):
+        if eflomal.sentences[index].unit_id != fast.sentences[index].unit_id:
+            continue
+        sentence = eflomal.sentences[index]
+        agreed = set(eflomal.symmetrized[index].pairs) & set(
+            fast.symmetrized[index].pairs
+        )
+        by_src: dict[int, set[int]] = defaultdict(set)
+        for src_index, trg_index in agreed:
+            by_src[src_index].add(trg_index)
+        source = [fold_coptic(token) for token in sentence.source_tokens]
+        target = [fold_greek(token) for token in sentence.target_tokens]
+        for length in (2, 3, 4):
+            if len(source) < length:
+                continue
+            for start in range(len(source) - length + 1):
+                window = range(start, start + length)
+                if any(not by_src.get(src) for src in window):
+                    continue
+                greek_indexes = sorted({trg for src in window for trg in by_src[src]})
+                if not greek_indexes or len(greek_indexes) > 4:
+                    continue
+                if greek_indexes[-1] - greek_indexes[0] + 1 != len(greek_indexes):
+                    continue
+                coptic_key = tuple(source[src] for src in window)
+                greek_key = tuple(target[trg] for trg in greek_indexes)
+                if any(not token for token in coptic_key + greek_key):
+                    continue
+                counts[coptic_key][greek_key] += 1
+    table: dict[tuple[str, ...], tuple[tuple[str, ...], int, float]] = {}
+    for coptic_key, greek_counts in counts.items():
+        ranked = sorted(greek_counts.items(), key=lambda item: (-item[1], item[0]))
+        best_greek, best_count = ranked[0]
+        total = sum(greek_counts.values())
+        if best_count < 2 or total <= 0:
+            continue
+        posterior = best_count / total
+        second = ranked[1][1] / total if len(ranked) > 1 else 0.0
+        if posterior < 0.4 or posterior - second < 0.15:
+            continue
+        table[coptic_key] = (best_greek, best_count, posterior)
+    return table
+
+
 def _file_sha256(path: Path) -> str:
     digest = hashlib.sha256()
     with path.open("rb") as handle:
@@ -561,6 +662,102 @@ def gospel_tei_digest(tei_dir: Path) -> str:
         digest.update(_file_sha256(path).encode())
         digest.update(b"\n")
     return digest.hexdigest()
+
+
+def _dev_detail(
+    sentences: list[Any],
+    dictionary: ParallelDictionary,
+) -> tuple[float, float]:
+    """NT dev token precision and content-type recall. No fragment text."""
+    from zetodos_thomas.dictionary.apply import apply_tokens
+    from zetodos_thomas.dictionary.orthography import fold_greek
+
+    emitted = 0
+    hits = 0
+    content_gold = 0
+    content_hit = 0
+    for sentence in sentences:
+        gold = [fold_greek(token) for token in sentence.target_tokens]
+        gold = [token for token in gold if token]
+        gold_set = set(gold)
+        content = {token for token in gold_set if len(token) >= 4}
+        outputs = apply_tokens(
+            list(sentence.source_tokens),
+            dictionary,
+            snap_enabled=False,
+        )
+        hypothesis: list[str] = []
+        for item in outputs:
+            if item.greek:
+                hypothesis.append(fold_greek(item.greek))
+            for extra in item.greek_extra:
+                folded = fold_greek(extra)
+                if folded:
+                    hypothesis.append(folded)
+        for form in hypothesis:
+            if not form:
+                continue
+            emitted += 1
+            if form in gold_set:
+                hits += 1
+        content_gold += len(content)
+        content_hit += len(content & set(hypothesis))
+    precision = hits / emitted if emitted else 0.0
+    recall = content_hit / content_gold if content_gold else 0.0
+    return precision, recall
+
+
+def _select_structure_on_dev(
+    sentences: list[Any],
+    dictionary: ParallelDictionary,
+) -> None:
+    """Keep suffix, phrase, and paradigm switches only when NT dev improves."""
+    base_precision, base_recall = _dev_detail(sentences, dictionary)
+    options: list[tuple[float, float, bool, bool, bool, bool]] = []
+    switches = tuple(
+        (suffix, phrases, paradigm, loan)
+        for suffix in (False, True)
+        for phrases in (False, True)
+        for paradigm in (False, True)
+        for loan in (False, True)
+    )
+    for use_suffix, use_phrases, use_paradigm, use_loan in switches:
+        dictionary.use_suffix = use_suffix
+        dictionary.use_phrases = use_phrases
+        dictionary.use_paradigm = use_paradigm
+        dictionary.use_loan_spelling = use_loan
+        precision, recall = _dev_detail(sentences, dictionary)
+        if precision + 0.015 < base_precision:
+            continue
+        options.append(
+            (recall, precision, use_suffix, use_phrases, use_paradigm, use_loan)
+        )
+    dictionary.use_suffix = False
+    dictionary.use_phrases = False
+    dictionary.use_paradigm = False
+    dictionary.use_loan_spelling = False
+    dictionary.provenance["dev_content_recall_baseline"] = round(base_recall, 6)
+    dictionary.provenance["dev_token_precision_baseline"] = round(base_precision, 6)
+    if not options:
+        dictionary.provenance["structure_gate"] = "none_cleared_precision"
+        return
+    options.sort(reverse=True)
+    recall, precision, use_suffix, use_phrases, use_paradigm, use_loan = options[0]
+    improved = recall >= base_recall + 0.005 or precision >= base_precision + 0.005
+    if not improved:
+        dictionary.provenance["structure_gate"] = "no_dev_gain"
+        return
+    dictionary.use_suffix = use_suffix
+    dictionary.use_phrases = use_phrases
+    dictionary.use_paradigm = use_paradigm
+    dictionary.use_loan_spelling = use_loan
+    dictionary.provenance["structure_gate"] = "dev"
+    dictionary.provenance["use_suffix"] = use_suffix
+    dictionary.provenance["use_phrases"] = use_phrases
+    dictionary.provenance["use_paradigm"] = use_paradigm
+    dictionary.provenance["use_loan_spelling"] = use_loan
+    dictionary.provenance["dev_content_recall"] = round(recall, 6)
+    dictionary.provenance["dev_token_precision_structure"] = round(precision, 6)
 
 
 def _dev_token_precision(
@@ -609,6 +806,7 @@ def run_gospel_dictionary(
     prepared: PilotCorpus | None = None,
     version: str | None = None,
     extra_train: list[Any] | None = None,
+    select_structure: bool = False,
 ) -> dict[str, Any]:
     """Align a Horner x Vaticanus corpus with both aligners, then score."""
     root = repo_root
@@ -651,7 +849,15 @@ def run_gospel_dictionary(
         aligners=(AlignerName.EFLOMAL, AlignerName.FAST_ALIGN),
         repo_root=root,
     )
+    stable_stats: dict[str, int] = {}
+    if select_structure:
+        second_sample = align_eflomal(train, repo_root=root)
+        alignments["eflomal"], stable_stats = stable_eflomal_links(
+            alignments["eflomal"],
+            second_sample,
+        )
     links, context_counts = observed_links_from_alignments(alignments)
+    phrase_table = phrase_table_from_alignments(alignments) if select_structure else {}
     dictionary: ParallelDictionary = build_dictionary(
         links,
         unit_ids=sorted(set(train_ids)),
@@ -686,6 +892,18 @@ def run_gospel_dictionary(
     dictionary.provenance["dev_token_precision_without_context"] = round(dev_without, 6)
     dictionary.provenance["dev_token_precision_with_context"] = round(dev_with, 6)
     dictionary.provenance["use_context"] = dictionary.use_context
+    if select_structure:
+        from zetodos_thomas.dictionary.build import build_suffix_table
+
+        dictionary.suffix_given_prev = build_suffix_table(context_counts)
+        dictionary.phrases = phrase_table
+        _select_structure_on_dev(dev_sentences, dictionary)
+    if stable_stats:
+        dictionary.provenance["eflomal_stable_samples"] = 2
+        dictionary.provenance["eflomal_stable_links"] = stable_stats["stable_links"]
+        dictionary.provenance["eflomal_links_dropped"] = stable_stats[
+            "dropped_from_first"
+        ]
     diagnostic = nt_dev_snap_diagnostic(corpus, splits, dictionary)
     dictionary.snap_enabled = bool(diagnostic["snap_enabled"])
     return _apply_and_write(
@@ -701,6 +919,8 @@ def run_ot_dictionary(
     repo_root: Path,
     *,
     output_dir: Path | None = None,
+    version: str = "parallel-dict-v4",
+    select_structure: bool = False,
 ) -> dict[str, Any]:
     """Fit NT plus Sahidic OT and Swete. Both OT texts are CC BY-SA 4.0."""
     from zetodos_thomas.dictionary.ot_bitext import iter_ot_sentences
@@ -722,8 +942,28 @@ def run_ot_dictionary(
         output_dir=output_dir,
         download=False,
         prepared=corpus,
-        version="parallel-dict-v4",
+        version=version,
         extra_train=ot_sentences,
+        select_structure=select_structure,
+    )
+
+
+def run_structure_dictionary(
+    repo_root: Path,
+    *,
+    output_dir: Path | None = None,
+) -> dict[str, Any]:
+    """v6: same NT+OT bitext. eflomal links must agree across two samples.
+
+    Each switch is kept only when held-out NT precision does not drop and
+    the dev content recall or token precision improves. Fragment Greek is
+    not an input to that choice.
+    """
+    return run_ot_dictionary(
+        repo_root,
+        output_dir=output_dir,
+        version="parallel-dict-v8",
+        select_structure=True,
     )
 
 
@@ -783,9 +1023,10 @@ def _apply_and_write(
     fragments = load_fragment_corpus(fragments_corpus_path(repo_root))
     summary = score_fragments(decisions, fragments)
     sufficient, reason = _sufficient(summary)
+    fit_version = str(dictionary.provenance.get("version") or VERSION)
     metrics: dict[str, Any] = {
-        "id": f"{VERSION}-metrics",
-        "version": VERSION,
+        "id": f"{fit_version}-metrics",
+        "version": fit_version,
         "uses_thomas_greek_as_training": False,
         "uses_handwritten_glosses": False,
         "uses_verified_loanword_table": False,

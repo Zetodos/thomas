@@ -26,6 +26,7 @@ class TokenOut:
     posterior: float | None
     observation_count: int | None
     span_head: int
+    greek_extra: tuple[str, ...] = ()
 
 
 def apply_tokens(
@@ -76,8 +77,24 @@ def apply_tokens(
             if any(not folded[index] for index in range(start, end)):
                 break
             key = "".join(folded[start:end])
-            emission = dictionary.statistical_emission(key)
-            if emission is not None:
+            span_key = tuple(folded[start:end])
+            phrase = dictionary.phrase_emission(span_key)
+            direct = dictionary.statistical_emission(key)
+            # A phrase may add Greek tokens. It does not replace an attested
+            # one-word emission, so a bound form keeps the greek it was aligned to.
+            phrase_extra: tuple[str, ...] = ()
+            if direct is not None:
+                emission = direct
+                if phrase is not None:
+                    phrase_tokens = (phrase.greek, *phrase.greek_extra)
+                    phrase_extra = tuple(
+                        token
+                        for token in phrase_tokens
+                        if token and token != direct.greek
+                    )
+            else:
+                emission = phrase
+            if emission is not None and emission.channel != "phrase":
                 contexts: list[str] = []
                 if start > 1 and folded[start - 2] and folded[start - 1]:
                     contexts.append(folded[start - 2] + "+" + folded[start - 1])
@@ -85,6 +102,35 @@ def apply_tokens(
                     contexts.append(folded[start - 1])
                 if contexts:
                     emission = dictionary.choose_surface(emission, key, tuple(contexts))
+                elif emission.channel not in {"phrase", "paradigm"}:
+                    emission = dictionary.prefer_loan_spelling(emission, key)
+                extras = dictionary.paradigm_extras(key, emission.greek)
+                if extras:
+                    emission = Emission(
+                        greek=emission.greek,
+                        posterior=emission.posterior,
+                        observation_count=emission.observation_count,
+                        channel="paradigm",
+                        count_eflomal=emission.count_eflomal,
+                        count_fast_align=emission.count_fast_align,
+                        greek_extra=extras,
+                    )
+                if phrase_extra:
+                    merged = tuple(
+                        token
+                        for token in phrase_extra
+                        if token != emission.greek and token not in emission.greek_extra
+                    )
+                    if merged:
+                        emission = Emission(
+                            greek=emission.greek,
+                            posterior=emission.posterior,
+                            observation_count=emission.observation_count,
+                            channel=emission.channel,
+                            count_eflomal=emission.count_eflomal,
+                            count_fast_align=emission.count_fast_align,
+                            greek_extra=emission.greek_extra + merged,
+                        )
             if emission is None and length == 1 and use_snap:
                 emission = dictionary.snap_emission(key)
             if emission is not None:
@@ -129,6 +175,7 @@ def apply_tokens(
                     posterior=emission.posterior,
                     observation_count=emission.observation_count,
                     span_head=start,
+                    greek_extra=emission.greek_extra,
                 )
             else:
                 outputs[index] = TokenOut(

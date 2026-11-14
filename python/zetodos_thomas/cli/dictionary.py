@@ -12,6 +12,7 @@ from zetodos_thomas.dictionary.wider import (
     run_gospel_dictionary,
     run_nt_dictionary,
     run_ot_dictionary,
+    run_structure_dictionary,
 )
 from zetodos_thomas.ingest.paths import require_repo_root
 
@@ -175,6 +176,45 @@ def build_ot_cmd(
         f"loanword_stem_match_rate={metrics['loanword_stem_match_rate']} "
         f"content_type_recall={metrics['content_type_recall']} "
         f"content_emission_precision={metrics['content_emission_precision']} "
+        f"train_sentences={metrics['train_sentences']} "
+        f"approach_sufficient={metrics['approach_sufficient']}"
+    )
+    typer.echo(str(metrics["approach_sufficient_reason"]))
+
+
+@dictionary_app.command("build-structure")
+def build_structure_cmd(
+    repo_root: Path | None = typer.Option(
+        None,
+        "--repo-root",
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+    ),
+    output: Path | None = typer.Option(
+        None,
+        "--output",
+        "-o",
+        file_okay=False,
+        dir_okay=True,
+    ),
+) -> None:
+    """v5 selection on the existing NT and OT bitext, then score fragments.
+
+    Suffix, phrase, and paradigm switches stay only when held-out NT improves.
+    No handwritten glosses. Thomas Greek is read only at score time.
+    """
+    root = require_repo_root(repo_root)
+    metrics = run_structure_dictionary(root, output_dir=output)
+    truncated = metrics["micro"]["loanword_truncated_prefix_misses"]
+    typer.echo(
+        "parallel-dict-v8 "
+        f"loanword_exact_match_rate={metrics['loanword_exact_match_rate']} "
+        f"loanword_stem_match_rate={metrics['loanword_stem_match_rate']} "
+        f"content_type_recall={metrics['content_type_recall']} "
+        f"content_emission_precision={metrics['content_emission_precision']} "
+        f"truncated_prefix_misses={truncated} "
         f"train_sentences={metrics['train_sentences']} "
         f"approach_sufficient={metrics['approach_sufficient']}"
     )

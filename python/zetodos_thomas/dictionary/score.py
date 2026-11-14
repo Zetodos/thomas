@@ -67,6 +67,7 @@ def score_logia(
     loan_tokens = 0
     loan_stem = 0
     loan_exact = 0
+    truncated = 0
     abstain = 0
     letter_tokens = 0
     audit: list[dict[str, object]] = []
@@ -84,6 +85,10 @@ def score_logia(
                 letter_tokens += 1
             elif token.greek:
                 emitted.append(fold_greek(token.greek))
+                for extra in token.greek_extra:
+                    folded_extra = fold_greek(extra)
+                    if folded_extra:
+                        emitted.append(folded_extra)
                 letter_tokens += 1
             if not loan_shape(token.coptic):
                 continue
@@ -110,6 +115,22 @@ def score_logia(
                 loan_exact += 1
             if stem:
                 loan_stem += 1
+            # A short gold string that is only a prefix of the prediction stays
+            # an exact miss. It is counted here so the truncation is visible.
+            prefix_miss = False
+            if stem and not exact and predicted:
+                predicted_folded = fold_greek(predicted)
+                for item in neighbors:
+                    if not predicted_folded or not item:
+                        continue
+                    if predicted_folded.startswith(item) or item.startswith(
+                        predicted_folded
+                    ):
+                        if abs(len(predicted_folded) - len(item)) >= 2:
+                            prefix_miss = True
+                            break
+            if prefix_miss:
+                truncated += 1
             if len(audit) < 20:
                 audit.append(
                     {
@@ -119,6 +140,7 @@ def score_logia(
                         "gold": neighbors[0],
                         "stem_match": stem,
                         "exact_match": exact,
+                        "truncated_prefix": prefix_miss,
                         "evaluation_only": True,
                     }
                 )
@@ -132,6 +154,7 @@ def score_logia(
         "loanword_exact_matches": loan_exact,
         "loanword_stem_match_rate": _rate(loan_stem, loan_tokens),
         "loanword_exact_match_rate": _rate(loan_exact, loan_tokens),
+        "loanword_truncated_prefix_misses": truncated,
         "fragment_types": len(gold_set),
         "fragment_types_recovered": len(all_hit),
         "fragment_type_recall": _rate(len(all_hit), len(gold_set)),
@@ -182,6 +205,7 @@ def _blank_counts() -> dict[str, int]:
         "loanword_tokens": 0,
         "loanword_stem_matches": 0,
         "loanword_exact_matches": 0,
+        "loanword_truncated_prefix_misses": 0,
         "fragment_types": 0,
         "fragment_types_recovered": 0,
         "content_types": 0,
@@ -209,6 +233,7 @@ def _rates_from_counts(counts: dict[str, int]) -> dict[str, object]:
         "loanword_exact_match_rate": _rate(
             counts["loanword_exact_matches"], counts["loanword_tokens"]
         ),
+        "loanword_truncated_prefix_misses": counts["loanword_truncated_prefix_misses"],
         "fragment_type_recall": _rate(
             counts["fragment_types_recovered"], counts["fragment_types"]
         ),

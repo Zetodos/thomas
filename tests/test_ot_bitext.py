@@ -15,6 +15,28 @@ def test_swete_latin_lookalike_folds_to_greek() -> None:
     assert OT_LICENSE == "CC-BY-SA-4.0"
 
 
+def test_truncated_prefix_stays_an_exact_miss() -> None:
+    from zetodos_thomas.dictionary.apply import TokenOut
+    from zetodos_thomas.dictionary.score import score_logia
+
+    token = TokenOut(
+        index=0,
+        coptic="ⲑⲁⲗⲁⲥⲥⲁ",
+        greek="θαλασσησ",
+        channel="direct",
+        posterior=0.8,
+        observation_count=4,
+        span_head=0,
+    )
+    scored = score_logia({3: [token]}, ["θαλα", "θαλασσησ"], {3})
+    assert scored["loanword_exact_matches"] == 1
+    short = score_logia({3: [token]}, ["θαλα"], {3})
+    assert short["loanword_exact_matches"] == 0
+    assert short["loanword_stem_matches"] == 1
+    assert short["loanword_truncated_prefix_misses"] == 1
+    assert short["loanword_tokens"] == 1
+
+
 def test_tt_and_swete_pair_by_verse_number() -> None:
     tt = """
     <verse_n verse_n="1" vname="Genesis 1:1">

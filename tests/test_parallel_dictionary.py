@@ -214,6 +214,41 @@ def test_real_train_table_agrees_on_kai_and_abstains_on_conflict() -> None:
     assert dictionary.statistical_emission("ⲉⲧⲉ") is None
 
 
+def test_loan_spelling_uses_an_attested_transliteration() -> None:
+    dictionary = _dictionary(
+        [
+            _link("ⲡⲟⲗⲓⲥ", "πολιν", 10),
+            _link("ⲡⲟⲗⲓⲥ", "πολισ", 4),
+            _link("ⲟⲩ", "εισ", 4),
+        ]
+    )
+    dictionary.use_context = True
+    dictionary.use_loan_spelling = True
+    outputs = apply_mod.apply_tokens(["ⲟⲩ", "ⲡⲟⲗⲓⲥ"], dictionary)
+    assert outputs[1].greek == "πολισ"
+    assert outputs[1].channel == "loan_spelling"
+    dictionary.context_counts = {"ⲡⲟⲗⲓⲥ": {"πολιν": {"ⲟⲩ": 5}}}
+    overridden = apply_mod.apply_tokens(["ⲟⲩ", "ⲡⲟⲗⲓⲥ"], dictionary)
+    assert overridden[1].greek == "πολιν"
+    assert overridden[1].channel == "direct"
+
+
+def test_phrase_does_not_replace_direct_greek() -> None:
+    dictionary = _dictionary(
+        [
+            _link("ⲡⲟⲗⲓⲥ", "πολισ", 6),
+            _link("ⲟⲩⲡⲟⲗⲓⲥ", "πολισ", 4),
+        ]
+    )
+    dictionary.use_phrases = True
+    dictionary.phrases = {("ⲟⲩ", "ⲡⲟⲗⲓⲥ"): (("πολει", "μεγαλη"), 4, 0.95)}
+    outputs = apply_mod.apply_tokens(["ⲟⲩ", "ⲡⲟⲗⲓⲥ"], dictionary)
+    head = outputs[0]
+    assert head.greek == "πολισ"
+    assert head.channel != "phrase"
+    assert "μεγαλη" in head.greek_extra
+
+
 def test_full_run_scores_without_training_on_fragments(tmp_path: Path) -> None:
     root = find_repo_root()
     metrics = run_parallel_dictionary(root, output_dir=tmp_path, write=True)

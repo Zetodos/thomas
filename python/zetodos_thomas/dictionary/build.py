@@ -7,6 +7,7 @@ verified loanword table are not inputs. Thomas / P.Oxy. unit ids are refused.
 
 from __future__ import annotations
 
+from collections import defaultdict
 from dataclasses import dataclass, field
 
 from zetodos_thomas.align.segment_coptic import peel_bound_group
@@ -68,6 +69,7 @@ class Emission:
     channel: str
     count_eflomal: int
     count_fast_align: int
+    greek_extra: tuple[str, ...] = ()
 
 
 @dataclass
@@ -100,6 +102,18 @@ class ParallelDictionary:
     # coptic -> greek -> previous coptic token -> observation count
     context_counts: dict[str, dict[str, dict[str, int]]] = field(default_factory=dict)
     use_context: bool = False
+    # previous Coptic token -> Greek suffix -> count, pooled across lexemes
+    suffix_given_prev: dict[str, dict[str, int]] = field(default_factory=dict)
+    use_suffix: bool = False
+    # joined Coptic tokens -> (greek tokens, count, posterior)
+    phrases: dict[tuple[str, ...], tuple[tuple[str, ...], int, float]] = field(
+        default_factory=dict
+    )
+    use_phrases: bool = False
+    use_paradigm: bool = False
+    # When true, a loan-shaped token prefers the attested Greek string that
+    # its letters already spell, unless context or suffix already chose.
+    use_loan_spelling: bool = False
 
     def statistical_emission(self, coptic: str) -> Emission | None:
         """Best agreeing emission for ``coptic``, including spelling variants."""
@@ -144,7 +158,44 @@ class ParallelDictionary:
             chosen = self._surface_for_context(emission, coptic, context_key)
             if chosen is not None:
                 return chosen
-        return emission
+        if self.use_suffix:
+            for context_key in keys:
+                if "+" in context_key:
+                    continue
+                transferred = self._surface_for_suffix(emission, coptic, context_key)
+                if transferred is not None:
+                    return transferred
+        return self.prefer_loan_spelling(emission, coptic)
+
+    def prefer_loan_spelling(self, emission: Emission, coptic: str) -> Emission:
+        """Prefer the attested Greek spelling of a loan when case was not chosen.
+
+        The Greek string has to already be aligned to this Coptic form by both
+        aligners. Nothing is invented, and a context or suffix choice stands.
+        """
+        if not self.use_loan_spelling:
+            return emission
+        if emission.channel in {"context", "suffix", "phrase", "paradigm"}:
+            return emission
+        key = fold_coptic(coptic)
+        if not key or not loan_shape(key):
+            return emission
+        spelled = transliterate_coptic(key)
+        if not spelled or spelled == emission.greek:
+            return emission
+        acc = self.direct.get(key, {}).get(spelled)
+        if acc is None or acc.count_eflomal <= 0 or acc.count_fast_align <= 0:
+            return emission
+        if acc.observation_count < MIN_COUNT:
+            return emission
+        return Emission(
+            greek=spelled,
+            posterior=emission.posterior,
+            observation_count=acc.observation_count,
+            channel="loan_spelling",
+            count_eflomal=acc.count_eflomal,
+            count_fast_align=acc.count_fast_align,
+        )
 
     def _surface_for_context(
         self,
@@ -181,6 +232,100 @@ class ParallelDictionary:
             count_eflomal=emission.count_eflomal,
             count_fast_align=emission.count_fast_align,
         )
+
+    def _surface_for_suffix(
+        self,
+        emission: Emission,
+        coptic: str,
+        previous: str,
+    ) -> Emission | None:
+        """Reuse a suffix that this context prefers on other lexemes.
+
+        The full word has to have been aligned to this Coptic form already.
+        The transfer only reorders those attested surfaces.
+        """
+        key = fold_coptic(coptic)
+        prev = fold_coptic(previous)
+        if not key or not prev:
+            return None
+        forms = self._attested_paradigm(key, emission.greek)
+        if len(forms) < 2:
+            return None
+        stem = _shared_prefix(forms)
+        if len(stem) < 3:
+            return None
+        table = self.suffix_given_prev.get(prev, {})
+        scored: list[tuple[int, str]] = []
+        for form in forms:
+            if not form.startswith(stem):
+                continue
+            score = table.get(form[len(stem) :], 0)
+            if score > 0:
+                scored.append((score, form))
+        if not scored:
+            return None
+        scored.sort(key=lambda item: (-item[0], item[1]))
+        best_score, best_form = scored[0]
+        second = scored[1][0] if len(scored) > 1 else 0
+        if best_score < 8 or best_score < second * 2:
+            return None
+        if best_form == emission.greek:
+            return emission
+        return Emission(
+            greek=best_form,
+            posterior=emission.posterior,
+            observation_count=emission.observation_count,
+            channel="suffix",
+            count_eflomal=emission.count_eflomal,
+            count_fast_align=emission.count_fast_align,
+        )
+
+    def paradigm_extras(self, coptic: str, greek: str) -> tuple[str, ...]:
+        """Other attested inflections of the chosen stem, most frequent first."""
+        if not self.use_paradigm:
+            return ()
+        key = fold_coptic(coptic)
+        forms = self._attested_paradigm(key, greek)
+        ranked: list[tuple[int, str]] = []
+        for form in forms:
+            if form == greek:
+                continue
+            acc = self.direct.get(key, {}).get(form)
+            count = acc.observation_count if acc is not None else 0
+            ranked.append((count, form))
+        ranked.sort(key=lambda item: (-item[0], item[1]))
+        return tuple(form for _, form in ranked[:3])
+
+    def phrase_emission(self, keys: tuple[str, ...]) -> Emission | None:
+        """Greek phrase both aligners attached to this Coptic token sequence."""
+        if not self.use_phrases or len(keys) < 2:
+            return None
+        found = self.phrases.get(keys)
+        if found is None:
+            return None
+        greek, count, posterior = found
+        if not greek:
+            return None
+        return Emission(
+            greek=greek[0],
+            posterior=posterior,
+            observation_count=count,
+            channel="phrase",
+            count_eflomal=count,
+            count_fast_align=count,
+            greek_extra=greek[1:],
+        )
+
+    def _attested_paradigm(self, key: str, greek: str) -> list[str]:
+        forms = [greek]
+        for other, acc in self.direct.get(key, {}).items():
+            if other == greek:
+                continue
+            if acc.count_eflomal <= 0 or acc.count_fast_align <= 0:
+                continue
+            if same_paradigm(other, greek):
+                forms.append(other)
+        return forms
 
     def snap_emission(self, coptic: str) -> Emission | None:
         """Snap an unseen loan-shaped form onto an attested train Greek type.
@@ -264,6 +409,53 @@ class ParallelDictionary:
                 }
             )
         return rows
+
+
+def _shared_prefix(forms: list[str]) -> str:
+    if not forms:
+        return ""
+    stem = forms[0]
+    for form in forms[1:]:
+        limit = min(len(stem), len(form))
+        index = 0
+        while index < limit and stem[index] == form[index]:
+            index += 1
+        stem = stem[:index]
+        if not stem:
+            break
+    return stem
+
+
+def build_suffix_table(
+    context_counts: dict[str, dict[str, dict[str, int]]],
+) -> dict[str, dict[str, int]]:
+    """Pool Greek suffixes by the preceding Coptic token, across lexemes."""
+    table: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    for by_greek in context_counts.values():
+        forms = list(by_greek)
+        clusters: list[list[str]] = []
+        for form in forms:
+            placed = False
+            for cluster in clusters:
+                if same_paradigm(form, cluster[0]):
+                    cluster.append(form)
+                    placed = True
+                    break
+            if not placed:
+                clusters.append([form])
+        for cluster in clusters:
+            if len(cluster) < 2:
+                continue
+            stem = _shared_prefix(cluster)
+            if len(stem) < 3:
+                continue
+            for form in cluster:
+                suffix = form[len(stem) :]
+                for prev, count in by_greek[form].items():
+                    if "+" in prev or count <= 0:
+                        continue
+                    table[prev][suffix] += count
+    return {prev: dict(suffixes) for prev, suffixes in table.items()}
 
 
 def transliterate_similar_target(

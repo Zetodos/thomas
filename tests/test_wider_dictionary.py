@@ -11,6 +11,7 @@ from zetodos_thomas.dictionary.diagnose import load_nt_splits
 from zetodos_thomas.dictionary.wider import (
     observed_links_from_alignments,
     role_for_unit,
+    stable_eflomal_links,
     wider_splits,
 )
 from zetodos_thomas.ingest.paths import find_repo_root
@@ -52,6 +53,14 @@ def test_link_union_counts_once_when_both_aligners_agree() -> None:
     assert observed[0].observation_count == 1
     assert observed[0].count_eflomal == 1
     assert observed[0].count_fast_align == 1
+
+
+def test_eflomal_sample_intersection_drops_flips() -> None:
+    first = _links(AlignerName.EFLOMAL, ((0, 0), (1, 1)))
+    second = _links(AlignerName.EFLOMAL, ((0, 0), (1, 0)))
+    stable, stats = stable_eflomal_links(first, second)
+    assert stable.symmetrized[0].pairs == ((0, 0),)
+    assert stats == {"stable_links": 1, "dropped_from_first": 1}
 
 
 def test_single_aligner_batch_is_refused() -> None:
