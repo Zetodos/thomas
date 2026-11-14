@@ -7,6 +7,7 @@ import typer
 
 from zetodos_thomas.cli.align import align_app
 from zetodos_thomas.cli.decode import decode_app
+from zetodos_thomas.cli.dictionary import dictionary_app
 from zetodos_thomas.cli.eval_cmd import eval_app
 from zetodos_thomas.cli.lexicon import lexicon_app
 from zetodos_thomas.cli.mappings import mappings_app
@@ -20,6 +21,7 @@ app = typer.Typer(
 app.add_typer(sources_app, name="sources")
 app.add_typer(align_app, name="align")
 app.add_typer(lexicon_app, name="lexicon")
+app.add_typer(dictionary_app, name="dictionary")
 app.add_typer(mappings_app, name="mappings")
 app.add_typer(decode_app, name="decode")
 app.add_typer(eval_app, name="eval")

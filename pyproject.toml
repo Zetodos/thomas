@@ -106,6 +106,8 @@ select = [
 "python/zetodos_thomas/cli/mappings.py" = ["B008", "RUF001"]
 "python/zetodos_thomas/cli/decode.py" = ["B008", "RUF001"]
 "python/zetodos_thomas/cli/eval_cmd.py" = ["B008", "RUF001"]
+"python/zetodos_thomas/dictionary/**" = ["RUF001"]
+"python/zetodos_thomas/cli/dictionary.py" = ["B008", "RUF001"]
 
 [tool.ruff.format]
 quote-style = "double"

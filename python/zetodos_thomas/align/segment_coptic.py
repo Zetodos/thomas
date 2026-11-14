@@ -144,6 +144,9 @@ _PREFIXES: tuple[str, ...] = (
     "ⲛ",
 )
 
+# Closed-class proclitics for bound-form bridges. Not a Coptic→Greek gloss list.
+GRAMMATICAL_PREFIXES: tuple[str, ...] = _PREFIXES
+
 _CLOSED_FORMS = frozenset(_PREFIXES)
 
 # High-frequency Horner stems / speech verbs that must not be sliced by bare
