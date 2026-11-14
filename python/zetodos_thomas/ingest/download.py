@@ -204,6 +204,24 @@ def _fetch_ntvmr_teiraw(osis_range: str, dest: Path) -> None:
     raise DownloadError(msg) from last_error
 
 
+def fetch_ntvmr_teiraw(osis_range: str, dest: Path, *, force: bool = False) -> Path:
+    """Download one Vaticanus B* teiraw range into ``dest``.
+
+    Unlike :func:`download_ntvmr_vaticanus`, this does not check a pinned
+    checksum. Callers record their own digest. No manuscript images.
+    """
+    if dest.is_file() and not force and dest.stat().st_size > 200:
+        return dest
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    _fetch_ntvmr_teiraw(osis_range, dest)
+    if dest.stat().st_size < 200:
+        msg = (
+            f"NTVMR teiraw for {osis_range} is too small ({dest.stat().st_size} bytes)"
+        )
+        raise DownloadError(msg)
+    return dest
+
+
 def download_ntvmr_vaticanus(
     downloads_dir: Path,
     *,

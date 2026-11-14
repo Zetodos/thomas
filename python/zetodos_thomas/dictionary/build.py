@@ -97,6 +97,9 @@ class ParallelDictionary:
     keys_with_pairs: set[str]
     snap_enabled: bool = False
     provenance: dict[str, object] = field(default_factory=dict)
+    # coptic -> greek -> previous coptic token -> observation count
+    context_counts: dict[str, dict[str, dict[str, int]]] = field(default_factory=dict)
+    use_context: bool = False
 
     def statistical_emission(self, coptic: str) -> Emission | None:
         """Best agreeing emission for ``coptic``, including spelling variants."""
@@ -117,6 +120,67 @@ class ParallelDictionary:
         if len(greeks) == 1:
             return variant_hits[0]
         return None
+
+    def choose_surface(
+        self,
+        emission: Emission,
+        coptic: str,
+        previous: str | tuple[str, ...] | None,
+    ) -> Emission:
+        """Pick an attested inflection from local Coptic context.
+
+        ``previous`` may be several keys, most specific first (a bigram, then
+        the single preceding token). The first decisive key wins. Otherwise
+        the original emission is kept.
+        """
+        if (
+            not self.use_context
+            or not previous
+            or emission.channel == "orthographic_snap"
+        ):
+            return emission
+        keys = (previous,) if isinstance(previous, str) else previous
+        for context_key in keys:
+            chosen = self._surface_for_context(emission, coptic, context_key)
+            if chosen is not None:
+                return chosen
+        return emission
+
+    def _surface_for_context(
+        self,
+        emission: Emission,
+        coptic: str,
+        previous: str,
+    ) -> Emission | None:
+        key = fold_coptic(coptic)
+        prev = previous if "+" in previous else fold_coptic(previous)
+        if not key or not prev:
+            return None
+        by_greek = self.context_counts.get(key, {})
+        scored: list[tuple[int, str]] = []
+        for greek, prevs in by_greek.items():
+            if greek != emission.greek and not same_paradigm(greek, emission.greek):
+                continue
+            count = prevs.get(prev, 0)
+            if count > 0:
+                scored.append((count, greek))
+        if not scored:
+            return None
+        scored.sort(key=lambda item: (-item[0], item[1]))
+        best_count, best_greek = scored[0]
+        second = scored[1][0] if len(scored) > 1 else 0
+        if best_count < 2 or best_count < second + 2:
+            return None
+        if best_greek == emission.greek:
+            return emission
+        return Emission(
+            greek=best_greek,
+            posterior=emission.posterior,
+            observation_count=best_count,
+            channel="context",
+            count_eflomal=emission.count_eflomal,
+            count_fast_align=emission.count_fast_align,
+        )
 
     def snap_emission(self, coptic: str) -> Emission | None:
         """Snap an unseen loan-shaped form onto an attested train Greek type.

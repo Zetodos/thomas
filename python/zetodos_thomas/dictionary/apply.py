@@ -77,6 +77,14 @@ def apply_tokens(
                 break
             key = "".join(folded[start:end])
             emission = dictionary.statistical_emission(key)
+            if emission is not None:
+                contexts: list[str] = []
+                if start > 1 and folded[start - 2] and folded[start - 1]:
+                    contexts.append(folded[start - 2] + "+" + folded[start - 1])
+                if start > 0 and folded[start - 1]:
+                    contexts.append(folded[start - 1])
+                if contexts:
+                    emission = dictionary.choose_surface(emission, key, tuple(contexts))
             if emission is None and length == 1 and use_snap:
                 emission = dictionary.snap_emission(key)
             if emission is not None:
