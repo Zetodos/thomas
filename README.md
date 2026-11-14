@@ -52,6 +52,8 @@ The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python too
 | [`docs/deterministic-decoder.md`](docs/deterministic-decoder.md) | Minimal deterministic decoder, ranking, abstention (JAK-39) |
 | [`docs/blinded-reconstruction.md`](docs/blinded-reconstruction.md) | Blinded Thomas 7 / NT holdout reconstruct + surviving-letter eval (JAK-40) |
 | [`data/reconstructions/jak40/`](data/reconstructions/jak40/) | Blinded reconstruction + eval artifacts (JAK-40) |
+| [`docs/phase2-feasibility-report.md`](docs/phase2-feasibility-report.md) | Phase 2 feasibility metrics vs baseline + gate recommendation (JAK-41) |
+| [`data/reconstructions/jak41/`](data/reconstructions/jak41/) | Feasibility metrics JSON (JAK-41) |
 
 ## Never ship (summary)
 

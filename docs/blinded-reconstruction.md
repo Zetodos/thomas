@@ -56,8 +56,8 @@ as gaps). NT holdouts use **token-positional** letter agreement. Global LCS is
 retained only as `incidental_global_lcs` (diagnostic — not gate precision/F1).
 Unclear papyrus letters are excluded from primary gold by default (sensitivity
 reported separately). No invented pass/fail threshold (Jake). Multi-level lemma /
-order / phrase metrics and the decoder-vs-baseline comparison gate live in
-**JAK-41**.
+order / phrase metrics and the decoder-vs-baseline comparison gate:
+[`docs/phase2-feasibility-report.md`](phase2-feasibility-report.md) (**JAK-41**).
 
 ## CLI
 
@@ -82,6 +82,9 @@ uv run thomas eval validate-reconstruction \
   data/reconstructions/jak40/blinded-reconstruction-v1.json
 uv run thomas eval validate-reconstruction \
   data/reconstructions/jak40/nt-holdout-blinded-reconstruction-v1.json
+
+# Phase 2 feasibility gate (decoder vs word-for-word; JAK-41)
+uv run thomas eval feasibility-report
 ```
 
 ## Leakage controls
@@ -97,5 +100,5 @@ uv run thomas eval validate-reconstruction \
 
 ## Out of scope
 
-JAK-41 feasibility report / decision gate, Phase 3 model freeze, Ollama,
-critical edition, using restored letters as gold.
+Phase 3 model freeze, Ollama (JAK-42 deferred), critical edition, using
+restored letters as gold. Feasibility gate: JAK-41.
