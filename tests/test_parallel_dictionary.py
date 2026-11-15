@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import inspect
+import json
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -36,12 +37,15 @@ def _link(
     eflomal: int | None = None,
     fast_align: int | None = None,
 ) -> ObservedLink:
+    eflomal_count = count if eflomal is None else eflomal
+    fast_count = count if fast_align is None else fast_align
     return ObservedLink(
         coptic=coptic,
         greek=greek,
         observation_count=count,
-        count_eflomal=count if eflomal is None else eflomal,
-        count_fast_align=count if fast_align is None else fast_align,
+        count_eflomal=eflomal_count,
+        count_fast_align=fast_count,
+        consensus_count=count if eflomal_count > 0 and fast_count > 0 else 0,
     )
 
 
@@ -247,6 +251,95 @@ def test_phrase_does_not_replace_direct_greek() -> None:
     assert head.greek == "πολισ"
     assert head.channel != "phrase"
     assert "μεγαλη" in head.greek_extra
+
+
+def test_context_cannot_emit_a_single_aligner_oblique() -> None:
+    dictionary = _dictionary(
+        [
+            _link("ⲡⲟⲗⲓⲥ", "πολισ", 6),
+            ObservedLink(
+                coptic="ⲡⲟⲗⲓⲥ",
+                greek="πολει",
+                observation_count=8,
+                count_eflomal=8,
+                count_fast_align=0,
+                consensus_count=0,
+            ),
+        ]
+    )
+    dictionary.use_context = True
+    dictionary.context_counts = {"ⲡⲟⲗⲓⲥ": {"πολισ": {"ⲟⲩ": 2}, "πολει": {"ⲟⲩ": 8}}}
+    outputs = apply_mod.apply_tokens(["ⲟⲩ", "ⲡⲟⲗⲓⲥ"], dictionary)
+    assert outputs[1].greek == "πολισ"
+    assert outputs[1].channel != "context" or outputs[1].greek == "πολισ"
+
+
+def test_phrase_does_not_swallow_a_known_constituent() -> None:
+    lion = "ⲙⲟⲩⲓ"
+    city_article = "ⲡ"
+    eat_left = "ⲛⲁ"
+    eat_right = "ⲟⲩⲟⲙ"
+    dictionary = _dictionary([_link(lion, "λεων", 4)])
+    dictionary.use_phrases = True
+    dictionary.phrases = {
+        (city_article, lion): (("ο",), 4, 1.0),
+        (eat_left, eat_right): (("α",), 2, 1.0),
+    }
+    lion_out = apply_mod.apply_tokens([city_article, lion], dictionary)
+    assert lion_out[1].greek == "λεων"
+    assert lion_out[1].channel != "covered_by_span"
+    eat_out = apply_mod.apply_tokens([eat_left, eat_right], dictionary)
+    assert eat_out[0].greek != "α" or eat_out[1].channel != "covered_by_span"
+    assert eat_out[1].channel != "covered_by_span"
+    assert eat_out[1].greek is None
+
+
+def test_committed_thomas_7_patterns_match_the_review() -> None:
+    root = find_repo_root()
+    v4 = json.loads(
+        (
+            root / "data/reconstructions/parallel-dict-v4/thomas-reconstruction.json"
+        ).read_text(encoding="utf-8")
+    )
+    v8 = json.loads(
+        (
+            root / "data/reconstructions/parallel-dict-v8/thomas-reconstruction.json"
+        ).read_text(encoding="utf-8")
+    )
+    v4_lions = [token for token in _logion(v4, 7) if token["c"] == "ⲙⲟⲩⲓ"]
+    assert len(v4_lions) == 4
+    assert [token["g"] for token in v4_lions] == ["λεων", "λεων", "λεων", "λεων"]
+    v8_tokens = _logion(v8, 7)
+    lions = [token for token in v8_tokens if token["c"] == "ⲙⲟⲩⲓ"]
+    assert len(lions) == 4
+    for token in lions:
+        head_index = token["h"]
+        assert isinstance(head_index, int)
+        head = v8_tokens[head_index]
+        assert head["c"] == "ⲡ"
+        assert head["g"] == "ο"
+        assert token["ch"] == "covered_by_span"
+    eats = [
+        (v8_tokens[index], v8_tokens[index + 1])
+        for index, token in enumerate(v8_tokens[:-1])
+        if token["c"] == "ⲛⲁ" and v8_tokens[index + 1]["c"] == "ⲟⲩⲟⲙ"
+    ]
+    assert eats
+    assert all(
+        left["g"] == "α" and right["ch"] == "covered_by_span" for left, right in eats
+    )
+
+
+def _logion(reconstruction: dict[str, object], number: int) -> list[dict[str, object]]:
+    units = reconstruction["units"]
+    assert isinstance(units, list)
+    for unit in units:
+        assert isinstance(unit, dict)
+        if unit.get("logion") == number:
+            tokens = unit["tokens"]
+            assert isinstance(tokens, list)
+            return tokens
+    raise AssertionError(number)
 
 
 def test_full_run_scores_without_training_on_fragments(tmp_path: Path) -> None:

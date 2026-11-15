@@ -69,9 +69,26 @@ def run_parallel_dictionary(
             }
         )
 
-    # Dictionary is frozen before any fragment text is read.
+    if write:
+        dest = output_dir or (repo_root / "data" / "reconstructions" / VERSION)
+    else:
+        import tempfile
+
+        dest = Path(tempfile.mkdtemp(prefix="thomas-dict-pin-"))
+    pin = _write_frozen(dest, dictionary, units)
+    # Fragment Greek is loaded only after the dictionary and the Thomas
+    # prediction have been written and hashed. The boolean below does not
+    # by itself establish a blind: this witness has already been consulted.
     fragments = load_fragment_corpus(fragments_corpus_path(repo_root))
-    summary = score_fragments(decisions, fragments)
+    if dest is None or pin is None:
+        msg = "fragment scoring requires a frozen prediction pin"
+        raise DictionaryBuildError(msg)
+    summary = score_fragments(
+        decisions,
+        fragments,
+        prediction_pin=pin,
+        pin_dir=dest,
+    )
     sufficient, reason = _sufficient(summary)
     metrics: dict[str, Any] = {
         "id": f"{VERSION}-metrics",
@@ -80,6 +97,15 @@ def run_parallel_dictionary(
         "uses_handwritten_glosses": False,
         "uses_verified_loanword_table": False,
         "frozen_before_fragment_score": True,
+        "blinding_established": False,
+        "fragment_evaluation_status": "exploratory",
+        "official_freeze": (
+            "JAK-40 and JAK-44 remain the official freeze and review gate. "
+            "This experiment is not that gate, and a boolean "
+            "does not establish a blind."
+        ),
+        "prediction_pin": pin,
+        "vocabulary_overlap_is_correctness_gate": False,
         "snap_enabled": dictionary.snap_enabled,
         "nt_dev_diagnostic": diagnostic,
         "loanword_stem_match_rate": summary["loanword_stem_match_rate"],
@@ -119,9 +145,8 @@ def run_parallel_dictionary(
             "Loanword audit rows are evaluation-only.",
         ],
     }
-    if write:
-        dest = output_dir or (repo_root / "data" / "reconstructions" / VERSION)
-        _write_outputs(dest, dictionary, units, metrics)
+    if write and dest is not None:
+        _dump(dest / "metrics.json", metrics)
         metrics["output_dir"] = str(dest)
     return metrics
 
@@ -151,6 +176,12 @@ def links_from_candidate_table(
                 observation_count=int(row["observation_count"]),
                 count_eflomal=int(row.get("count_eflomal") or 0),
                 count_fast_align=int(row.get("count_fast_align") or 0),
+                consensus_count=(
+                    int(row["observation_count"])
+                    if int(row.get("count_eflomal") or 0) > 0
+                    and int(row.get("count_fast_align") or 0) > 0
+                    else 0
+                ),
             )
         )
     upstream = payload.get("provenance") or {}
@@ -176,10 +207,24 @@ def _token_row(item: TokenOut) -> dict[str, object]:
         "p": posterior,
         "n": item.observation_count,
         "h": item.span_head,
+        **({"x": list(item.greek_extra)} if item.greek_extra else {}),
     }
 
 
 def _sufficient(summary: dict[str, Any]) -> tuple[bool, str]:
+    """Overlap numbers are not a reconstruction-fidelity gate.
+
+    The pre-set bars remain recorded on the metrics for the exploratory
+    diagnostic. They do not make a pooled witness overlap 'sufficient'.
+    """
+    if summary.get("vocabulary_overlap_is_correctness_gate"):
+        return False, "vocabulary overlap must not be used as a correctness gate"
+    if not summary.get("official_score_available"):
+        return (
+            False,
+            "no reviewed logion-aligned fidelity score; "
+            "vocabulary overlap is exploratory and is not a correctness gate",
+        )
     support = int(summary["loanword_tokens"])
     rate = summary["loanword_stem_match_rate"]
     recall = summary["content_type_recall"]
@@ -192,7 +237,7 @@ def _sufficient(summary: dict[str, Any]) -> tuple[bool, str]:
         return False, "surviving content-type recall is below the pre-set bar"
     if not isinstance(precision, float) or precision < CONTENT_PRECISION_BAR:
         return False, "content emission precision is below the pre-set bar"
-    return True, "pre-set loanword, recall, and precision bars met"
+    return True, "reviewed fidelity score met the pre-set bars"
 
 
 def _next_step(sufficient: bool) -> str:
@@ -209,14 +254,10 @@ def _next_step(sufficient: bool) -> str:
     )
 
 
-def _write_outputs(
-    dest: Path,
-    dictionary: ParallelDictionary,
-    units: list[dict[str, Any]],
-    metrics: dict[str, Any],
-) -> None:
-    dest.mkdir(parents=True, exist_ok=True)
-    dictionary_payload = {
+def _dictionary_summary(dictionary: ParallelDictionary) -> dict[str, Any]:
+    return {
+        "artifact_role": "lossy_summary",
+        "complete_model": "model.json",
         "id": dictionary.version,
         "snap_enabled": dictionary.snap_enabled,
         "provenance": dictionary.provenance,
@@ -227,6 +268,22 @@ def _write_outputs(
             [greek, count] for greek, count in sorted(dictionary.greek_types.items())
         ],
     }
+
+
+def _write_frozen(
+    dest: Path,
+    dictionary: ParallelDictionary,
+    units: list[dict[str, Any]],
+) -> dict[str, str]:
+    """Write the summary, the full model, and the Thomas prediction. No fragments."""
+    from zetodos_thomas.dictionary.integrity import (
+        dump_json,
+        export_inference_state,
+        prediction_pin,
+    )
+
+    dest.mkdir(parents=True, exist_ok=True)
+    dictionary_payload = _dictionary_summary(dictionary)
     reconstruction = {
         "id": f"{dictionary.version}-thomas",
         "coptic_source": "dilley-thomas-v6.2.0",
@@ -248,8 +305,19 @@ def _write_outputs(
             "greek_type_count is retained. Snap was decided before this write."
         )
         _dump(dictionary_path, dictionary_payload)
+    dump_json(dest / "model.json", export_inference_state(dictionary))
     _dump(dest / "thomas-reconstruction.json", reconstruction)
-    # Metrics include an evaluation audit. Do not feed this file back into training.
+    return prediction_pin(dest)
+
+
+def _write_outputs(
+    dest: Path,
+    dictionary: ParallelDictionary,
+    units: list[dict[str, Any]],
+    metrics: dict[str, Any],
+) -> None:
+    """Compatibility wrapper. Prefer ``_write_frozen`` before fragment scoring."""
+    _write_frozen(dest, dictionary, units)
     _dump(dest / "metrics.json", metrics)
 
 

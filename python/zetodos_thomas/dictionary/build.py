@@ -57,6 +57,9 @@ class ObservedLink:
     observation_count: int
     count_eflomal: int
     count_fast_align: int
+    # Occurrences where both aligners linked this same token, not merely the
+    # same wordform in different verses. Zero means no joint link.
+    consensus_count: int = 0
 
 
 @dataclass(frozen=True, slots=True)
@@ -77,11 +80,13 @@ class _Acc:
     observation_count: int = 0
     count_eflomal: int = 0
     count_fast_align: int = 0
+    consensus_count: int = 0
 
     def add(self, link: ObservedLink) -> None:
         self.observation_count += link.observation_count
         self.count_eflomal += link.count_eflomal
         self.count_fast_align += link.count_fast_align
+        self.consensus_count += link.consensus_count
 
 
 @dataclass
@@ -114,6 +119,11 @@ class ParallelDictionary:
     # When true, a loan-shaped token prefers the attested Greek string that
     # its letters already spell, unless context or suffix already chose.
     use_loan_spelling: bool = False
+    # Exact Coptic token sequence -> stored outputs. A frozen trace replays
+    # those outputs and does not re-decide them.
+    replay_traces: dict[tuple[str, ...], tuple[dict[str, object], ...]] = field(
+        default_factory=dict
+    )
 
     def statistical_emission(self, coptic: str) -> Emission | None:
         """Best agreeing emission for ``coptic``, including spelling variants."""
@@ -183,18 +193,18 @@ class ParallelDictionary:
         spelled = transliterate_coptic(key)
         if not spelled or spelled == emission.greek:
             return emission
-        acc = self.direct.get(key, {}).get(spelled)
-        if acc is None or acc.count_eflomal <= 0 or acc.count_fast_align <= 0:
+        found = self.direct.get(key, {}).get(spelled)
+        if not isinstance(found, _Acc) or not _has_consensus(found):
             return emission
-        if acc.observation_count < MIN_COUNT:
+        if found.observation_count < MIN_COUNT:
             return emission
         return Emission(
             greek=spelled,
             posterior=emission.posterior,
-            observation_count=acc.observation_count,
+            observation_count=found.observation_count,
             channel="loan_spelling",
-            count_eflomal=acc.count_eflomal,
-            count_fast_align=acc.count_fast_align,
+            count_eflomal=found.count_eflomal,
+            count_fast_align=found.count_fast_align,
         )
 
     def _surface_for_context(
@@ -210,6 +220,9 @@ class ParallelDictionary:
         by_greek = self.context_counts.get(key, {})
         scored: list[tuple[int, str]] = []
         for greek, prevs in by_greek.items():
+            attested = self.direct.get(key, {}).get(greek)
+            if not _has_consensus(attested):
+                continue
             if greek != emission.greek and not same_paradigm(greek, emission.greek):
                 continue
             count = prevs.get(prev, 0)
@@ -321,7 +334,7 @@ class ParallelDictionary:
         for other, acc in self.direct.get(key, {}).items():
             if other == greek:
                 continue
-            if acc.count_eflomal <= 0 or acc.count_fast_align <= 0:
+            if not _has_consensus(acc):
                 continue
             if same_paradigm(other, greek):
                 forms.append(other)
@@ -486,6 +499,23 @@ def transliterate_similar_target(
     return best[3], -best[2]
 
 
+def _has_consensus(acc: _Acc | None) -> bool:
+    """True only for a form both aligners support on a shared occurrence."""
+    if acc is None:
+        return False
+    return (
+        acc.consensus_count > 0 and acc.count_eflomal > 0 and acc.count_fast_align > 0
+    )
+
+
+def _link_consensus(link: ObservedLink) -> bool:
+    return (
+        link.consensus_count > 0
+        and link.count_eflomal > 0
+        and link.count_fast_align > 0
+    )
+
+
 def _choose(pairs: dict[str, _Acc]) -> tuple[str, _Acc, float] | None:
     """Winning attested surface, after grouping inflections of one stem.
 
@@ -496,37 +526,36 @@ def _choose(pairs: dict[str, _Acc]) -> tuple[str, _Acc, float] | None:
     agreeing = [
         (greek, acc)
         for greek, acc in pairs.items()
-        if acc.count_eflomal > 0
-        and acc.count_fast_align > 0
-        and acc.observation_count > 0
+        if _has_consensus(acc) and acc.consensus_count > 0
     ]
     if not agreeing:
         return None
-    total = sum(acc.observation_count for _, acc in agreeing)
+    total = sum(acc.consensus_count for _, acc in agreeing)
     if total <= 0:
         return None
     clusters = _inflection_clusters(agreeing)
     clusters.sort(
         key=lambda cluster: (
-            -sum(acc.observation_count for _, acc in cluster),
+            -sum(acc.consensus_count for _, acc in cluster),
             cluster[0][0],
         )
     )
     best = clusters[0]
-    best_count = sum(acc.observation_count for _, acc in best)
+    best_count = sum(acc.consensus_count for _, acc in best)
     posterior = best_count / total
     if best_count < MIN_COUNT or posterior < MIN_POSTERIOR:
         return None
     if len(clusters) > 1:
-        second_count = sum(acc.observation_count for _, acc in clusters[1])
+        second_count = sum(acc.consensus_count for _, acc in clusters[1])
         if posterior - (second_count / total) < MIN_MARGIN:
             return None
     mode_greek, mode_acc = max(
         best,
-        key=lambda item: (item[1].observation_count, item[0]),
+        key=lambda item: (item[1].consensus_count, item[0]),
     )
     reported = _Acc()
     reported.observation_count = best_count
+    reported.consensus_count = best_count
     reported.count_eflomal = mode_acc.count_eflomal
     reported.count_fast_align = mode_acc.count_fast_align
     return mode_greek, reported, posterior
@@ -536,7 +565,7 @@ def _inflection_clusters(
     agreeing: list[tuple[str, _Acc]],
 ) -> list[list[tuple[str, _Acc]]]:
     """Group Greek surfaces that are inflections of one another."""
-    ordered = sorted(agreeing, key=lambda item: (-item[1].observation_count, item[0]))
+    ordered = sorted(agreeing, key=lambda item: (-item[1].consensus_count, item[0]))
     clusters: list[list[tuple[str, _Acc]]] = []
     for greek, acc in ordered:
         placed = False
@@ -582,8 +611,8 @@ def build_dictionary(
         greek = fold_greek(link.greek)
         if not coptic or not greek:
             continue
-        if link.count_eflomal > 0 and link.count_fast_align > 0:
-            greek_types[greek] = greek_types.get(greek, 0) + link.observation_count
+        if link.consensus_count > 0 and _link_consensus(link):
+            greek_types[greek] = greek_types.get(greek, 0) + link.consensus_count
         bucket = direct.setdefault(coptic, {})
         acc = bucket.setdefault(greek, _Acc())
         acc.add(link)
@@ -591,14 +620,10 @@ def build_dictionary(
 
     keys_with_pairs: set[str] = set()
     for key, pairs in direct.items():
-        if any(
-            acc.count_eflomal > 0 and acc.count_fast_align > 0 for acc in pairs.values()
-        ):
+        if any(_has_consensus(acc) for acc in pairs.values()):
             keys_with_pairs.add(key)
     for key, pairs in stems.items():
-        if any(
-            acc.count_eflomal > 0 and acc.count_fast_align > 0 for acc in pairs.values()
-        ):
+        if any(_has_consensus(acc) for acc in pairs.values()):
             keys_with_pairs.add(key)
 
     return ParallelDictionary(
@@ -635,7 +660,7 @@ def _project_stem(
     projected: set[tuple[str, str, str]],
 ) -> None:
     """Credit a Greek link to a peeled stem when transliteration agrees."""
-    if link.count_eflomal <= 0 or link.count_fast_align <= 0:
+    if link.consensus_count <= 0 or not _link_consensus(link):
         return
     stems_found: list[str] = []
     cut = loan_stem(coptic, greek)

@@ -24,6 +24,7 @@ emission. Paradigm extras stayed off.
 | Content emission precision | 0.137 |
 | Abstain rate | 0.257 |
 
-Not sufficient. Exact match is the same 6/11 as v4. Content recall rose by
-three types. The other five exact misses are a different lexeme (twice), an
-unattested one-letter ending, a truncated fragment token, and an abstention.
+`dictionary.json` is a lossy summary of selected emissions. A later fit writes
+`model.json` with the full inference state. The overlap numbers above are an
+exploratory, non-positional diagnostic. They are not a reconstruction-fidelity
+gate, and they are not a blind. JAK-40 and JAK-44 stay the official freeze.

@@ -25,16 +25,24 @@ from zetodos_thomas.dictionary.build import (
     build_dictionary,
 )
 from zetodos_thomas.dictionary.diagnose import load_nt_splits, nt_dev_snap_diagnostic
+from zetodos_thomas.dictionary.integrity import (
+    aligner_config_record,
+    hash_aligner_input,
+    hash_file,
+    hash_tei_dirs,
+    observed_git_commit,
+)
 from zetodos_thomas.dictionary.orthography import fold_coptic, fold_greek
 from zetodos_thomas.dictionary.ot_bitext import OT_LICENSE, SWETE_COMMIT
 from zetodos_thomas.dictionary.run import (
     VERSION as V1_VERSION,
 )
 from zetodos_thomas.dictionary.run import (
+    _dump,
     _next_step,
     _sufficient,
     _token_row,
-    _write_outputs,
+    _write_frozen,
 )
 from zetodos_thomas.ingest.copsahhorner import open_module as open_horner
 from zetodos_thomas.ingest.copsahhorner import read_verse
@@ -487,10 +495,10 @@ def observed_links_from_alignments(
     if set(by_aligner) != {"eflomal", "fast_align"}:
         msg = f"keep-both requires eflomal and fast_align; got {sorted(by_aligner)}"
         raise DictionaryBuildError(msg)
-    union: dict[tuple[str, str], set[tuple[str, int, int]]] = defaultdict(set)
-    per_aligner: dict[tuple[str, str], dict[str, int]] = defaultdict(
-        lambda: {"eflomal": 0, "fast_align": 0}
+    by_pair: dict[tuple[str, str], dict[str, set[tuple[str, int, int]]]] = defaultdict(
+        lambda: {"eflomal": set(), "fast_align": set()}
     )
+    sentences_by_id: dict[str, Any] = {}
     context: dict[str, dict[str, dict[str, int]]] = defaultdict(
         lambda: defaultdict(lambda: defaultdict(int))
     )
@@ -499,6 +507,7 @@ def observed_links_from_alignments(
             msg = f"{name} symmetrized links do not match the sentence list"
             raise DictionaryBuildError(msg)
         for sentence, aligned in zip(links.sentences, links.symmetrized, strict=True):
+            sentences_by_id[sentence.unit_id] = sentence
             seen: set[tuple[str, int, int]] = set()
             for src_index, trg_index in aligned.pairs:
                 if src_index < 0 or trg_index < 0:
@@ -515,30 +524,37 @@ def observed_links_from_alignments(
                     sentence.source_tokens[src_index],
                     sentence.target_tokens[trg_index],
                 )
-                union[pair].add(occurrence)
-                per_aligner[pair][name] += 1
-                if src_index > 0:
-                    previous = fold_coptic(sentence.source_tokens[src_index - 1])
-                    coptic_key = fold_coptic(pair[0])
-                    greek_key = fold_greek(pair[1])
-                    if previous and coptic_key and greek_key:
-                        context[coptic_key][greek_key][previous] += 1
-                    if src_index > 1 and previous and coptic_key and greek_key:
-                        earlier = fold_coptic(sentence.source_tokens[src_index - 2])
-                        if earlier:
-                            bigram = earlier + "+" + previous
-                            context[coptic_key][greek_key][bigram] += 1
+                by_pair[pair][name].add(occurrence)
     observed: list[ObservedLink] = []
-    for coptic, greek in sorted(union):
+    for coptic, greek in sorted(by_pair):
+        eflomal_hits = by_pair[(coptic, greek)]["eflomal"]
+        fast_hits = by_pair[(coptic, greek)]["fast_align"]
+        consensus = eflomal_hits & fast_hits
         observed.append(
             ObservedLink(
                 coptic=coptic,
                 greek=greek,
-                observation_count=len(union[(coptic, greek)]),
-                count_eflomal=per_aligner[(coptic, greek)]["eflomal"],
-                count_fast_align=per_aligner[(coptic, greek)]["fast_align"],
+                observation_count=len(eflomal_hits | fast_hits),
+                count_eflomal=len(eflomal_hits),
+                count_fast_align=len(fast_hits),
+                consensus_count=len(consensus),
             )
         )
+        for unit_id, src_index, _trg_index in consensus:
+            sentence = sentences_by_id[unit_id]
+            if src_index <= 0:
+                continue
+            previous = fold_coptic(sentence.source_tokens[src_index - 1])
+            coptic_key = fold_coptic(coptic)
+            greek_key = fold_greek(greek)
+            if not previous or not coptic_key or not greek_key:
+                continue
+            context[coptic_key][greek_key][previous] += 1
+            if src_index > 1:
+                earlier = fold_coptic(sentence.source_tokens[src_index - 2])
+                if earlier:
+                    bigram = earlier + "+" + previous
+                    context[coptic_key][greek_key][bigram] += 1
     plain_context = {
         coptic: {greek: dict(prevs) for greek, prevs in greeks.items()}
         for coptic, greeks in context.items()
@@ -844,6 +860,34 @@ def run_gospel_dictionary(
     if any(unit_id in holdout_ids or unit_id in omission_ids for unit_id in train_ids):
         msg = "v3 holdout or omission verse entered Gospel training"
         raise DictionaryBuildError(msg)
+    ot_zip = root / "data" / "downloads" / "sahidic-ot" / "sahidic.ot_TT.zip"
+    swete_repo = root / "data" / "downloads" / "lxx-swete" / "repo"
+    tei_dirs = [tei]
+    nt_dir = nt_tei_dir(root)
+    if nt_dir.is_dir():
+        tei_dirs.append(nt_dir)
+    swete_commit_observed = (
+        observed_git_commit(swete_repo) if swete_repo.is_dir() else ""
+    )
+    if extra_train and swete_commit_observed != SWETE_COMMIT:
+        msg = (
+            "Swete checkout does not match the pinned commit "
+            f"{SWETE_COMMIT}; observed {swete_commit_observed or 'missing'}"
+        )
+        raise DictionaryBuildError(msg)
+    source_record = {
+        "aligner_input_sha256": hash_aligner_input(train),
+        "aligner_config": aligner_config_record(),
+        "ot_zip_sha256": hash_file(ot_zip) if extra_train and ot_zip.is_file() else "",
+        "swete_commit_observed": swete_commit_observed if extra_train else "",
+        "swete_commit_expected": SWETE_COMMIT if extra_train else "",
+        "swete_data_sha256": (
+            hash_tei_dirs([swete_repo / "data"])
+            if extra_train and (swete_repo / "data").is_dir()
+            else ""
+        ),
+        "all_nt_tei_sha256": hash_tei_dirs(tei_dirs),
+    }
     alignments = align_train_sentences(
         train,
         aligners=(AlignerName.EFLOMAL, AlignerName.FAST_ALIGN),
@@ -880,6 +924,7 @@ def run_gospel_dictionary(
             "nt_train_sentences": len(train) - len(extra_train or []),
             "license": OT_LICENSE if extra_train else "CC-BY-4.0",
             "swete_commit": SWETE_COMMIT if extra_train else "",
+            "training_sources": source_record,
         },
         version=fit_version,
     )
@@ -1020,8 +1065,14 @@ def _apply_and_write(
                 "tokens": [_token_row(item) for item in outputs],
             }
         )
+    pin = _write_frozen(output_dir, dictionary, units)
     fragments = load_fragment_corpus(fragments_corpus_path(repo_root))
-    summary = score_fragments(decisions, fragments)
+    summary = score_fragments(
+        decisions,
+        fragments,
+        prediction_pin=pin,
+        pin_dir=output_dir,
+    )
     sufficient, reason = _sufficient(summary)
     fit_version = str(dictionary.provenance.get("version") or VERSION)
     metrics: dict[str, Any] = {
@@ -1031,6 +1082,15 @@ def _apply_and_write(
         "uses_handwritten_glosses": False,
         "uses_verified_loanword_table": False,
         "frozen_before_fragment_score": True,
+        "blinding_established": False,
+        "fragment_evaluation_status": "exploratory",
+        "official_freeze": (
+            "JAK-40 and JAK-44 remain the official freeze and review gate. "
+            "This experiment is not that gate, and a boolean "
+            "does not establish a blind."
+        ),
+        "prediction_pin": pin,
+        "vocabulary_overlap_is_correctness_gate": False,
         "snap_enabled": dictionary.snap_enabled,
         "nt_dev_diagnostic": diagnostic,
         "train_sentences": train_sentences,
@@ -1057,6 +1117,6 @@ def _apply_and_write(
             "No handwritten glosses and no verified-loanword table.",
         ],
     }
-    _write_outputs(output_dir, dictionary, units, metrics)
+    _dump(output_dir / "metrics.json", metrics)
     metrics["output_dir"] = str(output_dir)
     return metrics

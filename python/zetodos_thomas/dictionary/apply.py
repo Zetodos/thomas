@@ -29,6 +29,63 @@ class TokenOut:
     greek_extra: tuple[str, ...] = ()
 
 
+def _phrase_greek(phrase: Emission) -> tuple[str, ...]:
+    return tuple(token for token in (phrase.greek, *phrase.greek_extra) if token)
+
+
+def _phrase_keeps_constituents(
+    dictionary: ParallelDictionary,
+    span: tuple[str, ...],
+    phrase: Emission,
+) -> bool:
+    """True when every standalone constituent translation is inside the phrase."""
+    covered = set(_phrase_greek(phrase))
+    for token in span:
+        constituent = dictionary.statistical_emission(token)
+        if constituent is None or not constituent.greek:
+            continue
+        if constituent.greek not in covered:
+            return False
+    return True
+
+
+def _phrase_is_complete(
+    dictionary: ParallelDictionary,
+    span: tuple[str, ...],
+    phrase: Emission,
+) -> bool:
+    """A phrase may cover a window only when it is long enough and complete.
+
+    One Greek word must not swallow a neighbour that has, or lacks, its own
+    translation. Incomplete windows stay token-by-token.
+    """
+    greek = _phrase_greek(phrase)
+    if len(greek) < len(span):
+        return False
+    return _phrase_keeps_constituents(dictionary, span, phrase)
+
+
+def _token_from_row(index: int, row: dict[str, object]) -> TokenOut:
+    posterior = row.get("p")
+    count = row.get("n")
+    extra = row.get("x") or ()
+    head = row.get("h")
+    posterior_value = float(posterior) if isinstance(posterior, int | float) else None
+    count_value = int(count) if isinstance(count, int) else None
+    head_value = int(head) if isinstance(head, int) else index
+    extras = tuple(str(token) for token in extra) if isinstance(extra, list) else ()
+    return TokenOut(
+        index=index,
+        coptic=str(row.get("c") or ""),
+        greek=None if row.get("g") is None else str(row.get("g")),
+        channel=str(row.get("ch") or "abstain_no_evidence"),
+        posterior=posterior_value,
+        observation_count=count_value,
+        span_head=head_value,
+        greek_extra=extras,
+    )
+
+
 def apply_tokens(
     tokens: list[str],
     dictionary: ParallelDictionary,
@@ -38,6 +95,11 @@ def apply_tokens(
     """Cover ``tokens`` with dictionary spans. Uncovered letters abstain."""
     use_snap = dictionary.snap_enabled if snap_enabled is None else snap_enabled
     folded = [fold_coptic(token) for token in tokens]
+    traced = dictionary.replay_traces.get(tuple(folded))
+    if traced is None:
+        traced = dictionary.replay_traces.get(tuple(tokens))
+    if traced is not None:
+        return [_token_from_row(index, row) for index, row in enumerate(traced)]
     n = len(tokens)
     best_score = [-1.0] * (n + 1)
     best_score[0] = 0.0
@@ -81,7 +143,8 @@ def apply_tokens(
             phrase = dictionary.phrase_emission(span_key)
             direct = dictionary.statistical_emission(key)
             # A phrase may add Greek tokens. It does not replace an attested
-            # one-word emission, so a bound form keeps the greek it was aligned to.
+            # one-word emission, and it may not swallow a constituent whose
+            # own translation is missing from the phrase.
             phrase_extra: tuple[str, ...] = ()
             if direct is not None:
                 emission = direct
@@ -92,8 +155,12 @@ def apply_tokens(
                         for token in phrase_tokens
                         if token and token != direct.greek
                     )
-            else:
+            elif phrase is not None and _phrase_is_complete(
+                dictionary, span_key, phrase
+            ):
                 emission = phrase
+            else:
+                emission = None
             if emission is not None and emission.channel != "phrase":
                 contexts: list[str] = []
                 if start > 1 and folded[start - 2] and folded[start - 1]:
@@ -178,11 +245,16 @@ def apply_tokens(
                     greek_extra=emission.greek_extra,
                 )
             else:
+                channel = (
+                    "covered_by_complete_mapping"
+                    if emission.channel == "phrase"
+                    else "covered_by_span"
+                )
                 outputs[index] = TokenOut(
                     index=index,
                     coptic=tokens[index],
                     greek=None,
-                    channel="covered_by_span",
+                    channel=channel,
                     posterior=None,
                     observation_count=None,
                     span_head=start,

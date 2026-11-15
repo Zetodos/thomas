@@ -6,7 +6,7 @@ from __future__ import annotations
 import pytest
 
 from zetodos_thomas.align.splits import SplitRole
-from zetodos_thomas.dictionary.build import DictionaryBuildError
+from zetodos_thomas.dictionary.build import DictionaryBuildError, build_dictionary
 from zetodos_thomas.dictionary.diagnose import load_nt_splits
 from zetodos_thomas.dictionary.wider import (
     observed_links_from_alignments,
@@ -48,9 +48,10 @@ def test_link_union_counts_once_when_both_aligners_agree() -> None:
             "fast_align": _links(AlignerName.FAST_ALIGN, ((1, 0),)),
         }
     )
-    assert context["ⲃ"]["και"]["ⲁ"] == 2
+    assert context["ⲃ"]["και"]["ⲁ"] == 1
     assert len(observed) == 1
     assert observed[0].observation_count == 1
+    assert observed[0].consensus_count == 1
     assert observed[0].count_eflomal == 1
     assert observed[0].count_fast_align == 1
 
@@ -61,6 +62,57 @@ def test_eflomal_sample_intersection_drops_flips() -> None:
     stable, stats = stable_eflomal_links(first, second)
     assert stable.symmetrized[0].pairs == ((0, 0),)
     assert stats == {"stable_links": 1, "dropped_from_first": 1}
+
+
+def _sentence(unit_id: str) -> BitextSentence:
+    return BitextSentence(
+        unit_id=unit_id,
+        source_tokens=("ⲁ",),
+        target_tokens=("και",),
+        source_token_ids=("c0",),
+        target_token_ids=("g0",),
+        split_role="train",
+    )
+
+
+def test_disjoint_verses_are_not_a_dual_agreed_alignment() -> None:
+    """Same wordform in different verses is not one jointly aligned occurrence."""
+    verse_a = _sentence("matthew.2.1")
+    verse_b = _sentence("matthew.2.2")
+    eflomal = AlignmentLinks(
+        aligner=AlignerName.EFLOMAL,
+        sentences=[verse_a, verse_b],
+        forward=[],
+        reverse=[],
+        symmetrized=[
+            DirectionalAlignment(unit_id=verse_a.unit_id, pairs=((0, 0),)),
+            DirectionalAlignment(unit_id=verse_b.unit_id, pairs=()),
+        ],
+    )
+    fast = AlignmentLinks(
+        aligner=AlignerName.FAST_ALIGN,
+        sentences=[verse_a, verse_b],
+        forward=[],
+        reverse=[],
+        symmetrized=[
+            DirectionalAlignment(unit_id=verse_a.unit_id, pairs=()),
+            DirectionalAlignment(unit_id=verse_b.unit_id, pairs=((0, 0),)),
+        ],
+    )
+    observed, _context = observed_links_from_alignments(
+        {"eflomal": eflomal, "fast_align": fast}
+    )
+    assert len(observed) == 1
+    assert observed[0].count_eflomal == 1
+    assert observed[0].count_fast_align == 1
+    assert observed[0].consensus_count == 0
+    dictionary = build_dictionary(
+        observed,
+        unit_ids=["matthew.2.1", "matthew.2.2"],
+        aligners=["eflomal", "fast_align"],
+        provenance={"source": "test"},
+    )
+    assert dictionary.statistical_emission("ⲁ") is None
 
 
 def test_single_aligner_batch_is_refused() -> None:

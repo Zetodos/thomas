@@ -7,6 +7,8 @@ Restorations are reported separately and are not the manuscript score.
 
 from __future__ import annotations
 
+from pathlib import Path
+
 from zetodos_thomas.dictionary.apply import TokenOut
 from zetodos_thomas.dictionary.orthography import (
     fold_greek,
@@ -33,12 +35,24 @@ FRAGMENT_LOGIA: dict[str, frozenset[int]] = {
 def layer_wordforms(
     transcription: FragmentTranscription,
     kind: FragmentLayerKind,
+    *,
+    certainty: str = "clear",
 ) -> list[str]:
-    """Whitespace tokens of one fragment layer, accent-folded, length >= 2."""
+    """Whitespace tokens of one fragment layer, accent-folded, length >= 2.
+
+    ``certainty="clear"`` drops surviving tokens marked ``unclear``. Those
+    damaged readings stay in the ``unclear`` stratum and are not treated as
+    certain gold. ``all`` keeps both, for a sensitivity check only.
+    """
     forms: list[str] = []
     for line in transcription.lines:
         for token in line.tokens:
             if token.kind is not kind or not token.text.strip():
+                continue
+            marked = token.certainty or ""
+            if certainty == "clear" and marked == "unclear":
+                continue
+            if certainty == "unclear" and marked != "unclear":
                 continue
             for piece in token.text.split():
                 folded = fold_greek(piece)
@@ -78,9 +92,12 @@ def score_logia(
                 continue
             head = rows[token.span_head]
             predicted = head.greek
-            if token.channel == "covered_by_span":
+            if token.channel in {"covered_by_span", "covered_by_complete_mapping"}:
                 letter_tokens += 1
-            elif token.channel.startswith("abstain"):
+            elif (
+                token.channel == "untranslated_inside_span"
+                or token.channel.startswith("abstain")
+            ):
                 abstain += 1
                 letter_tokens += 1
             elif token.greek:
@@ -174,30 +191,129 @@ def score_logia(
 def score_fragments(
     decisions: dict[int, list[TokenOut]],
     corpus: FragmentCorpus,
+    *,
+    prediction_pin: dict[str, str],
+    pin_dir: Path,
 ) -> dict[str, object]:
-    """Score each P.Oxy. witness, then micro-average the counts."""
+    """Exploratory witness overlap. Not a reconstruction-fidelity gate.
+
+    The pin is re-checked here so fragment Greek is scored only against a
+    dictionary and Thomas prediction that were already written. Pooled
+    manuscript types are vocabulary overlap: a word emitted in one saying can
+    match a surviving type from another saying. That overlap is reported, and
+    it is not an official correctness score.
+    """
+    from zetodos_thomas.dictionary.integrity import verify_prediction_pin
+
+    verify_prediction_pin(pin_dir, prediction_pin)
     by_manuscript: dict[str, object] = {}
-    micro = _blank_counts()
+    clear_micro = _blank_counts()
+    unclear_micro = _blank_counts()
+    pooled_micro = _blank_counts()
     for transcription in corpus.transcriptions:
         logia = FRAGMENT_LOGIA.get(transcription.id)
         if logia is None:
             msg = f"no structural logion coverage for {transcription.id}"
             raise ValueError(msg)
-        surviving = layer_wordforms(transcription, FragmentLayerKind.SURVIVING)
-        block = score_logia(decisions, surviving, logia)
-        restored = layer_wordforms(transcription, FragmentLayerKind.RESTORATION)
-        diagnostic = score_logia(decisions, surviving + restored, logia)
+        clear = layer_wordforms(
+            transcription, FragmentLayerKind.SURVIVING, certainty="clear"
+        )
+        unclear = layer_wordforms(
+            transcription, FragmentLayerKind.SURVIVING, certainty="unclear"
+        )
+        pooled = layer_wordforms(
+            transcription, FragmentLayerKind.SURVIVING, certainty="all"
+        )
+        block = score_logia(decisions, clear, logia)
+        including = score_logia(decisions, pooled, logia)
+        restored = layer_wordforms(
+            transcription, FragmentLayerKind.RESTORATION, certainty="all"
+        )
+        diagnostic = score_logia(decisions, clear + restored, logia)
         block["restoration_inclusive_content_recall_diagnostic"] = diagnostic[
             "content_type_recall"
         ]
+        block["unclear_types"] = len(set(unclear))
+        block["overlap_including_unclear"] = including["content_type_recall"]
         block["manuscript_id"] = transcription.manuscript_id
         block["logia"] = sorted(logia)
-        block["score_layer"] = "surviving"
+        block["score_layer"] = "surviving_clear"
+        block["vocabulary_overlap_role"] = "exploratory_nonpositional"
         by_manuscript[transcription.id] = block
-        _add_counts(micro, block)
-    summary = _rates_from_counts(micro)
+        _add_counts(clear_micro, block)
+        _add_counts(unclear_micro, score_logia(decisions, unclear, logia))
+        _add_counts(pooled_micro, including)
+    summary = _rates_from_counts(clear_micro)
     summary["by_manuscript"] = by_manuscript
+    summary["vocabulary_overlap_role"] = "exploratory_nonpositional"
+    summary["vocabulary_overlap_is_correctness_gate"] = False
+    summary["official_aligned_recovery"] = None
+    summary["official_score_available"] = False
+    summary["official_score_reason"] = (
+        "Pooled witness overlap is not reconstruction fidelity. "
+        "An official score needs a reviewed logion, line, and lacuna alignment, "
+        "and the JAK-44 surviving-versus-unclear decision. Neither is applied here."
+    )
+    summary["clear_surviving_overlap"] = _rates_from_counts(clear_micro)
+    summary["unclear_sensitivity"] = {
+        "excluding_unclear": _rates_from_counts(clear_micro),
+        "including_unclear": _rates_from_counts(pooled_micro),
+        "unclear_only": _rates_from_counts(unclear_micro),
+    }
+    summary["prediction_pin_verified"] = True
     return summary
+
+
+def score_aligned_recovery(
+    decisions: dict[int, list[TokenOut]],
+    gold_by_logion: dict[int, list[str]],
+) -> dict[str, object]:
+    """Same-saying overlap only. A type from another saying is not a recovery.
+
+    ``gold_by_logion`` is an explicit logion assignment. Lacunae and other
+    sayings are simply absent from that saying's list. This is still type
+    overlap inside one saying, not a character alignment, and it is not an
+    official score unless a reviewer has accepted the gold.
+    """
+    recovered = 0
+    gold_types = 0
+    wrong_saying_hits = 0
+    per_logion: dict[str, dict[str, int]] = {}
+    for logion, gold in sorted(gold_by_logion.items()):
+        gold_set = {fold_greek(token) for token in gold if fold_greek(token)}
+        gold_set = {token for token in gold_set if len(token) >= 4}
+        emitted: set[str] = set()
+        for token in decisions.get(logion, []):
+            head = decisions[logion][token.span_head]
+            if head.greek:
+                folded = fold_greek(head.greek)
+                if len(folded) >= 4:
+                    emitted.add(folded)
+            for extra in head.greek_extra:
+                folded = fold_greek(extra)
+                if len(folded) >= 4:
+                    emitted.add(folded)
+        hits = emitted & gold_set
+        recovered += len(hits)
+        gold_types += len(gold_set)
+        per_logion[str(logion)] = {"gold": len(gold_set), "recovered": len(hits)}
+    for logion, gold in gold_by_logion.items():
+        gold_set = {fold_greek(token) for token in gold if len(fold_greek(token)) >= 4}
+        for other, rows in decisions.items():
+            if other == logion:
+                continue
+            for token in rows:
+                head = rows[token.span_head]
+                if head.greek and fold_greek(head.greek) in gold_set:
+                    wrong_saying_hits += 1
+    return {
+        "role": "logion_type_overlap",
+        "correctness_gate": False,
+        "same_logion_content_recovered": recovered,
+        "same_logion_content_types": gold_types,
+        "wrong_saying_overlaps": wrong_saying_hits,
+        "per_logion": per_logion,
+    }
 
 
 def _blank_counts() -> dict[str, int]:
