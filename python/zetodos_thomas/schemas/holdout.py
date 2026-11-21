@@ -75,11 +75,11 @@ class NtCorpusSplit(BaseModel):
     id: str
     title: str
     schema_version: str = "1"
-    greek_source_id: str = "ntvmr-vaticanus-b"
+    greek_source_id: str = "morphgnt-sblgnt"
     sahidic_source_id: str = "copsahhorner"
-    pilot_corpus_id: str = "horner-vaticanus-nt-pilot-v1"
+    pilot_corpus_id: str = "horner-morphgnt-nt-v1"
     owned_by: str = "JAK-33"
-    consumed_by: list[str] = Field(default_factory=lambda: ["JAK-28"])
+    consumed_by: list[str] = Field(default_factory=lambda: ["eval"])
     passages: list[PassageRef]
     evaluation_witness_exclusions: list[EvaluationWitnessExclusion] = Field(
         default_factory=list
@@ -90,8 +90,10 @@ class NtCorpusSplit(BaseModel):
 
     @model_validator(mode="after")
     def _roles_and_overlap(self) -> NtCorpusSplit:
-        if self.greek_source_id != "ntvmr-vaticanus-b":
-            msg = "greek_source_id must be ntvmr-vaticanus-b (Vaticanus B* only)"
+        if self.greek_source_id not in {"morphgnt-sblgnt", "ntvmr-vaticanus-b"}:
+            msg = (
+                "greek_source_id must be morphgnt-sblgnt (or legacy ntvmr-vaticanus-b)"
+            )
             raise ValueError(msg)
         if self.sahidic_source_id != "copsahhorner":
             msg = "sahidic_source_id must be copsahhorner"
@@ -167,16 +169,21 @@ class OmissionFixtureSet(BaseModel):
     id: str
     title: str
     schema_version: str = "1"
-    greek_source_id: str = "ntvmr-vaticanus-b"
+    greek_source_id: str = "morphgnt-sblgnt"
     sahidic_source_id: str = "copsahhorner"
-    pilot_corpus_id: str = "horner-vaticanus-nt-pilot-v1"
-    owned_by: str = "JAK-33"
-    consumed_by: list[str] = Field(default_factory=lambda: ["JAK-28"])
+    pilot_corpus_id: str = "horner-morphgnt-nt-v1"
+    owned_by: str = "phase-b-reset"
+    consumed_by: list[str] = Field(default_factory=lambda: ["align", "eval"])
     units: list[OmissionUnit]
     notes: str = ""
 
     @model_validator(mode="after")
     def _nonempty_and_empty_sides(self) -> OmissionFixtureSet:
+        if self.greek_source_id not in {"morphgnt-sblgnt", "ntvmr-vaticanus-b"}:
+            msg = (
+                "greek_source_id must be morphgnt-sblgnt (or legacy ntvmr-vaticanus-b)"
+            )
+            raise ValueError(msg)
         if not self.units:
             msg = "omission fixture set must list at least one unit"
             raise ValueError(msg)

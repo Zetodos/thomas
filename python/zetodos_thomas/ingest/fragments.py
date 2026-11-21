@@ -77,7 +77,8 @@ def build_fragment_corpus(tei_dir: Path) -> FragmentCorpus:
 
 def write_fragment_corpus(corpus: FragmentCorpus, path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(corpus.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    # Keep derived JSON well under the 1024 KiB repo large-file limit.
+    path.write_text(corpus.model_dump_json() + "\n", encoding="utf-8")
 
 
 def load_fragment_corpus(path: Path) -> FragmentCorpus:

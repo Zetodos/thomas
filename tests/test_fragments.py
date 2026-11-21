@@ -9,10 +9,6 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
-from zetodos_thomas.bundled import (
-    bundled_fragments_corpus_path,
-    bundled_manifests_dir,
-)
 from zetodos_thomas.cli.app import app
 from zetodos_thomas.ingest.dclp_fragments import (
     DCLP_THOMAS_FRAGMENTS,
@@ -29,6 +25,7 @@ from zetodos_thomas.ingest.fragments import (
     validate_fragment_corpus_or_raise,
 )
 from zetodos_thomas.ingest.manifests import load_manifest, validate_manifests_dir
+from zetodos_thomas.ingest.paths import resolve_fragments_corpus_path
 from zetodos_thomas.ingest.verify_inputs import verify_fragment_rebuild_inputs
 from zetodos_thomas.schemas.fragment import (
     CorpusRole,
@@ -102,12 +99,11 @@ def test_nested_gap_inside_supplied_survives_parse_and_corpus() -> None:
     lacuna = next(t for t in line.tokens if t.kind is FragmentLayerKind.LACUNA)
     assert lacuna.reason == "illegible"
     assert lacuna.unit == "character"
-    # Derived JSON (checkout + bundled) must retain the nested marker.
-    for path in (CORPUS_PATH, bundled_fragments_corpus_path()):
-        corpus = load_fragment_corpus(path)
-        tx = next(t for t in corpus.transcriptions if t.id == "poxy-655-dclp")
-        derived = next(ln for ln in tx.lines if ln.line_id == "column-ii.23")
-        assert any(t.kind is FragmentLayerKind.LACUNA for t in derived.tokens)
+    # Derived JSON must retain the nested marker.
+    corpus = load_fragment_corpus(CORPUS_PATH)
+    tx = next(t for t in corpus.transcriptions if t.id == "poxy-655-dclp")
+    derived = next(ln for ln in tx.lines if ln.line_id == "column-ii.23")
+    assert any(t.kind is FragmentLayerKind.LACUNA for t in derived.tokens)
 
 
 def test_verify_fragment_rebuild_rejects_checksum_mismatch(tmp_path: Path) -> None:
@@ -123,7 +119,9 @@ def test_verify_fragment_rebuild_rejects_checksum_mismatch(tmp_path: Path) -> No
         verify_fragment_rebuild_inputs(manifests_dir=MANIFESTS_DIR, tei_dir=tei_dir)
 
 
-def test_cli_build_fragments_rejects_tei_dir_checksum_mismatch(tmp_path: Path) -> None:
+def test_verify_fragment_rebuild_rejects_tei_dir_checksum_mismatch(
+    tmp_path: Path,
+) -> None:
     tei_dir = tmp_path / "tei"
     tei_dir.mkdir()
     for meta in DCLP_THOMAS_FRAGMENTS:
@@ -133,24 +131,8 @@ def test_cli_build_fragments_rejects_tei_dir_checksum_mismatch(tmp_path: Path) -
     (tei_dir / "poxy-654-tm62840.xml").write_text(
         "not-the-pinned-tei", encoding="utf-8"
     )
-    out = tmp_path / "out.json"
-    runner = CliRunner()
-    result = runner.invoke(
-        app,
-        [
-            "sources",
-            "build-fragments",
-            "--repo-root",
-            str(REPO_ROOT),
-            "--tei-dir",
-            str(tei_dir),
-            "-o",
-            str(out),
-        ],
-    )
-    assert result.exit_code == 1
-    assert "checksum" in (result.stdout + result.stderr).lower()
-    assert not out.exists()
+    with pytest.raises(DownloadError, match="checksum"):
+        verify_fragment_rebuild_inputs(manifests_dir=MANIFESTS_DIR, tei_dir=tei_dir)
 
 
 def test_committed_fragment_corpus_validates() -> None:
@@ -215,15 +197,23 @@ def test_cli_sources_validate_includes_fragments() -> None:
     )
 
 
-def test_bundled_fragment_corpus_matches_checkout() -> None:
-    assert CORPUS_PATH.read_text(
-        encoding="utf-8"
-    ) == bundled_fragments_corpus_path().read_text(encoding="utf-8")
-    for meta in DCLP_THOMAS_FRAGMENTS:
-        name = f"{meta['source_id']}.json"
-        assert (MANIFESTS_DIR / name).read_text(encoding="utf-8") == (
-            bundled_manifests_dir() / name
-        ).read_text(encoding="utf-8")
+def test_fragment_words_preserve_truncation_and_abbreviations() -> None:
+    corpus = load_fragment_corpus(CORPUS_PATH)
+    assert resolve_fragments_corpus_path(REPO_ROOT) == CORPUS_PATH
+    tx654 = next(tx for tx in corpus.transcriptions if tx.id == "poxy-654-dclp")
+    thalassa = next(w for w in tx654.words if w.full_editorial_word == "θαλάσσης")
+    assert thalassa.surviving_text == "θαλά"
+    assert thalassa.restored_text == "σσης"
+    assert thalassa.is_truncated is True
+    assert thalassa.is_abbreviation is False
+
+    tx1 = next(tx for tx in corpus.transcriptions if tx.id == "poxy-1-dclp")
+    is_words = [
+        w for w in tx1.words if w.is_abbreviation and w.full_editorial_word == "Ἰησοῦς"
+    ]
+    assert is_words
+    assert is_words[0].surviving_text == "Ἰς"
+    assert is_words[0].abbreviated_text == "ησοῦ"
 
 
 def test_validate_or_raise() -> None:

@@ -1,0 +1,11 @@
+{
+  "w_fwd": 1.0,
+  "w_rev": 0.25,
+  "w_lm": 0.15,
+  "w_loan": 0.8,
+  "w_cov": 0.0,
+  "len_alpha": 1.0,
+  "beam_size": 8,
+  "use_v1_draft": true,
+  "include_v1_candidate": false
+}

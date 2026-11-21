@@ -7,8 +7,6 @@ from pathlib import Path
 
 import typer
 
-from zetodos_thomas.align.splits import load_canonical_splits
-from zetodos_thomas.align.validate import validate_pilot_corpus
 from zetodos_thomas.ingest.dilley_thomas import (
     EXPECTED_LOGIA,
     INGEST_LEVEL,
@@ -23,12 +21,7 @@ from zetodos_thomas.ingest.dilley_thomas import (
 from zetodos_thomas.ingest.dilley_thomas import (
     SOURCE_ID as DILLEY_SOURCE_ID,
 )
-from zetodos_thomas.ingest.download import (
-    DownloadError,
-    download_dilley_thomas,
-    download_pilot_sources,
-    verify_checksum,
-)
+from zetodos_thomas.ingest.download import DownloadError, verify_checksum
 from zetodos_thomas.ingest.evidence_pilot import (
     EvidencePilotValidationError,
     load_evidence_pilot,
@@ -45,6 +38,7 @@ from zetodos_thomas.ingest.fragments import (
 )
 from zetodos_thomas.ingest.holdouts import (
     HoldoutValidationError,
+    load_omission_fixtures,
     validate_holdout_artifacts,
 )
 from zetodos_thomas.ingest.manifests import (
@@ -52,8 +46,9 @@ from zetodos_thomas.ingest.manifests import (
     load_manifest,
     validate_manifests_dir,
 )
-from zetodos_thomas.ingest.ntvmr_vaticanus import SOURCE_ID as VATICANUS_SOURCE_ID
+from zetodos_thomas.ingest.morphgnt import build_nt_split_v1, pair_horner_morphgnt
 from zetodos_thomas.ingest.paths import (
+    NT_SPLIT_REL,
     require_repo_root,
     resolve_evidence_pilot_path,
     resolve_fragment_divergences_path,
@@ -61,24 +56,18 @@ from zetodos_thomas.ingest.paths import (
     resolve_manifests_dir,
     resolve_nt_split_path,
     resolve_omission_fixtures_path,
-    resolve_pilot_path,
     resolve_thomas_path,
 )
-from zetodos_thomas.ingest.pilot import (
-    build_pilot_corpus,
-    load_pilot_corpus,
-    write_pilot_corpus,
-)
 from zetodos_thomas.ingest.verify_inputs import (
+    verify_downloaded_sources,
     verify_fragment_rebuild_inputs,
-    verify_pilot_rebuild_inputs,
 )
 from zetodos_thomas.schemas.holdout import PassageRole
 from zetodos_thomas.schemas.source import GATED_DEFAULT_SOURCE_IDS
 
 sources_app = typer.Typer(
     name="sources",
-    help="Validate manifests and manage redistributable source imports.",
+    help="Validate manifests and build annotated corpora offline after setup.",
     no_args_is_help=True,
 )
 
@@ -88,7 +77,7 @@ def validate_sources(
     repo_root: Path | None = typer.Option(
         None,
         "--repo-root",
-        help="Checkout root (optional; packaged manifests used if absent)",
+        help="Checkout root (optional; packaged data used if absent)",
         exists=True,
         file_okay=False,
         dir_okay=True,
@@ -103,45 +92,12 @@ def validate_sources(
         dir_okay=True,
         readable=True,
     ),
-    pilot_path: Path | None = typer.Option(
-        None,
-        "--pilot",
-        help="Optional pilot corpus JSON to validate (omit file to skip)",
-        exists=False,
-        dir_okay=False,
-    ),
-    thomas_path: Path | None = typer.Option(
-        None,
-        "--thomas",
-        help="Optional Dilley Thomas corpus JSON to validate (omit file to skip)",
-        exists=False,
-        dir_okay=False,
-    ),
-    fragments_path: Path | None = typer.Option(
-        None,
-        "--fragments",
-        help="Optional Greek Thomas fragment corpus JSON (omit file to skip)",
-        exists=False,
-        dir_okay=False,
-    ),
-    evidence_pilot_path: Path | None = typer.Option(
-        None,
-        "--evidence-pilot",
-        help="Optional Phase 1 Thomas 7/17/30/77 evidence pilot JSON",
-        exists=False,
-        dir_okay=False,
-    ),
 ) -> None:
-    """Validate default manifests (and optional corpora) without network access.
-
-    Manifests/corpora resolve from the checkout when present; otherwise from
-    packaged wheel resources under ``zetodos_thomas.bundled``.
-    """
+    """Validate default manifests, Thomas corpus, fragments, and splits offline."""
     manifests_path = manifests_dir or resolve_manifests_dir(repo_root)
-    pilot = pilot_path or resolve_pilot_path(repo_root)
-    thomas = thomas_path or resolve_thomas_path(repo_root)
-    fragments = fragments_path or resolve_fragments_corpus_path(repo_root)
-    evidence_pilot = evidence_pilot_path or resolve_evidence_pilot_path(repo_root)
+    thomas = resolve_thomas_path(repo_root)
+    fragments = resolve_fragments_corpus_path(repo_root)
+    evidence_pilot = resolve_evidence_pilot_path(repo_root)
 
     try:
         manifests = validate_manifests_dir(manifests_path)
@@ -165,52 +121,6 @@ def validate_sources(
         f"({len(GATED_DEFAULT_SOURCE_IDS)} gated ids)"
     )
 
-    if pilot.is_file():
-        corpus = load_pilot_corpus(pilot)
-        empty_sahidic = sum(
-            1 for unit in corpus.units if not unit.sahidic.original_text
-        )
-        empty_greek = sum(1 for unit in corpus.units if not unit.greek.original_text)
-        typer.echo(
-            f"OK: pilot {corpus.id} - {len(corpus.units)} units "
-            f"({empty_sahidic} empty Sahidic, {empty_greek} empty Greek) "
-            f"from {pilot}"
-        )
-        if corpus.greek_source_id != VATICANUS_SOURCE_ID:
-            typer.secho(
-                f"Pilot greek_source_id must be {VATICANUS_SOURCE_ID} (JAK-25)",
-                fg=typer.colors.RED,
-            )
-            raise typer.Exit(code=1)
-        if corpus.sahidic_source_id != "copsahhorner":
-            typer.secho(
-                "Pilot sahidic_source_id must be copsahhorner (JAK-14)",
-                fg=typer.colors.RED,
-            )
-            raise typer.Exit(code=1)
-        # Structural / normalization / omission checks (JAK-28) against
-        # the single JAK-33 canonical training split.
-        splits = load_canonical_splits(
-            resolve_nt_split_path(repo_root),
-            resolve_omission_fixtures_path(repo_root),
-        )
-        report = validate_pilot_corpus(corpus, splits=splits)
-        for issue in report.issues:
-            if issue.severity == "error":
-                typer.secho(
-                    f"Pilot validation error [{issue.code}]: {issue.message}",
-                    fg=typer.colors.RED,
-                )
-        if not report.ok:
-            raise typer.Exit(code=1)
-        typer.echo(
-            "OK: pilot structural validation "
-            f"({report.nonempty_positive} nonempty positive, "
-            f"{report.omission_units} omission)"
-        )
-    else:
-        typer.echo(f"Note: pilot file not found at {pilot} (skipped)")
-
     if thomas.is_file():
         try:
             thomas_corpus = load_thomas_corpus(thomas)
@@ -220,41 +130,16 @@ def validate_sources(
             raise typer.Exit(code=1) from exc
         if thomas_corpus.source_id != DILLEY_SOURCE_ID:
             typer.secho(
-                f"Thomas source_id must be {DILLEY_SOURCE_ID} (JAK-30)",
+                f"Thomas source_id must be {DILLEY_SOURCE_ID}",
                 fg=typer.colors.RED,
             )
             raise typer.Exit(code=1)
-        if INGEST_LEVEL not in thomas_corpus.notes or (
-            "not alignment-ready" not in thomas_corpus.notes
-        ):
-            typer.secho(
-                "Thomas corpus notes must label unit-level ingest as "
-                "not alignment-ready (JAK-30)",
-                fg=typer.colors.RED,
-            )
-            raise typer.Exit(code=1)
-        if thomas_corpus.tokens or thomas_corpus.spans:
-            typer.secho(
-                "unit-level Thomas corpus must leave tokens[]/spans[] empty",
-                fg=typer.colors.RED,
-            )
-            raise typer.Exit(code=1)
-        empty_orig = sum(1 for u in thomas_corpus.units if not u.original_text)
-        empty_norm = sum(1 for u in thomas_corpus.units if not u.normalized_text)
-        if empty_orig or empty_norm:
-            typer.secho(
-                "Thomas corpus has empty original/normalized layers "
-                f"(orig={empty_orig}, norm={empty_norm})",
-                fg=typer.colors.RED,
-            )
-            raise typer.Exit(code=1)
+        morpheme_count = sum(len(u.morphemes) for u in thomas_corpus.units)
         expected = expected_unit_ids()
         typer.echo(
-            f"OK: thomas {thomas_corpus.id} - unit-level ingest "
-            f"({expected[0]}..{expected[-1]}, {EXPECTED_LOGIA} logia + prologue); "
-            "not token-complete / not alignment-ready "
-            f"(tokens={len(thomas_corpus.tokens)}, spans={len(thomas_corpus.spans)}) "
-            f"from {thomas}"
+            f"OK: thomas {thomas_corpus.id} - {INGEST_LEVEL} "
+            f"({expected[0]}..{expected[-1]}, {EXPECTED_LOGIA} logia + prologue, "
+            f"{morpheme_count} morphemes) from {thomas}"
         )
     else:
         typer.echo(f"Note: thomas corpus not found at {thomas} (skipped)")
@@ -269,20 +154,16 @@ def validate_sources(
             typer.secho(f"Fragment validation failed: {exc}", fg=typer.colors.RED)
             raise typer.Exit(code=1) from exc
         line_count = sum(len(tx.lines) for tx in frag.transcriptions)
+        word_count = sum(len(tx.words) for tx in frag.transcriptions)
         typer.echo(
             f"OK: fragments {frag.id} - {len(frag.transcriptions)} transcription(s), "
-            f"{line_count} lines, role={frag.corpus_role} from {fragments}"
+            f"{line_count} lines, {word_count} words, role={frag.corpus_role} "
+            f"from {fragments}"
         )
     else:
         typer.echo(f"Note: fragment corpus not found at {fragments} (skipped)")
 
-    if evidence_pilot.is_file():
-        if not thomas.is_file() or not fragments.is_file():
-            typer.secho(
-                "Evidence pilot requires Dilley Thomas + fragment corpora on disk",
-                fg=typer.colors.RED,
-            )
-            raise typer.Exit(code=1)
+    if evidence_pilot.is_file() and thomas.is_file() and fragments.is_file():
         try:
             package = validate_evidence_pilot_or_raise(
                 load_evidence_pilot(evidence_pilot),
@@ -297,26 +178,19 @@ def validate_sources(
             )
             raise typer.Exit(code=1) from exc
         typer.echo(
-            f"OK: evidence pilot {package.id} - {len(package.sayings)} sayings, "
-            f"{len(package.witness_alignments)} witness alignment(s) "
+            f"OK: evidence pilot {package.id} - {len(package.sayings)} sayings "
             f"from {evidence_pilot}"
         )
-    else:
-        typer.echo(f"Note: evidence pilot not found at {evidence_pilot} (skipped)")
 
     split_path = resolve_nt_split_path(repo_root)
     omission_path = resolve_omission_fixtures_path(repo_root)
     divergence_path = resolve_fragment_divergences_path(repo_root)
     if split_path.is_file() and omission_path.is_file() and divergence_path.is_file():
-        pilot_for_holdouts = None
-        if pilot.is_file():
-            pilot_for_holdouts = load_pilot_corpus(pilot)
         try:
             split, omissions, divergences = validate_holdout_artifacts(
                 split_path=split_path,
                 omission_path=omission_path,
                 divergence_path=divergence_path,
-                pilot=pilot_for_holdouts,
             )
         except HoldoutValidationError as exc:
             typer.secho(f"Holdout validation failed: {exc}", fg=typer.colors.RED)
@@ -324,243 +198,114 @@ def validate_sources(
         train_n = sum(
             len(p.unit_ids) for p in split.passages if p.role is PassageRole.TRAIN
         )
+        dev_n = sum(
+            len(p.unit_ids) for p in split.passages if p.role is PassageRole.DEV
+        )
         holdout_n = sum(
             len(p.unit_ids) for p in split.passages if p.role is PassageRole.HOLDOUT
         )
         typer.echo(
-            f"OK: holdouts {split.id} "
-            f"(train={train_n}, holdout={holdout_n}, "
+            f"OK: split {split.id} (train={train_n}, dev={dev_n}, holdout={holdout_n}, "
             f"omissions={len(omissions.units)}, "
-            f"divergences={len(divergences.divergences)}, "
-            f"eval-exclusions={len(split.evaluation_witness_exclusions)})"
+            f"divergences={len(divergences.divergences)})"
         )
-    else:
-        typer.echo("Note: JAK-33 holdout artifacts not found (skipped)")
 
 
-@sources_app.command("download")
-def download_sources(
+@sources_app.command("build")
+def build_sources(
     repo_root: Path | None = typer.Option(
         None,
         "--repo-root",
-        help="Writable checkout root (default: auto-detect from cwd)",
+        help="Writable checkout root (default: auto-detect)",
         exists=True,
         file_okay=False,
         dir_okay=True,
         resolve_path=True,
     ),
-    force: bool = typer.Option(
-        False,
-        "--force",
-        help="Re-download even when checksum-verified files already exist",
-    ),
 ) -> None:
-    """Download CopSahHorner + NTVMR Vaticanus B* TEI + Dilley Thomas TT.
-
-    Writes only under the checkout (never into the package install). Requires
-    network. Throttles NTVMR pulls. Does **not** download manuscript images.
-    After this, optionally run ``build-pilot`` / ``build-thomas``.
-    """
+    """Rebuild token-complete Dilley Thomas, word-layered fragments, and NT split."""
     try:
         root = require_repo_root(repo_root)
-        sword_root, tei_dir, dilley_tt = download_pilot_sources(root, force=force)
-    except (DownloadError, FileNotFoundError, OSError) as exc:
-        typer.secho(f"Download failed: {exc}", fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-    typer.echo(f"OK: CopSahHorner SWORD tree at {sword_root}")
-    typer.echo(f"OK: NTVMR Vaticanus B* TEI at {tei_dir}")
-    typer.echo(f"OK: Dilley Thomas TT at {dilley_tt}")
-    typer.echo("Next (optional): uv run thomas sources build-pilot")
-    typer.echo("Next (optional): uv run thomas sources build-thomas")
+        manifests_dir = root / "data" / "manifests"
+        downloads_dir = root / "data" / "downloads"
+        manifests = validate_manifests_dir(manifests_dir)
 
-
-@sources_app.command("build-pilot")
-def build_pilot(
-    repo_root: Path | None = typer.Option(
-        None,
-        "--repo-root",
-        help="Writable checkout root (default: auto-detect from cwd)",
-        exists=True,
-        file_okay=False,
-        dir_okay=True,
-        resolve_path=True,
-    ),
-    sword_root: Path | None = typer.Option(
-        None,
-        "--sword-root",
-        help="Local SWORD tree containing CopSahHorner (under data/downloads/)",
-        exists=True,
-        file_okay=False,
-    ),
-    vaticanus_tei_dir: Path | None = typer.Option(
-        None,
-        "--vaticanus-tei-dir",
-        help="Directory of NTVMR Vaticanus teiraw XML files",
-        exists=True,
-        file_okay=False,
-    ),
-    output: Path | None = typer.Option(
-        None,
-        "--output",
-        "-o",
-        help="Destination JSON for the redistributable pilot excerpt",
-    ),
-) -> None:
-    """Build the pilot excerpt from local downloads after checksum verification."""
-    try:
-        root = require_repo_root(repo_root)
-    except FileNotFoundError as exc:
-        typer.secho(f"build-pilot requires a checkout: {exc}", fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-
-    manifests_dir = root / "data" / "manifests"
-    downloads_dir = root / "data" / "downloads"
-    sword = sword_root or downloads_dir / "sword"
-    tei_dir = vaticanus_tei_dir or downloads_dir / "ntvmr-vaticanus"
-    dest = (
-        output or root / "data" / "sources" / "pilot" / "horner-vaticanus-nt-pilot.json"
-    )
-
-    try:
-        verify_pilot_rebuild_inputs(
-            manifests_dir=manifests_dir,
-            sword_root=sword,
-            vaticanus_tei_dir=tei_dir,
-            downloads_dir=downloads_dir,
+        # 1. Rebuild Dilley Thomas with full SCRIPTORIUM annotations
+        dilley_manifest = load_manifest(manifests_dir / "dilley-thomas.json")
+        tt_path = default_tt_path(root)
+        if not tt_path.is_file():
+            msg = f"missing Dilley TT at {tt_path}; run `thomas setup` first"
+            raise FileNotFoundError(msg)
+        verify_checksum(tt_path, dilley_manifest.checksum)
+        thomas_corpus = parse_tt(tt_path, source_id=DILLEY_SOURCE_ID)
+        thomas_out = default_corpus_path(root)
+        write_thomas_corpus(thomas_corpus, thomas_out)
+        morphemes_n = sum(len(u.morphemes) for u in thomas_corpus.units)
+        typer.echo(
+            f"Wrote {len(thomas_corpus.units)} Thomas units ({morphemes_n} morphemes) "
+            f"to {thomas_out}"
         )
-        corpus = build_pilot_corpus(sword_root=sword, vaticanus_tei_dir=tei_dir)
-    except (DownloadError, FileNotFoundError, OSError, ValueError) as exc:
-        typer.secho(f"build-pilot failed: {exc}", fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
 
-    write_pilot_corpus(corpus, dest)
-    typer.echo(f"Wrote {len(corpus.units)} parallel units to {dest}")
-
-
-@sources_app.command("build-thomas")
-def build_thomas(
-    repo_root: Path | None = typer.Option(
-        None,
-        "--repo-root",
-        help="Writable checkout root (default: auto-detect from cwd)",
-        exists=True,
-        file_okay=False,
-        dir_okay=True,
-        resolve_path=True,
-    ),
-    tt_path: Path | None = typer.Option(
-        None,
-        "--tt",
-        help="Local Dilley SCRIPTORIUM TreeTagger SGML (*.tt)",
-        exists=True,
-        dir_okay=False,
-    ),
-    output: Path | None = typer.Option(
-        None,
-        "--output",
-        "-o",
-        help="Destination JSON for the redistributable Thomas corpus",
-    ),
-    download_if_missing: bool = typer.Option(
-        False,
-        "--download-if-missing",
-        help="Fetch the pinned Dilley TT when the local file is absent",
-    ),
-) -> None:
-    """Build the Dilley Thomas corpus from a local (checksum-verified) *.tt file."""
-    try:
-        root = require_repo_root(repo_root)
-    except FileNotFoundError as exc:
-        typer.secho(f"build-thomas requires a checkout: {exc}", fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-
-    manifests_dir = root / "data" / "manifests"
-    downloads_dir = root / "data" / "downloads"
-    tt = tt_path or default_tt_path(root)
-    dest = output or default_corpus_path(root)
-
-    try:
-        manifest = load_manifest(manifests_dir / "dilley-thomas.json")
-        if not tt.is_file():
-            if not download_if_missing:
-                msg = (
-                    f"missing Dilley TT at {tt}; run "
-                    "`thomas sources download` or pass --download-if-missing"
-                )
-                raise FileNotFoundError(msg)
-            tt = download_dilley_thomas(
-                downloads_dir, manifests_dir=manifests_dir, force=False
-            )
-        verify_checksum(tt, manifest.checksum)
-        corpus = parse_tt(tt, source_id=DILLEY_SOURCE_ID)
-    except (DownloadError, FileNotFoundError, OSError, ValueError) as exc:
-        typer.secho(f"build-thomas failed: {exc}", fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-
-    write_thomas_corpus(corpus, dest)
-    typer.echo(
-        f"Wrote {len(corpus.units)} units ({EXPECTED_LOGIA} logia + prologue) to {dest}"
-    )
-
-
-@sources_app.command("build-fragments")
-def build_fragments(
-    repo_root: Path | None = typer.Option(
-        None,
-        "--repo-root",
-        help="Writable checkout root (default: auto-detect from cwd)",
-        exists=True,
-        file_okay=False,
-        dir_okay=True,
-        resolve_path=True,
-    ),
-    tei_dir: Path | None = typer.Option(
-        None,
-        "--tei-dir",
-        help="Directory of bundled DCLP TEI XML files",
-        exists=True,
-        file_okay=False,
-    ),
-    output: Path | None = typer.Option(
-        None,
-        "--output",
-        "-o",
-        help="Destination JSON for the layered fragment corpus",
-    ),
-) -> None:
-    """Build layered Greek Thomas fragment corpus from local DCLP TEI (offline)."""
-    try:
-        root = require_repo_root(repo_root)
-    except FileNotFoundError as exc:
-        typer.secho(f"build-fragments requires a checkout: {exc}", fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-
-    source_tei = tei_dir or fragments_tei_dir(root)
-    dest = output or fragments_corpus_path(root)
-    manifests_path = root / "data" / "manifests"
-
-    try:
-        manifests = validate_manifests_dir(manifests_path)
-        # Pin TEI bytes to manifests before parse (same pattern as build-pilot).
-        verify_fragment_rebuild_inputs(
-            manifests_dir=manifests_path,
-            tei_dir=source_tei,
+        # 2. Rebuild DCLP fragments with FragmentWord layer
+        tei_dir = fragments_tei_dir(root)
+        verify_fragment_rebuild_inputs(manifests_dir=manifests_dir, tei_dir=tei_dir)
+        frag_corpus = build_fragment_corpus(tei_dir)
+        validate_fragment_corpus_or_raise(frag_corpus, manifests)
+        frag_out = fragments_corpus_path(root)
+        write_fragment_corpus(frag_corpus, frag_out)
+        words_n = sum(len(tx.words) for tx in frag_corpus.transcriptions)
+        typer.echo(
+            f"Wrote {len(frag_corpus.transcriptions)} fragment transcriptions "
+            f"({words_n} words) to {frag_out}"
         )
-        corpus = build_fragment_corpus(source_tei)
-        validate_fragment_corpus_or_raise(corpus, manifests)
+
+        # 3. Verify downloaded NT/OT/CCL inputs and build full-NT leak-free split v1
+        verify_downloaded_sources(
+            manifests_dir=manifests_dir, downloads_dir=downloads_dir
+        )
+        paired = pair_horner_morphgnt(
+            sword_root=downloads_dir / "sword",
+            morphgnt_dir=downloads_dir / "morphgnt-sblgnt",
+        )
+        omissions = load_omission_fixtures(resolve_omission_fixtures_path(root))
+        legacy_split = root / "data/training/splits/horner-vaticanus-nt-split-v3.json"
+        seed_split = legacy_split if legacy_split.is_file() else (root / NT_SPLIT_REL)
+        split = build_nt_split_v1(
+            paired_verses=paired,
+            legacy_split_path=seed_split,
+            omission_unit_ids={u.unit_id for u in omissions.units},
+        )
+        split_out = root / NT_SPLIT_REL
+        split_out.parent.mkdir(parents=True, exist_ok=True)
+        split_out.write_text(split.model_dump_json() + "\n", encoding="utf-8")
+        validate_holdout_artifacts(
+            split_path=split_out,
+            omission_path=resolve_omission_fixtures_path(root),
+            divergence_path=resolve_fragment_divergences_path(root),
+            greek_texts={g.unit_id: g.normalized_text for _c, g in paired},
+            sahidic_texts={c.unit_id: c.normalized_text for c, _g in paired},
+        )
+        train_n = sum(
+            len(p.unit_ids) for p in split.passages if p.role is PassageRole.TRAIN
+        )
+        dev_n = sum(
+            len(p.unit_ids) for p in split.passages if p.role is PassageRole.DEV
+        )
+        hold_n = sum(
+            len(p.unit_ids) for p in split.passages if p.role is PassageRole.HOLDOUT
+        )
+        typer.echo(
+            f"Wrote {split.id} (train={train_n}, dev={dev_n}, holdout={hold_n}) "
+            f"to {split_out}"
+        )
     except (
         DownloadError,
         FragmentValidationError,
+        HoldoutValidationError,
         ManifestValidationError,
         FileNotFoundError,
         OSError,
         ValueError,
     ) as exc:
-        typer.secho(f"build-fragments failed: {exc}", fg=typer.colors.RED)
+        typer.secho(f"sources build failed: {exc}", fg=typer.colors.RED)
         raise typer.Exit(code=1) from exc
-
-    write_fragment_corpus(corpus, dest)
-    typer.echo(
-        f"Wrote {len(corpus.transcriptions)} transcription(s) "
-        f"({sum(len(t.lines) for t in corpus.transcriptions)} lines) to {dest}"
-    )

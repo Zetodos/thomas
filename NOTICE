@@ -9,12 +9,6 @@ Third-party source texts, linguistic datasets, and editorial outputs are not
 covered by that Apache-2.0 grant. Their terms are recorded in per-source
 manifests under data/manifests/ (see docs/source-licenses.md).
 
-Bundled pilot excerpt (data/sources/pilot/):
-  - Sahidic: G. W. Horner via CrossWire CopSahHorner v1.5 (Public Domain)
-  - Greek: INTF/NTVMR Codex Vaticanus GA 03 firsthand (B*) transcription
-    (CC BY 4.0). Attribution: Institut für neutestamentliche Textforschung.
-    Manuscript images are not included.
-
 Bundled Coptic Thomas import (data/sources/thomas/):
   - Dilley / Coptic SCRIPTORIUM Gospel of Thomas v6.2.0 (CC BY 4.0).
     Attribution: Paul C. Dilley; Coptic SCRIPTORIUM; annotation/metadata
@@ -26,13 +20,20 @@ Bundled Greek Thomas fragments (data/sources/fragments/):
     Attribution: Digital Corpus of Literary Papyri and LDAB (Trismegistos).
     Papyrus images are not included. Labeled evaluation-witness (evidence type G).
 
-Bundled verified loanword subset (data/sources/mappings/verified-loanwords-ccl-ddglc-v1.json):
-  - Adapted from Comprehensive Coptic Lexicon TEI v1.2 / DDGLC Greek loanwords
-    (Burns, Feder, John, Kupreyev; BBAW TLA; DDGLC FU Berlin), CC BY-SA 4.0.
-    DOI https://doi.org/10.17169/refubium-27566. Manifest:
-    data/manifests/ccl-ddglc-tei.json. ShareAlike applies to this adapted
-    lexical subset. DIOSKOROS is not used.
+Setup-downloaded corpora and lexicons (data/manifests/):
+  - Sahidic NT: G. W. Horner via CrossWire CopSahHorner v1.5 (Public Domain)
+  - Greek NT: SBL Greek New Testament (Michael W. Holmes, CC BY 4.0 / SBLGNT EULA)
+    with MorphGNT morphological parsing & lemmatization (J. K. Tauber et al.,
+    CC BY-SA 3.0, DOI 10.5281/zenodo.376200)
+  - Sahidic OT: Coptic SCRIPTORIUM sahidic.ot v6.2.0 (Göttingen / CoptOT,
+    CC BY-SA 4.0)
+  - Greek LXX: Henry Barclay Swete via Open Greek & Latin / First1KGreek and
+    nathans/lxx-swete (CC BY-SA 4.0)
+  - Lexicon: Comprehensive Coptic Lexicon TEI v1.2 / DDGLC Greek loanwords
+    (Burns, Feder, John, Kupreyev; BBAW TLA; DDGLC FU Berlin, CC BY-SA 4.0,
+    DOI https://doi.org/10.17169/refubium-27566). DIOSKOROS is not used.
 
-See data/manifests/*.json, docs/horner-vaticanus-alignment-notes.md,
-docs/id-scheme.md, docs/greek-thomas-fragments.md,
-docs/phrase-loanword-mappings.md, and docs/deterministic-decoder.md.
+Derived mapping models and lexical tables under data/mappings/ incorporate
+CC BY-SA 4.0 / CC BY-SA 3.0 adaptations and are licensed CC BY-SA 4.0.
+Generated Greek reconstructions for Thomas carry no copied copyrighted editions
+and are licensed CC BY 4.0.

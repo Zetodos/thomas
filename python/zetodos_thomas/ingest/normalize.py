@@ -19,6 +19,7 @@ _COPTIC_COMBINING = "".join(
 _COPTIC_STRIP_RE = re.compile(f"[{re.escape(_COPTIC_COMBINING)}\u0361]")
 # Diplomatic editorial wrappers: keep letters, drop brackets/angles.
 _EDITORIAL_WRAP_RE = re.compile(r"[\[\]⟨⟩<>]")
+_COPTIC_MODIFIER_RE = re.compile(r"[\u02be\u02bf\u2cfd]")
 
 
 def normalize_whitespace(text: str) -> str:
@@ -36,14 +37,15 @@ def strip_editorial_marks(text: str) -> str:
 
 
 def normalize_coptic(text: str) -> str:
-    """NFC + whitespace collapse; strip combining overlines for matching.
+    """NFC + whitespace collapse; strip combining marks/overlines for matching.
 
-    Original display text (with overlines / binders) is preserved separately.
-    Normalized form is for machine-oriented token comparison only.
+    Original display text (with overlines / binders / diaereses) is preserved
+    separately. Normalized form is for machine-oriented token comparison only.
     """
-    nfc = unicodedata.normalize("NFC", text)
-    stripped = _COPTIC_STRIP_RE.sub("", nfc)
-    stripped = strip_editorial_marks(stripped)
+    nfd = unicodedata.normalize("NFD", text)
+    no_marks = "".join(ch for ch in nfd if unicodedata.category(ch) != "Mn")
+    nfc = unicodedata.normalize("NFC", no_marks)
+    stripped = strip_editorial_marks(_COPTIC_MODIFIER_RE.sub("", nfc))
     return normalize_whitespace(stripped)
 
 
@@ -87,14 +89,17 @@ def map_coptic_normalized_span_to_original(
         while j < len(orig_chars) and unicodedata.combining(orig_chars[j]):
             j += 1
         cluster = "".join(orig_chars[i:j])
-        nfc_cluster = unicodedata.normalize("NFC", cluster)
-        for k, nfc_ch in enumerate(nfc_cluster):
-            if len(nfc_cluster) == 1:
+        nfd_cluster = unicodedata.normalize("NFD", cluster)
+        clean_cluster = unicodedata.normalize(
+            "NFC", "".join(c for c in nfd_cluster if unicodedata.category(c) != "Mn")
+        )
+        for k, nfc_ch in enumerate(clean_cluster):
+            if len(clean_cluster) == 1:
                 o_start, o_end = i, j
             else:
                 o_start = i + k
                 o_end = min(j, o_start + 1)
-            if _COPTIC_STRIP_RE.match(nfc_ch) or _EDITORIAL_WRAP_RE.match(nfc_ch):
+            if _EDITORIAL_WRAP_RE.match(nfc_ch) or _COPTIC_MODIFIER_RE.match(nfc_ch):
                 continue
             kept.append((nfc_ch, o_start, o_end))
         i = j
