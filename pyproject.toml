@@ -8,6 +8,7 @@ requires-python = ">=3.12"
 authors = [{ name = "Zetodos" }]
 dependencies = [
     "greek-accentuation>=1.2.0",
+    "numpy>=2.5.5",
     "pydantic>=2.10",
     "safetensors>=0.8.0",
     "sentencepiece>=0.2.3",

@@ -5,11 +5,15 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from zetodos_thomas.align.lemma_aligner import (
+    LexicalCandidate,
     LexicalTranslationModel,
     extract_coptic_right_context,
     filter_coptic_for_alignment,
 )
+from zetodos_thomas.integrations.aligners.discovery import probe_eflomal
 from zetodos_thomas.lexicon.idioms import IdiomAndValencyTable
 from zetodos_thomas.morphology.greek_inflector import GreekInflector
 from zetodos_thomas.schemas.linguistic import (
@@ -19,6 +23,8 @@ from zetodos_thomas.schemas.linguistic import (
     GreekToken,
     GreekUnit,
 )
+
+_HAS_EFLOMAL = probe_eflomal().available
 
 
 def _c_unit(uid: str, pairs: list[tuple[str, str, str]]) -> CopticUnit:
@@ -97,6 +103,67 @@ def test_idiom_and_valency_matching() -> None:
     assert span_len == 2
 
 
+def test_right_context_and_shard_roundtrip_without_eflomal(tmp_path: Path) -> None:
+    u_prep = _c_unit(
+        "ctx.unit.1", [("ϩⲉ", "ϩⲉ", "V"), ("ⲉ", "ⲉ", "PREP"), ("ⲙⲟⲩ", "ⲙⲟⲩ", "N")]
+    )
+    u_end = _c_unit("ctx.unit.2", [("ϩⲉ", "ϩⲉ", "V")])
+    assert extract_coptic_right_context(u_prep.morphemes, 0) == "prep:ⲉ"
+    assert extract_coptic_right_context(u_end.morphemes, 0) == "END"
+
+    c_fall = LexicalCandidate(
+        greek_lemma="πίπτω",
+        greek_pos="V-",
+        score=-0.3,
+        prob_g_given_c=0.74,
+        prob_c_given_g=0.70,
+        provenance="N",
+        count_nt=10.0,
+        count_ot=0.0,
+    )
+    c_find = LexicalCandidate(
+        greek_lemma="εὑρίσκω",
+        greek_pos="V-",
+        score=-0.5,
+        prob_g_given_c=0.60,
+        prob_c_given_g=0.55,
+        provenance="N",
+        count_nt=8.0,
+        count_ot=0.0,
+    )
+    c_find_ctx = LexicalCandidate(
+        greek_lemma="εὑρίσκω",
+        greek_pos="V-",
+        score=-0.1,
+        prob_g_given_c=0.90,
+        prob_c_given_g=0.80,
+        provenance="N",
+        count_nt=8.0,
+        count_ot=0.0,
+    )
+    model = LexicalTranslationModel(
+        by_lemma_pos={("ϩⲉ", "V"): [c_fall, c_find]},
+        by_lemma={"ϩⲉ": [c_fall, c_find]},
+        by_lemma_ctx={("ϩⲉ", "V", "prep:ⲉ"): [c_find_ctx]},
+    )
+    shards = model.save_shards(tmp_path)
+    assert any(p.name.startswith("lemma-ctx-") for p in shards)
+    reloaded = LexicalTranslationModel.load_shards(tmp_path)
+    assert (
+        reloaded.lookup(coptic_lemma="ϩⲉ", coptic_pos="V", right_ctx="prep:ⲉ")[
+            0
+        ].greek_lemma
+        == "εὑρίσκω"
+    )
+    assert (
+        reloaded.lookup(coptic_lemma="ϩⲉ", coptic_pos="V", right_ctx="END")[
+            0
+        ].greek_lemma
+        == "πίπτω"
+    )
+
+
+@pytest.mark.skipif(not _HAS_EFLOMAL, reason="eflomal not installed (run thomas setup)")
 def test_eflomal_synthetic_bitext_and_domain_weighting() -> None:
     inf = GreekInflector(
         paradigms={}, coarse_paradigms={}, lemma_genders={}, surface_analyses={}
@@ -148,6 +215,7 @@ def test_eflomal_synthetic_bitext_and_domain_weighting() -> None:
     assert cands[0].provenance == "N"
 
 
+@pytest.mark.skipif(not _HAS_EFLOMAL, reason="eflomal not installed (run thomas setup)")
 def test_contextual_disambiguation_and_shard_roundtrip(tmp_path: Path) -> None:
     inf = GreekInflector(
         paradigms={}, coarse_paradigms={}, lemma_genders={}, surface_analyses={}
