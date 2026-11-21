@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""``thomas eval`` Typer subcommands for JAK-40 blinded reconstruction."""
+"""``thomas eval`` Typer subcommands: offline holdout & P.Oxy. benchmarking."""
 
 from __future__ import annotations
 
@@ -8,465 +8,103 @@ from pathlib import Path
 
 import typer
 
-from zetodos_thomas.eval.blinded_reconstruct import (
-    COMMITTED_ARTIFACT_MAX_BYTES,
-    DEFAULT_FREEZE_REL,
-    DEFAULT_NT_RECON_REL,
-    DEFAULT_THOMAS_RECON_REL,
-    BlindedReconstructError,
-    reconstruct_blinded_package,
-    write_committed_reconstruction_artifacts,
-    write_reconstruction_package,
-)
-from zetodos_thomas.eval.surviving_letters import (
-    score_nt_unit_letters,
-    score_thomas7_surviving,
-    try_score_thomas7_or_gate_report,
-)
-from zetodos_thomas.eval.validate_reconstruction import (
-    validate_reconstruction_path,
+from zetodos_thomas.cli.model_cmd import MODEL_REL, MODEL_V2_REL
+from zetodos_thomas.eval.benchmark import (
+    BENCHMARK_DOC_REL,
+    EVAL_REPORT_REL,
+    format_benchmark_markdown,
+    run_full_evaluation,
 )
 from zetodos_thomas.ingest.paths import require_repo_root
-from zetodos_thomas.schemas.blinded import (
-    BlindedReconstructionPackage,
-    BlindedTargetKind,
-    SurvivingLetterEvalReport,
-)
-from zetodos_thomas.schemas.mappings import AblationCondition
+
+EVAL_REPORT_V2_REL = Path("data/generated/eval-report-v2.json")
+BENCHMARK_DOC_V2_REL = Path("docs/benchmark-report-v2.md")
 
 eval_app = typer.Typer(
     name="eval",
-    help="Blinded reconstruction, surviving-letter eval, feasibility gate (JAK-40/41).",
+    help="Run offline NT holdout and lacuna-aware P.Oxy. fragment evaluations.",
     no_args_is_help=True,
 )
 
-DEFAULT_RECON_REL = DEFAULT_THOMAS_RECON_REL
-DEFAULT_NT_RECON_PATH = DEFAULT_NT_RECON_REL
-DEFAULT_SCORE_REL = Path(
-    "data/reconstructions/jak40/thomas-7-surviving-letter-eval-v1.json"
-)
-DEFAULT_NT_SCORE_REL = Path("data/reconstructions/jak40/nt-holdout-letter-eval-v1.json")
 
-
-def _parse_condition(value: str) -> AblationCondition:
-    try:
-        return AblationCondition(value)
-    except ValueError as exc:
-        allowed = ", ".join(c.value for c in AblationCondition)
-        msg = f"unknown ablation condition {value!r}; expected one of: {allowed}"
-        raise typer.BadParameter(msg) from exc
-
-
-def _write_json(path: Path, payload: SurvivingLetterEvalReport) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    text = json.dumps(
-        payload.model_dump(mode="json"),
-        ensure_ascii=False,
-        indent=2,
-    )
-    path.write_text(text + "\n", encoding="utf-8")
-
-
-@eval_app.command("reconstruct")
-def reconstruct_cmd(
+@eval_app.command("run")
+def eval_run(
     repo_root: Path | None = typer.Option(
         None,
         "--repo-root",
+        help="Checkout root (default: auto-detect)",
         exists=True,
         file_okay=False,
         dir_okay=True,
         resolve_path=True,
     ),
-    ablation: str = typer.Option(
-        AblationCondition.NT_ALIGNER_PLUS_VERIFIED_LOANWORDS.value,
-        "--ablation",
-        help="Ablation arm (JAK-38).",
-    ),
-    thomas_only: bool = typer.Option(
-        False,
-        "--thomas-only/--with-nt-holdouts",
-        help="Reconstruct Thomas 7 only (skip NT holdout Sahidic).",
-    ),
-    commit_split: bool = typer.Option(
-        True,
-        "--commit-split/--single-file",
-        help=(
-            "Default: write Thomas 7 + NT holdout sibling files under the "
-            "1024 KiB large-file hook. --single-file writes one JSON via -o."
-        ),
-    ),
-    output: Path | None = typer.Option(
+    report_out: Path | None = typer.Option(
         None,
-        "--output",
-        "-o",
-        help="Single-file BlindedReconstructionPackage path (--single-file).",
+        "--report-out",
+        help="Output JSON report path (default: data/generated/eval-report-v1.json)",
     ),
-    compact: bool = typer.Option(False, "--compact/--pretty"),
+    doc_out: Path | None = typer.Option(
+        None,
+        "--doc-out",
+        help="Markdown benchmark report path (default: docs/benchmark-report.md)",
+    ),
+    model: str = typer.Option(
+        "v1",
+        "--model",
+        help="Model track to evaluate: v1 or v2",
+    ),
 ) -> None:
-    """Blinded decode of Thomas 7 (+ NT holdouts) without consulting Greek."""
-    try:
-        root = require_repo_root(repo_root)
-    except FileNotFoundError as exc:
-        typer.secho(str(exc), fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-
-    condition = _parse_condition(ablation)
-    try:
-        if commit_split and not thomas_only and output is None:
-            digests = write_committed_reconstruction_artifacts(root, ablation=condition)
-            typer.echo(f"Wrote {root / DEFAULT_RECON_REL}")
-            typer.echo(f"Wrote {root / DEFAULT_NT_RECON_PATH}")
-            typer.echo(f"Wrote {root / DEFAULT_FREEZE_REL}")
-            typer.echo(
-                f"thomas_sha256={digests['thomas'][:12]}… "
-                f"nt_sha256={digests['nt_holdout'][:12]}… "
-                f"freeze={digests['freeze'][:12]}… "
-                f"ablation={condition.value} greek_consulted=False"
-            )
-            return
-
-        package = reconstruct_blinded_package(
-            root,
-            ablation=condition,
-            include_nt_holdouts=not thomas_only,
+    """Run NT Gospel holdouts + P.Oxy. 1/654/655 benchmark and emit reports."""
+    root = require_repo_root(repo_root)
+    is_v2 = model.lower() in {"v2", "model-v2"}
+    model_dir = (root / MODEL_V2_REL) if is_v2 else (root / MODEL_REL)
+    marker = "seq2seq-config.json" if is_v2 else "decoder-weights.json"
+    if not (model_dir / marker).is_file():
+        cmd = "thomas model build-v2" if is_v2 else "thomas model build"
+        typer.secho(
+            f"Missing frozen model at {model_dir}; run `{cmd}` first",
+            fg=typer.colors.RED,
         )
-    except (OSError, ValueError) as exc:
-        typer.secho(str(exc), fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
+        raise typer.Exit(code=1)
 
-    out = output or (root / DEFAULT_RECON_REL)
-    # Enforce the 1 MiB commit hook for paths under data/reconstructions/jak40/.
-    under_commit_dir = "data/reconstructions/jak40" in str(out).replace("\\", "/")
-    try:
-        digest = write_reconstruction_package(
-            package,
-            out,
-            max_bytes=COMMITTED_ARTIFACT_MAX_BYTES if under_commit_dir else None,
-        )
-    except BlindedReconstructError as exc:
-        typer.secho(str(exc), fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-    typer.echo(f"Wrote {out}")
+    report = run_full_evaluation(repo_root=root, model_dir=model_dir)
+    json_path = report_out or (
+        root / (EVAL_REPORT_V2_REL if is_v2 else EVAL_REPORT_REL)
+    )
+    md_path = doc_out or (root / (BENCHMARK_DOC_V2_REL if is_v2 else BENCHMARK_DOC_REL))
+    json_path.parent.mkdir(parents=True, exist_ok=True)
+    md_path.parent.mkdir(parents=True, exist_ok=True)
+
+    serialized = (
+        json.dumps(report.model_dump(mode="json"), ensure_ascii=False, indent=2) + "\n"
+    )
+    json_path.write_text(serialized, encoding="utf-8")
+    md_path.write_text(format_benchmark_markdown(report), encoding="utf-8")
+
+    nt = report.nt_holdout
+    cv = report.poxy_convergent
+    ov = report.poxy_overall
     typer.echo(
-        f"units={package.summary.get('unit_count')} "
-        f"candidates_spans={package.summary.get('spans_with_candidates')} "
-        f"abstained_spans={package.summary.get('spans_abstained')} "
-        f"ablation={package.ablation_condition.value} "
-        f"sha256={digest[:12]}… "
-        f"greek_consulted={package.blinding.get('greek_consulted_during_reconstruction')}"
+        f"NT Holdout ({nt.unit_count} verses): "
+        f"Content Lemma F1={nt.content_lemma_f1:.4f} "
+        f"(P={nt.content_lemma_precision:.4f}, R={nt.content_lemma_recall:.4f}), "
+        f"Surface F1={nt.inflected_surface_f1:.4f}, "
+        f"Morph={nt.morph_accuracy_on_matched_lemmas:.4f}, "
+        f"chrF++={nt.chrf_pp:.4f}, BLEU-4={nt.bleu_4:.4f}, Cov={nt.coverage:.4f}"
     )
-    if compact:
-        pass
-
-
-@eval_app.command("score-thomas7")
-def score_thomas7_cmd(
-    repo_root: Path | None = typer.Option(
-        None,
-        "--repo-root",
-        exists=True,
-        file_okay=False,
-        dir_okay=True,
-        resolve_path=True,
-    ),
-    reconstruction: Path | None = typer.Option(
-        None,
-        "--reconstruction",
-        "-r",
-        exists=True,
-        dir_okay=False,
-        readable=True,
-        help="BlindedReconstructionPackage JSON.",
-    ),
-    output: Path | None = typer.Option(
-        None,
-        "--output",
-        "-o",
-        help="Write SurvivingLetterEvalReport JSON.",
-    ),
-    allow_unreviewed: bool = typer.Option(
-        False,
-        "--allow-unreviewed/--require-human-checked",
-        help=(
-            "Protocol smoke only: score without human-checked gate "
-            "(marks official=false). Default requires human-checked."
-        ),
-    ),
-    gate_report: bool = typer.Option(
-        False,
-        "--gate-report/--fail-closed",
-        help=(
-            "When review is pending, write a gate-blocked report instead of "
-            "exiting non-zero (default fail-closed)."
-        ),
-    ),
-) -> None:
-    """Score Thomas 7 vs P.Oxy. 654 surviving letters (fragments at eval only)."""
-    try:
-        root = require_repo_root(repo_root)
-    except FileNotFoundError as exc:
-        typer.secho(str(exc), fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-
-    recon_path = reconstruction or (root / DEFAULT_RECON_REL)
-    if not recon_path.is_file():
-        typer.secho(f"missing reconstruction: {recon_path}", fg=typer.colors.RED)
-        raise typer.Exit(code=1)
-
-    package = BlindedReconstructionPackage.model_validate(
-        json.loads(recon_path.read_text(encoding="utf-8"))
-    )
-    try:
-        if gate_report and not allow_unreviewed:
-            report = try_score_thomas7_or_gate_report(root, package)
-        else:
-            report = score_thomas7_surviving(
-                root,
-                package,
-                require_human_checked=not allow_unreviewed,
-            )
-    except (OSError, ValueError, KeyError) as exc:
-        typer.secho(str(exc), fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-
-    out = output or (root / DEFAULT_SCORE_REL)
-    _write_json(out, report)
-    typer.echo(f"Wrote {out}")
     typer.echo(
-        f"official={report.official} review_status={report.review_status} "
-        f"scores={len(report.scores)} "
-        f"gate_blocked={report.blinding.get('gate_blocked', False)}"
+        f"P.Oxy. Convergent ({cv.span_count} spans / {cv.unit_count} units): "
+        f"Content Lemma F1={cv.content_lemma_f1:.4f} "
+        f"(R={cv.content_lemma_recall:.4f}, "
+        f"Top-3 R={cv.top3_content_lemma_recall:.4f}), "
+        f"Char F1 exact/itac={cv.surviving_char_f1_exact:.4f}/"
+        f"{cv.surviving_char_f1_itacism:.4f}, "
+        f"Loanwords={cv.loanword_exact_match_rate:.4f} ({cv.loanword_total})"
     )
-    if not report.official and not allow_unreviewed and not gate_report:
-        raise typer.Exit(code=1)
-    if report.blinding.get("gate_blocked") and not gate_report:
-        raise typer.Exit(code=1)
-
-
-@eval_app.command("score-nt-holdouts")
-def score_nt_holdouts_cmd(
-    repo_root: Path | None = typer.Option(
-        None,
-        "--repo-root",
-        exists=True,
-        file_okay=False,
-        dir_okay=True,
-        resolve_path=True,
-    ),
-    reconstruction: Path | None = typer.Option(
-        None,
-        "--reconstruction",
-        "-r",
-        exists=True,
-        dir_okay=False,
-        readable=True,
-    ),
-    output: Path | None = typer.Option(None, "--output", "-o"),
-) -> None:
-    """Letter-agree NT holdout reconstructions vs Vaticanus B* (eval-time Greek)."""
-    from zetodos_thomas.eval.blinded_reconstruct import holdout_units
-
-    try:
-        root = require_repo_root(repo_root)
-    except FileNotFoundError as exc:
-        typer.secho(str(exc), fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-
-    recon_path = reconstruction or (root / DEFAULT_NT_RECON_PATH)
-    if not recon_path.is_file():
-        # Fall back to combined/single-file Thomas+NT package if present.
-        fallback = root / DEFAULT_RECON_REL
-        if fallback.is_file():
-            recon_path = fallback
-    if not recon_path.is_file():
-        typer.secho(f"missing reconstruction: {recon_path}", fg=typer.colors.RED)
-        raise typer.Exit(code=1)
-
-    package = BlindedReconstructionPackage.model_validate(
-        json.loads(recon_path.read_text(encoding="utf-8"))
-    )
-    by_id = {u.unit_id: u for u in holdout_units(root)}
-    scores = []
-    for unit in package.units:
-        if unit.target_kind is not BlindedTargetKind.NT_HOLDOUT:
-            continue
-        gold_unit = by_id.get(unit.unit_id)
-        if gold_unit is None:
-            continue
-        scores.append(
-            score_nt_unit_letters(
-                unit_id=unit.unit_id,
-                top1_greek=unit.top1_greek_surfaces,
-                greek_unit=gold_unit,
-                review_status="provisional-draft",
-                official=False,
-            )
-        )
-
-    report = SurvivingLetterEvalReport(
-        id="jak40-nt-holdout-letter-eval-v1",
-        title="NT holdout letter evaluation (JAK-40; provisional gold)",
-        reconstruction_package_id=package.id,
-        eval_package_id="horner-vaticanus-nt-holdout",
-        review_status="provisional-draft",
-        official=False,
-        nt_holdout_letter_scores=scores,
-        blinding={
-            "greek_loaded_during_reconstruction": False,
-            "greek_loaded_at_scoring": True,
-            "nt_holdout_only": True,
-        },
-        summary={
-            "n_scores": len(scores),
-            "official": False,
-            "mean_recall": (
-                sum(s.recall or 0.0 for s in scores) / len(scores) if scores else None
-            ),
-        },
-        provenance={"owned_by": "JAK-40", "llm": False, "network": False},
-        notes=[
-            "NT holdout letter scores use Vaticanus B* at eval time only.",
-            "Gold remains provisional-draft until human-checked (JAK-41 gate).",
-            "Train/dev passages are not scored as holdout.",
-        ],
-    )
-    out = output or (root / DEFAULT_NT_SCORE_REL)
-    _write_json(out, report)
-    typer.echo(f"Wrote {out}")
-    typer.echo(f"nt_holdout_scores={len(scores)} official=False")
-
-
-@eval_app.command("validate-reconstruction")
-def validate_reconstruction_cmd(
-    path: Path = typer.Argument(
-        ...,
-        exists=True,
-        dir_okay=False,
-        readable=True,
-        help="BlindedReconstructionPackage JSON.",
-    ),
-    repo_root: Path | None = typer.Option(
-        None,
-        "--repo-root",
-        exists=True,
-        file_okay=False,
-        dir_okay=True,
-        resolve_path=True,
-    ),
-) -> None:
-    """Validate blinded reconstruction schema + structured integrity checks."""
-    try:
-        root = require_repo_root(repo_root)
-    except FileNotFoundError as exc:
-        typer.secho(str(exc), fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-    report = validate_reconstruction_path(path, repo_root=root)
-    typer.echo(json.dumps(report, indent=2, ensure_ascii=False))
-    if not report["ok"]:
-        raise typer.Exit(code=1)
-    typer.echo("OK: JAK-40 blinded reconstruction validation passed")
-
-
-@eval_app.command("feasibility-report")
-def feasibility_report_cmd(
-    repo_root: Path | None = typer.Option(
-        None,
-        "--repo-root",
-        exists=True,
-        file_okay=False,
-        dir_okay=True,
-        resolve_path=True,
-    ),
-    thomas_reconstruction: Path | None = typer.Option(
-        None,
-        "--thomas-reconstruction",
-        exists=True,
-        dir_okay=False,
-        readable=True,
-        help="JAK-40 Thomas 7 BlindedReconstructionPackage JSON.",
-    ),
-    nt_reconstruction: Path | None = typer.Option(
-        None,
-        "--nt-reconstruction",
-        exists=True,
-        dir_okay=False,
-        readable=True,
-        help="JAK-40 NT holdout BlindedReconstructionPackage JSON.",
-    ),
-    output: Path | None = typer.Option(
-        None,
-        "--output",
-        "-o",
-        help="Write FeasibilityReport JSON.",
-    ),
-    write_doc: Path | None = typer.Option(
-        None,
-        "--write-doc",
-        help="Markdown report path (defaults with --doc).",
-    ),
-    doc: bool = typer.Option(
-        True,
-        "--doc/--no-doc",
-        help="Also write docs/phase2-feasibility-report.md (or --write-doc path).",
-    ),
-    include_ablation_arms: bool = typer.Option(
-        True,
-        "--ablation-arms/--skip-ablation-arms",
-        help="Reconstruct both JAK-38 ablation arms for NT comparison.",
-    ),
-) -> None:
-    """Compare decoder vs word-for-word baseline; emit Phase 2 gate report (JAK-41)."""
-    from zetodos_thomas.eval.feasibility import (
-        DEFAULT_DOC_REL,
-        DEFAULT_METRICS_REL,
-        build_feasibility_report,
-        write_feasibility_artifacts,
-    )
-
-    try:
-        root = require_repo_root(repo_root)
-    except FileNotFoundError as exc:
-        typer.secho(str(exc), fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-
-    try:
-        report = build_feasibility_report(
-            root,
-            thomas_recon_path=thomas_reconstruction,
-            nt_recon_path=nt_reconstruction,
-            include_ablation_arms=include_ablation_arms,
-        )
-    except (OSError, ValueError, KeyError) as exc:
-        typer.secho(str(exc), fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-
-    metrics_out = output or (root / DEFAULT_METRICS_REL)
-    doc_out: Path | None = None
-    if doc:
-        doc_out = write_doc or (root / DEFAULT_DOC_REL)
-    elif write_doc is not None:
-        doc_out = write_doc
-
-    under_commit = "data/reconstructions/jak41" in str(metrics_out).replace("\\", "/")
-    try:
-        digests = write_feasibility_artifacts(
-            report,
-            metrics_path=metrics_out,
-            doc_path=doc_out,
-            max_bytes=1024 * 1024 if under_commit else None,
-        )
-    except ValueError as exc:
-        typer.secho(str(exc), fg=typer.colors.RED)
-        raise typer.Exit(code=1) from exc
-
-    typer.echo(f"Wrote {metrics_out}")
-    if doc_out is not None:
-        typer.echo(f"Wrote {doc_out}")
     typer.echo(
-        f"gate={report.gate_recommendation.value} "
-        f"nt_units={report.summary.get('nt_units_scored')} "
-        f"decoder_f1={report.summary.get('decoder_mean_letter_f1')} "
-        f"baseline_f1={report.summary.get('baseline_mean_letter_f1')} "
-        f"thomas7_blocked={report.thomas7_gate.gate_blocked} "
-        f"sha256={digests['metrics_sha256'][:12]}…"
+        f"P.Oxy. Overall ({ov.span_count} spans / {ov.unit_count} units): "
+        f"Content Lemma F1={ov.content_lemma_f1:.4f} "
+        f"(R={ov.content_lemma_recall:.4f}), "
+        f"Char F1 itacism={ov.surviving_char_f1_itacism:.4f}"
     )
+    typer.echo(f"Wrote {json_path} ({json_path.stat().st_size} bytes) and {md_path}")

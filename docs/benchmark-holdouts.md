@@ -1,64 +1,37 @@
-# Benchmark holdouts and leakage policy
+# Benchmark Holdouts and Zero-Leakage Policy
 
-**Active (JAK-43):** Canonical train / dev / holdout for Horner × Vaticanus B\* **v3**
-(407 units / 396 nonempty). See [`docs/eval-data-readiness.md`](eval-data-readiness.md)
-and [`horner-vaticanus-nt-split-v3.json`](../data/training/splits/horner-vaticanus-nt-split-v3.json).
+**Active split (`v1`):** Whole-chapter/passage NT partition over **Horner CopSahHorner × MorphGNT SBLGNT** (`nt-split-v1.json`: `7,782` `train` verses, `51` `dev` verses, `41` `holdout` verses), plus P.Oxy. 1 / 654 / 655 DCLP witness exclusions (`EVALUATION_WITNESS`).
 
-**Archival (JAK-33):** Phase 1 **v2** pilot (46 units) remains below for history.
-**Greek NT:** Vaticanus B\* (`ntvmr-vaticanus-b`) only — no Westcott–Hort / SBLGNT lacuna fill.
-**Sahidic NT:** `copsahhorner`.
-**Consumers:** JAK-36+ (v3); JAK-28 historical benchmarks (v2). Do not keep a second policy under `data/sources/pilot/splits.json`.
+- **Greek NT spine:** `morphgnt-sblgnt` (all 27 NT books, polytonic Koine, gold lemmas + 8-slot morphology).
+- **Sahidic NT:** `copsahhorner`.
+- **Omission fixtures:** [`data/evidence/omissions/john-8-pa-omission-fixture-v3.json`](../data/evidence/omissions/john-8-pa-omission-fixture-v3.json) (John 8:1–11 Pericope Adulterae excluded from training/scoring).
+- **Gated corpora:** Wells `Sahidica`, `NTAEG`, `Bohairica`, and `UD_Coptic` are never downloaded or used.
 
-## Canonical artifact (offline)
+## Canonical Evaluation & Split Artifacts
 
 | Path | Role |
 | --- | --- |
-| [`data/training/splits/horner-vaticanus-nt-split-v3.json`](../data/training/splits/horner-vaticanus-nt-split-v3.json) | **Authoritative (JAK-43)** whole-passage train / dev / holdout + evaluation-witness exclusions |
-| [`data/training/splits/horner-vaticanus-nt-split-v2.json`](../data/training/splits/horner-vaticanus-nt-split-v2.json) | Archival Phase 1 split (JAK-33) |
-| [`data/evidence/omissions/john-8-pa-omission-fixture-v3.json`](../data/evidence/omissions/john-8-pa-omission-fixture-v3.json) | Empty/omission fixtures for pilot **v3** (default) |
-| [`data/evidence/omissions/john-8-pa-omission-fixture-v1.json`](../data/evidence/omissions/john-8-pa-omission-fixture-v1.json) | Archival omission fixtures for pilot **v2** / split v2 |
-| [`data/evidence/divergences/greek-thomas-fragment-divergences-v1.json`](../data/evidence/divergences/greek-thomas-fragment-divergences-v1.json) | Greek Thomas fragment vs Coptic sequence/edition divergences |
-| [`docs/greek-thomas-fragment-divergences.md`](greek-thomas-fragment-divergences.md) | Human-readable divergence notes |
+| [`data/training/splits/nt-split-v1.json`](../data/training/splits/nt-split-v1.json) | Authoritative whole-passage NT `train` / `dev` / `holdout` + evaluation-witness exclusions (`N=7874`: `train=7782`, `dev=51`, `holdout=41`) |
+| [`data/evidence/fragment-clause-map.json`](../data/evidence/fragment-clause-map.json) | Evaluation-only span alignments (`FragmentClauseMap`) mapping Dilley Coptic morphemes to DCLP P.Oxy. 1/654/655 `FragmentWord` ranges (29 spans across 20 overlapping units; convergent vs `divergent_witness: true`) |
+| [`data/evidence/divergences/greek-thomas-fragment-divergences-v1.json`](../data/evidence/divergences/greek-thomas-fragment-divergences-v1.json) | Documented structural/redactional divergences in P.Oxy. vs NHC II |
+| [`data/evidence/omissions/john-8-pa-omission-fixture-v3.json`](../data/evidence/omissions/john-8-pa-omission-fixture-v3.json) | John 8:1–11 empty-Coptic omission fixture catalog |
+| [`data/generated/eval-report-v1.json`](../data/generated/eval-report-v1.json) | Machine-readable NT holdout + lacuna-aware P.Oxy. evaluation report |
+| [`docs/benchmark-report.md`](benchmark-report.md) | Human-readable benchmark tables and side-by-side P.Oxy. comparisons |
 
-Schema: `zetodos_thomas.schemas.holdout.NtCorpusSplit`. Validation: `uv run thomas sources validate` (+ `tests/test_holdouts.py`).
+## Strict Zero-Leakage Enforcements
 
-`pilot_corpus_id` is pinned to **`horner-vaticanus-nt-pilot-v2`** (46 units / 35 nonempty / 11 omission).
+Enforced automatically in code and CI (`tests/test_leakage_boundaries.py`, `tests/test_holdouts.py`):
 
-## NT split v2 (whole passages)
+1. **Fragment Blindness:** Packages `morphology`, `lexicon`, `align`, and `reconstruct` may never import `eval` or `fragments`, and may never reference `greek-thomas-fragments`, `fragment-clause-map`, or `dclp/`.
+2. **NT Split & Synoptic Scrub:** All 41 `holdout` verses, 51 `dev` verses, AND any `train` verse sharing a Greek 5-gram with `holdout` or `dev` Synoptic passages are excluded from alignment, inflection table building, idiom/valency extraction, and Koine LM training (`model build`).
+3. **Morphology Holdout:** `CopticAnalyzer` trains strictly on `sahidic.ot_TT.zip` + `CCL v1.2` (zero Thomas, holding out `Ruth` and `Jonah` for intrinsic segmentation/lemmatization scoring).
+4. **Decoder Tuning:** `tune_weights_on_dev` tunes log-linear weights exclusively on the 51-verse `dev` partition.
+5. **Lacuna Honesty:** Purely editorial `[lacuna]` restorations (`surviving_text == ""`) contribute zero gold lemma or character counts in `eval/benchmark.py`; truncated words (`is_truncated=True`) score only surviving letters.
 
-| Role | Passage | Unit ids |
-| --- | --- | --- |
-| **train** | John 1:1–18 | `john.1.1`–`john.1.18` |
-| **train** | Mark 1:1–8 | `mark.1.1`–`mark.1.8` |
-| **train** | Matthew 5:14–16 | `matthew.5.14`–`matthew.5.16` |
-| **train** | Matthew 7:7–8 | `matthew.7.7`–`matthew.7.8` |
-| **dev** | Luke 6:20–21 | `luke.6.20`–`luke.6.21` |
-| **holdout** | Matthew 13:31–32 | `matthew.13.31`–`matthew.13.32` |
+Validation commands:
 
-**Not in train/dev/holdout:** John 8:1–11 — omission fixtures only.
-
-**Secondary OT:** not used (`secondary_ot_used: false`).
-
-## Omission fixtures (separate catalog)
-
-John 8:1–11 dual-empty PA slots live only in the omission catalog. Do not score as positive lexical/phrase pairs; do not assign them to train/dev/holdout.
-
-## Evaluation-witness exclusions (Greek Thomas fragments)
-
-| Witness id | Source id | Manuscript |
-| --- | --- | --- |
-| `poxy-654-dclp` | `dclp-poxy-654` | P.Oxy. 654 |
-| `poxy-1-dclp` | `dclp-poxy-1` | P.Oxy. 1 |
-| `poxy-655-dclp` | `dclp-poxy-655` | P.Oxy. 655 |
-
-## Ownership vs JAK-28 (#13)
-
-1. **Read** [`horner-vaticanus-nt-split-v2.json`](../data/training/splits/horner-vaticanus-nt-split-v2.json) (and the omission / divergence catalogs).
-2. **Delete** any duplicate `data/sources/pilot/splits.json` policy once this lands.
-3. Map `passages[].role` + `unit_ids` / book–verse ranges into the aligner partitioner; treat the omission catalog as the sole John 8 PA negative set.
-4. Run `thomas sources validate` and `thomas align benchmark --splits <canonical-path>` (or default to this path).
-
-## Jake decisions
-
-1. Confirm Luke 6:20–21 as **dev** and Matthew 13:31–32 as **holdout** (adopted from #13 design).
-2. Confirm Mark stays in **train** (not holdout) for the v2 pilot.
+```bash
+uv run thomas sources validate
+uv run thomas eval run
+uv run pytest tests/test_leakage_boundaries.py tests/test_holdouts.py tests/test_eval_lacuna.py
+```

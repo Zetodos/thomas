@@ -1,0 +1,8 @@
+{
+  "w_lex": 1.0,
+  "w_lm": 0.38,
+  "w_agree": 0.5,
+  "w_valency": 0.7,
+  "w_omit_pen": 1.25,
+  "beam_size": 8
+}

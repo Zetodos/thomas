@@ -1,0 +1,22 @@
+{
+  "id": "swete-lxx",
+  "title": "The Old Testament in Greek According to the Septuagint (Henry Barclay Swete via lxx-swete)",
+  "version": "26bad3eb42bb",
+  "url": "https://github.com/nathans/lxx-swete",
+  "spdx_or_custom": "CC-BY-SA-4.0",
+  "attribution": "Henry Barclay Swete (ed.); Open Greek and Latin / First1KGreek (tlg0527); nathans/lxx-swete (data CC BY-SA 4.0; build code MIT).",
+  "mode": "setup-download",
+  "checksum": "sha256:b5abf507f757de3c96f3e44944515dba46d6e5b9edd8e653d7ce6096588c5ce6",
+  "notes": "Default Greek LXX OT parallel paired with scriptorium-sahidic-ot (JAK-18 Done). Checksum pins data/01.Genesis.txt at commit 26bad3eb42bba98471d154c954e36a6f30a0279d; repo is cloned at that immutable git SHA during thomas setup. ShareAlike applies to derived adaptations.",
+  "editor": "Henry Barclay Swete; First1KGreek / nathans/lxx-swete",
+  "language": "grc",
+  "dialect": "Koine (LXX)",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "local_path": "data/downloads/lxx-swete/",
+  "redistributable": true,
+  "gate": null,
+  "module_name": null,
+  "sword_version_date": null,
+  "text_source": "First1KGreek tlg0527 via nathans/lxx-swete (26bad3eb42bba98471d154c954e36a6f30a0279d)",
+  "counterpart_source_id": "scriptorium-sahidic-ot"
+}
