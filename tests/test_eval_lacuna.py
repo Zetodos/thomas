@@ -6,7 +6,10 @@ from __future__ import annotations
 from pathlib import Path
 
 from zetodos_thomas.eval.benchmark import (
+    _aggregate_frag_stratum,
     _AttestedGreekLemmatiser,
+    _lcs_len,
+    _monotone_surviving_char_overlap,
     koine_itacism_fold,
     score_fragment_span_lacuna_aware,
     strip_greek_diacritics,
@@ -163,3 +166,75 @@ def test_stage9_attested_lemmatiser_poxy_morphology() -> None:
                 is_truncated=False,
             )
             assert real_lem.resolve_word(fw) == expected
+
+
+def test_order_sensitive_lcs_surviving_only_and_zero_loanword_none() -> None:
+    # 1. Char overlap inside aligned words is order-preserving LCS, not bag-of-chars
+    fw_trunc = FragmentWord(
+        word_index=0,
+        line_id="main.1",
+        surviving_text="θαλά",
+        restored_text="σσης",
+        full_editorial_word="θαλάσσης",
+        is_truncated=True,
+    )
+    m_exact, _, tot_exact, _ = _monotone_surviving_char_overlap(
+        [fw_trunc], ["θαλάσσης"], normalizer=strip_greek_diacritics
+    )
+    assert m_exact == 4 and tot_exact == 4
+    m_anagram, _, tot_anagram, _ = _monotone_surviving_char_overlap(
+        [fw_trunc], ["αθαλσσης"], normalizer=strip_greek_diacritics
+    )
+    assert m_anagram == 3 and tot_anagram == 4 and m_anagram < tot_anagram
+
+    # 2. Sequence LCS distinguishes reversed lemma order vs unordered multiset
+    assert _lcs_len(["λόγος", "θεός"], ["λόγος", "θεός"]) == 2
+    assert _lcs_len(["θεός", "λόγος"], ["λόγος", "θεός"]) == 1
+
+    # 3. surviving_only excludes restored words; zero loanwords yields None (not 1.0)
+    lemmatiser = _AttestedGreekLemmatiser(
+        exact_map={
+            "θαλασσησ": ("θάλασσα", "N-"),
+            "λογοσ": ("λόγος", "N-"),
+        },
+        ita_map={},
+    )
+    fw_intact = FragmentWord(
+        word_index=1,
+        line_id="main.1",
+        surviving_text="λόγος",
+        restored_text="",
+        full_editorial_word="λόγος",
+        is_truncated=False,
+    )
+    assert lemmatiser.resolve_word(fw_trunc, surviving_only=False) == ("θάλασσα", "N-")
+    assert lemmatiser.resolve_word(fw_trunc, surviving_only=True) is None
+    assert lemmatiser.resolve_word(fw_intact, surviving_only=True) == ("λόγος", "N-")
+
+    span = FragmentClauseSpan(
+        span_id="test.order",
+        unit_id="thomas.3",
+        transcription_id="poxy-654-dclp",
+        coptic_start=0,
+        coptic_end=2,
+        frag_word_start=0,
+        frag_word_end=2,
+    )
+    # Reversed order prediction vs [θάλασσα, λόγος]
+    preds = [
+        _tok(0, "λόγος", "λόγος", "N-"),
+        _tok(1, "θαλάσσης", "θάλασσα", "N-"),
+    ]
+    counts, _ = score_fragment_span_lacuna_aware(
+        span=span,
+        frag_words=[fw_trunc, fw_intact],
+        pred_tokens=preds,
+        lemmatiser=lemmatiser,
+        loanword_lemmas=[],
+    )
+    stratum = _aggregate_frag_stratum([counts], [span])
+    assert stratum.content_lemma_f1 == 1.0
+    assert stratum.ordered_content_lemma_f1 == 0.5
+    assert stratum.surviving_only_word_count == 1
+    assert stratum.loanword_total == 0
+    assert stratum.loanword_exact_match_rate is None

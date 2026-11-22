@@ -560,28 +560,6 @@ def _clause_to_slots(
         eff_voice = base_voice
         if is_labile_pass:
             eff_voice = "P"
-            if v_m.lemma == "ϩⲱⲡ":
-                boosted = [
-                    SlotCandidate(
-                        c.lemma,
-                        c.pos,
-                        c.score + (0.6 if c.lemma == "κρύπτω" else 0.0),
-                        c.provenance,
-                        fixed_surface=c.fixed_surface,
-                        required_case=c.required_case,
-                        morph_override=c.morph_override,
-                    )
-                    for c in cands
-                ]
-                if not any(c.lemma == "κρύπτω" for c in boosted):
-                    boosted.append(SlotCandidate("κρύπτω", "V-", 2.2, "N"))
-                cands = sorted(boosted, key=lambda c: -c.score)[:6]
-            elif v_m.lemma == "ⲟⲩⲱⲛϩ" and cur_tense == "A":
-                if not any(c.lemma == "ὁράω" for c in cands):
-                    cands = sorted(
-                        [*cands, SlotCandidate("ὁράω", "V-", 2.25, "N")],
-                        key=lambda c: -c.score,
-                    )[:6]
         elif eff_voice == "A" and cands and cands[0].lemma.endswith("ομαι"):
             eff_voice = "M"
         return cands, eff_voice
@@ -2252,7 +2230,7 @@ def _clause_to_slots(
                 not has_poss_dat
                 and i + 2 < n
                 and ms[i + 1].pos == "N"
-                and ms[i + 2].lemma in {"ϣⲏⲡ", "ϣⲱⲡ"}
+                and ms[i + 2].pos == "VSTAT"
             ):
                 pivot_m = ms[i + 1]
                 pred_m = ms[i + 2]
@@ -2262,6 +2240,13 @@ def _clause_to_slots(
                     lexicon=lexicon,
                     ccl_lexicon=ccl_lexicon,
                     right_ctx=extract_coptic_right_context(ms, i + 1),
+                )
+                pred_cands = _lookup_content_candidates(
+                    pred_m,
+                    desired_pos="A-",
+                    lexicon=lexicon,
+                    ccl_lexicon=ccl_lexicon,
+                    right_ctx=extract_coptic_right_context(ms, i + 2),
                 )
                 p_gnd = inflector.lemma_gender(p_cands[0].lemma) or "M"
                 p_num = "P" if pivot_m.norm in _PLURAL_NOUN_NORMS else "S"
@@ -2302,14 +2287,21 @@ def _clause_to_slots(
                         candidates=p_cands,
                     )
                 )
+                pred_pos = pred_cands[0].pos if pred_cands else "A-"
                 slots.append(
                     TransferSlot(
-                        role="ADJ",
+                        role="ADJ" if pred_pos == "A-" else "PART",
                         coptic_seqs=[pred_m.seq],
                         target_morph=GreekMorphFeatures(
-                            pos="A-", case="N", number=p_num, gender=p_gnd
+                            pos=pred_pos,
+                            tense="X" if pred_pos == "V-" else None,
+                            voice="P" if pred_pos == "V-" else None,
+                            mood="P" if pred_pos == "V-" else None,
+                            case="N",
+                            number=p_num,
+                            gender=p_gnd,
                         ),
-                        candidates=[SlotCandidate("δεκτός", "A-", 2.6, "N")],
+                        candidates=pred_cands,
                     )
                 )
                 i += 3

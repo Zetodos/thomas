@@ -10,7 +10,7 @@ import pytest
 
 from zetodos_thomas.align.lemma_aligner import LexicalCandidate, LexicalTranslationModel
 from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon, LoanwordEntry
-from zetodos_thomas.lexicon.idioms import IdiomAndValencyTable
+from zetodos_thomas.lexicon.idioms import CopticIdiomRule, IdiomAndValencyTable
 from zetodos_thomas.morphology.greek_inflector import GreekInflector
 from zetodos_thomas.reconstruct.chunker import chunk_unit
 from zetodos_thomas.reconstruct.decoder import DecoderWeights, KoineBeamDecoder
@@ -41,6 +41,9 @@ def _synthetic_decoder() -> KoineBeamDecoder:
                 LexicalCandidate("θεός", "N-", 1.6, 0.95, 0.95, "N", 90, 50)
             ],
             ("ⲛⲁⲩ", "V"): [LexicalCandidate("βλέπω", "V-", 1.6, 0.9, 0.9, "N", 60, 20)],
+            ("ⲣⲣⲣⲟ", "V"): [
+                LexicalCandidate("βασιλεύω", "V-", 1.6, 0.9, 0.9, "N", 20, 10)
+            ],
         },
         by_lemma={},
     )
@@ -157,10 +160,20 @@ def _synthetic_decoder() -> KoineBeamDecoder:
         trigram_logp={},
         surface_bi_logp={},
     )
+    synthetic_idioms = IdiomAndValencyTable(
+        idioms=(
+            CopticIdiomRule(("ϩⲉ", "ⲉ"), "εὑρίσκω", "V-", required_case="A"),
+            CopticIdiomRule(("ϫⲓ", "ϯⲡⲉ"), "γεύομαι", "V-", required_case="G"),
+            CopticIdiomRule(("ϭⲱⲗⲡ", "ⲉⲃⲟⲗ"), "ἀποκαλύπτω", "V-", required_case="A"),
+            CopticIdiomRule(("ⲃⲱⲕ", "ⲉϩⲟⲩⲛ"), "εἰσέρχομαι", "V-"),
+        ),
+        verb_cases={"γεύομαι": "G", "εὑρίσκω": "A"},
+        prep_cases={"ἐν": "D", "εἰς": "A"},
+    )
     return KoineBeamDecoder(
         lexicon=lex,
         ccl_lexicon=ccl,
-        idioms=IdiomAndValencyTable(),
+        idioms=synthetic_idioms,
         inflector=inf,
         lm=lm,
         weights=DecoderWeights(),
@@ -481,6 +494,9 @@ def test_stage8_clauses_imperatives_modal_and_existential() -> None:
     dec.lexicon._by_lemma_pos[("ⲉⲓⲣⲏⲛⲏ", "N")] = [
         LexicalCandidate("εἰρήνη", "N-", 1.8, 0.95, 0.95, "N", 80, 40)
     ]
+    dec.lexicon._by_lemma_pos[("ϣⲏⲡ", "V")] = [
+        LexicalCandidate("δεκτός", "A-", 1.8, 0.95, 0.95, "N", 10, 5)
+    ]
     dec.ccl_lexicon._greek_genders.update({"προφήτης": "M", "εἰρήνη": "F"})
     dec.inflector._paradigms[
         (
@@ -581,7 +597,7 @@ def test_stage8_clauses_imperatives_modal_and_existential() -> None:
             CopticMorpheme(group_seq=15, norm="·", lemma="·", pos="PUNCT"),
             CopticMorpheme(group_seq=16, norm="ⲙⲛ", lemma="ⲙⲛ", pos="PREP"),
             CopticMorpheme(group_seq=17, norm="ⲡⲣⲟⲫⲏⲧⲏⲥ", lemma="ⲡⲣⲟⲫⲏⲧⲏⲥ", pos="N"),
-            CopticMorpheme(group_seq=18, norm="ϣⲏⲡ", lemma="ϣⲏⲡ", pos="V"),
+            CopticMorpheme(group_seq=18, norm="ϣⲏⲡ", lemma="ϣⲏⲡ", pos="VSTAT"),
         ],
     )
     gen = dec.decode_unit(unit)

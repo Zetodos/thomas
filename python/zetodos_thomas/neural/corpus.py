@@ -15,7 +15,11 @@ from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from zetodos_thomas.ingest.holdouts import load_nt_split
+from zetodos_thomas.ingest.holdouts import (
+    assert_clean_training_unit,
+    clean_nt_train_ids,
+    load_nt_split,
+)
 from zetodos_thomas.ingest.morphgnt import load_morphgnt_nt, pair_horner_morphgnt
 from zetodos_thomas.ingest.normalize import normalize_coptic
 from zetodos_thomas.ingest.ot_swete import load_ot_swete_pairs, parse_swete_file
@@ -450,9 +454,7 @@ def build_parallel_corpus_bundle(
 ) -> ParallelCorpusBundle:
     """Load strictly leak-free NT train/dev, OT x Swete, Swete mono, and CCL lex."""
     split = load_nt_split(split_path)
-    train_ids = {
-        uid for p in split.passages if p.role is PassageRole.TRAIN for uid in p.unit_ids
-    }
+    train_ids = clean_nt_train_ids(split, exclude_synoptic_thomas=True)
     dev_ids = {
         uid for p in split.passages if p.role is PassageRole.DEV for uid in p.unit_ids
     }
@@ -473,6 +475,8 @@ def build_parallel_corpus_bundle(
     all_clean_coptic_units: list[CopticUnit] = []
 
     for c_u, (_, g_u) in zip(analyzed_train_c, train_raw, strict=True):
+        assert_clean_training_unit(c_u.unit_id, source_id=c_u.source_id)
+        assert_clean_training_unit(g_u.unit_id, source_id=g_u.source_id)
         g_txt = normalize_greek_unit_target(g_u)
         if not c_u.morphemes or not g_txt:
             continue
@@ -519,6 +523,8 @@ def build_parallel_corpus_bundle(
     ot_train: list[ParallelExample] = []
     aligned_ot_ids: set[str] = set()
     for c_u, g_u in ot_pairs:
+        assert_clean_training_unit(c_u.unit_id, source_id=c_u.source_id)
+        assert_clean_training_unit(g_u.unit_id, source_id=g_u.source_id)
         g_txt = normalize_greek_unit_target(g_u)
         if not c_u.morphemes or not g_txt:
             continue

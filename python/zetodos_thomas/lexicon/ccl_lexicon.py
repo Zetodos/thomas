@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 import re
 import unicodedata
@@ -15,59 +16,6 @@ from zetodos_thomas.ingest.normalize import normalize_coptic
 
 _TEI_NS = "{http://www.tei-c.org/ns/1.0}"
 _CLEAN_GREEK_RE = re.compile(r"[()\[\]<>·.,;;:!?\"'«»]+")
-
-# Proper names & light-verb compounds prominent in Thomas and NT not always
-# mapped under DDGLC <etym> (explicit historical/lexical equivalents).
-_PROPER_AND_COMPOUND_FALLBACKS: dict[str, tuple[str, str, str | None]] = {
-    "ⲓⲏⲥⲟⲩⲥ": ("Ἰησοῦς", "NPROP", "M"),
-    "ⲓⲥ": ("Ἰησοῦς", "NPROP", "M"),
-    "ⲭⲣⲓⲥⲧⲟⲥ": ("Χριστός", "NPROP", "M"),
-    "ⲭⲥ": ("Χριστός", "NPROP", "M"),
-    "ⲑⲱⲙⲁⲥ": ("Θωμᾶς", "NPROP", "M"),
-    "ⲇⲓⲇⲩⲙⲟⲥ": ("Δίδυμος", "NPROP", "M"),
-    "ⲥⲓⲙⲱⲛ": ("Σίμων", "NPROP", "M"),
-    "ⲡⲉⲧⲣⲟⲥ": ("Πέτρος", "NPROP", "M"),
-    "ⲙⲁⲑⲑⲁⲓⲟⲥ": ("Μαθθαῖος", "NPROP", "M"),
-    "ⲙⲁⲧⲑⲁⲓⲟⲥ": ("Μαθθαῖος", "NPROP", "M"),
-    "ⲙⲁⲣⲓϩⲁⲙ": ("Μαριάμ", "NPROP", "F"),
-    "ⲙⲁⲣⲓⲁ": ("Μαρία", "NPROP", "F"),
-    "ⲓⲁⲕⲱⲃⲟⲥ": ("Ἰάκωβος", "NPROP", "M"),
-    "ⲥⲁⲗⲱⲙⲏ": ("Σαλώμη", "NPROP", "F"),
-    "ⲓⲟⲩⲇⲁⲥ": ("Ἰούδας", "NPROP", "M"),
-    "ⲫⲁⲣⲓⲥⲁⲓⲟⲥ": ("Φαρισαῖος", "N-", "M"),
-    "ⲓⲟⲩⲇⲁⲓ": ("Ἰουδαῖος", "A-", "M"),
-    "ⲓⲟⲩⲇⲁⲓⲟⲥ": ("Ἰουδαῖος", "A-", "M"),
-    "ⲓⲱϩⲁⲛⲛⲏⲥ": ("Ἰωάννης", "NPROP", "M"),
-    "ⲃⲁⲣⲓⲱⲛⲁ": ("Βαριωνᾶ", "NPROP", "M"),
-    "ⲥⲁⲙⲁⲣⲓⲧⲏⲥ": ("Σαμαρίτης", "N-", "M"),
-    "ⲍⲁⲕⲭⲁⲓⲟⲥ": ("Ζακχαῖος", "NPROP", "M"),
-    "ⲁⲇⲁⲙ": ("Ἀδάμ", "NPROP", "M"),
-    "ⲁⲃⲣⲁϩⲁⲙ": ("Ἀβραάμ", "NPROP", "M"),
-    "ⲇⲁⲩⲉⲓⲇ": ("Δαυίδ", "NPROP", "M"),
-    "ⲙⲱⲩⲥⲏⲥ": ("Μωϋσῆς", "NPROP", "M"),
-    "ⲏⲗⲉⲓⲁⲥ": ("Ἠλίας", "NPROP", "M"),
-    "ⲏⲥⲁⲓⲁⲥ": ("Ἡσαΐας", "NPROP", "M"),
-    "ⲓⲥⲣⲁⲏⲗ": ("Ἰσραήλ", "NPROP", "M"),
-    "ⲓⲏⲗ": ("Ἰσραήλ", "NPROP", "M"),
-    "ϩⲓⲉⲣⲟⲩⲥⲁⲗⲏⲙ": ("Ἱεροσόλυμα", "NPROP", "N"),
-    "ⲓⲗⲏⲙ": ("Ἱεροσόλυμα", "NPROP", "N"),
-    # Special compound Greek phrases & grammatical borrowings in Thomas
-    "ⲇⲓⲁⲧⲟⲩⲧⲟ": ("διότι", "C-", None),
-    "ⲟⲩⲭ": ("οὐ", "D-", None),
-    "ϩⲟⲧⲓ": ("ὅτι", "C-", None),
-    "ⲉⲓⲙⲏⲧⲓ": ("εἰ μή", "C-", None),
-    "ϯⲕⲁⲣⲡⲟⲥ": ("καρποφορέω", "V-", None),
-    "ϯϩⲏⲩ": ("ὠφελέω", "V-", None),
-    "ⲣϩⲏⲩ": ("ὠφελέω", "V-", None),
-    "ⲣⲛⲟⲃⲉ": ("ἁμαρτάνω", "V-", None),
-    "ⲣⲙⲁⲑⲏⲧⲏⲥ": ("μαθητεύω", "V-", None),
-    "ⲣⲉⲓⲣⲏⲛⲏ": ("εἰρηνεύω", "V-", None),
-    "ⲣⲇⲓⲡⲛⲟⲛ": ("δειπνέω", "V-", None),
-    "ⲣⲇⲓⲡⲛⲉⲓ": ("δειπνέω", "V-", None),
-    "ⲣⲭⲣⲱ": ("χράομαι", "V-", None),
-    "ⲙⲁⲣⲅⲁⲣⲓⲧⲏⲥ": ("μαργαρίτης", "N-", "M"),
-    "ϯⲉⲗⲉⲏⲙⲟⲥⲩⲛⲏ": ("ἐλεημοσύνη", "N-", "F"),
-}
 
 _DDGLC_POS_MAP: dict[str, str] = {
     "noun": "N-",
@@ -134,7 +82,7 @@ class LoanwordEntry:
 
 
 class CclLexicon:
-    """Index of CCL v1.2 + DDGLC Greek loanwords and Coptic compound stems."""
+    """Index of CCL v1.2 + DDGLC Greek loanwords parsed strictly from pinned TEI."""
 
     def __init__(
         self,
@@ -142,17 +90,31 @@ class CclLexicon:
         loanwords: dict[str, list[LoanwordEntry]],
         itacism_index: dict[str, list[LoanwordEntry]],
         greek_genders: dict[str, str],
+        source_sha256: str = "",
     ) -> None:
         self._loanwords = loanwords
         self._itacism = itacism_index
         self._greek_genders = greek_genders
+        self.source_sha256 = source_sha256
 
     @classmethod
-    def from_tei_xml(cls, xml_path: Path) -> CclLexicon:
+    def from_tei_xml(
+        cls, xml_path: Path, *, expected_sha256: str | None = None
+    ) -> CclLexicon:
         """Parse ``Comprehensive_Coptic_Lexicon-v1.2-2020.xml`` cleanly (NFC)."""
         if not xml_path.is_file():
             msg = f"missing CCL XML: {xml_path}"
             raise FileNotFoundError(msg)
+
+        digest = hashlib.sha256(xml_path.read_bytes()).hexdigest()
+        if expected_sha256 is not None:
+            exp_clean = expected_sha256.removeprefix("sha256:").strip().lower()
+            if digest != exp_clean:
+                msg = (
+                    f"CCL XML sha256 mismatch for {xml_path}: "
+                    f"got {digest}, expected {exp_clean}"
+                )
+                raise ValueError(msg)
 
         loanwords: dict[str, list[LoanwordEntry]] = defaultdict(list)
         itacism_idx: dict[str, list[LoanwordEntry]] = defaultdict(list)
@@ -244,23 +206,11 @@ class CclLexicon:
                 if item not in itacism_idx[ita]:
                     itacism_idx[ita].append(item)
 
-        # Register explicit proper-name & light-verb fallbacks
-        for c_lem, (g_lem, g_pos, g_gen) in _PROPER_AND_COMPOUND_FALLBACKS.items():
-            entry_fb = LoanwordEntry(
-                coptic_lemma=c_lem,
-                greek_lemma=g_lem,
-                greek_pos=g_pos,
-                gender=g_gen,
-            )
-            if not loanwords[c_lem]:
-                loanwords[c_lem].append(entry_fb)
-            if g_gen and g_lem not in greek_genders:
-                greek_genders[g_lem] = g_gen
-
         return cls(
             loanwords=dict(loanwords),
             itacism_index=dict(itacism_idx),
             greek_genders=greek_genders,
+            source_sha256=digest,
         )
 
     def resolve(
@@ -342,6 +292,7 @@ class CclLexicon:
     def save_json(self, path: Path) -> None:
         """Persist compact loanword lookup (< 1024 KiB)."""
         payload = {
+            "source_sha256": self.source_sha256,
             "loanwords": {
                 k: [
                     [e.coptic_lemma, e.greek_lemma, e.greek_pos, e.gender]
@@ -353,7 +304,7 @@ class CclLexicon:
         }
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(
-            json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
+            json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n",
             encoding="utf-8",
         )
 
@@ -382,4 +333,5 @@ class CclLexicon:
             loanwords=loanwords,
             itacism_index=dict(itacism_idx),
             greek_genders=data.get("greek_genders", {}),
+            source_sha256=str(data.get("source_sha256", "")),
         )

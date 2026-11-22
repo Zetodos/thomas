@@ -8,11 +8,14 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-from zetodos_thomas.ingest.holdouts import load_nt_split
+from zetodos_thomas.ingest.holdouts import (
+    assert_clean_training_unit,
+    clean_nt_train_ids,
+    load_nt_split,
+)
 from zetodos_thomas.ingest.morphgnt import load_morphgnt_nt
 from zetodos_thomas.ingest.ot_swete import load_ot_swete_pairs
 from zetodos_thomas.morphology.greek_inflector import GreekInflector
-from zetodos_thomas.schemas.holdout import PassageRole
 from zetodos_thomas.schemas.linguistic import GreekMorphFeatures
 
 _CLAUSE_STOP_LEMMAS = frozenset({"καί", "ἀλλά", "δέ", "ὅτι", "ἵνα", "ἐάν", "ὅταν"})
@@ -58,14 +61,9 @@ class KoineNgramLM:
         inflector: GreekInflector,
         nt_weight: float = 3.0,
     ) -> KoineNgramLM:
-        """Train LM strictly on NT TRAIN split (no dev/holdout) + Swete LXX."""
+        """Train LM strictly on clean NT TRAIN split + Swete LXX."""
         split = load_nt_split(split_path)
-        train_ids = {
-            uid
-            for p in split.passages
-            if p.role is PassageRole.TRAIN
-            for uid in p.unit_ids
-        }
+        train_ids = clean_nt_train_ids(split, exclude_synoptic_thomas=True)
         morphgnt = load_morphgnt_nt(downloads_dir / "morphgnt-sblgnt")
 
         uni_c: dict[str, float] = defaultdict(float)
@@ -121,6 +119,7 @@ class KoineNgramLM:
             u = morphgnt.get(uid)
             if u is None:
                 continue
+            assert_clean_training_unit(u.unit_id, source_id=u.source_id)
             keys = [morph_lm_key(t.lemma, t.morph) for t in u.tokens]
             surfs = [t.normalized for t in u.tokens]
             _feed_sequence(keys, surfs, nt_weight)
@@ -134,6 +133,7 @@ class KoineNgramLM:
             swete_dir=downloads_dir / "lxx-swete",
         )
         for _c, g_u in ot_pairs:
+            assert_clean_training_unit(g_u.unit_id, source_id=g_u.source_id)
             keys: list[str] = []
             surfs: list[str] = []
             colloc_seq: list[tuple[str, str, str]] = []
@@ -224,7 +224,8 @@ class KoineNgramLM:
             if uni_est + esz > max_bytes and uni_chunk:
                 p = out_dir / f"koine-lm-uni-{uni_idx}.json"
                 p.write_text(
-                    json.dumps(uni_chunk, ensure_ascii=False, separators=(",", ":")),
+                    json.dumps(uni_chunk, ensure_ascii=False, separators=(",", ":"))
+                    + "\n",
                     encoding="utf-8",
                 )
                 files.append(p)
@@ -236,7 +237,7 @@ class KoineNgramLM:
         if uni_chunk or uni_idx == 0:
             p = out_dir / f"koine-lm-uni-{uni_idx}.json"
             p.write_text(
-                json.dumps(uni_chunk, ensure_ascii=False, separators=(",", ":")),
+                json.dumps(uni_chunk, ensure_ascii=False, separators=(",", ":")) + "\n",
                 encoding="utf-8",
             )
             files.append(p)
@@ -251,7 +252,8 @@ class KoineNgramLM:
                 if est + rsz > max_bytes and shard:
                     p = out_dir / f"{prefix}-{idx}.json"
                     p.write_text(
-                        json.dumps(shard, ensure_ascii=False, separators=(",", ":")),
+                        json.dumps(shard, ensure_ascii=False, separators=(",", ":"))
+                        + "\n",
                         encoding="utf-8",
                     )
                     files.append(p)
@@ -263,7 +265,7 @@ class KoineNgramLM:
             if shard or idx == 0:
                 p = out_dir / f"{prefix}-{idx}.json"
                 p.write_text(
-                    json.dumps(shard, ensure_ascii=False, separators=(",", ":")),
+                    json.dumps(shard, ensure_ascii=False, separators=(",", ":")) + "\n",
                     encoding="utf-8",
                 )
                 files.append(p)

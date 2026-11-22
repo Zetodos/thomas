@@ -10,7 +10,11 @@ from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
-from zetodos_thomas.ingest.holdouts import load_nt_split
+from zetodos_thomas.ingest.holdouts import (
+    assert_clean_training_unit,
+    clean_nt_train_ids,
+    load_nt_split,
+)
 from zetodos_thomas.ingest.morphgnt import pair_horner_morphgnt
 from zetodos_thomas.ingest.normalize import normalize_coptic
 from zetodos_thomas.ingest.ot_swete import load_ot_swete_pairs
@@ -19,7 +23,6 @@ from zetodos_thomas.integrations.aligners.types import AlignerConfig, BitextSent
 from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon
 from zetodos_thomas.morphology.coptic_analyzer import CopticAnalyzer
 from zetodos_thomas.morphology.greek_inflector import GreekInflector
-from zetodos_thomas.schemas.holdout import PassageRole
 from zetodos_thomas.schemas.linguistic import CopticMorpheme, CopticUnit, GreekUnit
 
 # Purely syntactic/analytic Sahidic clitics filtered before eflomal so
@@ -295,8 +298,12 @@ class LexicalTranslationModel:
 
         nt_repeats = max(1, round(nt_weight))
         for c_u, g_u in nt_pairs:
+            assert_clean_training_unit(c_u.unit_id, source_id=c_u.source_id)
+            assert_clean_training_unit(g_u.unit_id, source_id=g_u.source_id)
             _append_pair(c_u, g_u, tag="N", weight=nt_weight, repeats=nt_repeats)
         for c_u, g_u in ot_pairs:
+            assert_clean_training_unit(c_u.unit_id, source_id=c_u.source_id)
+            assert_clean_training_unit(g_u.unit_id, source_id=g_u.source_id)
             _append_pair(c_u, g_u, tag="P", weight=1.0, repeats=1)
 
         # High-precision DDGLC loanword seed pairs (keep Coptic->Greek anchored)
@@ -517,14 +524,9 @@ class LexicalTranslationModel:
         nt_weight: float = 3.0,
         repo_root: Path | None = None,
     ) -> LexicalTranslationModel:
-        """Run full leak-free alignment on NT TRAIN split + Sahidic OT x Swete."""
+        """Run full leak-free alignment on clean NT TRAIN split + Sahidic OT x Swete."""
         split = load_nt_split(split_path)
-        train_ids = {
-            uid
-            for p in split.passages
-            if p.role is PassageRole.TRAIN
-            for uid in p.unit_ids
-        }
+        train_ids = clean_nt_train_ids(split, exclude_synoptic_thomas=True)
         raw_nt = pair_horner_morphgnt(
             sword_root=downloads_dir / "sword",
             morphgnt_dir=downloads_dir / "morphgnt-sblgnt",
@@ -695,7 +697,7 @@ class LexicalTranslationModel:
             if est + row_sz > max_bytes and shard:
                 p = out_dir / f"lemma-align-{shard_idx}.json"
                 p.write_text(
-                    json.dumps(shard, ensure_ascii=False, separators=(",", ":")),
+                    json.dumps(shard, ensure_ascii=False, separators=(",", ":")) + "\n",
                     encoding="utf-8",
                 )
                 files.append(p)
@@ -707,7 +709,7 @@ class LexicalTranslationModel:
         if shard or not files:
             p = out_dir / f"lemma-align-{shard_idx}.json"
             p.write_text(
-                json.dumps(shard, ensure_ascii=False, separators=(",", ":")),
+                json.dumps(shard, ensure_ascii=False, separators=(",", ":")) + "\n",
                 encoding="utf-8",
             )
             files.append(p)
@@ -736,7 +738,8 @@ class LexicalTranslationModel:
                 if cest + cr_sz > max_bytes and cshard:
                     cp = out_dir / f"lemma-ctx-{cidx}.json"
                     cp.write_text(
-                        json.dumps(cshard, ensure_ascii=False, separators=(",", ":")),
+                        json.dumps(cshard, ensure_ascii=False, separators=(",", ":"))
+                        + "\n",
                         encoding="utf-8",
                     )
                     files.append(cp)
@@ -748,7 +751,8 @@ class LexicalTranslationModel:
             if cshard:
                 cp = out_dir / f"lemma-ctx-{cidx}.json"
                 cp.write_text(
-                    json.dumps(cshard, ensure_ascii=False, separators=(",", ":")),
+                    json.dumps(cshard, ensure_ascii=False, separators=(",", ":"))
+                    + "\n",
                     encoding="utf-8",
                 )
                 files.append(cp)

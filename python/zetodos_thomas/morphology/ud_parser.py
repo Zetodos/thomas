@@ -402,7 +402,7 @@ class CopticDependencyParser:
         payload = json.dumps(raw_dict, ensure_ascii=False, separators=(",", ":"))
         if len(payload.encode("utf-8")) <= max_bytes:
             p = out_dir / "coptic-ud-0.json"
-            p.write_text(payload, encoding="utf-8")
+            p.write_text(payload + "\n", encoding="utf-8")
             return [p]
 
         # Fall back to chunked sharding of arc_logp if tables grow larger
@@ -423,7 +423,8 @@ class CopticDependencyParser:
                 out_obj = dict(meta_obj) if idx == 0 else {}
                 out_obj["arc_logp"] = chunk
                 p.write_text(
-                    json.dumps(out_obj, ensure_ascii=False, separators=(",", ":")),
+                    json.dumps(out_obj, ensure_ascii=False, separators=(",", ":"))
+                    + "\n",
                     encoding="utf-8",
                 )
                 files.append(p)
@@ -436,7 +437,7 @@ class CopticDependencyParser:
         out_obj = dict(meta_obj) if idx == 0 else {}
         out_obj["arc_logp"] = chunk
         p.write_text(
-            json.dumps(out_obj, ensure_ascii=False, separators=(",", ":")),
+            json.dumps(out_obj, ensure_ascii=False, separators=(",", ":")) + "\n",
             encoding="utf-8",
         )
         files.append(p)

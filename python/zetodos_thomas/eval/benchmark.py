@@ -13,16 +13,22 @@ import math
 import re
 import unicodedata
 from collections import Counter
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 from pathlib import Path
 from typing import Any, Protocol
 
 from pydantic import BaseModel, Field
 
 from zetodos_thomas.ingest.dilley_thomas import load_thomas_corpus
+from zetodos_thomas.ingest.download import CCL_TEI_FILENAME
 from zetodos_thomas.ingest.fragments import load_fragment_corpus
-from zetodos_thomas.ingest.holdouts import load_nt_split
+from zetodos_thomas.ingest.holdouts import (
+    NON_SYNOPTIC_POXY_THOMAS_UNITS,
+    load_manifest_sha256,
+    load_nt_split,
+)
 from zetodos_thomas.ingest.morphgnt import load_morphgnt_nt, pair_horner_morphgnt
+from zetodos_thomas.ingest.normalize import normalize_coptic
 from zetodos_thomas.ingest.paths import (
     resolve_fragments_corpus_path,
     resolve_nt_split_path,
@@ -42,17 +48,46 @@ from zetodos_thomas.schemas.linguistic import CopticUnit, GreekMorphFeatures, Gr
 class DecoderProtocol(Protocol):
     """Minimal common decoder interface shared by model-v1 and model-v2."""
 
-    ccl_lexicon: CclLexicon
-
     def decode_unit(self, unit: CopticUnit) -> GeneratedUnit: ...
 
 
 FRAGMENT_CLAUSE_MAP_REL = Path("data/evidence/fragment-clause-map.json")
 EVAL_REPORT_REL = Path("data/generated/eval-report-v1.json")
 BENCHMARK_DOC_REL = Path("docs/benchmark-report.md")
+CCL_MANIFEST_REL = Path("data/manifests/ccl-ddglc-tei.json")
 
 CONTENT_POS = frozenset({"N-", "V-", "A-", "D-"})
 _PUNCT_RE = re.compile(r"[\s·.,;;:!?()\[\]\"'«»—\-]+")
+
+# Deterministic Greek-derived Coptic -> Greek letter fold for decoder-independent
+# identification of Dilley <lang="Greek"> tokens against surviving P.Oxy. lemmas.
+_COPTIC_GREEK_SCRIPT_FOLD: dict[str, str] = {
+    "ⲁ": "α",
+    "ⲃ": "β",
+    "ⲅ": "γ",
+    "ⲇ": "δ",
+    "ⲉ": "ε",
+    "ⲍ": "ζ",
+    "ⲏ": "η",
+    "ⲑ": "θ",
+    "ⲓ": "ι",
+    "ⲕ": "κ",
+    "ⲗ": "λ",
+    "ⲙ": "μ",
+    "ⲛ": "ν",
+    "ⲝ": "ξ",
+    "ⲟ": "ο",
+    "ⲡ": "π",
+    "ⲣ": "ρ",
+    "ⲥ": "σ",
+    "ⲧ": "τ",
+    "ⲩ": "υ",
+    "ⲫ": "φ",
+    "ⲭ": "χ",
+    "ⲯ": "ψ",
+    "ⲱ": "ω",
+    "ϩ": "",
+}
 
 # Canonical Koine nomina sacra & scribal abbreviations (unaccented -> (lemma, pos))
 _NOMINA_SACRA: dict[str, tuple[str, str]] = {
@@ -89,34 +124,6 @@ _NOMINA_SACRA: dict[str, tuple[str, str]] = {
     "χν": ("Χριστός", "N-"),
 }
 
-# Koine inflected-form fallback for rare/unattested NT forms in P.Oxy.
-_POXY_LEX_STEM_FALLBACK: dict[str, tuple[str, str]] = {
-    "σαββατισητε": ("σαββατίζω", "V-"),
-    "διαβλεψεις": ("διαβλέπω", "V-"),
-    "θαμβηθησεται": ("θαμβέω", "V-"),
-    "θαμβηθεις": ("θαμβέω", "V-"),
-    "αναπαησεται": ("ἀναπαύω", "V-"),
-    "προφθασαντες": ("προφθάνω", "V-"),
-    "καταντησουσιν": ("καταντάω", "V-"),
-    "εξεταζουσιν": ("ἐξετάζω", "V-"),
-    "αναφαινεται": ("ἀναφαίνω", "V-"),
-    "αποκεκρυμμενον": ("ἀποκρύπτω", "V-"),
-    "αποκνησει": ("ἀποκνέω", "V-"),
-    "ενοικει": ("ἐνοικέω", "V-"),
-    "κρεισσονες": ("κρείσσων", "A-"),
-    "ξαινει": ("ξαίνω", "V-"),
-    "νηθει": ("νήθω", "V-"),
-    "ενδειτε": ("ἐνδέω", "V-"),
-    "εμφανης": ("ἐμφανής", "A-"),
-    "εκδυσησθε": ("ἐκδύω", "V-"),
-    "αισχυνθητε": ("αἰσχύνω", "V-"),
-    "ωτιον": ("ὠτίον", "N-"),
-    "κλειδας": ("κλείς", "N-"),
-    "ακεραιοι": ("ἀκέραιος", "A-"),
-    "φρονιμοι": ("φρόνιμος", "A-"),
-    "αθεοι": ("ἄθεος", "A-"),
-}
-
 
 def strip_greek_diacritics(text: str) -> str:
     """Strip polytonic combining marks & punctuation and normalize final sigma."""
@@ -150,8 +157,10 @@ class NtHoldoutMetrics(BaseModel):
     content_lemma_precision: float
     content_lemma_recall: float
     content_lemma_f1: float
+    ordered_content_lemma_f1: float = 0.0
     all_token_lemma_f1: float
     inflected_surface_f1: float
+    ordered_inflected_surface_f1: float = 0.0
     morph_accuracy_on_matched_lemmas: float
     chrf_pp: float
     bleu_4: float
@@ -170,8 +179,13 @@ class FragStratumMetrics(BaseModel):
     content_lemma_precision: float
     content_lemma_recall: float
     content_lemma_f1: float
+    ordered_content_lemma_f1: float = 0.0
+    surviving_only_word_count: int = 0
+    surviving_only_content_lemma_recall: float = 0.0
+    surviving_only_content_lemma_f1: float = 0.0
+    surviving_only_ordered_content_lemma_f1: float = 0.0
     top3_content_lemma_recall: float
-    loanword_exact_match_rate: float
+    loanword_exact_match_rate: float | None = None
     loanword_total: int
 
 
@@ -199,6 +213,8 @@ class EvalReport(BaseModel):
     model_id: str = "model-v1"
     nt_holdout: NtHoldoutMetrics
     poxy_convergent: FragStratumMetrics
+    poxy_convergent_non_synoptic: FragStratumMetrics | None = None
+    poxy_convergent_synoptic: FragStratumMetrics | None = None
     poxy_divergent: FragStratumMetrics
     poxy_overall: FragStratumMetrics
     spans: list[SpanEvalSummary] = Field(default_factory=list)
@@ -218,6 +234,33 @@ def _multiset_overlap(
     gc = Counter(gold_items)
     matched = sum((pc & gc).values())
     return matched, sum(pc.values()), sum(gc.values())
+
+
+def _lcs_len(seq_a: Sequence[Any], seq_b: Sequence[Any]) -> int:
+    """Order-preserving Longest Common Subsequence length."""
+    m = len(seq_a)
+    n = len(seq_b)
+    if m == 0 or n == 0:
+        return 0
+    prev = [0] * (n + 1)
+    for x in seq_a:
+        cur = [0] * (n + 1)
+        for j, y in enumerate(seq_b, start=1):
+            if x == y:
+                cur[j] = prev[j - 1] + 1
+            else:
+                a = prev[j]
+                b = cur[j - 1]
+                cur[j] = a if a >= b else b
+        prev = cur
+    return prev[n]
+
+
+def _ordered_lcs_overlap(
+    pred_items: Sequence[str], gold_items: Sequence[str]
+) -> tuple[int, int, int]:
+    """Order-sensitive token/lemma LCS overlap counts."""
+    return _lcs_len(pred_items, gold_items), len(pred_items), len(gold_items)
 
 
 def _extract_ngrams(seq: str | list[str], n: int) -> Counter[str | tuple[str, ...]]:
@@ -377,8 +420,10 @@ def evaluate_nt_holdouts(
 
     non_empty = 0
     cl_matched = cl_pred = cl_gold = 0
+    cl_ord_matched = 0
     all_matched = all_pred = all_gold = 0
     surf_matched = surf_pred = surf_gold = 0
+    surf_ord_matched = 0
     morph_checked = morph_ok = 0
     refs: list[str] = []
     hyps: list[str] = []
@@ -404,6 +449,7 @@ def evaluate_nt_holdouts(
         cl_matched += m_c
         cl_pred += p_c
         cl_gold += g_c
+        cl_ord_matched += _lcs_len(p_content, g_content)
 
         p_all = [_norm_lemma(t.lemma) for t in gen.tokens if t.morph.pos != "X-"]
         g_all = [_norm_lemma(t.lemma) for t in g_unit.tokens if t.morph.pos != "X-"]
@@ -427,6 +473,7 @@ def evaluate_nt_holdouts(
         surf_matched += m_s
         surf_pred += p_s
         surf_gold += g_s
+        surf_ord_matched += _lcs_len(p_surf, g_surf)
 
         # Check morph accuracy on greedily matched content/function lemmas
         used_gold: set[int] = set()
@@ -445,16 +492,20 @@ def evaluate_nt_holdouts(
                     break
 
     cp, cr, cf1 = _prf(cl_matched, cl_pred, cl_gold)
+    _, _, cl_ord_f1 = _prf(cl_ord_matched, cl_pred, cl_gold)
     _, _, af1 = _prf(all_matched, all_pred, all_gold)
     _, _, sf1 = _prf(surf_matched, surf_pred, surf_gold)
+    _, _, s_ord_f1 = _prf(surf_ord_matched, surf_pred, surf_gold)
     return NtHoldoutMetrics(
         unit_count=len(holdout_raw),
         coverage=round(non_empty / max(len(holdout_raw), 1), 4),
         content_lemma_precision=cp,
         content_lemma_recall=cr,
         content_lemma_f1=cf1,
+        ordered_content_lemma_f1=cl_ord_f1,
         all_token_lemma_f1=af1,
         inflected_surface_f1=sf1,
+        ordered_inflected_surface_f1=s_ord_f1,
         morph_accuracy_on_matched_lemmas=round(morph_ok / max(morph_checked, 1), 4),
         chrf_pp=compute_chrf_pp(refs, hyps),
         bleu_4=compute_bleu_4(refs, hyps),
@@ -475,11 +526,20 @@ class _AttestedGreekLemmatiser:
         self._inflector = inflector
 
     @classmethod
-    def from_morphgnt(cls, morphgnt_dir: Path) -> _AttestedGreekLemmatiser:
+    def from_morphgnt(
+        cls,
+        morphgnt_dir: Path,
+        *,
+        exclude_unit_ids: set[str] | None = None,
+        swete_dir: Path | None = None,
+    ) -> _AttestedGreekLemmatiser:
+        excluded = set(exclude_unit_ids or ())
         exact_counts: dict[str, Counter[tuple[str, str]]] = {}
         ita_counts: dict[str, Counter[tuple[str, str]]] = {}
         units = load_morphgnt_nt(morphgnt_dir)
-        for unit in units.values():
+        for uid, unit in units.items():
+            if uid in excluded:
+                continue
             for tok in unit.tokens:
                 if tok.morph.pos == "X-":
                     continue
@@ -492,35 +552,49 @@ class _AttestedGreekLemmatiser:
                     ita_counts.setdefault(k2, Counter())[pair] += 1
         exact_map = {k: cnt.most_common(1)[0][0] for k, cnt in exact_counts.items()}
         ita_map = {k: cnt.most_common(1)[0][0] for k, cnt in ita_counts.items()}
-        inflector = GreekInflector.build(morphgnt_dir=morphgnt_dir)
+        inflector = GreekInflector.build(
+            morphgnt_dir=morphgnt_dir,
+            exclude_unit_ids=excluded,
+            swete_dir=swete_dir,
+        )
         return cls(exact_map=exact_map, ita_map=ita_map, inflector=inflector)
 
-    def resolve_word(self, word: FragmentWord) -> tuple[str, str] | None:
-        """Return ``(lemma, pos)`` ONLY if ``word.surviving_text`` is non-empty.
+    def resolve_word(
+        self, word: FragmentWord, *, surviving_only: bool = False
+    ) -> tuple[str, str] | None:
+        """Return ``(lemma, pos)`` for attested P.Oxy. forms.
 
-        Words inside complete lacunae (`surviving_text == ""`) are excluded.
+        - Words inside complete lacunae (``surviving_text == ""``) are excluded.
+        - When ``surviving_only=True``, any word with editorial restoration
+          (``is_truncated=True`` or non-empty ``restored_text``) is also excluded
+          and only ``word.surviving_text`` is lemmatized.
         """
         if not word.surviving_text.strip():
             return None
+        if surviving_only and (word.is_truncated or word.restored_text.strip()):
+            return None
         if (
-            word.is_truncated
+            not surviving_only
+            and word.is_truncated
             and len(strip_greek_diacritics(word.full_editorial_word)) <= 2
         ):
             return None
 
-        # Check nomina sacra & scribal abbreviations on surviving text first
+        # Check universal Koine nomina sacra & scribal abbreviations first
         surv_key = strip_greek_diacritics(word.surviving_text)
         if surv_key in _NOMINA_SACRA:
             return _NOMINA_SACRA[surv_key]
 
-        form = word.full_editorial_word or word.surviving_text
+        form = (
+            word.surviving_text
+            if surviving_only
+            else (word.full_editorial_word or word.surviving_text)
+        )
         bare = strip_greek_diacritics(form)
         if not bare:
             return None
         if bare in _NOMINA_SACRA:
             return _NOMINA_SACRA[bare]
-        if bare in _POXY_LEX_STEM_FALLBACK:
-            return _POXY_LEX_STEM_FALLBACK[bare]
         if bare in self._exact:
             return self._exact[bare]
         ita = koine_itacism_fold(form)
@@ -537,6 +611,15 @@ class _AttestedGreekLemmatiser:
         return (unicodedata.normalize("NFC", form.lower()), "N-")
 
 
+def _coptic_to_greek_itacism(coptic_form: str) -> str:
+    """Fold Greek-derived Coptic loanword letters to Koine itacism key."""
+    norm = normalize_coptic(coptic_form).replace("\u2cff", "")
+    if norm.startswith(("ⲣ", "ϯ")) and len(norm) >= 4:
+        norm = norm[1:]
+    greek = "".join(_COPTIC_GREEK_SCRIPT_FOLD.get(ch, "") for ch in norm)
+    return koine_itacism_fold(greek)
+
+
 def _monotone_surviving_char_overlap(
     surv_words: list[FragmentWord],
     pred_surfaces: list[str],
@@ -546,8 +629,9 @@ def _monotone_surviving_char_overlap(
     """Align surviving non-abbreviated FragmentWords monotonically to predicted words.
 
     Returns ``(matched_chars, pred_aligned_chars, surv_total_chars, three_gram_hits)``.
-    Truncated words (`is_truncated=True`) score ONLY against
-    `pred_norm[:len(surv_norm)]` so lost lacuna letters never penalize endings.
+    Within each aligned word pair, character overlap uses order-preserving LCS
+    so scrambled anagrams cannot score 1.0. Truncated words (``is_truncated=True``)
+    score ONLY against ``pred_norm[:len(surv_norm)]``.
     """
     surv_items = [
         (w, normalizer(w.surviving_text))
@@ -568,7 +652,7 @@ def _monotone_surviving_char_overlap(
 
     def _pair_score(w: FragmentWord, sn: str, pn: str) -> tuple[int, int]:
         cmp_p = pn[: len(sn)] if w.is_truncated else pn
-        ov = sum((Counter(sn) & Counter(cmp_p)).values())
+        ov = _lcs_len(sn, cmp_p)
         return ov, len(cmp_p)
 
     for i in range(1, m + 1):
@@ -635,12 +719,13 @@ def score_fragment_span_lacuna_aware(
     pred_tokens: list[GeneratedToken],
     lemmatiser: _AttestedGreekLemmatiser,
     loanword_lemmas: list[str],
+    greek_coptic_forms: Sequence[str] = (),
 ) -> tuple[dict[str, int | float | list[str]], SpanEvalSummary]:
     """Compute exact lacuna-aware metrics for one aligned ``FragmentClauseSpan``."""
     surv_words = frag_words[span.frag_word_start : span.frag_word_end]
     pred_surfs = [t.surface for t in pred_tokens if t.morph.pos != "X-"]
 
-    # 1. Surviving char F1 (diplomatic exact + Koine itacism normalized)
+    # 1. Surviving char F1 (diplomatic exact + Koine itacism normalized, ordered LCS)
     ex_m, ex_pa, surv_ex_tot, _ = _monotone_surviving_char_overlap(
         surv_words, pred_surfs, normalizer=strip_greek_diacritics
     )
@@ -664,23 +749,41 @@ def score_fragment_span_lacuna_aware(
     tg_matched = sum((surv_3g & pred_3g).values())
     tg_total = sum(surv_3g.values())
 
-    # 2. Surviving content lemmas (excluding pure lacunae: surviving_text == "")
+    # 2a. Editorial-assisted surviving content lemmas (complete lacunae excluded)
     gold_content_raw: list[str] = []
+    # 2b. Strictly unrestored surviving-only content lemmas (zero [...] restorations)
+    surv_only_content_raw: list[str] = []
+    surv_only_word_count = 0
     for w in surv_words:
-        res = lemmatiser.resolve_word(w)
-        if res is None:
-            continue
-        lem, pos = res
-        if pos in CONTENT_POS:
-            gold_content_raw.append(lem)
+        res = lemmatiser.resolve_word(w, surviving_only=False)
+        if res is not None:
+            lem, pos = res
+            if pos in CONTENT_POS:
+                gold_content_raw.append(lem)
+        if (
+            w.surviving_text.strip()
+            and not w.is_truncated
+            and not w.restored_text.strip()
+        ):
+            surv_only_word_count += 1
+            res_so = lemmatiser.resolve_word(w, surviving_only=True)
+            if res_so is not None:
+                lem_so, pos_so = res_so
+                if pos_so in CONTENT_POS:
+                    surv_only_content_raw.append(lem_so)
 
     gold_content_norm = [_norm_lemma(g) for g in gold_content_raw]
+    surv_only_norm = [_norm_lemma(g) for g in surv_only_content_raw]
     pred_content_norm = [
         _norm_lemma(t.lemma) for t in pred_tokens if t.morph.pos in CONTENT_POS
     ]
     cl_matched, cl_pred, cl_gold = _multiset_overlap(
         pred_content_norm, gold_content_norm
     )
+    cl_ord_matched = _lcs_len(pred_content_norm, gold_content_norm)
+
+    so_matched, so_pred, so_gold = _multiset_overlap(pred_content_norm, surv_only_norm)
+    so_ord_matched = _lcs_len(pred_content_norm, surv_only_norm)
 
     # Top-3 content lemma recall across predicted token alternatives
     gold_counter = Counter(gold_content_norm)
@@ -712,12 +815,26 @@ def score_fragment_span_lacuna_aware(
                 top3_hits += 1
                 rem -= 1
 
-    # Loanword exact match rate
-    lw_gold = [
-        _norm_lemma(lw)
-        for lw in loanword_lemmas
-        if _norm_lemma(lw) in set(gold_content_norm)
-    ]
+    # Decoder-independent loanword exact match rate
+    gold_c_set = set(gold_content_norm)
+    lw_gold: list[str] = []
+    seen_lw: set[str] = set()
+    for lw in loanword_lemmas:
+        nlw = _norm_lemma(lw)
+        if nlw in gold_c_set and nlw not in seen_lw:
+            lw_gold.append(nlw)
+            seen_lw.add(nlw)
+    # Also match Dilley <lang="Greek"> Coptic stems not carrying a DDGLC <etym>
+    # (e.g. Greek proper names like ⲇⲓⲇⲩⲙⲟⲥ) directly against surviving gold lemmas
+    if greek_coptic_forms:
+        gold_by_ita = {koine_itacism_fold(g): g for g in gold_content_norm}
+        for cf in greek_coptic_forms:
+            c_ita = _coptic_to_greek_itacism(cf)
+            if len(c_ita) >= 4 and c_ita in gold_by_ita:
+                matched_g = gold_by_ita[c_ita]
+                if matched_g not in seen_lw:
+                    lw_gold.append(matched_g)
+                    seen_lw.add(matched_g)
     lw_hits = sum(1 for lw in lw_gold if pred_c_set.get(lw, 0) > 0)
 
     _, _, it_f1 = _prf(it_m, it_pa, surv_it_tot)
@@ -729,6 +846,7 @@ def score_fragment_span_lacuna_aware(
 
     counts: dict[str, Any] = {
         "surv_words": sum(1 for w in surv_words if w.surviving_text.strip()),
+        "surv_only_words": surv_only_word_count,
         "ex_m": ex_m,
         "ex_pa": ex_pa,
         "surv_ex_tot": surv_ex_tot,
@@ -738,8 +856,13 @@ def score_fragment_span_lacuna_aware(
         "tg_matched": tg_matched,
         "tg_total": tg_total,
         "cl_matched": cl_matched,
+        "cl_ord_matched": cl_ord_matched,
         "cl_pred": cl_pred,
         "cl_gold": cl_gold,
+        "so_matched": so_matched,
+        "so_ord_matched": so_ord_matched,
+        "so_pred": so_pred,
+        "so_gold": so_gold,
         "top3_hits": top3_hits,
         "lw_hits": lw_hits,
         "lw_total": len(lw_gold),
@@ -776,8 +899,13 @@ def _aggregate_frag_stratum(
             content_lemma_precision=0.0,
             content_lemma_recall=0.0,
             content_lemma_f1=0.0,
+            ordered_content_lemma_f1=0.0,
+            surviving_only_word_count=0,
+            surviving_only_content_lemma_recall=0.0,
+            surviving_only_content_lemma_f1=0.0,
+            surviving_only_ordered_content_lemma_f1=0.0,
             top3_content_lemma_recall=0.0,
-            loanword_exact_match_rate=0.0,
+            loanword_exact_match_rate=None,
             loanword_total=0,
         )
     tot = Counter()
@@ -787,6 +915,9 @@ def _aggregate_frag_stratum(
     _, _, ex_f1 = _prf(tot["ex_m"], tot["ex_pa"], tot["surv_ex_tot"])
     _, _, it_f1 = _prf(tot["it_m"], tot["it_pa"], tot["surv_it_tot"])
     cp, cr, cf1 = _prf(tot["cl_matched"], tot["cl_pred"], tot["cl_gold"])
+    _, _, cl_ord_f1 = _prf(tot["cl_ord_matched"], tot["cl_pred"], tot["cl_gold"])
+    _, so_r, so_f1 = _prf(tot["so_matched"], tot["so_pred"], tot["so_gold"])
+    _, _, so_ord_f1 = _prf(tot["so_ord_matched"], tot["so_pred"], tot["so_gold"])
     return FragStratumMetrics(
         span_count=len(rows),
         unit_count=len({s.unit_id for s in spans}),
@@ -800,22 +931,42 @@ def _aggregate_frag_stratum(
         content_lemma_precision=cp,
         content_lemma_recall=cr,
         content_lemma_f1=cf1,
+        ordered_content_lemma_f1=cl_ord_f1,
+        surviving_only_word_count=tot["surv_only_words"],
+        surviving_only_content_lemma_recall=so_r,
+        surviving_only_content_lemma_f1=so_f1,
+        surviving_only_ordered_content_lemma_f1=so_ord_f1,
         top3_content_lemma_recall=round(tot["top3_hits"] / max(tot["cl_gold"], 1), 4),
-        loanword_exact_match_rate=round(tot["lw_hits"] / max(tot["lw_total"], 1), 4)
+        loanword_exact_match_rate=round(tot["lw_hits"] / tot["lw_total"], 4)
         if tot["lw_total"] > 0
-        else 1.0,
+        else None,
         loanword_total=tot["lw_total"],
     )
 
 
-def evaluate_poxy_fragments(
+def _load_eval_independent_ccl(repo_root: Path) -> CclLexicon | None:
+    """Load pure manifest-verified CCL/DDGLC XML independently of the decoder."""
+    ccl_xml = repo_root / "data" / "downloads" / "ccl-ddglc" / CCL_TEI_FILENAME
+    if not ccl_xml.is_file():
+        return None
+    manifest_p = repo_root / CCL_MANIFEST_REL
+    expected = load_manifest_sha256(manifest_p) if manifest_p.is_file() else None
+    return CclLexicon.from_tei_xml(ccl_xml, expected_sha256=expected)
+
+
+def evaluate_poxy_fragments_detailed(
     *,
     repo_root: Path,
     decoder: DecoderProtocol,
 ) -> tuple[
-    FragStratumMetrics, FragStratumMetrics, FragStratumMetrics, list[SpanEvalSummary]
+    FragStratumMetrics,
+    FragStratumMetrics,
+    FragStratumMetrics,
+    FragStratumMetrics,
+    FragStratumMetrics,
+    list[SpanEvalSummary],
 ]:
-    """Run span-aligned P.Oxy. 1/654/655 evaluation stratified by divergence."""
+    """Run span-aligned P.Oxy. 1/654/655 eval with divergence & Synoptic strata."""
     map_path = repo_root / FRAGMENT_CLAUSE_MAP_REL
     clause_map = FragmentClauseMap.model_validate(
         json.loads(map_path.read_text(encoding="utf-8"))
@@ -826,13 +977,30 @@ def evaluate_poxy_fragments(
     frag_by_id = {t.id: t for t in frags.transcriptions}
     thomas = load_thomas_corpus(resolve_thomas_path(repo_root))
     c_by_id = {u.unit_id: u for u in thomas.units}
+
+    # Exclude NT holdout verses from the eval lemmatizer as well
+    split = load_nt_split(resolve_nt_split_path(repo_root))
+    holdout_ids = {
+        uid
+        for p in split.passages
+        if p.role is PassageRole.HOLDOUT
+        for uid in p.unit_ids
+    }
+    downloads = repo_root / "data" / "downloads"
     lemmatiser = _AttestedGreekLemmatiser.from_morphgnt(
-        repo_root / "data" / "downloads" / "morphgnt-sblgnt"
+        downloads / "morphgnt-sblgnt",
+        exclude_unit_ids=holdout_ids,
+        swete_dir=downloads / "lxx-swete",
     )
+    eval_ccl = _load_eval_independent_ccl(repo_root)
 
     decoded_cache: dict[str, GeneratedUnit] = {}
     conv_rows: list[dict[str, Any]] = []
     conv_spans: list[FragmentClauseSpan] = []
+    conv_nonsyn_rows: list[dict[str, Any]] = []
+    conv_nonsyn_spans: list[FragmentClauseSpan] = []
+    conv_syn_rows: list[dict[str, Any]] = []
+    conv_syn_spans: list[FragmentClauseSpan] = []
     div_rows: list[dict[str, Any]] = []
     div_spans: list[FragmentClauseSpan] = []
     summaries: list[SpanEvalSummary] = []
@@ -851,12 +1019,15 @@ def evaluate_poxy_fragments(
         coptic_slice_txt = " ".join(m.norm for m in c_slice_ms)
 
         loan_lemmas: list[str] = []
+        greek_coptic_forms: list[str] = []
         for m in c_slice_ms:
             if m.lang == "Greek":
-                for entry in decoder.ccl_lexicon.resolve(
-                    norm=m.norm, lemma=m.lemma, pos=m.pos, lang=m.lang
-                )[:1]:
-                    loan_lemmas.append(entry.greek_lemma)
+                greek_coptic_forms.append(m.lemma or m.norm)
+                if eval_ccl is not None:
+                    for entry in eval_ccl.resolve(
+                        norm=m.norm, lemma=m.lemma, pos=m.pos, lang=m.lang
+                    )[:1]:
+                        loan_lemmas.append(entry.greek_lemma)
 
         tx = frag_by_id[span.transcription_id]
         counts, summary = score_fragment_span_lacuna_aware(
@@ -865,6 +1036,7 @@ def evaluate_poxy_fragments(
             pred_tokens=span_tokens,
             lemmatiser=lemmatiser,
             loanword_lemmas=loan_lemmas,
+            greek_coptic_forms=greek_coptic_forms,
         )
         summary.coptic_text = coptic_slice_txt
         summaries.append(summary)
@@ -874,13 +1046,36 @@ def evaluate_poxy_fragments(
         else:
             conv_rows.append(counts)
             conv_spans.append(span)
+            if span.unit_id in NON_SYNOPTIC_POXY_THOMAS_UNITS:
+                conv_nonsyn_rows.append(counts)
+                conv_nonsyn_spans.append(span)
+            else:
+                conv_syn_rows.append(counts)
+                conv_syn_spans.append(span)
 
     return (
         _aggregate_frag_stratum(conv_rows, conv_spans),
+        _aggregate_frag_stratum(conv_nonsyn_rows, conv_nonsyn_spans),
+        _aggregate_frag_stratum(conv_syn_rows, conv_syn_spans),
         _aggregate_frag_stratum(div_rows, div_spans),
         _aggregate_frag_stratum(conv_rows + div_rows, conv_spans + div_spans),
         summaries,
     )
+
+
+def evaluate_poxy_fragments(
+    *,
+    repo_root: Path,
+    decoder: DecoderProtocol,
+) -> tuple[
+    FragStratumMetrics, FragStratumMetrics, FragStratumMetrics, list[SpanEvalSummary]
+]:
+    """Run span-aligned P.Oxy. 1/654/655 evaluation stratified by divergence."""
+    conv, _nonsyn, _syn, div, ov, summaries = evaluate_poxy_fragments_detailed(
+        repo_root=repo_root,
+        decoder=decoder,
+    )
+    return conv, div, ov, summaries
 
 
 def format_benchmark_markdown(report: EvalReport) -> str:
@@ -890,26 +1085,39 @@ def format_benchmark_markdown(report: EvalReport) -> str:
     dv = report.poxy_divergent
     ov = report.poxy_overall
 
+    def _fmt_loan(m: FragStratumMetrics) -> str:
+        if m.loanword_exact_match_rate is None or m.loanword_total == 0:
+            return f"n/a ({m.loanword_total})"
+        return f"{m.loanword_exact_match_rate:.4f} ({m.loanword_total})"
+
     def _frag_row(label: str, m: FragStratumMetrics, *, bold: bool = False) -> str:
         f1_s = f"**{m.content_lemma_f1:.4f}**" if bold else f"{m.content_lemma_f1:.4f}"
+        so_s = (
+            f"{m.surviving_only_content_lemma_f1:.4f} / "
+            f"{m.surviving_only_content_lemma_recall:.4f} "
+            f"({m.surviving_only_word_count})"
+        )
         return (
             f"| {label} | {m.span_count} | {m.unit_count} | "
             f"{m.surviving_word_count} | {m.surviving_char_f1_exact:.4f} | "
             f"{m.surviving_char_f1_itacism:.4f} | "
             f"{m.surviving_char_3gram_recall_itacism:.4f} | "
             f"{m.content_lemma_precision:.4f} | {m.content_lemma_recall:.4f} | "
-            f"{f1_s} | {m.top3_content_lemma_recall:.4f} | "
-            f"{m.loanword_exact_match_rate:.4f} ({m.loanword_total}) |"
+            f"{f1_s} | {m.ordered_content_lemma_f1:.4f} | "
+            f"{so_s} | "
+            f"{m.top3_content_lemma_recall:.4f} | {_fmt_loan(m)} |"
         )
 
     frag_hdr = (
-        "| Stratum | Spans | Units | Surv. Words | Char F1 (Exact) | "
-        "Char F1 (Itacism) | 3g Recall (Itacism) | Content Lemma P | "
-        "Content Lemma R | **Content Lemma F1** | Top-3 Recall | Loanword Exact |"
+        "| Stratum | Spans | Units | Surv. Words | Char F1 (Exact LCS) | "
+        "Char F1 (Itacism LCS) | 3g Recall (Itacism) | Content Lemma P | "
+        "Content Lemma R | **Content Lemma F1 (multiset)** | "
+        "Ordered Lemma F1 (LCS) | Surv.-Only F1 / R (unrestored) | "
+        "Top-3 Recall | Loanword Exact |"
     )
     frag_sep = (
         "| --- | ---: | ---: | ---: | ---: | ---: | ---: | "
-        "---: | ---: | ---: | ---: | ---: |"
+        "---: | ---: | ---: | ---: | ---: | ---: | ---: |"
     )
     side_hdr = (
         "| Span | Coptic (Dilley) | Attested Greek (Editorial / Surviving) | "
@@ -920,7 +1128,9 @@ def format_benchmark_markdown(report: EvalReport) -> str:
         f"# Benchmark Evaluation Report (`{report.model_id}`)",
         "",
         "Offline, zero-leakage evaluation across 41 NT holdout verses "
-        "and span-aligned P.Oxy. 1/654/655 papyri.",
+        "and span-aligned P.Oxy. 1/654/655 papyri (Synoptic parallels of "
+        "scored P.Oxy. logia excluded from training; zero curated Thomas idioms, "
+        "zero CCL manual fallbacks, zero P.Oxy. eval stem cribs).",
         "",
         "## 1. Intact NT Gospel Holdout Split (`41 verses`)",
         "",
@@ -929,21 +1139,32 @@ def format_benchmark_markdown(report: EvalReport) -> str:
         f"| Verse Count | {nt.unit_count} | Excluded from train, LM & dev |",
         f"| Non-Empty Greek Coverage | {nt.coverage:.4f} | Zero-null guarantee |",
         (
-            f"| Content Lemma Precision | {nt.content_lemma_precision:.4f} | "
-            "POS in `{N-, V-, A-, D-}` |"
+            f"| Content Lemma Precision (unordered multiset) | "
+            f"{nt.content_lemma_precision:.4f} | POS in `{{N-, V-, A-, D-}}` |"
         ),
         (
-            f"| Content Lemma Recall | {nt.content_lemma_recall:.4f} | "
-            "Multiset over gold MorphGNT |"
-        ),
-        f"| **Content Lemma F1** | **{nt.content_lemma_f1:.4f}** | Target >= 0.50 |",
-        (
-            f"| All-Token Lemma F1 | {nt.all_token_lemma_f1:.4f} | "
-            "Articles, prepositions, particles |"
+            f"| Content Lemma Recall (unordered multiset) | "
+            f"{nt.content_lemma_recall:.4f} | Multiset over gold MorphGNT |"
         ),
         (
-            f"| Inflected Surface F1 | {nt.inflected_surface_f1:.4f} | "
-            "Accent-preserving forms |"
+            f"| **Content Lemma F1 (unordered multiset)** | "
+            f"**{nt.content_lemma_f1:.4f}** | Target >= 0.50 |"
+        ),
+        (
+            f"| **Ordered Content Lemma F1 (sequence LCS)** | "
+            f"**{nt.ordered_content_lemma_f1:.4f}** | Order-preserving LCS |"
+        ),
+        (
+            f"| All-Token Lemma F1 (unordered multiset) | "
+            f"{nt.all_token_lemma_f1:.4f} | Articles, prepositions, particles |"
+        ),
+        (
+            f"| Inflected Surface F1 (unordered multiset) | "
+            f"{nt.inflected_surface_f1:.4f} | Accent-preserving forms |"
+        ),
+        (
+            f"| Ordered Inflected Surface F1 (sequence LCS) | "
+            f"{nt.ordered_inflected_surface_f1:.4f} | Order-preserving LCS |"
         ),
         (
             f"| Morph Accuracy (matched) | "
@@ -957,14 +1178,32 @@ def format_benchmark_markdown(report: EvalReport) -> str:
         frag_hdr,
         frag_sep,
         _frag_row("**Convergent Clauses**", cv, bold=True),
-        _frag_row("Divergent / Redactional", dv),
-        _frag_row("**Overall**", ov, bold=True),
-        "",
-        "## 3. Side-by-Side Comparison on Key P.Oxy. Convergent Spans",
-        "",
-        side_hdr,
-        "| --- | --- | --- | --- | ---: |",
     ]
+    if report.poxy_convergent_non_synoptic is not None:
+        lines.append(
+            _frag_row(
+                "Convergent — Non-Synoptic / Unique Thomas",
+                report.poxy_convergent_non_synoptic,
+            )
+        )
+    if report.poxy_convergent_synoptic is not None:
+        lines.append(
+            _frag_row(
+                "Convergent — Synoptic-Parallel (NT parallels excl.)",
+                report.poxy_convergent_synoptic,
+            )
+        )
+    lines.extend(
+        [
+            _frag_row("Divergent / Redactional", dv),
+            _frag_row("**Overall**", ov, bold=True),
+            "",
+            "## 3. Side-by-Side Comparison on Key P.Oxy. Convergent Spans",
+            "",
+            side_hdr,
+            "| --- | --- | --- | --- | ---: |",
+        ]
+    )
 
     for sp in report.spans:
         if sp.divergent_witness:
@@ -1004,7 +1243,7 @@ def run_full_evaluation(
         coptic_analyzer=coptic_analyzer,
         decoder=decoder,
     )
-    conv, div, ov, spans = evaluate_poxy_fragments(
+    conv, nonsyn, syn, div, ov, spans = evaluate_poxy_fragments_detailed(
         repo_root=repo_root,
         decoder=decoder,
     )
@@ -1019,6 +1258,8 @@ def run_full_evaluation(
         model_id=model_id,
         nt_holdout=nt,
         poxy_convergent=conv,
+        poxy_convergent_non_synoptic=nonsyn,
+        poxy_convergent_synoptic=syn,
         poxy_divergent=div,
         poxy_overall=ov,
         spans=spans,

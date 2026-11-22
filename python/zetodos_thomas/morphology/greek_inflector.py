@@ -18,6 +18,7 @@ from typing import TYPE_CHECKING
 
 from greek_accentuation import accentuation, characters, syllabify
 
+from zetodos_thomas.ingest.holdouts import assert_clean_training_unit
 from zetodos_thomas.ingest.morphgnt import load_morphgnt_nt
 from zetodos_thomas.ingest.ot_swete import parse_swete_file
 from zetodos_thomas.schemas.linguistic import GreekMorphFeatures
@@ -1420,6 +1421,9 @@ class GreekInflector:
         for unit_id, unit in sorted(units.items()):
             if unit_id in excluded:
                 continue
+            assert_clean_training_unit(
+                unit_id, source_id=unit.source_id, excluded_ids=excluded
+            )
             for tok in unit.tokens:
                 surf = _normalize_polytonic_for_match(tok.surface)
                 lemma = _nfc(tok.lemma)
@@ -1922,7 +1926,7 @@ class GreekInflector:
             if est_size + entry_len > max_bytes and shard:
                 p = out_dir / f"greek-paradigms-{shard_idx}.json"
                 p.write_text(
-                    json.dumps(shard, ensure_ascii=False, separators=(",", ":")),
+                    json.dumps(shard, ensure_ascii=False, separators=(",", ":")) + "\n",
                     encoding="utf-8",
                 )
                 files.append(p)
@@ -1940,7 +1944,7 @@ class GreekInflector:
         if shard:
             p = out_dir / f"greek-paradigms-{shard_idx}.json"
             p.write_text(
-                json.dumps(shard, ensure_ascii=False, separators=(",", ":")),
+                json.dumps(shard, ensure_ascii=False, separators=(",", ":")) + "\n",
                 encoding="utf-8",
             )
             files.append(p)
@@ -1951,7 +1955,7 @@ class GreekInflector:
         }
         meta_p = out_dir / "greek-meta.json"
         meta_p.write_text(
-            json.dumps(meta, ensure_ascii=False, separators=(",", ":")),
+            json.dumps(meta, ensure_ascii=False, separators=(",", ":")) + "\n",
             encoding="utf-8",
         )
         files.append(meta_p)

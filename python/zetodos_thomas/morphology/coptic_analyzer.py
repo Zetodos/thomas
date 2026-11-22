@@ -20,6 +20,7 @@ from collections.abc import Iterable
 from dataclasses import dataclass
 from pathlib import Path
 
+from zetodos_thomas.ingest.holdouts import assert_clean_training_unit
 from zetodos_thomas.ingest.normalize import normalize_coptic
 from zetodos_thomas.ingest.ot_swete import load_sahidic_ot_chapters
 from zetodos_thomas.morphology.ud_parser import CopticDependencyParser
@@ -271,6 +272,7 @@ class CopticAnalyzer:
             if book in excluded:
                 continue
             for (_ch, _vs), unit in sorted(verses.items()):
+                assert_clean_training_unit(unit.unit_id, source_id=unit.source_id)
                 by_g: dict[int, list[CopticMorpheme]] = defaultdict(list)
                 pos_seq: list[str] = ["<s>", "<s>"]
                 for m in unit.morphemes:
@@ -482,7 +484,7 @@ class CopticAnalyzer:
         }
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(
-            json.dumps(payload, ensure_ascii=False, separators=(",", ":")),
+            json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n",
             encoding="utf-8",
         )
 
@@ -549,7 +551,8 @@ class CopticAnalyzer:
                 if est + esz > max_bytes and chunk:
                     p = out_dir / f"{prefix}-{idx}.json"
                     p.write_text(
-                        json.dumps(chunk, ensure_ascii=False, separators=(",", ":")),
+                        json.dumps(chunk, ensure_ascii=False, separators=(",", ":"))
+                        + "\n",
                         encoding="utf-8",
                     )
                     files.append(p)
@@ -561,7 +564,7 @@ class CopticAnalyzer:
             if chunk or idx == 0:
                 p = out_dir / f"{prefix}-{idx}.json"
                 p.write_text(
-                    json.dumps(chunk, ensure_ascii=False, separators=(",", ":")),
+                    json.dumps(chunk, ensure_ascii=False, separators=(",", ":")) + "\n",
                     encoding="utf-8",
                 )
                 files.append(p)
@@ -610,7 +613,7 @@ class CopticAnalyzer:
             ],
         }
         meta_p.write_text(
-            json.dumps(meta, ensure_ascii=False, separators=(",", ":")),
+            json.dumps(meta, ensure_ascii=False, separators=(",", ":")) + "\n",
             encoding="utf-8",
         )
         files.append(meta_p)

@@ -9,8 +9,16 @@ import typer
 
 from zetodos_thomas.align.lemma_aligner import LexicalTranslationModel
 from zetodos_thomas.ingest.download import CCL_TEI_FILENAME, SAHIDIC_OT_ZIP_FILENAME
-from zetodos_thomas.ingest.holdouts import load_nt_split
+from zetodos_thomas.ingest.holdouts import (
+    SYNOPTIC_THOMAS_PARALLEL_EXCLUSIONS,
+    all_excluded_nt_ids,
+    clean_nt_train_ids,
+    load_manifest_sha256,
+    load_nt_split,
+    write_training_provenance,
+)
 from zetodos_thomas.ingest.morphgnt import load_morphgnt_nt, pair_horner_morphgnt
+from zetodos_thomas.ingest.ot_swete import load_ot_swete_pairs
 from zetodos_thomas.ingest.paths import require_repo_root, resolve_nt_split_path
 from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon
 from zetodos_thomas.lexicon.idioms import IdiomAndValencyTable
@@ -25,6 +33,7 @@ from zetodos_thomas.schemas.holdout import PassageRole
 
 MODEL_REL = Path("data/mappings/model-v1")
 MODEL_V2_REL = Path("data/mappings/model-v2")
+CCL_MANIFEST_REL = Path("data/manifests/ccl-ddglc-tei.json")
 
 model_app = typer.Typer(
     name="model",
@@ -67,38 +76,62 @@ def build_model(
     dev_ids = {
         uid for p in split.passages if p.role is PassageRole.DEV for uid in p.unit_ids
     }
-    excluded_from_model = holdout_ids | dev_ids
+    clean_train_ids = clean_nt_train_ids(split, exclude_synoptic_thomas=True)
+    excluded_from_model = all_excluded_nt_ids(
+        split, include_dev=True, exclude_synoptic_thomas=True
+    )
 
     ot_zip = downloads / "sahidic-ot" / SAHIDIC_OT_ZIP_FILENAME
     ccl_xml = downloads / "ccl-ddglc" / CCL_TEI_FILENAME
+    ccl_manifest = root / CCL_MANIFEST_REL
+    ccl_expected_sha = (
+        load_manifest_sha256(ccl_manifest) if ccl_manifest.is_file() else None
+    )
     morphgnt_dir = downloads / "morphgnt-sblgnt"
 
     typer.echo("1/6 Training CopticAnalyzer (sahidic.ot + CCL v1.2)...")
     coptic_analyzer = CopticAnalyzer.train(ot_zip=ot_zip, ccl_xml=ccl_xml)
     c_shards = coptic_analyzer.save_shards(target_dir)
 
-    typer.echo("2/6 Building CCL/DDGLC loanword & compound index...")
-    ccl_lexicon = CclLexicon.from_tei_xml(ccl_xml)
+    typer.echo("2/6 Building CCL/DDGLC loanword & compound index (pure TEI)...")
+    ccl_lexicon = CclLexicon.from_tei_xml(ccl_xml, expected_sha256=ccl_expected_sha)
     ccl_lexicon.save_json(target_dir / "ccl-loanwords.json")
 
     typer.echo(
-        "3/6 Building Koine Greek paradigm inflector (+ CCL/Swete LXX, no holdout)..."
+        "3/6 Building Koine Greek inflector (+ CCL/Swete LXX, no holdout/Synoptic)..."
     )
     inflector = GreekInflector.build(
         morphgnt_dir=morphgnt_dir,
-        exclude_unit_ids=holdout_ids,
+        exclude_unit_ids=excluded_from_model,
         ccl_lexicon=ccl_lexicon,
         swete_dir=downloads / "lxx-swete",
     )
     g_shards = inflector.save_shards(target_dir)
 
     typer.echo(
-        "4/6 Running seeded bidirectional eflomal on NT train (3x) + OT x LXX..."
+        "4/6 Running seeded bidirectional eflomal on clean NT train (3x) + OT x LXX..."
     )
-    lexicon = LexicalTranslationModel.build_full(
-        downloads_dir=downloads,
-        split_path=split_path,
-        analyzer=coptic_analyzer,
+    raw_nt = pair_horner_morphgnt(
+        sword_root=downloads / "sword",
+        morphgnt_dir=morphgnt_dir,
+    )
+    train_raw_c = [c for c, g in raw_nt if g.unit_id in clean_train_ids]
+    greek_train_by_id = {
+        g.unit_id: g for _c, g in raw_nt if g.unit_id in clean_train_ids
+    }
+    analyzed_nt_c = coptic_analyzer.analyze_units(train_raw_c)
+    clean_nt_pairs = [
+        (c_u, greek_train_by_id[c_u.unit_id])
+        for c_u in analyzed_nt_c
+        if c_u.unit_id in greek_train_by_id
+    ]
+    ot_pairs = load_ot_swete_pairs(
+        tt_zip=ot_zip,
+        swete_dir=downloads / "lxx-swete",
+    )
+    lexicon = LexicalTranslationModel.build_from_bitext(
+        nt_pairs=clean_nt_pairs,
+        ot_pairs=ot_pairs,
         inflector=inflector,
         ccl_lexicon=ccl_lexicon,
         nt_weight=3.0,
@@ -107,11 +140,13 @@ def build_model(
     l_shards = lexicon.save_shards(target_dir)
 
     typer.echo(
-        "5/6 Extracting idioms/valency & training 3-gram Koine LM (train split)..."
+        "5/6 Extracting empirical MWE idioms/valency & training 3-gram Koine LM..."
     )
     morphgnt_units = load_morphgnt_nt(morphgnt_dir)
-    idioms = IdiomAndValencyTable.build_from_morphgnt(
-        morphgnt_units.values(),
+    idioms = IdiomAndValencyTable.build_from_bitext(
+        nt_pairs=clean_nt_pairs,
+        ot_pairs=ot_pairs,
+        morphgnt_units=morphgnt_units.values(),
         exclude_unit_ids=excluded_from_model,
     )
     idioms.save_json(target_dir / "idiom-valency.json")
@@ -134,10 +169,6 @@ def build_model(
         inflector=inflector,
         lm=lm,
     )
-    raw_nt = pair_horner_morphgnt(
-        sword_root=downloads / "sword",
-        morphgnt_dir=morphgnt_dir,
-    )
     dev_raw_c = [c for c, g in raw_nt if g.unit_id in dev_ids]
     analyzed_dev = coptic_analyzer.analyze_units(dev_raw_c)
     dev_pairs = [
@@ -147,6 +178,23 @@ def build_model(
     ]
     tuned = tune_weights_on_dev(decoder=decoder, dev_pairs=dev_pairs)
     tuned.save_json(target_dir / "decoder-weights.json")
+
+    write_training_provenance(
+        out_dir=target_dir,
+        model_id=target_dir.name,
+        split_path=split_path,
+        ccl_xml_path=ccl_xml,
+        nt_train_ids=[g.unit_id for _c, g in clean_nt_pairs],
+        ot_train_ids=[g.unit_id for _c, g in ot_pairs],
+        excluded_holdout_ids=holdout_ids,
+        excluded_dev_ids=dev_ids,
+        excluded_synoptic_ids=SYNOPTIC_THOMAS_PARALLEL_EXCLUSIONS,
+        extra={
+            "empirical_idiom_count": len(idioms._idioms),
+            "empirical_verb_case_count": len(idioms.verb_cases),
+            "empirical_prep_case_count": len(idioms.prep_cases),
+        },
+    )
 
     all_files = sorted(target_dir.glob("*.json"))
     oversized = [p for p in all_files if p.stat().st_size >= 1024 * 1024]
@@ -277,6 +325,13 @@ def build_model_v2(
         if p.role is PassageRole.HOLDOUT
         for uid in p.unit_ids
     }
+    dev_ids = {
+        uid for p in split.passages if p.role is PassageRole.DEV for uid in p.unit_ids
+    }
+    excluded_from_model = all_excluded_nt_ids(
+        split, include_dev=True, exclude_synoptic_thomas=True
+    )
+    ccl_xml = downloads / "ccl-ddglc" / CCL_TEI_FILENAME
 
     # 1. Load leak-free CopticAnalyzer & CCL loanwords, build offline Greek analyzer
     coptic_analyzer = CopticAnalyzer.load_shards(v1_dir)
@@ -284,10 +339,12 @@ def build_model_v2(
     ccl_lexicon.save_json(target_dir / "ccl-loanwords.json")
 
     if not reuse_aux or not (target_dir / "greek-analyzer-0.json").is_file():
-        typer.echo("1/6 Building leak-free Greek surface analyzer (no holdout)...")
+        typer.echo(
+            "1/6 Building leak-free Greek surface analyzer (no holdout/dev/Synoptic)..."
+        )
         inflector = GreekInflector.build(
             morphgnt_dir=downloads / "morphgnt-sblgnt",
-            exclude_unit_ids=holdout_ids,
+            exclude_unit_ids=excluded_from_model,
             ccl_lexicon=ccl_lexicon,
             swete_dir=downloads / "lxx-swete",
         )
@@ -686,6 +743,29 @@ def build_model_v2(
     typer.echo("Tuning noisy-channel rerank weights strictly on NT DEV (51 verses)...")
     tuned_w = tune_rerank_weights_on_dev(decoder=dec, dev_units=bundle.nt_dev_units)
     tuned_w.save_json(target_dir / "rerank-weights.json")
+
+    write_training_provenance(
+        out_dir=target_dir,
+        model_id=target_dir.name,
+        split_path=split_path,
+        ccl_xml_path=ccl_xml,
+        nt_train_ids=[ex.unit_id for ex in bundle.nt_train],
+        ot_train_ids=[ex.unit_id for ex in bundle.ot_train],
+        excluded_holdout_ids=holdout_ids,
+        excluded_dev_ids=dev_ids,
+        excluded_synoptic_ids=SYNOPTIC_THOMAS_PARALLEL_EXCLUSIONS,
+        extra={
+            "seeds": len(forward_models),
+            "epochs": epochs,
+            "ft_epochs": ft_epochs,
+            "pretrain_epochs": pretrain_epochs,
+            "backtranslate": backtranslate,
+            "bt_pair_count": len(bt_pairs),
+            "train_lm": train_lm,
+            "use_v1_draft": use_v1_draft,
+            "include_v1": include_v1,
+        },
+    )
 
     sz_mb = sum(p.stat().st_size for p in target_dir.glob("*")) / (1024 * 1024)
     typer.echo(
