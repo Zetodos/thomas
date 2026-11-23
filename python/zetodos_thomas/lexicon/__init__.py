@@ -1,24 +1,12 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Lexicon / mapping helpers (Phase 2 lexical candidates — JAK-37)."""
+"""Lexicon, DDGLC loanwords, and Coptic multiword idioms."""
 
-from zetodos_thomas.lexicon.candidates import (
-    build_lexical_candidate_table,
-    generate_lexical_candidates,
-    load_lexical_candidate_table,
-    write_lexical_candidate_table,
-)
-from zetodos_thomas.lexicon.validate import (
-    LexicalValidationReport,
-    validate_lexical_candidate_path,
-    validate_lexical_candidate_table,
-)
+from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon, LoanwordEntry
+from zetodos_thomas.lexicon.idioms import CopticIdiomRule, IdiomAndValencyTable
 
 __all__ = [
-    "LexicalValidationReport",
-    "build_lexical_candidate_table",
-    "generate_lexical_candidates",
-    "load_lexical_candidate_table",
-    "validate_lexical_candidate_path",
-    "validate_lexical_candidate_table",
-    "write_lexical_candidate_table",
+    "CclLexicon",
+    "CopticIdiomRule",
+    "IdiomAndValencyTable",
+    "LoanwordEntry",
 ]

@@ -1,677 +1,522 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Minimal deterministic decoder (JAK-39).
-
-Consumes JAK-37 lexical candidates and JAK-38 statistical constructions /
-verified loanwords / ablation arms without collapsing evidence classes.
-Prefers attested Greek; abstains when evidence is insufficient.
-"""
+"""Deterministic log-linear beam decoder for Koine Greek reconstruction."""
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+import json
+import math
+from collections.abc import Sequence
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
-from zetodos_thomas.lexicon.candidates import FORBIDDEN_UNIT_MARKERS
-from zetodos_thomas.reconstruct.model import DecodeModel, normalized_loanword_greek
-from zetodos_thomas.reconstruct.ranking import (
-    RANKING_RULES_ID,
-    RankingFeatures,
-    RankingKey,
-    observed_row_sufficient,
-    ranking_key,
-    score_from_key,
-    uncertainty_for,
+from zetodos_thomas.align.lemma_aligner import LexicalTranslationModel
+from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon
+from zetodos_thomas.lexicon.idioms import IdiomAndValencyTable
+from zetodos_thomas.morphology.greek_inflector import (
+    GreekInflector,
+    realize_greek_tokens,
 )
-from zetodos_thomas.schemas.decode import (
-    AbstentionReason,
-    CandidateEvidenceRef,
-    DecodeRequest,
-    DecodeResult,
-    DecoderEvidenceKind,
-    DecodeSpanInput,
-    GreekCandidate,
-    GreekFormKind,
-    SpanDecodeResult,
-    SpanDecodeStatus,
+from zetodos_thomas.reconstruct.koine_lm import KoineNgramLM, morph_lm_key
+from zetodos_thomas.reconstruct.transfer import (
+    SlotCandidate,
+    TransferSlot,
+    build_unit_transfer_clauses,
 )
-from zetodos_thomas.schemas.ids import parse_span_id, parse_token_id
-from zetodos_thomas.schemas.lexicon import ObservedWordformCandidate
-from zetodos_thomas.schemas.mappings import (
-    AblationCondition,
-    EvidenceClass,
-    SpanRef,
-    StatisticalConstruction,
-    VerifiedLoanword,
+from zetodos_thomas.schemas.generated import (
+    GeneratedCorpus,
+    GeneratedToken,
+    GeneratedUnit,
+    TokenAlternative,
 )
-
-# Local article set for light grammatical notes (mirrors JAK-38 phrase helpers).
-_GREEK_ART = frozenset(
-    {
-        "ο",
-        "η",
-        "το",
-        "τον",
-        "την",
-        "του",
-        "της",
-        "τω",
-        "τη",
-        "οι",
-        "αι",
-        "τα",
-        "των",
-        "τοις",
-        "ταις",
-        "τους",
-        "τας",
-    }
-)
-_GREEK_NEG = frozenset({"ου", "ουκ", "ουχ", "μη", "μηδε", "ουδε", "ουτε", "μητε"})
+from zetodos_thomas.schemas.linguistic import CopticUnit, GreekMorphFeatures
 
 
-def _dual_aligner(aligners: list[str]) -> bool:
-    return set(aligners) >= {"eflomal", "fast_align"}
+@dataclass(frozen=True)
+class DecoderWeights:
+    """Log-linear feature weights tuned on NT dev split (never holdout/P.Oxy.)."""
+
+    w_lex: float = 1.0
+    w_lm: float = 0.38
+    w_agree: float = 0.85
+    w_valency: float = 0.70
+    w_omit_pen: float = 0.95
+    beam_size: int = 8
+
+    def save_json(self, path: Path) -> None:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(asdict(self), indent=2) + "\n", encoding="utf-8")
+
+    @classmethod
+    def load_json(cls, path: Path) -> DecoderWeights:
+        data = json.loads(path.read_text(encoding="utf-8"))
+        return cls(**data)
 
 
-def _unit_forbidden(unit_id: str) -> bool:
-    lowered = unit_id.lower().replace(" ", "")
-    return any(marker in lowered for marker in FORBIDDEN_UNIT_MARKERS) or (
-        "p.oxy" in lowered
-    )
+@dataclass(frozen=True)
+class _BeamItem:
+    surface: str
+    lemma: str
+    morph: GreekMorphFeatures
+    coptic_seqs: tuple[int, ...]
+    provenance: str
+    slot_idx: int
+    cand_score: float
+    alternatives: tuple[TokenAlternative, ...]
 
 
-def _fragment_forbidden(unit_id: str) -> bool:
-    """P.Oxy. Greek fragment handles must not be decode query units."""
-    lowered = unit_id.lower().replace(" ", "")
-    return "poxy" in lowered or "p.oxy" in lowered
+@dataclass(frozen=True)
+class _BeamState:
+    score: float
+    k0: str
+    k1: str
+    s1: str
+    expected_gender: str | None
+    verb_obj_case: str
+    active_verb_lemma: str
+    items: tuple[_BeamItem, ...]
 
 
-@dataclass(frozen=True, slots=True)
-class _RawCandidate:
-    greek_surfaces: tuple[str, ...]
-    kind: DecoderEvidenceKind
-    evidence_class: EvidenceClass | None
-    ref_id: str
-    layer: str | None
-    dual_aligner: bool
-    observation_count: int
-    heuristic_ranking_score: float
-    grammatical_notes: tuple[str, ...]
-    restrictions: str
-    form_kind: GreekFormKind
-    notes: str = ""
-    hint_matched: bool = False
-    source_unit_ids: tuple[str, ...] = ()
-
-
-def _grammatical_notes_for_construction(
-    row: StatisticalConstruction,
-) -> tuple[str, ...]:
-    notes: list[str] = [f"family={row.family.value}"]
-    if row.greek_pattern and row.greek_pattern[0] in _GREEK_ART:
-        notes.append("greek_pattern_starts_with_article")
-    if any(t in _GREEK_NEG for t in row.greek_pattern):
-        notes.append("greek_pattern_contains_negation")
-    if row.family.value == "article" and len(row.coptic_pattern) >= 2:
-        notes.append("det_noun_construction")
-    return tuple(notes)
-
-
-def _from_construction(
-    row: StatisticalConstruction,
+def _resolve_gender(
+    lemma: str,
     *,
-    hint_matched: bool = False,
-) -> _RawCandidate:
-    return _RawCandidate(
-        greek_surfaces=tuple(row.greek_pattern),
-        kind=DecoderEvidenceKind.STATISTICAL_CONSTRUCTION,
-        evidence_class=EvidenceClass.STATISTICAL,
-        ref_id=row.construction_id,
-        layer=None,
-        dual_aligner=_dual_aligner(row.contributing_aligners),
-        observation_count=row.observation_count,
-        heuristic_ranking_score=0.0,
-        grammatical_notes=_grammatical_notes_for_construction(row),
-        restrictions=(
-            "Statistical train-aligner construction — not independently verified."
-        ),
-        form_kind=GreekFormKind.ATTESTED_SURFACE,
-        hint_matched=hint_matched,
-        source_unit_ids=tuple(row.source_unit_ids),
+    inflector: GreekInflector,
+    ccl_lexicon: CclLexicon,
+    fallback: str | None = None,
+) -> str:
+    return (
+        inflector.lemma_gender(lemma)
+        or ccl_lexicon.greek_gender(lemma)
+        or fallback
+        or "M"
     )
 
 
-def _from_observed(
-    row: ObservedWordformCandidate,
+def _inflect_slot(
+    cand: SlotCandidate,
+    morph: GreekMorphFeatures,
     *,
-    heuristic: float,
-) -> _RawCandidate:
-    return _RawCandidate(
-        greek_surfaces=(row.greek_wordform,),
-        kind=DecoderEvidenceKind.LEXICAL_OBSERVED_WORDFORM,
-        evidence_class=None,
-        ref_id=f"observed:{row.coptic_wordform}->{row.greek_wordform}",
-        layer="observed_wordform",
-        dual_aligner=_dual_aligner(row.contributing_aligners),
-        observation_count=row.observation_count,
-        heuristic_ranking_score=heuristic,
-        grammatical_notes=("attested_train_wordform",),
-        restrictions="Attested train surface only — morphology not generated.",
-        form_kind=GreekFormKind.ATTESTED_SURFACE,
-        source_unit_ids=tuple(row.source_unit_ids),
-    )
+    inflector: GreekInflector,
+) -> str:
+    if cand.fixed_surface:
+        return cand.fixed_surface
+    return inflector.inflect(cand.lemma, morph)
 
 
-def _from_loanword(entry: VerifiedLoanword, *, matched_form: str) -> _RawCandidate:
-    greek = normalized_loanword_greek(entry)
-    return _RawCandidate(
-        greek_surfaces=(greek,),
-        kind=DecoderEvidenceKind.INDEPENDENTLY_VERIFIED_LOANWORD,
-        evidence_class=EvidenceClass.INDEPENDENTLY_VERIFIED,
-        ref_id=entry.loanword_id,
-        layer=None,
-        dual_aligner=True,  # not aligner-derived; independent L-support
-        observation_count=1,
-        heuristic_ranking_score=0.0,
-        grammatical_notes=(
-            "verified_loanword_lemma",
-            f"matched_coptic_form={matched_form}",
-        ),
-        restrictions=entry.restrictions,
-        form_kind=GreekFormKind.LEMMA_CLUE,
-        notes=(
-            "Lemma-level L-clue only — not an attested surface inflection; "
-            "illustrative NT spans are non-training and are not consumed."
-        ),
-    )
+def _confidence_from_cands(cands: list[SlotCandidate]) -> float:
+    if not cands:
+        return 0.0
+    if len(cands) == 1:
+        return round(1.0 / (1.0 + math.exp(-max(min(cands[0].score, 6.0), -6.0))), 4)
+    top = cands[0].score
+    exps = [math.exp(max(min(c.score - top, 0.0), -12.0)) for c in cands[:4]]
+    return round(exps[0] / max(sum(exps), 1e-9), 4)
 
 
-@dataclass
-class _HypothesisAccum:
-    """Aggregate independent evidence for one Greek output sequence."""
+class KoineBeamDecoder:
+    """Deterministic log-linear beam decoder for Coptic -> Koine Greek."""
 
-    greek_surfaces: tuple[str, ...]
-    raws: list[_RawCandidate] = field(default_factory=list)
-    best_key: RankingKey | None = None
-    best_raw: _RawCandidate | None = None
+    def __init__(
+        self,
+        *,
+        lexicon: LexicalTranslationModel,
+        ccl_lexicon: CclLexicon,
+        idioms: IdiomAndValencyTable,
+        inflector: GreekInflector,
+        lm: KoineNgramLM,
+        weights: DecoderWeights | None = None,
+    ) -> None:
+        self.lexicon = lexicon
+        self.ccl_lexicon = ccl_lexicon
+        self.idioms = idioms
+        self.inflector = inflector
+        self.lm = lm
+        self.weights = weights or DecoderWeights()
 
-
-def _materialize(
-    raws: list[_RawCandidate],
-    *,
-    max_candidates: int,
-) -> list[GreekCandidate]:
-    """Deduplicate by normalized Greek hypothesis; aggregate evidence refs."""
-    by_greek: dict[tuple[str, ...], _HypothesisAccum] = {}
-    for raw in raws:
-        features = RankingFeatures(
-            kind=raw.kind,
-            dual_aligner=raw.dual_aligner,
-            observation_count=raw.observation_count,
-            heuristic_ranking_score=raw.heuristic_ranking_score,
-            greek_surfaces=raw.greek_surfaces,
-            ref_id=raw.ref_id,
-            hint_matched=raw.hint_matched,
+    @classmethod
+    def from_model_dir(cls, model_dir: Path) -> KoineBeamDecoder:
+        """Load complete frozen reconstruction model offline from ``model_dir``."""
+        inflector = GreekInflector.load_shards(model_dir)
+        lexicon = LexicalTranslationModel.load_shards(model_dir)
+        ccl_lexicon = CclLexicon.load_json(model_dir / "ccl-loanwords.json")
+        idioms = IdiomAndValencyTable.load_json(model_dir / "idiom-valency.json")
+        lm = KoineNgramLM.load_shards(model_dir)
+        weights_p = model_dir / "decoder-weights.json"
+        weights = (
+            DecoderWeights.load_json(weights_p)
+            if weights_p.is_file()
+            else DecoderWeights()
         )
-        key = ranking_key(features)
-        accum = by_greek.get(raw.greek_surfaces)
-        if accum is None:
-            accum = _HypothesisAccum(greek_surfaces=raw.greek_surfaces)
-            by_greek[raw.greek_surfaces] = accum
-        accum.raws.append(raw)
-        if accum.best_key is None or key < accum.best_key:
-            accum.best_key = key
-            accum.best_raw = raw
-
-    ordered = sorted(
-        by_greek.values(),
-        key=lambda a: (
-            a.best_key
-            if a.best_key is not None
-            else ranking_key(
-                RankingFeatures(
-                    kind=DecoderEvidenceKind.LEXICAL_OBSERVED_WORDFORM,
-                    dual_aligner=False,
-                    observation_count=0,
-                    heuristic_ranking_score=0.0,
-                    greek_surfaces=a.greek_surfaces,
-                    ref_id="",
-                )
-            )
-        ),
-    )
-    out: list[GreekCandidate] = []
-    for rank, accum in enumerate(ordered[:max_candidates], start=1):
-        assert accum.best_key is not None and accum.best_raw is not None
-        # Stable evidence order: by ranking key of each raw, then ref_id.
-        evidence_raws = sorted(
-            accum.raws,
-            key=lambda r: ranking_key(
-                RankingFeatures(
-                    kind=r.kind,
-                    dual_aligner=r.dual_aligner,
-                    observation_count=r.observation_count,
-                    heuristic_ranking_score=r.heuristic_ranking_score,
-                    greek_surfaces=r.greek_surfaces,
-                    ref_id=r.ref_id,
-                    hint_matched=r.hint_matched,
-                )
-            ),
+        return cls(
+            lexicon=lexicon,
+            ccl_lexicon=ccl_lexicon,
+            idioms=idioms,
+            inflector=inflector,
+            lm=lm,
+            weights=weights,
         )
-        # Prefer attested_surface form_kind if any contributing evidence is attested.
-        form_kind = GreekFormKind.LEMMA_CLUE
-        for r in evidence_raws:
-            if r.form_kind is GreekFormKind.ATTESTED_SURFACE:
-                form_kind = GreekFormKind.ATTESTED_SURFACE
-                break
-        notes: list[str] = []
-        for r in evidence_raws:
-            for n in r.grammatical_notes:
-                if n not in notes:
-                    notes.append(n)
-        restrictions = accum.best_raw.restrictions
-        if (
-            any(
-                r.kind is DecoderEvidenceKind.INDEPENDENTLY_VERIFIED_LOANWORD
-                for r in evidence_raws
+
+    def _decode_clause(
+        self, clause_slots: list[TransferSlot]
+    ) -> tuple[list[_BeamItem], list[str]]:
+        """Run deterministic beam search over one clause's ``TransferSlot``s."""
+        w = self.weights
+        beams: list[_BeamState] = [
+            _BeamState(
+                score=0.0,
+                k0="<s>",
+                k1="<s>",
+                s1="<s>",
+                expected_gender=None,
+                verb_obj_case="A",
+                active_verb_lemma="",
+                items=(),
             )
-            and form_kind is GreekFormKind.ATTESTED_SURFACE
-        ):
-            restrictions = (
-                "Attested surface preferred; verified loanword L-clue also "
-                "supports this hypothesis but does not invent inflection."
-            )
-        out.append(
-            GreekCandidate(
-                rank=rank,
-                greek_surfaces=list(accum.greek_surfaces),
-                form_kind=form_kind,
-                score=score_from_key(accum.best_key),
-                uncertainty=uncertainty_for(
-                    kind=accum.best_raw.kind,
-                    dual_aligner=accum.best_raw.dual_aligner,
-                    observation_count=accum.best_raw.observation_count,
-                ),
-                evidence=[
-                    CandidateEvidenceRef(
-                        kind=r.kind,
-                        evidence_class=r.evidence_class,
-                        ref_id=r.ref_id,
-                        layer=r.layer,
-                        notes=r.notes,
-                    )
-                    for r in evidence_raws
-                ],
-                ranking_key=list(accum.best_key),
-                grammatical_notes=notes,
-                restrictions=restrictions,
-            )
-        )
-    return out
+        ]
 
+        n_slots = len(clause_slots)
+        for s_idx, slot in enumerate(clause_slots):
+            next_beams: list[_BeamState] = []
+            nxt_slot = clause_slots[s_idx + 1] if s_idx + 1 < n_slots else None
 
-def _collect_for_surfaces(
-    model: DecodeModel,
-    surfaces: list[str],
-    *,
-    construction_id: str | None,
-) -> tuple[list[_RawCandidate], AbstentionReason | None, str]:
-    """Gather raw candidates or an abstention reason for one surface sequence."""
-    if not surfaces:
-        return [], AbstentionReason.EMPTY_SPAN, "span has no Coptic surfaces"
-
-    pattern = tuple(surfaces)
-    hinted_id: str | None = None
-
-    if construction_id is not None:
-        row = model.constructions_by_id.get(construction_id)
-        if row is None:
-            return (
-                [],
-                AbstentionReason.CONSTRUCTION_ID_UNKNOWN,
-                f"unknown construction_id={construction_id!r}",
-            )
-        if tuple(row.coptic_pattern) != pattern:
-            return (
-                [],
-                AbstentionReason.CONSTRUCTION_PATTERN_MISMATCH,
-                (
-                    f"construction {construction_id!r} pattern "
-                    f"{row.coptic_pattern!r} != surfaces {list(surfaces)!r}"
-                ),
-            )
-        # Valid hint: boost that construction; still gather all alternatives.
-        hinted_id = construction_id
-
-    raws: list[_RawCandidate] = []
-    weak_statistical_hits = 0
-
-    for row in model.constructions_by_pattern.get(pattern, []):
-        cand = _from_construction(
-            row,
-            hint_matched=(hinted_id is not None and row.construction_id == hinted_id),
-        )
-        if observed_row_sufficient(
-            dual_aligner=cand.dual_aligner,
-            observation_count=cand.observation_count,
-        ):
-            raws.append(cand)
-        else:
-            weak_statistical_hits += 1
-
-    if len(surfaces) == 1:
-        surface = surfaces[0]
-        for row in model.observed_by_coptic.get(surface, []):
-            heur = model.heuristic_by_pair.get(
-                (row.coptic_wordform, row.greek_wordform), 0.0
-            )
-            cand = _from_observed(row, heuristic=heur)
-            if observed_row_sufficient(
-                dual_aligner=cand.dual_aligner,
-                observation_count=cand.observation_count,
+            # Determine which target genders a pre-nominal determiner should explore
+            if (
+                slot.agree_head_offset == 1
+                and nxt_slot is not None
+                and nxt_slot.candidates
             ):
-                raws.append(cand)
+                head_genders: list[str] = []
+                for hc in nxt_slot.candidates[:4]:
+                    g = _resolve_gender(
+                        hc.lemma,
+                        inflector=self.inflector,
+                        ccl_lexicon=self.ccl_lexicon,
+                        fallback=slot.target_morph.gender,
+                    )
+                    if g not in head_genders:
+                        head_genders.append(g)
+                gender_choices: Sequence[str | None] = head_genders[:3]
             else:
-                weak_statistical_hits += 1
+                gender_choices = [None]
 
-        loan_hits = model.loanwords_by_form.get(surface, [])
-        if loan_hits:
-            if model.includes_verified_loanwords:
-                for entry in loan_hits:
-                    raws.append(_from_loanword(entry, matched_form=surface))
-            elif not raws:
-                return (
-                    [],
-                    AbstentionReason.ABLATION_EXCLUDES_LOANWORDS,
-                    (
-                        f"form {surface!r} only matches verified loanwords; "
-                        "ablation arm A omits independently_verified constraints"
+            cands = slot.candidates[:5]
+            # Build top-3 TokenAlternatives template for metadata
+            top_alts = tuple(
+                TokenAlternative(
+                    surface=_inflect_slot(
+                        c,
+                        c.morph_override or slot.target_morph,
+                        inflector=self.inflector,
                     ),
+                    lemma=c.lemma,
+                    morph_sig=(c.morph_override or slot.target_morph).signature(),
+                    score=round(c.score, 4),
+                    provenance=c.provenance,
                 )
-
-    if not raws:
-        if weak_statistical_hits:
-            return (
-                [],
-                AbstentionReason.INSUFFICIENT_EVIDENCE,
-                (
-                    "only uncorroborated one-aligner / weak statistical links; "
-                    "refusing to assert unsupported Greek"
-                ),
+                for c in cands[:3]
             )
-        return (
-            [],
-            AbstentionReason.NO_ATTESTED_EVIDENCE,
-            "no statistical construction, observed wordform, or allowed loanword",
-        )
-    return raws, None, ""
+            slot_conf = _confidence_from_cands(cands)
 
+            for st in beams:
+                # Option 1: Omit optional function word (quotative or copula)
+                if slot.optional_omit:
+                    next_beams.append(
+                        _BeamState(
+                            score=st.score - w.w_omit_pen,
+                            k0=st.k0,
+                            k1=st.k1,
+                            s1=st.s1,
+                            expected_gender=st.expected_gender,
+                            verb_obj_case=st.verb_obj_case,
+                            active_verb_lemma=st.active_verb_lemma,
+                            items=st.items,
+                        )
+                    )
 
-def _check_input_ids(
-    span: DecodeSpanInput,
-    *,
-    request_unit_id: str,
-) -> tuple[AbstentionReason | None, str]:
-    """Enforce consistent request/span/source/token IDs; reject fragment bypass."""
-    if _fragment_forbidden(request_unit_id):
-        return (
-            AbstentionReason.FORBIDDEN_QUERY_UNIT,
-            "request.unit_id embeds a P.Oxy. Greek fragment handle",
-        )
-    if span.unit_id and span.unit_id != request_unit_id:
-        if _fragment_forbidden(span.unit_id) or _fragment_forbidden(request_unit_id):
-            return (
-                AbstentionReason.FORBIDDEN_QUERY_UNIT,
-                (
-                    "span.unit_id / request.unit_id fragment bypass rejected: "
-                    f"span={span.unit_id!r} request={request_unit_id!r}"
+                for cand in cands:
+                    base_morph = cand.morph_override or slot.target_morph
+                    # Adjust POS from candidate when noun/adj differs
+                    if base_morph.pos != cand.pos and slot.role in {
+                        "NOUN",
+                        "ADV",
+                        "ADJ",
+                    }:
+                        base_morph = base_morph.model_copy(update={"pos": cand.pos})
+
+                    for forced_gender in gender_choices:
+                        cur_morph = base_morph
+                        agree_bonus = 0.0
+                        valency_bonus = 0.0
+
+                        # Apply verb-governed case (e.g. γεύομαι -> Genitive)
+                        if slot.case_governor == "verb_obj" and cur_morph.case:
+                            cur_morph = cur_morph.model_copy(
+                                update={"case": st.verb_obj_case}
+                            )
+
+                        # Enforce & score head-noun gender agreement
+                        if forced_gender is not None:
+                            cur_morph = cur_morph.model_copy(
+                                update={"gender": forced_gender}
+                            )
+                            next_exp_g = forced_gender
+                        else:
+                            next_exp_g = None
+                            if slot.role == "NOUN":
+                                head_g = _resolve_gender(
+                                    cand.lemma,
+                                    inflector=self.inflector,
+                                    ccl_lexicon=self.ccl_lexicon,
+                                    fallback=cur_morph.gender,
+                                )
+                                cur_morph = cur_morph.model_copy(
+                                    update={"gender": head_g}
+                                )
+                                if st.expected_gender is not None:
+                                    agree_bonus = (
+                                        w.w_agree
+                                        if head_g == st.expected_gender
+                                        else -1.5 * w.w_agree
+                                    )
+
+                        # Track active verb's governed object case & lemma for PMI
+                        next_vcase = st.verb_obj_case
+                        next_vlem = (
+                            cand.lemma
+                            if slot.role in {"VERB", "PART"}
+                            else st.active_verb_lemma
+                        )
+                        if slot.role in {"NOUN", "ADJ"} and st.active_verb_lemma:
+                            valency_bonus += 0.35 * self.lm.score_collocation(
+                                st.active_verb_lemma, cand.lemma
+                            )
+                        if slot.role == "VERB":
+                            next_vcase = (
+                                cand.required_case
+                                or self.idioms.verb_object_case(cand.lemma)
+                            )
+                        elif slot.role == "PREP":
+                            next_vcase = cand.required_case or self.idioms.prep_case(
+                                cand.lemma
+                            )
+
+                        surface = _inflect_slot(
+                            cand, cur_morph, inflector=self.inflector
+                        )
+                        if not surface:
+                            continue
+
+                        if slot.is_punct:
+                            lm_sc = 0.0
+                            nk0, nk1, ns1 = st.k0, st.k1, st.s1
+                        else:
+                            k2 = morph_lm_key(cand.lemma, cur_morph)
+                            lm_sc = w.w_lm * self.lm.score_step(
+                                k0=st.k0,
+                                k1=st.k1,
+                                k2=k2,
+                                s1=st.s1,
+                                s2=surface.lower(),
+                            )
+                            nk0, nk1, ns1 = st.k1, k2, surface.lower()
+
+                        step_score = (
+                            w.w_lex * cand.score
+                            + lm_sc
+                            + agree_bonus
+                            + valency_bonus * w.w_valency
+                        )
+                        item = _BeamItem(
+                            surface=surface,
+                            lemma=cand.lemma,
+                            morph=cur_morph,
+                            coptic_seqs=tuple(slot.coptic_seqs),
+                            provenance=cand.provenance,
+                            slot_idx=s_idx,
+                            cand_score=round(slot_conf, 4),
+                            alternatives=top_alts,
+                        )
+                        next_beams.append(
+                            _BeamState(
+                                score=st.score + step_score,
+                                k0=nk0,
+                                k1=nk1,
+                                s1=ns1,
+                                expected_gender=next_exp_g,
+                                verb_obj_case=next_vcase,
+                                active_verb_lemma=next_vlem,
+                                items=(*st.items, item),
+                            )
+                        )
+
+            # Prune deterministically (score desc, then canonical Greek Unicode tuple)
+            if next_beams:
+                next_beams.sort(
+                    key=lambda b: (-b.score, tuple(it.surface for it in b.items))
+                )
+                beams = next_beams[: w.beam_size]
+
+        # Score sentence end </s> via LM
+        final_ranked = sorted(
+            beams,
+            key=lambda b: (
+                -(
+                    b.score
+                    + 0.25
+                    * w.w_lm
+                    * self.lm.score_step(
+                        k0=b.k0, k1=b.k1, k2="</s>", s1=b.s1, s2="</s>"
+                    )
                 ),
-            )
-        return (
-            AbstentionReason.INPUT_ID_INCONSISTENT,
-            (f"span.unit_id {span.unit_id!r} != request.unit_id {request_unit_id!r}"),
-        )
-    unit_id = span.unit_id or request_unit_id
-    if _fragment_forbidden(unit_id):
-        return (
-            AbstentionReason.FORBIDDEN_QUERY_UNIT,
-            "decode unit embeds a P.Oxy. Greek fragment handle",
-        )
-
-    try:
-        parsed_span = parse_span_id(span.span_id)
-    except ValueError as exc:
-        return (
-            AbstentionReason.INPUT_ID_INCONSISTENT,
-            f"invalid span_id {span.span_id!r}: {exc}",
-        )
-    if parsed_span.unit_id != unit_id:
-        return (
-            AbstentionReason.INPUT_ID_INCONSISTENT,
-            (f"span_id unit {parsed_span.unit_id!r} != effective unit {unit_id!r}"),
-        )
-    if span.source_id and parsed_span.source_id != span.source_id:
-        return (
-            AbstentionReason.INPUT_ID_INCONSISTENT,
-            (
-                f"span_id source {parsed_span.source_id!r} != span.source_id "
-                f"{span.source_id!r}"
+                tuple(it.surface for it in b.items),
             ),
         )
-    if _fragment_forbidden(parsed_span.unit_id) or _unit_forbidden(
-        parsed_span.source_id
-    ):
-        # source_id "poxy" check via unit; also reject poxy in source
-        pass
-    if "poxy" in parsed_span.source_id.lower() or "poxy" in span.source_id.lower():
-        return (
-            AbstentionReason.FORBIDDEN_QUERY_UNIT,
-            "span source_id embeds a P.Oxy. Greek fragment handle",
+        best = final_ranked[0]
+        alt_strings: list[str] = []
+        seen_strs: set[str] = set()
+        for b in final_ranked[:5]:
+            s = realize_greek_tokens([it.surface for it in b.items])
+            if s and s not in seen_strs:
+                seen_strs.add(s)
+                alt_strings.append(s)
+            if len(alt_strings) >= 3:
+                break
+        return list(best.items), alt_strings
+
+    def decode_unit(self, unit: CopticUnit) -> GeneratedUnit:
+        """Deterministically reconstruct Koine Greek for one ``CopticUnit``."""
+        clauses = build_unit_transfer_clauses(
+            unit,
+            lexicon=self.lexicon,
+            ccl_lexicon=self.ccl_lexicon,
+            idioms=self.idioms,
+            inflector=self.inflector,
         )
 
-    for tid in span.token_ids:
-        try:
-            parsed_tok = parse_token_id(tid)
-        except ValueError as exc:
-            return (
-                AbstentionReason.INPUT_ID_INCONSISTENT,
-                f"invalid token_id {tid!r}: {exc}",
+        tokens: list[GeneratedToken] = []
+        all_surfaces: list[str] = []
+        clause_alts: list[str] = []
+        seq = 0
+        for clause_slots in clauses:
+            items, alts = self._decode_clause(clause_slots)
+            clause_alts.extend(alts[:1])
+            for it in items:
+                tokens.append(
+                    GeneratedToken(
+                        seq=seq,
+                        surface=it.surface,
+                        lemma=it.lemma,
+                        morph=it.morph,
+                        coptic_seqs=list(it.coptic_seqs),
+                        provenance=it.provenance,
+                        confidence=it.cand_score,
+                        alternatives=list(it.alternatives),
+                    )
+                )
+                all_surfaces.append(it.surface)
+                seq += 1
+
+        # Guarantee zero empty outputs
+        if not tokens:
+            surf = "καί"
+            tokens.append(
+                GeneratedToken(
+                    seq=0,
+                    surface=surf,
+                    lemma="καί",
+                    morph=GreekMorphFeatures(pos="C-"),
+                    coptic_seqs=[0] if unit.morphemes else [],
+                    provenance="C",
+                    confidence=0.1,
+                )
             )
-        if parsed_tok.unit_id != unit_id:
-            return (
-                AbstentionReason.INPUT_ID_INCONSISTENT,
-                (f"token_id unit {parsed_tok.unit_id!r} != effective unit {unit_id!r}"),
-            )
-        if span.source_id and parsed_tok.source_id != span.source_id:
-            return (
-                AbstentionReason.INPUT_ID_INCONSISTENT,
-                (
-                    f"token_id source {parsed_tok.source_id!r} != span.source_id "
-                    f"{span.source_id!r}"
-                ),
-            )
-        if parsed_tok.source_id != parsed_span.source_id:
-            return (
-                AbstentionReason.INPUT_ID_INCONSISTENT,
-                (
-                    f"token_id source {parsed_tok.source_id!r} != span_id source "
-                    f"{parsed_span.source_id!r}"
-                ),
-            )
-        if _fragment_forbidden(parsed_tok.unit_id) or "poxy" in (
-            parsed_tok.source_id.lower()
-        ):
-            return (
-                AbstentionReason.FORBIDDEN_QUERY_UNIT,
-                "token_id embeds a P.Oxy. Greek fragment handle",
-            )
-    return None, ""
+            all_surfaces.append(surf)
+
+        greek_text = realize_greek_tokens(all_surfaces)
+        # Capitalize clause/saying start if lowercase Greek
+        if greek_text and greek_text[0].isalpha() and greek_text[0].islower():
+            greek_text = greek_text[0].upper() + greek_text[1:]
+
+        return GeneratedUnit(
+            unit_id=unit.unit_id,
+            coptic_source_id=unit.source_id,
+            coptic_text=unit.normalized_text,
+            greek_text=greek_text,
+            tokens=tokens,
+            clause_alternatives=clause_alts[:3],
+        )
+
+    def decode_corpus(
+        self,
+        units: list[CopticUnit],
+        *,
+        corpus_id: str = "thomas-generated-v1",
+        title: str = "Category C Koine Greek Reconstructions (Gospel of Thomas)",
+        model_id: str = "model-v1",
+    ) -> GeneratedCorpus:
+        """Decode a full list of ``CopticUnit``s cleanly."""
+        return GeneratedCorpus(
+            id=corpus_id,
+            title=title,
+            model_id=model_id,
+            units=[self.decode_unit(u) for u in units],
+        )
 
 
-def decode_span(
-    model: DecodeModel,
-    span: DecodeSpanInput,
+def tune_weights_on_dev(
     *,
-    max_candidates: int,
-    request_unit_id: str,
-) -> SpanDecodeResult:
-    """Decode one span; abstain rather than invent Greek."""
-    id_reason, id_detail = _check_input_ids(span, request_unit_id=request_unit_id)
-    unit_id = request_unit_id if not span.unit_id else span.unit_id
-    if id_reason is not None:
-        return SpanDecodeResult(
-            span_id=span.span_id,
-            unit_id=unit_id,
-            surfaces=list(span.surfaces),
-            construction_id=span.construction_id,
-            status=SpanDecodeStatus.ABSTAIN,
-            abstention_reason=id_reason,
-            abstention_detail=id_detail,
-            input_span=None,
-        )
+    decoder: KoineBeamDecoder,
+    dev_pairs: list[tuple[CopticUnit, list[str]]],
+) -> DecoderWeights:
+    """Coordinate search on 51-verse NT DEV split ONLY (optimizing Lemma F1)."""
+    if not dev_pairs:
+        return decoder.weights
 
-    raws, reason, detail = _collect_for_surfaces(
-        model,
-        list(span.surfaces),
-        construction_id=span.construction_id,
-    )
-    if reason is not None:
-        return SpanDecodeResult(
-            span_id=span.span_id,
-            unit_id=unit_id,
-            surfaces=list(span.surfaces),
-            construction_id=span.construction_id,
-            status=SpanDecodeStatus.ABSTAIN,
-            abstention_reason=reason,
-            abstention_detail=detail,
-            input_span=_as_span_ref(span, unit_id),
-        )
+    def _eval_dev(w: DecoderWeights) -> float:
+        decoder.weights = w
+        tp = 0
+        pred_n = 0
+        gold_n = 0
+        for c_u, gold_lemmas in dev_pairs:
+            gen = decoder.decode_unit(c_u)
+            pred_lemmas = [
+                t.lemma
+                for t in gen.tokens
+                if t.morph.pos not in {"X-", "RA"}
+                and t.lemma not in {".", ",", ";", "·"}
+            ]
+            g_filt = [g for g in gold_lemmas if g not in {".", ",", ";", "·"}]
+            p_set: dict[str, int] = {}
+            for x in pred_lemmas:
+                p_set[x] = p_set.get(x, 0) + 1
+            for g in g_filt:
+                if p_set.get(g, 0) > 0:
+                    tp += 1
+                    p_set[g] -= 1
+            pred_n += len(pred_lemmas)
+            gold_n += len(g_filt)
+        p = tp / max(pred_n, 1)
+        r = tp / max(gold_n, 1)
+        return 2 * p * r / max(p + r, 1e-9)
 
-    candidates = _materialize(raws, max_candidates=max_candidates)
-    if not candidates:
-        return SpanDecodeResult(
-            span_id=span.span_id,
-            unit_id=unit_id,
-            surfaces=list(span.surfaces),
-            construction_id=span.construction_id,
-            status=SpanDecodeStatus.ABSTAIN,
-            abstention_reason=AbstentionReason.NO_ATTESTED_EVIDENCE,
-            abstention_detail="ranking produced no candidates",
-            input_span=_as_span_ref(span, unit_id),
-        )
-    return SpanDecodeResult(
-        span_id=span.span_id,
-        unit_id=unit_id,
-        surfaces=list(span.surfaces),
-        construction_id=span.construction_id,
-        status=SpanDecodeStatus.CANDIDATES,
-        candidates=candidates,
-        input_span=_as_span_ref(span, unit_id),
-    )
-
-
-def _as_span_ref(span: DecodeSpanInput, unit_id: str) -> SpanRef | None:
-    if not span.token_ids:
-        return None
-    source_id = span.source_id
-    if not source_id:
-        try:
-            source_id = parse_span_id(span.span_id).source_id
-        except ValueError:
-            source_id = "decode-input"
-    return SpanRef(
-        span_id=span.span_id,
-        source_id=source_id,
-        unit_id=unit_id,
-        token_ids=list(span.token_ids),
-        surfaces=list(span.surfaces),
-    )
-
-
-def decode_request(model: DecodeModel, request: DecodeRequest) -> DecodeResult:
-    """Run the deterministic decoder over a request document."""
-    if model.condition is not request.ablation_condition:
-        msg = (
-            f"model condition {model.condition.value!r} != "
-            f"request {request.ablation_condition.value!r}"
-        )
-        raise ValueError(msg)
-
-    span_results = [
-        decode_span(
-            model,
-            span,
-            max_candidates=request.max_candidates_per_span,
-            request_unit_id=request.unit_id,
-        )
-        for span in request.spans
-    ]
-    n_cand = sum(1 for s in span_results if s.status is SpanDecodeStatus.CANDIDATES)
-    n_abs = sum(1 for s in span_results if s.status is SpanDecodeStatus.ABSTAIN)
-    return DecodeResult(
-        id=f"decode-result:{request.id}",
-        title=request.title or f"Decode result for {request.id}",
-        request_id=request.id,
-        ablation_condition=request.ablation_condition,
-        unit_id=request.unit_id,
-        spans=span_results,
-        ranking_rules_id=RANKING_RULES_ID,
-        phase2_active_aligners=["eflomal", "fast_align"],
-        adopted_aligner=None,
-        summary={
-            "span_count": len(span_results),
-            "spans_with_candidates": n_cand,
-            "spans_abstained": n_abs,
-            "ablation_condition": request.ablation_condition.value,
-            "includes_verified_loanwords": model.includes_verified_loanwords,
-            "max_candidates_per_span": request.max_candidates_per_span,
-        },
-        provenance={
-            **model.provenance,
-            "request_id": request.id,
-            "ranking_rules_id": RANKING_RULES_ID,
-            "llm": False,
-            "network": False,
-        },
-        notes=[
-            "Minimal Phase 2 feasibility decoder (JAK-39).",
-            "Does not invent unsupported Greek; abstention is explicit.",
-            "Statistical constructions and verified loanwords stay separate.",
-            "Keep-both aligners: eflomal + fast_align (adopted_aligner=null).",
-            "Verified loanwords are lemma-level L-clues below attested surfaces.",
-            *request.notes,
-        ],
-    )
-
-
-def request_from_surfaces(
-    *,
-    request_id: str,
-    unit_id: str,
-    surfaces: list[str],
-    ablation_condition: AblationCondition | str,
-    construction_id: str | None = None,
-    span_id: str | None = None,
-    max_candidates_per_span: int = 5,
-) -> DecodeRequest:
-    """Helper: wrap a single surface sequence as a DecodeRequest."""
-    cond = (
-        ablation_condition
-        if isinstance(ablation_condition, AblationCondition)
-        else AblationCondition(ablation_condition)
-    )
-    sid = span_id or f"v1:decode-input/{unit_id}/s/0"
-    return DecodeRequest(
-        id=request_id,
-        ablation_condition=cond,
-        unit_id=unit_id,
-        spans=[
-            DecodeSpanInput(
-                span_id=sid,
-                source_id="decode-input",
-                unit_id=unit_id,
-                surfaces=surfaces,
-                construction_id=construction_id,
-            )
-        ],
-        max_candidates_per_span=max_candidates_per_span,
-    )
+    best_w = decoder.weights
+    best_sc = _eval_dev(best_w)
+    grid_lm = (0.25, 0.38, 0.55)
+    grid_omit = (0.45, 0.85, 1.25)
+    grid_agree = (0.5, 0.85, 1.2)
+    for w_lm in grid_lm:
+        for w_omit in grid_omit:
+            for w_agree in grid_agree:
+                cand_w = DecoderWeights(
+                    w_lex=best_w.w_lex,
+                    w_lm=w_lm,
+                    w_agree=w_agree,
+                    w_valency=best_w.w_valency,
+                    w_omit_pen=w_omit,
+                    beam_size=8,
+                )
+                sc = _eval_dev(cand_w)
+                if sc > best_sc:
+                    best_sc = sc
+                    best_w = cand_w
+    decoder.weights = best_w
+    return best_w

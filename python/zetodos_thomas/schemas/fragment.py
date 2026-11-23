@@ -9,11 +9,7 @@ from pydantic import BaseModel, Field, field_validator
 
 
 class EvidenceType(StrEnum):
-    """PLAN.md §3.2 evidence typology.
-
-    Fragment ingest (JAK-31) commits only ``G``. The Phase 1 pilot set (JAK-34)
-    also uses ``L`` / ``N`` / ``P`` (and optional ``R``) slots.
-    """
+    """PLAN.md §3.2 evidence typology."""
 
     G = "G"  # Direct Greek manuscripts of Thomas
     L = "L"  # Greek-derived words in Coptic
@@ -23,7 +19,7 @@ class EvidenceType(StrEnum):
 
 
 class CorpusRole(StrEnum):
-    """How a corpus may be used relative to alignment training (JAK-28)."""
+    """How a corpus may be used relative to alignment training."""
 
     EVALUATION_WITNESS = "evaluation-witness"
     TRAINING_OK = "training-ok"
@@ -57,12 +53,33 @@ class FragmentToken(BaseModel):
     )
 
 
+class FragmentWord(BaseModel):
+    """Word-level witness unit assembled across line breaks and lacunae.
+
+    Keeps surviving letters separate from editorial restorations/abbreviations
+    so truncated words like ``θαλά[σσης]`` are never treated as complete forms.
+    """
+
+    word_index: int = Field(ge=0)
+    line_id: str
+    surviving_text: str = ""
+    unclear_text: str = ""
+    restored_text: str = ""
+    abbreviated_text: str = ""
+    full_editorial_word: str = ""
+    is_truncated: bool = False
+    is_abbreviation: bool = False
+    has_unclear: bool = False
+    touches_lacuna: bool = False
+
+
 class FragmentLine(BaseModel):
     """One papyrus line (or column line) with layered tokens."""
 
     line_id: str
     n: str
     side_or_column: str | None = None
+    break_no: bool = False
     tokens: list[FragmentToken]
 
     @property
@@ -95,6 +112,7 @@ class FragmentTranscription(BaseModel):
     language: str = "grc"
     logia_coverage: str = ""
     lines: list[FragmentLine]
+    words: list[FragmentWord] = Field(default_factory=list)
     notes: str = ""
 
     @field_validator("source_id")
