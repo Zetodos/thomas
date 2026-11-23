@@ -14,9 +14,10 @@ repos:
       - id: check-yaml
       - id: check-toml
       - id: check-added-large-files
-        # Phase 2 Horner×Vaticanus parallel corpora (JAK-43+) exceed 500 KB when
-        # indented for review; keep a hard ceiling with headroom for Gospel growth.
+        # Keep a hard 1024 KiB ceiling for standard Git blobs; Git LFS weights
+        # under data/mappings/model-v2/ are excluded from the working-tree size cap.
         args: [--maxkb=1024, --enforce-all]
+        exclude: ^data/mappings/model-v2/.*\.(safetensors|model)$
 
   - repo: local
     hooks:

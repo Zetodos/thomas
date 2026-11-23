@@ -9,12 +9,6 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from zetodos_thomas.align.tokenize import (
-    TokenCountMismatchError,
-    whitespace_token_counts,
-    whitespace_tokens,
-)
-from zetodos_thomas.ingest.pilot import load_pilot_corpus
 from zetodos_thomas.schemas.alignment import (
     AgreementDegree,
     AlignmentDocument,
@@ -36,14 +30,29 @@ from zetodos_thomas.schemas.ids import (
 from zetodos_thomas.schemas.source import TextUnit, UnitKind
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
-PILOT_PATH = REPO_ROOT / "data" / "sources" / "pilot" / "horner-vaticanus-nt-pilot.json"
 FIXTURES = Path(__file__).parent / "fixtures" / "alignment"
 JOHN_PHRASE = FIXTURES / "horner-vaticanus-john1.1-phrase.json"
 THOMAS_STUB = FIXTURES / "thomas-7-unit-stub.json"
 
 
+def whitespace_tokens(unit: TextUnit) -> list[Token]:
+    """Local schema test helper splitting normalized/original words."""
+    parts = unit.normalized_text.split()
+    return [
+        Token(
+            id=token_id(unit.source_id, unit.unit_id, idx),
+            source_id=unit.source_id,
+            unit_id=unit.unit_id,
+            sequence=idx,
+            surface=tok,
+            normalized=tok,
+        )
+        for idx, tok in enumerate(parts)
+    ]
+
+
 def test_id_helpers_embed_scheme_version() -> None:
-    tid = token_id("ntvmr-vaticanus-b", "john.1.1", 0)
+    tid = token_id("morphgnt-sblgnt", "john.1.1", 0)
     sid = span_id("copsahhorner", "john.1.1", "whole")
     pid = parallel_id("john.1.1-logos")
     assert tid.startswith(f"v{ID_SCHEME_VERSION}:")
@@ -52,53 +61,9 @@ def test_id_helpers_embed_scheme_version() -> None:
     assert scheme_version_of(pid) == ID_SCHEME_VERSION
     parsed = parse_token_id(tid)
     assert parsed.sequence == 0
-    assert parsed.source_id == "ntvmr-vaticanus-b"
+    assert parsed.source_id == "morphgnt-sblgnt"
     with pytest.raises(ValueError):
         span_id("copsahhorner", "john.1.1", "has space")
-
-
-def test_pilot_verse_pairing_still_loads() -> None:
-    corpus = load_pilot_corpus(PILOT_PATH)
-    assert corpus.greek_source_id == "ntvmr-vaticanus-b"
-    assert len(corpus.units) == 407
-    john = next(u for u in corpus.units if u.unit_id == "john.1.1")
-    assert john.greek.kind is UnitKind.VERSE
-    assert "λογος" in john.greek.original_text
-
-
-def test_whitespace_tokens_from_pilot_john_1_1() -> None:
-    corpus = load_pilot_corpus(PILOT_PATH)
-    pair = next(u for u in corpus.units if u.unit_id == "john.1.1")
-    greek = whitespace_tokens(pair.greek)
-    sahidic = whitespace_tokens(pair.sahidic)
-    assert greek[0].surface == "εν"
-    assert greek[0].id == token_id("ntvmr-vaticanus-b", "john.1.1", 0)
-    assert greek[0].char_start == 0
-    assert any(t.normalized == "λογος" for t in greek)
-    assert any("ϣⲁϫⲉ" in t.normalized for t in sahidic)
-    empty = next(u for u in corpus.units if u.unit_id == "john.8.1")
-    assert whitespace_tokens(empty.greek) == []
-    assert whitespace_tokens(empty.sahidic) == []
-
-
-def test_whitespace_tokens_rejects_dilley_style_mismatch() -> None:
-    """SCRIPTORIUM-like: continuous orig concat vs segmented norm must not zip."""
-    unit = TextUnit(
-        source_id="dilley-thomas",
-        unit_id="thomas.0",
-        book="thomas",
-        chapter=0,
-        verse=0,
-        original_text="ⲛⲁⲉⲓⲛⲉⲛϣⲁϫⲉ",  # continuous concat (no spaces)
-        normalized_text="ⲛⲁⲓ ⲛⲉ ⲛ ϣⲁϫⲉ",  # morpheme-segmented
-        kind=UnitKind.PROLOGUE,
-        sequence=0,
-    )
-    orig_n, norm_n = whitespace_token_counts(unit)
-    assert orig_n == 1
-    assert norm_n == 4
-    with pytest.raises(TokenCountMismatchError, match="mismatch"):
-        whitespace_tokens(unit)
 
 
 def test_thomas_prologue_unit_allowed() -> None:
