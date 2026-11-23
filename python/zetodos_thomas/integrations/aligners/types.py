@@ -9,33 +9,22 @@ from typing import Any
 
 
 class AlignerName(StrEnum):
-    """Supported local statistical aligners (JAK-36 bake-off)."""
+    """Supported local statistical aligners."""
 
     EFLOMAL = "eflomal"
-    FAST_ALIGN = "fast_align"
 
 
 @dataclass(frozen=True)
 class BitextSentence:
-    """One parallel sentence with tokenized sides and stable unit provenance.
-
-    ``source_parent_v1_ids`` maps each bound-group (v2) source token onto the
-    whitespace (v1) parent token id via original-text character spans. Entries
-    may be empty strings when projection fails.
-    """
+    """One parallel sentence with aligned tokens and unit provenance."""
 
     unit_id: str
     source_tokens: tuple[str, ...]
     target_tokens: tuple[str, ...]
-    source_token_ids: tuple[str, ...]
-    target_token_ids: tuple[str, ...]
-    split_role: str
-    source_parent_v1_ids: tuple[str, ...] = ()
-    source_char_spans: tuple[tuple[int, int], ...] = ()
-
-    def as_pharaoh_line(self) -> str:
-        """fast_align joint line: ``src tokens ||| trg tokens``."""
-        return f"{' '.join(self.source_tokens)} ||| {' '.join(self.target_tokens)}"
+    source_token_ids: tuple[str, ...] = ()
+    target_token_ids: tuple[str, ...] = ()
+    split_role: str = "train"
+    domain: str = "nt"
 
 
 @dataclass(frozen=True)
@@ -59,51 +48,15 @@ class AlignmentLinks:
     config: dict[str, Any] = field(default_factory=dict)
     notes: list[str] = field(default_factory=list)
 
-    def as_dict(self) -> dict[str, Any]:
-        return {
-            "aligner": self.aligner.value,
-            "symmetrization": self.symmetrization,
-            "config": self.config,
-            "notes": self.notes,
-            "sentence_count": len(self.sentences),
-            "sentences": [
-                {
-                    "unit_id": s.unit_id,
-                    "split_role": s.split_role,
-                    "source_tokens": list(s.source_tokens),
-                    "target_tokens": list(s.target_tokens),
-                    "source_token_ids": list(s.source_token_ids),
-                    "target_token_ids": list(s.target_token_ids),
-                }
-                for s in self.sentences
-            ],
-            "forward": [
-                {"unit_id": a.unit_id, "pairs": [list(p) for p in a.pairs]}
-                for a in self.forward
-            ],
-            "reverse": [
-                {"unit_id": a.unit_id, "pairs": [list(p) for p in a.pairs]}
-                for a in self.reverse
-            ],
-            "symmetrized": [
-                {"unit_id": a.unit_id, "pairs": [list(p) for p in a.pairs]}
-                for a in self.symmetrized
-            ],
-        }
-
 
 @dataclass(frozen=True)
 class AlignerConfig:
-    """Reproducibility knobs shared across adapters."""
+    """Reproducibility knobs for eflomal."""
 
     seed: int = 36
     eflomal_model: int = 3
     eflomal_n_samplers: int = 1
     eflomal_null_prior: float = 0.2
-    fast_align_iterations: int = 5
-    fast_align_favor_diagonal: bool = True
-    fast_align_optimize_diagonal: bool = True
-    fast_align_variational_bayes: bool = True
     symmetrization: str = "grow-diag-final-and"
 
     def as_dict(self) -> dict[str, Any]:

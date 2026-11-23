@@ -7,7 +7,12 @@ license = "Apache-2.0"
 requires-python = ">=3.12"
 authors = [{ name = "Zetodos" }]
 dependencies = [
+    "greek-accentuation>=1.2.0",
+    "numpy>=2.5.5",
     "pydantic>=2.10",
+    "safetensors>=0.8.0",
+    "sentencepiece>=0.2.3",
+    "torch>=2.15.0",
     "typer>=0.15",
 ]
 
@@ -38,27 +43,26 @@ packages = ["python/zetodos_thomas"]
 [tool.hatch.build.targets.wheel.sources]
 "python" = ""
 
-# Ship redistributable JSON/XML (non-.py) inside the wheel for offline validate.
+# Map redistributable data directly from data/ into the wheel without duplicating files in git.
 [tool.hatch.build.targets.wheel.force-include]
-"python/zetodos_thomas/bundled/manifests/copsahhorner.json" = "zetodos_thomas/bundled/manifests/copsahhorner.json"
-"python/zetodos_thomas/bundled/manifests/ntvmr-vaticanus-b.json" = "zetodos_thomas/bundled/manifests/ntvmr-vaticanus-b.json"
-"python/zetodos_thomas/bundled/manifests/dilley-thomas.json" = "zetodos_thomas/bundled/manifests/dilley-thomas.json"
-"python/zetodos_thomas/bundled/manifests/dclp-poxy-1.json" = "zetodos_thomas/bundled/manifests/dclp-poxy-1.json"
-"python/zetodos_thomas/bundled/manifests/dclp-poxy-654.json" = "zetodos_thomas/bundled/manifests/dclp-poxy-654.json"
-"python/zetodos_thomas/bundled/manifests/dclp-poxy-655.json" = "zetodos_thomas/bundled/manifests/dclp-poxy-655.json"
-"python/zetodos_thomas/bundled/pilot/horner-vaticanus-nt-pilot.json" = "zetodos_thomas/bundled/pilot/horner-vaticanus-nt-pilot.json"
-"python/zetodos_thomas/bundled/thomas/dilley-thomas-v6.2.0.json" = "zetodos_thomas/bundled/thomas/dilley-thomas-v6.2.0.json"
-"python/zetodos_thomas/bundled/fragments/greek-thomas-fragments.json" = "zetodos_thomas/bundled/fragments/greek-thomas-fragments.json"
-"python/zetodos_thomas/bundled/fragments/dclp/poxy-1-tm62838.xml" = "zetodos_thomas/bundled/fragments/dclp/poxy-1-tm62838.xml"
-"python/zetodos_thomas/bundled/fragments/dclp/poxy-654-tm62840.xml" = "zetodos_thomas/bundled/fragments/dclp/poxy-654-tm62840.xml"
-"python/zetodos_thomas/bundled/fragments/dclp/poxy-655-tm62839.xml" = "zetodos_thomas/bundled/fragments/dclp/poxy-655-tm62839.xml"
-"python/zetodos_thomas/bundled/evidence/pilot/thomas-7-17-30-77.json" = "zetodos_thomas/bundled/evidence/pilot/thomas-7-17-30-77.json"
-"python/zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v3.json" = "zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v3.json"
-"python/zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v2.json" = "zetodos_thomas/bundled/training/splits/horner-vaticanus-nt-split-v2.json"
-"python/zetodos_thomas/bundled/evidence/omissions/john-8-pa-omission-fixture-v3.json" = "zetodos_thomas/bundled/evidence/omissions/john-8-pa-omission-fixture-v3.json"
-"python/zetodos_thomas/bundled/evidence/omissions/john-8-pa-omission-fixture-v1.json" = "zetodos_thomas/bundled/evidence/omissions/john-8-pa-omission-fixture-v1.json"
-"python/zetodos_thomas/bundled/evidence/divergences/greek-thomas-fragment-divergences-v1.json" = "zetodos_thomas/bundled/evidence/divergences/greek-thomas-fragment-divergences-v1.json"
-"python/zetodos_thomas/bundled/evidence/eval/thomas-7-blinded-v1.json" = "zetodos_thomas/bundled/evidence/eval/thomas-7-blinded-v1.json"
+"data/manifests/ccl-ddglc-tei.json" = "zetodos_thomas/data/manifests/ccl-ddglc-tei.json"
+"data/manifests/copsahhorner.json" = "zetodos_thomas/data/manifests/copsahhorner.json"
+"data/manifests/dclp-poxy-1.json" = "zetodos_thomas/data/manifests/dclp-poxy-1.json"
+"data/manifests/dclp-poxy-654.json" = "zetodos_thomas/data/manifests/dclp-poxy-654.json"
+"data/manifests/dclp-poxy-655.json" = "zetodos_thomas/data/manifests/dclp-poxy-655.json"
+"data/manifests/dilley-thomas.json" = "zetodos_thomas/data/manifests/dilley-thomas.json"
+"data/manifests/morphgnt-sblgnt.json" = "zetodos_thomas/data/manifests/morphgnt-sblgnt.json"
+"data/manifests/scriptorium-sahidic-ot.json" = "zetodos_thomas/data/manifests/scriptorium-sahidic-ot.json"
+"data/manifests/swete-lxx.json" = "zetodos_thomas/data/manifests/swete-lxx.json"
+"data/sources/thomas/dilley-thomas-v6.2.0.json" = "zetodos_thomas/data/sources/thomas/dilley-thomas-v6.2.0.json"
+"data/sources/fragments/greek-thomas-fragments.json" = "zetodos_thomas/data/sources/fragments/greek-thomas-fragments.json"
+"data/sources/fragments/dclp/poxy-1-tm62838.xml" = "zetodos_thomas/data/sources/fragments/dclp/poxy-1-tm62838.xml"
+"data/sources/fragments/dclp/poxy-654-tm62840.xml" = "zetodos_thomas/data/sources/fragments/dclp/poxy-654-tm62840.xml"
+"data/sources/fragments/dclp/poxy-655-tm62839.xml" = "zetodos_thomas/data/sources/fragments/dclp/poxy-655-tm62839.xml"
+"data/evidence/divergences/greek-thomas-fragment-divergences-v1.json" = "zetodos_thomas/data/evidence/divergences/greek-thomas-fragment-divergences-v1.json"
+"data/evidence/pilot/thomas-7-17-30-77.json" = "zetodos_thomas/data/evidence/pilot/thomas-7-17-30-77.json"
+"data/evidence/omissions/john-8-pa-omission-fixture-v3.json" = "zetodos_thomas/data/evidence/omissions/john-8-pa-omission-fixture-v3.json"
+
 [tool.uv]
 package = true
 default-groups = ["dev"]
@@ -81,33 +85,17 @@ select = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**" = ["ANN", "RUF001"]
-"python/zetodos_thomas/cli/**" = ["B008"]
-"python/zetodos_thomas/ingest/ntvmr_vaticanus.py" = ["RUF001"]
-"python/zetodos_thomas/ingest/copsahhorner.py" = ["RUF001"]
-"python/zetodos_thomas/ingest/pilot.py" = ["RUF001"]
-"python/zetodos_thomas/ingest/dilley_thomas.py" = ["RUF001"]
-"python/zetodos_thomas/ingest/dclp_fragments.py" = ["RUF001"]
-"python/zetodos_thomas/ingest/fragments.py" = ["RUF001"]
-"python/zetodos_thomas/align/bitext.py" = ["RUF001"]
-"python/zetodos_thomas/align/statistical.py" = ["RUF001"]
+"tests/**" = ["ANN", "RUF001", "RUF003"]
+"python/zetodos_thomas/cli/**" = ["B008", "RUF001"]
+"python/zetodos_thomas/ingest/**" = ["RUF001"]
+"python/zetodos_thomas/morphology/**" = ["RUF001", "RUF003"]
+"python/zetodos_thomas/align/**" = ["RUF001"]
 "python/zetodos_thomas/integrations/aligners/**" = ["RUF001"]
-"python/zetodos_thomas/lexicon/**" = ["RUF001"]
-"python/zetodos_thomas/mappings/**" = ["RUF001"]
-"python/zetodos_thomas/reconstruct/**" = ["RUF001"]
-"python/zetodos_thomas/eval/**" = ["RUF001"]
-"python/zetodos_thomas/schemas/lexicon.py" = ["RUF001"]
-"python/zetodos_thomas/schemas/mappings.py" = ["RUF001"]
-"python/zetodos_thomas/schemas/decode.py" = ["RUF001"]
-"python/zetodos_thomas/schemas/blinded.py" = ["RUF001"]
-"python/zetodos_thomas/schemas/feasibility.py" = ["RUF001"]
-"python/zetodos_thomas/cli/align.py" = ["B008", "RUF001"]
-"python/zetodos_thomas/cli/lexicon.py" = ["B008", "RUF001"]
-"python/zetodos_thomas/cli/mappings.py" = ["B008", "RUF001"]
-"python/zetodos_thomas/cli/decode.py" = ["B008", "RUF001"]
-"python/zetodos_thomas/cli/eval_cmd.py" = ["B008", "RUF001"]
-"python/zetodos_thomas/dictionary/**" = ["RUF001"]
-"python/zetodos_thomas/cli/dictionary.py" = ["B008", "RUF001"]
+"python/zetodos_thomas/lexicon/**" = ["RUF001", "RUF003"]
+"python/zetodos_thomas/reconstruct/**" = ["RUF001", "RUF003"]
+"python/zetodos_thomas/neural/**" = ["RUF001", "RUF003"]
+"python/zetodos_thomas/eval/**" = ["RUF001", "RUF003"]
+"python/zetodos_thomas/schemas/**" = ["RUF001"]
 
 [tool.ruff.format]
 quote-style = "double"

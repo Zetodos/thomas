@@ -5,7 +5,7 @@
   "coptic_source_id": "dilley-thomas",
   "coptic_corpus_id": "dilley-thomas-v6.2.0",
   "fragment_corpus_id": "greek-thomas-fragments-v1",
-  "greek_nt_spine_source_id": "ntvmr-vaticanus-b",
+  "greek_nt_spine_source_id": "morphgnt-sblgnt",
   "sayings": [
     {
       "id": "pilot:thomas.7",
@@ -111,12 +111,12 @@
           "evidence_type": "N",
           "status": "attested",
           "citation": "1 Corinthians 2:9 (Greek verbal parallel)",
-          "source_id": "ntvmr-vaticanus-b",
-          "unit_id": null,
+          "source_id": "morphgnt-sblgnt",
+          "unit_id": "1cor.2.9",
           "transcription_id": null,
           "agreement": "verbal",
           "restrictions": "N = Greek verbal parallel only. This is NOT proof that Paul quoted the Gospel of Thomas (PLAN.md §3.2).",
-          "notes": "Placeholder verse unit: 1 Cor is not yet in the Horner×Vaticanus B* pilot ranges. When ingested, mint a TextUnit under ntvmr-vaticanus-b and link unit_id here. Do not retarget the Greek NT spine away from Vaticanus B*."
+          "notes": "Greek NT spine is MorphGNT / SBLGNT (morphgnt-sblgnt); full 27-book alignment includes 1 Corinthians."
         },
         {
           "id": "v1:evidence/thomas.17/P/slot",
@@ -138,8 +138,7 @@
       "missing": [
         "G: no Greek Thomas fragment covers logion 17",
         "L: no loanword inventory yet",
-        "P: no early literary attestation ingested",
-        "N verse TextUnit for 1 Cor 2:9 not yet built under Vaticanus B* pilot ranges"
+        "P: no early literary attestation ingested"
       ],
       "notes": "Primary N example for the pilot: verbal agreement ≠ historical quotation of Thomas by Paul."
     },
@@ -178,12 +177,12 @@
           "evidence_type": "N",
           "status": "placeholder",
           "citation": "Synoptic thematic parallels (e.g. presence-with-two-or-three) — not yet span-linked",
-          "source_id": "ntvmr-vaticanus-b",
+          "source_id": "morphgnt-sblgnt",
           "unit_id": null,
           "transcription_id": null,
           "agreement": "semantic",
-          "restrictions": "Placeholder only; no verse TextUnit minted yet. Distinguish semantic similarity from verbal agreement before promotion to attested.",
-          "notes": "Reserved N slot; leave empty of fabricated verse ids."
+          "restrictions": "Placeholder only; distinguish semantic similarity from verbal agreement before promotion to attested.",
+          "notes": "Reserved N slot."
         },
         {
           "id": "v1:evidence/thomas.30/P/slot",
@@ -205,10 +204,10 @@
       ],
       "missing": [
         "L: no loanword inventory yet",
-        "N: only a semantic placeholder (no Vaticanus verse unit yet)",
+        "N: only a semantic placeholder (Synoptic thematic parallel)",
         "P: no early literary attestation ingested",
         "G: P.Oxy. 654/655 do not cover logion 30",
-        "G word-level: manuscript-local line/span IDs + surviving/restored flags for P.Oxy. 1 vs thomas.30"
+        "G word-level: see fragment-clause-map for P.Oxy. 1 vs thomas.30"
       ],
       "notes": "Pair with thomas.77 via witness_alignments — separate witness, not silent merge. Longer divergence/holdout prose: JAK-33."
     },
@@ -307,5 +306,5 @@
       "notes": "Straightforward coverage link for pilot Thomas 7; still evaluation-witness for training leakage."
     }
   ],
-  "notes": "Phase 1 pilot only (JAK-34). Not a critical edition. Coptic units resolve against Dilley ingest (JAK-30); Greek fragments against DCLP corpus (JAK-31); IDs follow JAK-32. Greek NT spine remains Vaticanus B* (ntvmr-vaticanus-b). Pilot G slots that only link a whole DCLP transcription use status=partial-coverage (not attested) until word-level spans exist."
+  "notes": "Phase 1 pilot reference set (not a critical edition). Coptic units resolve against Dilley ingest; Greek fragments against DCLP corpus. Greek NT spine is MorphGNT / SBLGNT (morphgnt-sblgnt)."
 }

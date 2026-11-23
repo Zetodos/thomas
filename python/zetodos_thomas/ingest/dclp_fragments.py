@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Parse DCLP EpiDoc TEI for Greek Thomas fragments into layered tokens."""
+"""Parse DCLP EpiDoc TEI for Greek Thomas fragments into layered tokens & words."""
 
 from __future__ import annotations
 
@@ -15,6 +15,7 @@ from zetodos_thomas.schemas.fragment import (
     FragmentLine,
     FragmentToken,
     FragmentTranscription,
+    FragmentWord,
 )
 
 TEI_NS = "http://www.tei-c.org/ns/1.0"
@@ -23,6 +24,7 @@ TEI = f"{{{TEI_NS}}}"
 
 _XML_WS_RE = re.compile(r"[ \t]*\n[ \t]*")
 _MULTI_SPACE_RE = re.compile(r"[ \t]{2,}")
+_PUNCT_STRIP_RE = re.compile(r"^[\s·.,;;:!?()\"'«»—\-]+|[\s·.,;;:!?()\"'«»—\-]+$")
 
 
 def _local(tag: str) -> str:
@@ -42,20 +44,19 @@ class _LineBuilder:
     side_or_column: str | None
     lines: list[FragmentLine] = field(default_factory=list)
     _n: str | None = None
+    _break_no: bool = False
     _tokens: list[FragmentToken] = field(default_factory=list)
     _seq: int = 0
 
     def start_line(self, n: str, *, break_no: bool) -> None:
-        del break_no  # word-continuation hint; lines still keyed by @n
         if self._n == n:
-            # Same @n repeated (DCLP sometimes splits one line) — keep accumulating.
             return
         self.flush()
         self._n = n
+        self._break_no = break_no
 
     def add(self, token: FragmentToken) -> None:
         if self._n is None:
-            # Rare leading content before first lb — ignore pure whitespace.
             if token.kind is FragmentLayerKind.SURVIVING and not token.text.strip():
                 return
             self._n = "0"
@@ -74,6 +75,7 @@ class _LineBuilder:
     def flush(self) -> None:
         if self._n is None:
             self._tokens = []
+            self._break_no = False
             return
         normalized: list[FragmentToken] = []
         for tok in self._tokens:
@@ -116,11 +118,13 @@ class _LineBuilder:
                     line_id=f"{side}.{self._n}",
                     n=self._n,
                     side_or_column=self.side_or_column,
+                    break_no=self._break_no,
                     tokens=normalized,
                 )
             )
         self._tokens = []
         self._n = None
+        self._break_no = False
 
 
 def _emit_text(
@@ -166,7 +170,6 @@ def _walk(
         return
 
     if tag == "gap":
-        # Nested gaps inside <supplied> must remain lacuna tokens (not itertext).
         builder.add(
             FragmentToken(
                 kind=FragmentLayerKind.LACUNA,
@@ -179,7 +182,6 @@ def _walk(
         return
 
     if tag == "supplied":
-        # Traverse children under restoration context so nested <gap> survives.
         reason = el.get("reason") or "lost"
         _walk_children(el, builder, in_restoration=reason)
         return
@@ -226,7 +228,6 @@ def _walk(
     if tag in {"rdg", "del"}:
         return
 
-    # Default: emit element text in the active layer, recurse into children.
     if el.text:
         _emit_text(builder, el.text, in_restoration=in_restoration)
     for child in list(el):
@@ -255,6 +256,103 @@ def _side_label(textpart: ET.Element) -> str | None:
     if n and subtype:
         return f"{subtype}-{n}"
     return n or subtype
+
+
+def _strip_punct(text: str) -> str:
+    return _PUNCT_STRIP_RE.sub("", text)
+
+
+def extract_fragment_words(lines: list[FragmentLine]) -> list[FragmentWord]:
+    """Assemble word-level witness units across line breaks and lacunae.
+
+    Handles ``break_no=True`` across papyrus line wraps and separates clear
+    surviving letters from unclear, supplied/restored, and abbreviated spans.
+    """
+
+    @dataclass
+    class _WordAccum:
+        line_id: str = ""
+        surviving: list[str] = field(default_factory=list)
+        unclear: list[str] = field(default_factory=list)
+        restored: list[str] = field(default_factory=list)
+        abbreviated: list[str] = field(default_factory=list)
+        full: list[str] = field(default_factory=list)
+        touches_lacuna: bool = False
+
+        def empty(self) -> bool:
+            return not "".join(self.full).strip() and not self.touches_lacuna
+
+        def has_letters(self) -> bool:
+            return bool(_strip_punct("".join(self.full)))
+
+    words: list[FragmentWord] = []
+    cur = _WordAccum()
+    pending_gap_touch = False
+
+    def flush_word() -> None:
+        nonlocal cur
+        if cur.has_letters():
+            surv = _strip_punct("".join(cur.surviving))
+            uncl = _strip_punct("".join(cur.unclear))
+            rest = _strip_punct("".join(cur.restored))
+            abbr = _strip_punct("".join(cur.abbreviated))
+            full = _strip_punct("".join(cur.full))
+            has_surv_or_uncl = bool(surv or uncl)
+            is_abbr = bool(abbr)
+            is_trunc = bool(has_surv_or_uncl and (bool(rest) or cur.touches_lacuna))
+            words.append(
+                FragmentWord(
+                    word_index=len(words),
+                    line_id=cur.line_id,
+                    surviving_text=surv,
+                    unclear_text=uncl,
+                    restored_text=rest,
+                    abbreviated_text=abbr,
+                    full_editorial_word=full,
+                    is_truncated=is_trunc,
+                    is_abbreviation=is_abbr,
+                    has_unclear=bool(uncl),
+                    touches_lacuna=cur.touches_lacuna,
+                )
+            )
+        cur = _WordAccum()
+
+    for idx, line in enumerate(lines):
+        if idx > 0 and not line.break_no:
+            flush_word()
+            pending_gap_touch = False
+        for tok in line.tokens:
+            if tok.kind is FragmentLayerKind.LACUNA:
+                cur.touches_lacuna = True
+                flush_word()
+                pending_gap_touch = True
+                continue
+            pieces = re.split(r"(\s+)", tok.text)
+            for piece in pieces:
+                if not piece:
+                    continue
+                if piece.isspace():
+                    flush_word()
+                    pending_gap_touch = False
+                    continue
+                if not cur.line_id:
+                    cur.line_id = line.line_id
+                if pending_gap_touch:
+                    cur.touches_lacuna = True
+                    pending_gap_touch = False
+                cur.full.append(piece)
+                if tok.kind is FragmentLayerKind.SURVIVING:
+                    if tok.certainty == "unclear":
+                        cur.unclear.append(piece)
+                    else:
+                        cur.surviving.append(piece)
+                elif tok.kind is FragmentLayerKind.RESTORATION:
+                    if tok.reason == "abbreviation":
+                        cur.abbreviated.append(piece)
+                    else:
+                        cur.restored.append(piece)
+    flush_word()
+    return words
 
 
 def parse_dclp_edition(path: Path) -> list[FragmentLine]:
@@ -302,7 +400,6 @@ def read_dclp_ids(path: Path) -> dict[str, str]:
     return out
 
 
-# Catalog of confirmed Greek Thomas witnesses for this ingest (JAK-31).
 DCLP_THOMAS_FRAGMENTS: tuple[dict[str, str], ...] = (
     {
         "source_id": "dclp-poxy-1",
@@ -333,14 +430,8 @@ DCLP_THOMAS_FRAGMENTS: tuple[dict[str, str], ...] = (
     },
 )
 
-# Independent parallels — do not ingest as Thomas manuscripts.
 EXCLUDED_NON_THOMAS_WITNESSES: tuple[str, ...] = (
     "P.Oxy. 5575 (TM 989105) — independent sayings parallel; not a Thomas manuscript",
-)
-
-IDP_DATA_TEI_COMMIT = "d9387868bbe3"
-IDP_DATA_RAW_BASE = (
-    f"https://raw.githubusercontent.com/papyri/idp.data/{IDP_DATA_TEI_COMMIT}/DCLP/62"
 )
 
 
@@ -353,7 +444,7 @@ def build_transcription(
     tm_id: str,
     logia_coverage: str,
 ) -> FragmentTranscription:
-    """Build a layered transcription from a local DCLP TEI file."""
+    """Build a layered transcription and word-level witness list from DCLP TEI."""
     license_url = read_dclp_license(path)
     if not license_url or "creativecommons.org/licenses/by/3.0" not in license_url:
         msg = f"{path.name}: missing or unexpected DCLP CC BY 3.0 license ref"
@@ -366,6 +457,7 @@ def build_transcription(
     if not lines:
         msg = f"{path.name}: parsed zero fragment lines"
         raise ValueError(msg)
+    words = extract_fragment_words(lines)
     return FragmentTranscription(
         id=transcription_id,
         source_id=source_id,
@@ -376,12 +468,11 @@ def build_transcription(
         corpus_role=CorpusRole.EVALUATION_WITNESS,
         logia_coverage=logia_coverage,
         lines=lines,
+        words=words,
         notes=(
             "Layers: surviving (incl. unclear), lacuna (tei:gap), restoration "
-            "(tei:supplied + abbreviation expansions in tei:ex). Editorial "
-            "apparatus uses lem only; rdg (Attridge/Fitzmyer/etc.) are not "
-            "promoted into layers. Corpus role=evaluation-witness — do not feed "
-            "into Greek–Sahidic alignment training (JAK-28) without an explicit "
-            "holdout decision."
+            "(tei:supplied + abbreviation expansions in tei:ex), plus word-level "
+            "witness items tracking break='no', truncations, and abbreviations. "
+            "Corpus role=evaluation-witness."
         ),
     )

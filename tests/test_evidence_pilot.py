@@ -8,10 +8,6 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
-from zetodos_thomas.bundled import (
-    bundled_evidence_pilot_path,
-    bundled_manifests_dir,
-)
 from zetodos_thomas.cli.app import app
 from zetodos_thomas.ingest.evidence_pilot import (
     EvidencePilotValidationError,
@@ -19,7 +15,10 @@ from zetodos_thomas.ingest.evidence_pilot import (
     validate_evidence_pilot_or_raise,
 )
 from zetodos_thomas.ingest.manifests import validate_manifests_dir
-from zetodos_thomas.ingest.paths import resolve_evidence_pilot_path
+from zetodos_thomas.ingest.paths import (
+    resolve_evidence_pilot_path,
+    resolve_manifests_dir,
+)
 from zetodos_thomas.schemas.evidence import PILOT_LOGIA, PilotEvidenceSet
 from zetodos_thomas.schemas.fragment import EvidenceType
 
@@ -36,7 +35,7 @@ EVIDENCE_JSONL = REPO_ROOT / "data" / "evidence" / "pilot" / "thomas-7-17-30-77.
 def test_pilot_package_schema_and_cross_refs() -> None:
     package = load_evidence_pilot(EVIDENCE_PATH)
     assert package.id == "thomas-pilot-evidence-7-17-30-77-v1"
-    assert package.greek_nt_spine_source_id == "ntvmr-vaticanus-b"
+    assert package.greek_nt_spine_source_id == "morphgnt-sblgnt"
     assert tuple(s.logion for s in package.sayings) == PILOT_LOGIA
     manifests = validate_manifests_dir(MANIFESTS_DIR)
     validate_evidence_pilot_or_raise(
@@ -113,15 +112,13 @@ def test_g_transcription_links_are_partial_coverage() -> None:
         assert "word-level" in blob or "word level" in blob
 
 
-def test_bundled_evidence_pilot_matches_checkout() -> None:
-    assert EVIDENCE_PATH.read_text(encoding="utf-8") == (
-        bundled_evidence_pilot_path().read_text(encoding="utf-8")
-    )
+def test_resolved_evidence_pilot_matches_checkout() -> None:
     assert resolve_evidence_pilot_path(REPO_ROOT) == EVIDENCE_PATH
-    # Packaged manifests still include Dilley + DCLP for wheel offline path.
-    bundled_ids = {p.stem for p in bundled_manifests_dir().glob("*.json")}
-    assert "dilley-thomas" in bundled_ids
-    assert "dclp-poxy-1" in bundled_ids
+    assert resolve_manifests_dir(REPO_ROOT) == MANIFESTS_DIR
+    manifest_ids = {p.stem for p in MANIFESTS_DIR.glob("*.json")}
+    assert "dilley-thomas" in manifest_ids
+    assert "dclp-poxy-1" in manifest_ids
+    assert "morphgnt-sblgnt" in manifest_ids
 
 
 def test_cli_sources_validate_includes_evidence_pilot() -> None:
