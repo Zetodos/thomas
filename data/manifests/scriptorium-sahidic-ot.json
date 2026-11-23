@@ -1,0 +1,22 @@
+{
+  "id": "scriptorium-sahidic-ot",
+  "title": "Sahidic Coptic Old Testament (Göttingen / CoptOT basetext via Coptic SCRIPTORIUM)",
+  "version": "6.2.0",
+  "url": "https://raw.githubusercontent.com/CopticScriptorium/corpora/v6.2.0/sahidic.ot/sahidic.ot_TT.zip",
+  "spdx_or_custom": "CC-BY-SA-4.0",
+  "attribution": "Coptic SCRIPTORIUM; Göttingen Academy of Sciences and Humanities / CoptOT; licensed CC BY-SA 4.0.",
+  "mode": "setup-download",
+  "checksum": "sha256:1a59a0b1e07149718c9feb0ba1d6ea45f3883a3ed5b0afb4408c13d0b5bd0f21",
+  "notes": "Supplementary Sahidic OT parallel corpus (~18,400 verses) with full TreeTagger SGML annotations (orig_group, norm_group, norm, lemma, pos, morph, lang, multiword). Paired with Swete LXX and used to train Coptic morphological segmentation/POS/lemmatization for Horner NT without touching Wells Sahidica. ShareAlike applies to derived adaptations.",
+  "editor": "Coptic SCRIPTORIUM / CoptOT",
+  "language": "cop",
+  "dialect": "Sahidic",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "local_path": "data/downloads/sahidic-ot/",
+  "redistributable": true,
+  "gate": null,
+  "module_name": "sahidic.ot",
+  "sword_version_date": null,
+  "text_source": "Coptic SCRIPTORIUM corpora v6.2.0 sahidic.ot_TT.zip",
+  "counterpart_source_id": "swete-lxx"
+}

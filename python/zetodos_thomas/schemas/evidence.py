@@ -104,8 +104,8 @@ class PilotEvidenceSet(BaseModel):
     coptic_corpus_id: str = "dilley-thomas-v6.2.0"
     fragment_corpus_id: str = "greek-thomas-fragments-v1"
     greek_nt_spine_source_id: str = Field(
-        default="ntvmr-vaticanus-b",
-        description="Sole Greek NT spine (Vaticanus B*); do not retarget",
+        default="morphgnt-sblgnt",
+        description="Greek NT spine source id",
     )
     sayings: list[PilotSaying]
     witness_alignments: list[WitnessAlignment] = Field(default_factory=list)
@@ -119,8 +119,13 @@ class PilotEvidenceSet(BaseModel):
                 f"code {ID_SCHEME_VERSION!r}"
             )
             raise ValueError(msg)
-        if self.greek_nt_spine_source_id != "ntvmr-vaticanus-b":
-            msg = "greek_nt_spine_source_id must remain ntvmr-vaticanus-b (JAK-25)"
+        if self.greek_nt_spine_source_id not in {
+            "morphgnt-sblgnt",
+            "ntvmr-vaticanus-b",
+        }:
+            msg = (
+                "greek_nt_spine_source_id must be morphgnt-sblgnt or ntvmr-vaticanus-b"
+            )
             raise ValueError(msg)
         logia = [s.logion for s in self.sayings]
         if tuple(logia) != PILOT_LOGIA:
@@ -154,4 +159,49 @@ class PilotEvidenceSet(BaseModel):
                         f"for type {required}"
                     )
                     raise ValueError(msg)
+        return self
+
+
+class FragmentClauseSpan(BaseModel):
+    """Exact span alignment between Coptic morphemes and P.Oxy. FragmentWords.
+
+    Keeps convergent and divergent/redactional witness clauses stratified.
+    Strictly evaluation-only (`EVALUATION_WITNESS`): never read during decode.
+    """
+
+    span_id: str
+    unit_id: str
+    transcription_id: str
+    coptic_start: int = Field(ge=0)
+    coptic_end: int = Field(ge=0)
+    frag_word_start: int = Field(ge=0)
+    frag_word_end: int = Field(ge=0)
+    divergent_witness: bool = False
+    notes: str = ""
+
+    @model_validator(mode="after")
+    def _valid_bounds(self) -> Self:
+        if self.coptic_end < self.coptic_start:
+            msg = f"{self.span_id}: coptic_end < coptic_start"
+            raise ValueError(msg)
+        if self.frag_word_end < self.frag_word_start:
+            msg = f"{self.span_id}: frag_word_end < frag_word_start"
+            raise ValueError(msg)
+        return self
+
+
+class FragmentClauseMap(BaseModel):
+    """Evaluation-only clause alignment map across P.Oxy. and Dilley Coptic."""
+
+    id: str
+    schema_version: str = "1"
+    description: str = ""
+    spans: list[FragmentClauseSpan] = Field(min_length=1)
+
+    @model_validator(mode="after")
+    def _unique_span_ids(self) -> Self:
+        ids = [s.span_id for s in self.spans]
+        if len(set(ids)) != len(ids):
+            msg = "FragmentClauseMap span_ids must be unique"
+            raise ValueError(msg)
         return self

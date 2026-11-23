@@ -1,0 +1,145 @@
+# SPDX-License-Identifier: Apache-2.0
+"""``thomas reconstruct`` Typer subcommands (100% offline, deterministic)."""
+
+from __future__ import annotations
+
+import json
+from pathlib import Path
+
+import typer
+
+from zetodos_thomas.cli.model_cmd import MODEL_REL, MODEL_V2_REL
+from zetodos_thomas.ingest.dilley_thomas import load_thomas_corpus
+from zetodos_thomas.ingest.paths import require_repo_root, resolve_thomas_path
+from zetodos_thomas.reconstruct.decoder import KoineBeamDecoder
+
+GENERATED_THOMAS_REL = Path("data/generated/thomas-generated-v1.json")
+GENERATED_THOMAS_V2_REL = Path("data/generated/thomas-generated-v2.json")
+
+reconstruct_app = typer.Typer(
+    name="reconstruct",
+    help="Generate deterministic Category C Koine Greek for Gospel of Thomas.",
+    no_args_is_help=True,
+)
+
+
+@reconstruct_app.command("run")
+def reconstruct_run(
+    saying: str | None = typer.Option(
+        None,
+        "--saying",
+        help="Single Thomas unit_id (e.g. thomas.2)",
+    ),
+    all_sayings: bool = typer.Option(
+        False,
+        "--all",
+        help="Reconstruct all 115 Thomas units (thomas.0..thomas.114)",
+    ),
+    repo_root: Path | None = typer.Option(
+        None,
+        "--repo-root",
+        help="Checkout root (default: auto-detect)",
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+    ),
+    out: Path | None = typer.Option(
+        None,
+        "--out",
+        "-o",
+        help="Output JSON path (default: data/generated/thomas-generated-v{1|2}.json)",
+    ),
+    model: str = typer.Option(
+        "v1",
+        "--model",
+        help="Model track: v1 (classical transfer) or v2 (from-scratch neural NMT)",
+    ),
+) -> None:
+    """Deterministically reconstruct Koine Greek for Thomas saying(s) offline."""
+    if not saying and not all_sayings:
+        typer.secho("Specify --saying <id> or --all", fg=typer.colors.RED)
+        raise typer.Exit(code=2)
+
+    root = require_repo_root(repo_root)
+    is_v2 = model.lower() in {"v2", "model-v2"}
+    v1_dir = root / MODEL_REL
+    model_dir = (root / MODEL_V2_REL) if is_v2 else v1_dir
+    marker = "seq2seq-config.json" if is_v2 else "decoder-weights.json"
+    if not (model_dir / marker).is_file():
+        cmd = "thomas model build-v2" if is_v2 else "thomas model build"
+        typer.secho(
+            f"Missing frozen model at {model_dir}; run `{cmd}` first",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(code=1)
+
+    corpus = load_thomas_corpus(resolve_thomas_path(root))
+    if is_v2:
+        from zetodos_thomas.neural.decoder_v2 import NeuralKoineDecoder
+
+        decoder_v2 = NeuralKoineDecoder.from_model_dir(
+            model_dir, v1_model_dir=v1_dir, device="cpu"
+        )
+        decoder: object = decoder_v2
+    else:
+        decoder = KoineBeamDecoder.from_model_dir(model_dir)
+
+    if saying and not all_sayings:
+        match = next((u for u in corpus.units if u.unit_id == saying), None)
+        if match is None:
+            typer.secho(f"Unknown Thomas saying id: {saying!r}", fg=typer.colors.RED)
+            raise typer.Exit(code=1)
+        gen = decoder.decode_unit(match)  # type: ignore[attr-defined]
+        if out is not None:
+            out.parent.mkdir(parents=True, exist_ok=True)
+            out.write_text(
+                json.dumps(
+                    gen.model_dump(mode="json", exclude_defaults=True),
+                    ensure_ascii=False,
+                    indent=2,
+                )
+                + "\n",
+                encoding="utf-8",
+            )
+        typer.echo(f"{gen.unit_id}: {gen.greek_text}")
+        return
+
+    generated = decoder.decode_corpus(corpus.units)  # type: ignore[attr-defined]
+    default_rel = GENERATED_THOMAS_V2_REL if is_v2 else GENERATED_THOMAS_REL
+    out_path = out or (root / default_rel)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = generated.model_dump(mode="json", exclude_defaults=True)
+    serialized = json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n"
+    if len(serialized.encode("utf-8")) >= 1024 * 1024:
+        # Trim lower-priority alternatives so file stays strictly < 1024 KiB
+        for u in payload.get("units", []):
+            u.pop("clause_alternatives", None)
+            u.pop("coptic_text", None)
+            for tok in u.get("tokens", []):
+                if "alternatives" in tok and len(tok["alternatives"]) > 2:
+                    tok["alternatives"] = tok["alternatives"][:2]
+        serialized = (
+            json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n"
+        )
+    if len(serialized.encode("utf-8")) >= 1024 * 1024:
+        # Preserve compact payload if per-token alternatives still exceed 1024 KiB
+        for u in payload.get("units", []):
+            for tok in u.get("tokens", []):
+                tok.pop("alternatives", None)
+        serialized = (
+            json.dumps(payload, ensure_ascii=False, separators=(",", ":")) + "\n"
+        )
+    out_path.write_text(serialized, encoding="utf-8")
+    size_bytes = out_path.stat().st_size
+    if size_bytes >= 1024 * 1024:
+        typer.secho(
+            f"Generated output {out_path} ({size_bytes} bytes) >= 1024 KiB",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(code=1)
+    tok_n = sum(len(u.tokens) for u in generated.units)
+    typer.echo(
+        f"OK: reconstructed {len(generated.units)} Thomas units ({tok_n} Greek tokens, "
+        f"{size_bytes} bytes) to {out_path}"
+    )

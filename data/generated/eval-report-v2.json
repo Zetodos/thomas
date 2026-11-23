@@ -1,0 +1,813 @@
+{
+  "id": "eval-report-v2",
+  "model_id": "model-v2",
+  "nt_holdout": {
+    "unit_count": 41,
+    "coverage": 1.0,
+    "ordered_content_lemma_precision": 0.6162,
+    "ordered_content_lemma_recall": 0.577,
+    "ordered_content_lemma_f1": 0.596,
+    "ordered_inflected_surface_f1": 0.5224,
+    "morph_accuracy_on_matched_lemmas": 0.7685,
+    "chrf_pp": 0.4576,
+    "bleu_4": 0.2367,
+    "content_lemma_precision": 0.6606,
+    "content_lemma_recall": 0.6186,
+    "content_lemma_f1": 0.6389,
+    "all_token_lemma_f1": 0.6978,
+    "inflected_surface_f1": 0.5666
+  },
+  "poxy_convergent": {
+    "span_count": 23,
+    "unit_count": 19,
+    "surviving_only_word_count": 232,
+    "surviving_only_ordered_content_lemma_precision": 0.2845,
+    "surviving_only_ordered_content_lemma_recall": 0.5593,
+    "surviving_only_ordered_content_lemma_f1": 0.3771,
+    "surviving_only_content_lemma_precision": 0.2888,
+    "surviving_only_content_lemma_recall": 0.5678,
+    "surviving_only_content_lemma_f1": 0.3829,
+    "clear_surviving_word_count": 292,
+    "clear_surviving_char_f1_itacism": 0.6687,
+    "unclear_surviving_word_count": 20,
+    "unclear_surviving_char_f1_itacism": 0.6667,
+    "surviving_char_f1_exact": 0.6549,
+    "surviving_char_f1_itacism": 0.6663,
+    "surviving_char_3gram_recall_itacism": 0.5046,
+    "loanword_exact_match_rate": 0.9091,
+    "loanword_total": 11,
+    "surviving_word_count": 312,
+    "surviving_char_count": 1103,
+    "ordered_content_lemma_f1": 0.5084,
+    "content_lemma_precision": 0.4741,
+    "content_lemma_recall": 0.5946,
+    "content_lemma_f1": 0.5276,
+    "top3_content_lemma_recall": 0.6757
+  },
+  "poxy_convergent_non_synoptic": {
+    "span_count": 7,
+    "unit_count": 6,
+    "surviving_only_word_count": 97,
+    "surviving_only_ordered_content_lemma_precision": 0.44,
+    "surviving_only_ordered_content_lemma_recall": 0.6226,
+    "surviving_only_ordered_content_lemma_f1": 0.5156,
+    "surviving_only_content_lemma_precision": 0.44,
+    "surviving_only_content_lemma_recall": 0.6226,
+    "surviving_only_content_lemma_f1": 0.5156,
+    "clear_surviving_word_count": 103,
+    "clear_surviving_char_f1_itacism": 0.7283,
+    "unclear_surviving_word_count": 3,
+    "unclear_surviving_char_f1_itacism": 0.5882,
+    "surviving_char_f1_exact": 0.7136,
+    "surviving_char_f1_itacism": 0.7263,
+    "surviving_char_3gram_recall_itacism": 0.5829,
+    "loanword_exact_match_rate": 1.0,
+    "loanword_total": 6,
+    "surviving_word_count": 106,
+    "surviving_char_count": 387,
+    "ordered_content_lemma_f1": 0.6029,
+    "content_lemma_precision": 0.56,
+    "content_lemma_recall": 0.6885,
+    "content_lemma_f1": 0.6176,
+    "top3_content_lemma_recall": 0.7049
+  },
+  "poxy_convergent_synoptic": {
+    "span_count": 16,
+    "unit_count": 13,
+    "surviving_only_word_count": 135,
+    "surviving_only_ordered_content_lemma_precision": 0.2102,
+    "surviving_only_ordered_content_lemma_recall": 0.5077,
+    "surviving_only_ordered_content_lemma_f1": 0.2973,
+    "surviving_only_content_lemma_precision": 0.2166,
+    "surviving_only_content_lemma_recall": 0.5231,
+    "surviving_only_content_lemma_f1": 0.3063,
+    "clear_surviving_word_count": 189,
+    "clear_surviving_char_f1_itacism": 0.6348,
+    "unclear_surviving_word_count": 17,
+    "unclear_surviving_char_f1_itacism": 0.6866,
+    "surviving_char_f1_exact": 0.622,
+    "surviving_char_f1_itacism": 0.6333,
+    "surviving_char_3gram_recall_itacism": 0.46,
+    "loanword_exact_match_rate": 0.8,
+    "loanword_total": 5,
+    "surviving_word_count": 206,
+    "surviving_char_count": 716,
+    "ordered_content_lemma_f1": 0.4626,
+    "content_lemma_precision": 0.4331,
+    "content_lemma_recall": 0.5484,
+    "content_lemma_f1": 0.484,
+    "top3_content_lemma_recall": 0.6613
+  },
+  "poxy_divergent": {
+    "span_count": 6,
+    "unit_count": 5,
+    "surviving_only_word_count": 30,
+    "surviving_only_ordered_content_lemma_precision": 0.1786,
+    "surviving_only_ordered_content_lemma_recall": 0.3846,
+    "surviving_only_ordered_content_lemma_f1": 0.2439,
+    "surviving_only_content_lemma_precision": 0.1786,
+    "surviving_only_content_lemma_recall": 0.3846,
+    "surviving_only_content_lemma_f1": 0.2439,
+    "clear_surviving_word_count": 40,
+    "clear_surviving_char_f1_itacism": 0.381,
+    "unclear_surviving_word_count": 16,
+    "unclear_surviving_char_f1_itacism": 0.2632,
+    "surviving_char_f1_exact": 0.3545,
+    "surviving_char_f1_itacism": 0.3495,
+    "surviving_char_3gram_recall_itacism": 0.2203,
+    "loanword_exact_match_rate": null,
+    "loanword_total": 0,
+    "surviving_word_count": 56,
+    "surviving_char_count": 156,
+    "ordered_content_lemma_f1": 0.1852,
+    "content_lemma_precision": 0.1786,
+    "content_lemma_recall": 0.1923,
+    "content_lemma_f1": 0.1852,
+    "top3_content_lemma_recall": 0.2308
+  },
+  "poxy_overall": {
+    "span_count": 29,
+    "unit_count": 20,
+    "surviving_only_word_count": 262,
+    "surviving_only_ordered_content_lemma_precision": 0.2731,
+    "surviving_only_ordered_content_lemma_recall": 0.542,
+    "surviving_only_ordered_content_lemma_f1": 0.3632,
+    "surviving_only_content_lemma_precision": 0.2769,
+    "surviving_only_content_lemma_recall": 0.5496,
+    "surviving_only_content_lemma_f1": 0.3683,
+    "clear_surviving_word_count": 332,
+    "clear_surviving_char_f1_itacism": 0.6461,
+    "unclear_surviving_word_count": 36,
+    "unclear_surviving_char_f1_itacism": 0.541,
+    "surviving_char_f1_exact": 0.6278,
+    "surviving_char_f1_itacism": 0.6374,
+    "surviving_char_3gram_recall_itacism": 0.477,
+    "loanword_exact_match_rate": 0.9091,
+    "loanword_total": 11,
+    "surviving_word_count": 368,
+    "surviving_char_count": 1259,
+    "ordered_content_lemma_f1": 0.4713,
+    "content_lemma_precision": 0.4423,
+    "content_lemma_recall": 0.545,
+    "content_lemma_f1": 0.4883,
+    "top3_content_lemma_recall": 0.6209
+  },
+  "spans": [
+    {
+      "span_id": "thomas.0.poxy654.a",
+      "unit_id": "thomas.0",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲛⲁⲓ ⲛⲉ ⲛ ϣⲁϫⲉ ⲉⲧ ϩⲏⲡ ⲉⲛⲧ ⲁ ⲓⲏⲥⲟⲩⲥ ⲉⲧ ⲟⲛϩ ϫⲟⲟ ⲩ ⲁⲩⲱ ⲁ ϥ ⲥϩⲁⲓ ⲥⲟⲩ ⲛϭⲓ ⲇⲓⲇⲩⲙⲟⲥ ⲓⲟⲩⲇⲁⲥ ⲑⲱⲙⲁⲥ",
+      "attested_surviving": "οὗτοι οἱ οἱ λόγοι οἱ λησεν Ἰης ὁ ζῶν κ καὶ Θωμᾶ",
+      "attested_editorial": "οὗτοι οἱ οἱ λόγοι οἱ ἀπόκρυφοι οὓς ἐλάλησεν Ἰησοῦς ὁ ζῶν καὶ ἔγραψεν Ἰούδας ὁ καὶ Θωμᾶς",
+      "predicted_greek": "ταῦτα τά ῥήματα τά κρυπτά ἅ ἐλάλησεν Ἰησοῦς ζῶντα καί ἔγραψεν Δίδυμος Ἰούδας Θωμᾶς",
+      "surviving_words": 12,
+      "gold_content_lemmas": [
+        "λόγος",
+        "ἰης",
+        "ζάω"
+      ],
+      "matched_content_lemmas": [
+        "ζαω"
+      ],
+      "surviving_char_f1_itacism": 0.5
+    },
+    {
+      "span_id": "thomas.1.poxy654.a",
+      "unit_id": "thomas.1",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲁⲩⲱ ⲡⲉϫⲁ ϥ ϫⲉ ⲡ ⲉⲧ ⲛⲁ ϩⲉ ⲉ ⲧ ϩⲉⲣⲙⲏⲛⲉⲓⲁ ⲛ ⲛⲉⲓ ϣⲁϫⲉ ϥ ⲛⲁ ϫⲓϯⲡⲉ ⲁⲛ ⲙ ⲡ ⲙⲟⲩ ·",
+      "attested_surviving": "καὶ εἶπεν αν τῶν λόγων τούτ οὐ μὴ γεύσηται",
+      "attested_editorial": "καὶ εἶπεν ὅστις ἂν τὴν ἑρμηνείαν τῶν λόγων τούτων εὑρίσκῃ θανάτου οὐ μὴ γεύσηται",
+      "predicted_greek": "καί λέγει ὁ πεσών ὡς ἑρμηνεία τῶν λόγων τούτων οὐ δώσει τόν θάνατον",
+      "surviving_words": 9,
+      "gold_content_lemmas": [
+        "λέγω",
+        "λόγος",
+        "οὐ",
+        "μή",
+        "γεύομαι"
+      ],
+      "matched_content_lemmas": [
+        "λεγω",
+        "λογοσ",
+        "ου"
+      ],
+      "surviving_char_f1_itacism": 0.75
+    },
+    {
+      "span_id": "thomas.2.poxy654.a",
+      "unit_id": "thomas.2",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ⲙⲡⲣⲧⲣⲉ ϥ ⲗⲟ ⲛϭⲓ ⲡ ⲉⲧ ϣⲓⲛⲉ ⲉ ϥ ϣⲓⲛⲉ ϣⲁⲛⲧⲉ ϥ ϭⲓⲛⲉ ⲁⲩⲱ ϩⲟⲧⲁⲛ ⲉϥϣⲁⲛ ϭⲓⲛⲉ",
+      "attested_surviving": "μὴ παυσάσθω ὁ ζη εὕρη καὶ ὅταν εὕρῃ",
+      "attested_editorial": "λέγει Ἰησοῦς μὴ παυσάσθω ὁ ζητῶν τοῦ ζητεῖν ἕως ἂν εὕρη καὶ ὅταν εὕρῃ",
+      "predicted_greek": "λέγει ὁ Ἰησοῦς μή ἀφιέτω ὁ ζητῶν αὐτόν ἕως οὗ εὕρῃ καί ὅταν",
+      "surviving_words": 8,
+      "gold_content_lemmas": [
+        "μή",
+        "παύω",
+        "εὑρίσκω",
+        "εὑρίσκω"
+      ],
+      "matched_content_lemmas": [
+        "μη",
+        "ευρισκω"
+      ],
+      "surviving_char_f1_itacism": 0.7083
+    },
+    {
+      "span_id": "thomas.2.poxy654.b",
+      "unit_id": "thomas.2",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": true,
+      "coptic_text": "ϥ ⲛⲁ ϣⲧⲟⲣⲧⲣ ⲁⲩⲱ ⲉϥϣⲁⲛ ϣⲧⲟⲣⲧⲣ ϥ ⲛⲁ ⲣϣⲡⲏⲣⲉ ⲁⲩⲱ ϥ ⲛⲁ ⲣⲣⲣⲟ ⲉϫⲛ ⲡ ⲧⲏⲣϥ",
+      "attested_surviving": "βηθεὶς βασιλεύση κα ήσεται",
+      "attested_editorial": "θαμβηθήσεται καὶ θαμβηθεὶς βασιλεύση καὶ βασιλεύσας ἀναπαήσεται",
+      "predicted_greek": "πέσῃ θόρυβος καί ὅταν θορυβήσῃ καί βασιλεύσει ἐπί πᾶσιν",
+      "surviving_words": 4,
+      "gold_content_lemmas": [
+        "βασιλεύω"
+      ],
+      "matched_content_lemmas": [
+        "βασιλευω"
+      ],
+      "surviving_char_f1_itacism": 0.6111
+    },
+    {
+      "span_id": "thomas.3.poxy654.a",
+      "unit_id": "thomas.3",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ϫⲉ ⲉⲩϣⲁⲛ ϫⲟⲟ ⲥ ⲛⲏ ⲧⲛ ⲛϭⲓ ⲛ ⲉⲧ ⲥⲱⲕ ϩⲏⲧ ⲧⲏⲩⲧⲛ ϫⲉ ⲉⲓⲥ ϩⲏⲏⲧⲉ ⲉ ⲧ ⲙⲛⲧⲣⲣⲟ ϩⲛ ⲧ ⲡⲉ ⲉⲓⲉ ⲛ ϩⲁⲗⲏⲧ ⲛⲁ ⲣϣⲟⲣⲡ ⲉⲣⲱ ⲧⲛ ⲛⲧⲉ ⲧ ⲡⲉ",
+      "attested_surviving": "λέγει Ἰ οἱ ἕλκοντες ἡμᾶς ἡ βασιλεία ἐν οὐρα τὰ πετεινὰ τοῦ οὐρ",
+      "attested_editorial": "λέγει Ἰησοῦς ἐὰν οἱ ἕλκοντες ἡμᾶς εἴπωσιν ὑμῖν ἰδοὺ ἡ βασιλεία ἐν οὐρανῷ ὑμᾶς φθήσεται τὰ πετεινὰ τοῦ οὐρανοῦ",
+      "predicted_greek": "εἶπεν δέ ὁ Ἰησοῦς ὅταν εἴπωσιν ὑμῖν οἱ κεκλυμμένοι εἰς τήν βασιλείαν ἐν τῷ οὐρανῷ ἄρα τά ὄρνεα προάγουσιν ὑμᾶς καί τόν οὐρανόν",
+      "surviving_words": 13,
+      "gold_content_lemmas": [
+        "λέγω",
+        "ἕλκω",
+        "βασιλεία",
+        "πετεινόν"
+      ],
+      "matched_content_lemmas": [
+        "λεγω",
+        "βασιλεια"
+      ],
+      "surviving_char_f1_itacism": 0.6392
+    },
+    {
+      "span_id": "thomas.3.poxy654.b",
+      "unit_id": "thomas.3",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲉⲩϣⲁⲛ ϫⲟⲟ ⲥ ⲛⲏ ⲧⲛ ϫⲉ ⲥ ϩⲛ ⲧ ⲑⲁⲗⲁⲥⲥⲁ ⲉⲓⲉ ⲛ ⲧⲃⲧ ⲛⲁ ⲣϣⲟⲣⲡ ⲉⲣⲱ ⲧⲛ",
+      "attested_surviving": "τι ὑπὸ τὴν γήν ἐστ οἱ ἰχθύες τῆς θαλά τες ὑμᾶς",
+      "attested_editorial": "ἐὰν δ’ εἴπωσιν ὅτι ὑπὸ τὴν γήν ἐστιν εἰσελεύσονται οἱ ἰχθύες τῆς θαλάσσης προφθάσαντες ὑμᾶς",
+      "predicted_greek": "καί ἐάν εἴπωσιν ὑμῖν ἐν τῇ θαλάσσῃ ἄρα τούς ἰχθύας προάγει ὑμᾶς",
+      "surviving_words": 11,
+      "gold_content_lemmas": [
+        "γῆ",
+        "ἰχθύς"
+      ],
+      "matched_content_lemmas": [
+        "ιχθυσ"
+      ],
+      "surviving_char_f1_itacism": 0.5075
+    },
+    {
+      "span_id": "thomas.3.poxy654.c",
+      "unit_id": "thomas.3",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲁⲗⲗⲁ ⲧ ⲙⲛⲧⲣⲣⲟ ⲥ ⲙ ⲡⲉⲧⲛ ϩⲟⲩⲛ ⲁⲩⲱ ⲥ ⲙ ⲡⲉⲧⲛ ⲃⲟⲗ ϩⲟⲧⲁⲛ ⲉⲧⲉⲧⲛϣⲁⲛ ⲥⲟⲩⲱⲛ ⲧⲏⲩⲧⲛ ⲧⲟⲧⲉ ⲥⲉ ⲛⲁ ⲥⲟⲩⲱⲛ ⲧⲏⲛⲉ ⲁⲩⲱ ⲧⲉⲧⲛ ⲛⲁ ⲉⲓⲙⲉ ϫⲉ ⲛⲧⲱⲧⲛ ⲡⲉ ⲛ ϣⲏⲣⲉ ⲛ ⲡ ⲉⲓⲱⲧ ⲉⲧ ⲟⲛϩ ⲉϣⲱⲡⲉ ⲇⲉ ⲧⲉⲧⲛ ⲛⲁ ⲥⲟⲩⲱⲛ ⲧⲏⲩⲧⲛ ⲁⲛ ⲉⲓⲉ ⲧⲉⲧⲛ ϣⲟⲟⲡ ϩⲛ ⲟⲩ ⲙⲛⲧϩⲏⲕⲉ ⲁⲩⲱ ⲛⲧⲱⲧⲛ ⲡⲉ ⲧ ⲙⲛⲧϩⲏⲕⲉ",
+      "attested_surviving": "καὶ ἡ βασ ἐντὸς ὑμῶν γνῷ ταύτην εὑρή ἑαυτοὺς γνώσεσθαι ἐστε ὑμεῖς τοῦ πατρὸς τοῦ ζ γνώσθε ἑαυτοὺς ἐν καὶ ὑμεῖς ἐστε ἡ πτ",
+      "attested_editorial": "καὶ ἡ βασιλεία τοῦ θεοῦ ἐντὸς ὑμῶν ἐστι κἀκτός ὃς ἂν ἑαυτὸν γνῷ ταύτην εὑρήσει καὶ ὅτε ὑμεῖς ἑαυτοὺς γνώσεσθαι εἴσεσθε ὅτι υἱοί ἐστε ὑμεῖς τοῦ πατρὸς τοῦ ζῶντος εἰ δὲ μὴ γνώσεσθε ἑαυτοὺς ἐν τῇ πτωχείᾳ ἐστὲ καὶ ὑμεῖς ἐστε ἡ πτωχεία",
+      "predicted_greek": "ἀλλά ἡ βασιλεία ὑμῶν ἔσωθεν ἐστίν καί ὅταν ἐπιγνώσητε ὑμᾶς τότε ἐπιγνώσονται ὑμᾶς καί γνώσεσθε ὅτι ὑμεῖς ἐστέ οἱ υἱοί τοῦ πατρός τοῦ ζῶντος ἐάν δέ μή ἐπιγνώσητε ὑμᾶς ἐν πτωχείᾳ καί ὑμεῖς ἐστέ ἡ πτωχία",
+      "surviving_words": 24,
+      "gold_content_lemmas": [
+        "ἐντός",
+        "γινώσκω",
+        "γινώσκω",
+        "εἰμί",
+        "πατήρ",
+        "εἰμί"
+      ],
+      "matched_content_lemmas": [
+        "γινωσκω",
+        "ειμι",
+        "ειμι",
+        "πατηρ"
+      ],
+      "surviving_char_f1_itacism": 0.7119
+    },
+    {
+      "span_id": "thomas.4.poxy654.a",
+      "unit_id": "thomas.4",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ϥ ⲛⲁ ϫⲛⲁⲩ ⲁⲛ ⲛϭⲓ ⲡ ⲣⲱⲙⲉ ⲛ ϩⲗⲗⲟ ϩⲛ ⲛⲉϥ ϩⲟⲟⲩ ⲉ ϫⲛⲉ ⲟⲩ ⲕⲟⲩⲓ ⲛ ϣⲏⲣⲉ ϣⲏⲙ ⲉ ϥ ϩⲛ ⲥⲁϣϥ̅ ⲛ ϩⲟⲟⲩ ⲉⲧⲃⲉ ⲡ ⲧⲟⲡⲟⲥ ⲙ ⲡ ⲱⲛϩ ⲁⲩⲱ ϥ ⲛⲁ ⲱⲛϩ ϫⲉ ⲟⲩⲛ ϩⲁϩ ⲛ ϣⲟⲣⲡ ⲛⲁ ⲣϩⲁⲉ ⲁⲩⲱ ⲛ ⲥⲉ ϣⲱⲡⲉ ⲟⲩⲁ ⲟⲩⲱⲧ",
+      "attested_surviving": "οὐκ ἀποκνήσει ἄνθ ρῶν ἐπερωτῆσε πα ρῶν περὶ τοῦ τόπου τ σετε ὃτι πολλοὶ ἔσονται οἱ ἔσχατοι πρῶτοι καὶ σιν",
+      "attested_editorial": "λέγει Ἰησοῦς οὐκ ἀποκνήσει ἄνθρωπος πλήρης ἡμερῶν ἐπερωτῆσε παιδίον ἑπτὰ ἡμερῶν περὶ τοῦ τόπου τῆς ζωῆς καὶ ζήσετε ὃτι πολλοὶ ἔσονται πρῶτοι ἔσχατοι καὶ οἱ ἔσχατοι πρῶτοι καὶ εἰς ἓν καταντήσουσιν",
+      "predicted_greek": "καί εἶπεν ὁ Ἰησοῦς πρός τόν πρεσβύτην ἐν ταῖς ἡμέραις αὐτοῦ ἐπερωτῆσαι ὀλίγον ἐν ἑπτά ἡμέρας διά τόν τόπον τῆς ζωῆς καί ζῳοποιήσει ὅτι πολλοί πλείονες εἰσίν καί εἷς ἔσται",
+      "surviving_words": 20,
+      "gold_content_lemmas": [
+        "οὐ",
+        "ἀποκνήσει",
+        "ἐπερωτάω",
+        "τόπος",
+        "πολύς",
+        "εἰμί",
+        "ἔσχατος",
+        "πρῶτος"
+      ],
+      "matched_content_lemmas": [
+        "επερωταω",
+        "τοποσ",
+        "πολυσ",
+        "ειμι"
+      ],
+      "surviving_char_f1_itacism": 0.5793
+    },
+    {
+      "span_id": "thomas.5.poxy654.a",
+      "unit_id": "thomas.5",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ⲥⲟⲩⲱⲛ ⲡ ⲉⲧ ⲙ ⲡ ⲙⲧⲟ ⲙ ⲡⲉⲕ ϩⲟ ⲉⲃⲟⲗ ⲁⲩⲱ ⲡ ⲉⲧ ϩⲏⲡ ⲉⲣⲟ ⲕ ϥ ⲛⲁ ϭⲱⲗⲡ ⲉⲃⲟⲗ ⲛⲁ ⲕ ⲙⲛ ⲗⲁⲁⲩ ⲅⲁⲣ ⲉ ϥ ϩⲏⲡ ⲉ ϥ ⲛⲁ ⲟⲩⲱⲛϩ ⲉⲃⲟⲗ ⲁⲛ",
+      "attested_surviving": "λέγει Ἰης γ θεν τῆς ὄψεώς σου καὶ ἀπό σου ἀποκαλυφήσετ τιν κρυπτὸν ὃ οὐ φαν",
+      "attested_editorial": "λέγει Ἰησοῦς γνῶθι τὸ ὃν ἔμπροσθεν τῆς ὄψεώς σου καὶ τὸ κεκαλυμμένον ἀπό σου ἀποκαλυφθήσεταί σοι οὐ γάρ ἐστιν κρυπτὸν ὃ οὐ φανερὸν γενήσεται",
+      "predicted_greek": "εἶπεν δέ ὁ Ἰησοῦς τῷ προσώπῳ σου καί τῷ κεκρυμμένῳ ἀπό σοῦ ἀποκαλύπτεται οὐδέν γάρ ἀποκεκρυμμένον",
+      "surviving_words": 16,
+      "gold_content_lemmas": [
+        "λέγω",
+        "ἰης",
+        "ὄψις",
+        "κρυπτός",
+        "οὐ"
+      ],
+      "matched_content_lemmas": [
+        "λεγω"
+      ],
+      "surviving_char_f1_itacism": 0.5586
+    },
+    {
+      "span_id": "thomas.5.poxy654.b",
+      "unit_id": "thomas.5",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": true,
+      "coptic_text": "",
+      "attested_surviving": "καὶ θεθαμμένον ὃ ο",
+      "attested_editorial": "καὶ θεθαμμένον ὃ οὐκ ἐγερθήσεται",
+      "predicted_greek": "",
+      "surviving_words": 4,
+      "gold_content_lemmas": [
+        "θάπτω"
+      ],
+      "matched_content_lemmas": [],
+      "surviving_char_f1_itacism": 0.0
+    },
+    {
+      "span_id": "thomas.6.poxy654.a",
+      "unit_id": "thomas.6",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲁ ⲩ ϫⲛⲟⲩ ϥ ⲛϭⲓ ⲛⲉϥ ⲙⲁⲑⲏⲧⲏⲥ ⲡⲉϫⲁ ⲩ ⲛⲁ ϥ ϫⲉ ⲕ ⲟⲩⲱϣ ⲉ ⲧⲣ ⲛ ⲣⲛⲏⲥⲧⲉⲩⲉ ⲁⲩⲱ ⲁϣ ⲧⲉ ⲧ ϩⲉ ⲉ ⲛ ⲛⲁ ϣⲗⲏⲗ ⲉ ⲛ ⲛⲁ ϯⲉⲗⲉⲏⲙⲟⲥⲩⲛⲏ ⲁⲩⲱ ⲉ ⲛ ⲛⲁ ⲣⲡⲁⲣⲁⲧⲏⲣⲉⲓ ⲉ ⲟⲩ ⲛ ϭⲓⲛⲟⲩⲱⲙ ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ϫⲉ ⲙⲡⲣ ϫⲓϭⲟⲗ ⲁⲩⲱ ⲡ ⲉⲧ ⲉⲧⲙ ⲙⲟⲥⲧⲉ ⲙⲙⲟ ϥ ⲙⲡⲣ ⲁⲁ ϥ ϫⲉ ⲥⲉ ϭⲟⲗⲡ ⲧⲏⲣ ⲟⲩ ⲉⲃⲟⲗ ⲙ ⲡⲉ ⲙⲧⲟ ⲉⲃⲟⲗ ⲛ ⲧ ⲡⲉ ⲙⲛ ⲗⲁⲁⲩ ⲅⲁⲣ ⲉ ϥ ϩⲏⲡ · ⲉ ϥ ⲛⲁ ⲟⲩⲱⲛϩ ⲉⲃⲟⲗ ⲁⲛ",
+      "attested_surviving": "ετάζουσιν αὐτὸν οἱ γ πῶς νηστεύ εθα καὶ πῶς ὶ τί παρατηρή ν λέγει Ἰης εῖται μὴ ποιεῖ ῆς ἀληθίας ἀν ν ἀοκεκ",
+      "attested_editorial": "ἐξετάζουσιν αὐτὸν οἱ μαθηταὶ αὐτοῦ καὶ λέγουσιν πῶς νηστεύσομεν καὶ πῶς προσευξόμεθα καὶ πῶς ἐλεημοσύνην ποιήσομεν καὶ τί παρατηρήσομεν περὶ τῶν βρωμάτων λέγει Ἰησοῦς μὴ ψεύδεσθε καὶ ὃτι μισεῖται μὴ ποιεῖτε πάντα γὰρ ἔμπροσθεν τῆς ἀληθείας ἀναφαίνεται οὐδὲν γάρ ἐστιν ἀποκεκρυμμένον ὃ οὐ φανερὸν ἔσται",
+      "predicted_greek": "καί ἐπηρώτησαν αὐτόν οἱ μαθηταί αὐτοῦ καί εἶπαν αὐτῷ θέλεις νηστεῦσαι καί πῶς προσεύξωμεν καί τί παρατηροῦμεν λέγει ὁ Ἰησοῦς μή ψεύδεσθε καί ὁ μισῶν αὐτόν μή ποιεῖτε ὅτι πάντες ἀπεκαλύφθησαν ἐνώπιον τοῦ οὐρανοῦ οὐδείς γάρ ἐστίν κεκρυμμένος οὐ φανερώσει",
+      "surviving_words": 23,
+      "gold_content_lemmas": [
+        "πῶς",
+        "πῶς",
+        "λέγω",
+        "ἰης",
+        "μή"
+      ],
+      "matched_content_lemmas": [
+        "πωσ",
+        "λεγω",
+        "μη"
+      ],
+      "surviving_char_f1_itacism": 0.6569
+    },
+    {
+      "span_id": "thomas.7.poxy654.a",
+      "unit_id": "thomas.7",
+      "transcription_id": "poxy-654-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲟⲩ ⲙⲁⲕⲁⲣⲓⲟⲥ ⲡⲉ ⲡ ⲙⲟⲩⲓ ⲡⲁⲓ ⲉⲧⲉ ⲡ ⲣⲱⲙⲉ ⲛⲁ ⲟⲩⲟⲙ ϥ ⲁⲩⲱ ⲛⲧⲉ ⲡ ⲙⲟⲩⲓ ϣⲱⲡⲉ ⲛ ⲣⲱⲙⲉ ⲁⲩⲱ ϥ ⲃⲏⲧ · ⲛϭⲓ ⲡ ⲣⲱⲙⲉ ⲡⲁⲓ ⲉⲧⲉ ⲡ ⲙⲟⲩⲓ ⲛⲁ ⲟⲩⲟⲙ ϥ ⲁⲩⲱ ⲡ ⲙⲟⲩⲓ ⲛⲁ ϣⲱⲡⲉ ⲣ ⲣⲱⲙⲉ",
+      "attested_surviving": "άρι ἐστιν ων ἔστ",
+      "attested_editorial": "μακάριός ἐστιν ὁ λέων ὃν φάγεται ἄνθρωπος καὶ ὁ λέων ἔσται ἄνθρωπος καὶ οὐαὶ τῷ ἄνθρώπῳ ὃν φάγεται λέων",
+      "predicted_greek": "εἶπεν μακάριος ὁ λέων ὅς φάγεται καί ἔσται ὁ λέων ἄνθρωπος καί ἐξολεθρεύσει αὐτόν ὁ ἄνθρωπος ὅς δέ λέων φάγεται καί ὁ λέων ἔσται",
+      "surviving_words": 4,
+      "gold_content_lemmas": [
+        "εἰμί"
+      ],
+      "matched_content_lemmas": [
+        "ειμι"
+      ],
+      "surviving_char_f1_itacism": 0.6667
+    },
+    {
+      "span_id": "thomas.26.poxy1.a",
+      "unit_id": "thomas.26",
+      "transcription_id": "poxy-1-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲧⲟⲧⲉ ⲕ ⲛⲁ ⲛⲁⲩ ⲉⲃⲟⲗ ⲉ ⲛⲟⲩϫⲉ ⲙ ⲡ ϫⲏ ⲉⲃⲟⲗ ϩⲙ ⲡ ⲃⲁⲗ ⲙ ⲡⲉⲕ ⲥⲟⲛ",
+      "attested_surviving": "καὶ τότε διαβλέψεις ἐκβαλεῖν τὸ κάρφος τὸ ἐν τῷ ὀφθαλμῷ τοῦ ἀδελφοῦ σου",
+      "attested_editorial": "καὶ τότε διαβλέψεις ἐκβαλεῖν τὸ κάρφος τὸ ἐν τῷ ὀφθαλμῷ τοῦ ἀδελφοῦ σου",
+      "predicted_greek": "σου τότε ὄψῃ τό κάλυμμα ἐκ τοῦ ὀφθαλμῶν τοῦ ἀδελφοῦ σου",
+      "surviving_words": 13,
+      "gold_content_lemmas": [
+        "τότε",
+        "διαβλέπω",
+        "ἐκβάλλω",
+        "κάρφος",
+        "ὀφθαλμός",
+        "ἀδελφός"
+      ],
+      "matched_content_lemmas": [
+        "τοτε",
+        "οφθαλμοσ",
+        "αδελφοσ"
+      ],
+      "surviving_char_f1_itacism": 0.6735
+    },
+    {
+      "span_id": "thomas.27.poxy1.a",
+      "unit_id": "thomas.27",
+      "transcription_id": "poxy-1-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲉⲧⲉⲧⲛϣⲁⲛ ⲧⲙ ⲣⲛⲏⲥⲧⲉⲩⲉ ⲉ ⲡ ⲕⲟⲥⲙⲟⲥ ⲧⲉⲧⲛ ⲛⲁ ϩⲉ ⲁⲛ ⲉ ⲧ ⲙⲛⲧⲣⲣⲟ ⲉ ⲧⲉⲧⲛ ⲧⲙ ⲉⲓⲣⲉ ⲙ ⲡ ⲥⲁⲃⲃⲁⲧⲟⲛ ⲛ ⲥⲁⲃⲃⲁⲧⲟⲛ ⲛⲧⲉⲧⲛ ⲛⲁ ⲛⲁⲩ ⲁⲛ ⲉ ⲡ ⲉⲓⲱⲧ",
+      "attested_surviving": "ἐὰν μὴ νηστεύσηται τὸν κόσμον οὐ μὴ εὕρηται τὴν βασιλείαν τοῦ θῦ καὶ ἐὰν μὴ σαββατίσητε τὸ σάββατον οὐκ ὄψεσθε το πρα",
+      "attested_editorial": "ἐὰν μὴ νηστεύσηται τὸν κόσμον οὐ μὴ εὕρηται τὴν βασιλείαν τοῦ θεοῦ καὶ ἐὰν μὴ σαββατίσητε τὸ σάββατον οὐκ ὄψεσθε τον πατέρα",
+      "predicted_greek": "ἐάν μή νηστεύσητε εἰς τόν κόσμον οὐ εὑρήσετε τήν βασιλείαν μή ποιεῖτε τό σάββατον οὐ θεωρεῖτε τόν πατέρα",
+      "surviving_words": 22,
+      "gold_content_lemmas": [
+        "μή",
+        "νηστεύω",
+        "κόσμος",
+        "οὐ",
+        "μή",
+        "εὑρίσκω",
+        "βασιλεία",
+        "θεός",
+        "μή",
+        "σαββατίσητε",
+        "σάββατον",
+        "οὐ",
+        "ὁράω",
+        "πατήρ"
+      ],
+      "matched_content_lemmas": [
+        "μη",
+        "μη",
+        "νηστευω",
+        "κοσμοσ",
+        "ου",
+        "ου",
+        "ευρισκω",
+        "βασιλεια",
+        "σαββατον",
+        "πατηρ"
+      ],
+      "surviving_char_f1_itacism": 0.7871
+    },
+    {
+      "span_id": "thomas.28.poxy1.a",
+      "unit_id": "thomas.28",
+      "transcription_id": "poxy-1-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ϫⲉ ⲁ ⲓ ⲱϩⲉ ⲉ ⲣⲁⲧ ϩⲛ ⲧ ⲙⲏⲧⲉ ⲙ ⲡ ⲕⲟⲥⲙⲟⲥ ⲁⲩⲱ ⲁ ⲓ ⲟⲩⲱⲛϩ ⲉⲃⲟⲗ ⲛⲁ ⲩ ϩⲛ ⲥⲁⲣⲝ ⲁ ⲓ ϩⲉ ⲉⲣⲟ ⲟⲩ ⲧⲏⲣ ⲟⲩ ⲉ ⲩ ⲧⲁϩⲉ ⲙ ⲡⲓ ϩⲉ ⲉⲣⲉ ⲗⲁⲁⲩ ⲛϩⲏⲧ ⲟⲩ ⲉ ϥ ⲟⲃⲉ ⲁⲩⲱ ⲁ ⲧⲁ ⲯⲩⲭⲏ ϯⲧⲕⲁⲥ ⲉϫⲛ ⲛ ϣⲏⲣⲉ ⲛ ⲛ ⲣⲱⲙⲉ ϫⲉ ϩⲉⲛ ⲃⲗⲗⲉⲉⲩ ⲉ ⲛⲉ ϩⲙ ⲡⲉⲩ ϩⲏⲧ ⲁⲩⲱ ⲥⲉ ⲛⲁⲩ ⲉⲃⲟⲗ ⲁⲛ",
+      "attested_surviving": "λέγει Ἰς ἔτην ἐν μέσῳ τοῦ κόσμου καὶ ἐν σαρκὶ ὤφθην αὐτοῖς καὶ εὗρον πάντας μεθύοντας καὶ οὐδένα εὗρον δειψῶτα ἐν αὐτοῖς καὶ πονεῖ ἡ ψυχή μου ἐπὶ τοῖς υἱοῖς τῶν ἀνων ὅτι τυφλοί εἰσιν τῇ καρδίᾳ αὐτῶ",
+      "attested_editorial": "λέγει Ἰησοῦς ἔστην ἐν μέσῳ τοῦ κόσμου καὶ ἐν σαρκὶ ὤφθην αὐτοῖς καὶ εὗρον πάντας μεθύοντας καὶ οὐδένα εὗρον δειψῶντα ἐν αὐτοῖς καὶ πονεῖ ἡ ψυχή μου ἐπὶ τοῖς υἱοῖς τῶν ἀνθρώπων ὅτι τυφλοί εἰσιν τῇ καρδίᾳ αὐτῶν",
+      "predicted_greek": "εἶπεν δέ ὁ Ἰησοῦς στῆθι ἐν μέσῳ τοῦ κόσμου καί ἐγνώρισα αὐτοῖς ἐν σαρκί καί εὗρον πάντας τούς μεθύοντας ἐν τῷ κόσμῳ τούτῳ καί οὐδείς ἦν ἐν αὐτοῖς διψῶν καί ἐδικαιώθη ἡ ψυχή μου ἐπί τούς υἱούς τῶν ἀνθρώπων ὅτι τυφλοί εἰσίν ἐν τῇ καρδίᾳ αὐτῶν καί οὐ βλέπουσιν",
+      "surviving_words": 38,
+      "gold_content_lemmas": [
+        "λέγω",
+        "μέσος",
+        "κόσμος",
+        "σάρξ",
+        "ὁράω",
+        "εὑρίσκω",
+        "πᾶς",
+        "μεθύω",
+        "οὐδείς",
+        "εὑρίσκω",
+        "δειψῶτα",
+        "πονεῖ",
+        "ψυχή",
+        "υἱός",
+        "ἄνθρωπος",
+        "τυφλός",
+        "εἰμί",
+        "καρδία"
+      ],
+      "matched_content_lemmas": [
+        "λεγω",
+        "μεσοσ",
+        "κοσμοσ",
+        "σαρξ",
+        "ευρισκω",
+        "πασ",
+        "μεθυω",
+        "ουδεισ",
+        "ψυχη",
+        "υιοσ",
+        "ανθρωποσ",
+        "τυφλοσ",
+        "ειμι",
+        "καρδια"
+      ],
+      "surviving_char_f1_itacism": 0.8462
+    },
+    {
+      "span_id": "thomas.28.poxy1.b",
+      "unit_id": "thomas.28",
+      "transcription_id": "poxy-1-dclp",
+      "divergent_witness": true,
+      "coptic_text": "ϫⲉ ⲛⲧ ⲁ ⲩ ⲉⲓ ⲉ ⲡ ⲕⲟⲥⲙⲟⲥ ⲉ ⲩ ϣⲟⲩⲉⲓⲧ · ⲉ ⲩ ϣⲓⲛⲉ ⲟⲛ ⲉ ⲧⲣⲉ ⲩ ⲉⲓ ⲉⲃⲟⲗ ϩⲙ ⲡ ⲕⲟⲥⲙⲟⲥ ⲉ ⲩ ϣⲟⲩⲉⲓⲧ ⲡⲗⲏⲛ ⲧⲉⲛⲟⲩ ⲥⲉ ⲧⲟϩⲉ ϩⲟⲧⲁⲛ ⲉⲩϣⲁⲛ ⲛⲉϩ ⲡⲉⲩ ⲏⲣⲡ ⲧⲟⲧⲉ ⲥⲉ ⲛⲁ ⲣⲙⲉⲧⲁⲛⲟⲉⲓ",
+      "attested_surviving": "κ βε η ὴν πτωχεία",
+      "attested_editorial": "καὶ βλεισ ἐνοικεῖ ταύτην τὴν πτωχείαν",
+      "predicted_greek": "ὅτι εἰς τόν κόσμον ἦλθον κενοί ζητοῦντες πάλιν ἐξελθεῖν ἐκ τοῦ κόσμου εἰς κενόν πλήν νῦν μεθύσκουσιν καί ὅταν ἀποτίσωσιν τόν οἶνον αὐτῶν τότε μετανοήσουσιν",
+      "surviving_words": 5,
+      "gold_content_lemmas": [
+        "κ",
+        "πτωχεία"
+      ],
+      "matched_content_lemmas": [],
+      "surviving_char_f1_itacism": 0.5333
+    },
+    {
+      "span_id": "thomas.30.poxy1.a",
+      "unit_id": "thomas.30",
+      "transcription_id": "poxy-1-dclp",
+      "divergent_witness": true,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ϫⲉ ⲡ ⲙⲁ ⲉ ⲟⲩⲛ ϣⲟⲙⲧ ⲛ ⲛⲟⲩⲧⲉ ⲙⲙⲁⲩ ϩⲉⲛ ⲛⲟⲩⲧⲉ ⲛⲉ ⲡ ⲙⲁ ⲉ ⲟⲩⲛ ⲥⲛⲁⲩ ⲏ ⲟⲩⲁ ⲁⲛⲟⲕ ϯ ϣⲟⲟⲡ ⲛⲙⲙⲁ ϥ ·",
+      "attested_surviving": "ει ου ἐὰν ὦσιν εν θεοι καὶ ε ἐστιν μόνος ω ἐγώ εἰμι μετ’ αὐτ",
+      "attested_editorial": "λέγει Ἰησοῦς ὃπου ἐὰν ὦσιν τρεῖς εἰσὶν ἄθεοι καὶ σο ε ἐστιν μόνος τω ἐγώ εἰμι μετ’ αὐτοῦ",
+      "predicted_greek": "εἶπεν δέ ὁ Ἰησοῦς ὅπου εἰσίν θεοί εἰσίν δύο ἤ δύο ἐγώ μετά αὐτοῦ εἰμί",
+      "surviving_words": 15,
+      "gold_content_lemmas": [
+        "εἰμί",
+        "θεός",
+        "εἰμί",
+        "μόνος",
+        "εἰμί"
+      ],
+      "matched_content_lemmas": [
+        "ειμι",
+        "ειμι",
+        "ειμι",
+        "θεοσ"
+      ],
+      "surviving_char_f1_itacism": 0.6176
+    },
+    {
+      "span_id": "thomas.77.poxy1.a",
+      "unit_id": "thomas.77",
+      "transcription_id": "poxy-1-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ϥⲓ ⲙ ⲡ ⲱⲛⲉ ⲉϩⲣⲁⲓ ⲁⲩⲱ ⲧⲉⲧⲛ ⲛⲁ ϩⲉ ⲉⲣⲟ ⲓ ⲙⲙⲁⲩ",
+      "attested_surviving": "ἔγειον τὸν λίθο κἀκεῖ εὑρήσεις με",
+      "attested_editorial": "ἔγειρον τὸν λίθον κἀκεῖ εὑρήσεις με",
+      "predicted_greek": "φέρω τόν λίθον ἐκεῖνον καί εὑρήσετε με ἐκεῖ",
+      "surviving_words": 6,
+      "gold_content_lemmas": [
+        "λίθος",
+        "εὑρίσκω"
+      ],
+      "matched_content_lemmas": [
+        "λιθοσ",
+        "ευρισκω"
+      ],
+      "surviving_char_f1_itacism": 0.6364
+    },
+    {
+      "span_id": "thomas.77.poxy1.b",
+      "unit_id": "thomas.77",
+      "transcription_id": "poxy-1-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲱϩ ⲛ ⲟⲩ ϣⲉ ⲁⲛⲟⲕ ϯ ⲙⲙⲁⲩ",
+      "attested_surviving": "σχίσον τὸ ξύλον κἀγὼ ἐκεῖ εἰμι",
+      "attested_editorial": "σχίσον τὸ ξύλον κἀγὼ ἐκεῖ εἰμι",
+      "predicted_greek": "καί ὄψεσθε ξύλον ἐγώ",
+      "surviving_words": 6,
+      "gold_content_lemmas": [
+        "σχίζω",
+        "ξύλον",
+        "ἐκεῖ",
+        "εἰμί"
+      ],
+      "matched_content_lemmas": [
+        "ξυλον"
+      ],
+      "surviving_char_f1_itacism": 0.4324
+    },
+    {
+      "span_id": "thomas.31.poxy1.a",
+      "unit_id": "thomas.31",
+      "transcription_id": "poxy-1-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ⲙⲛ ⲡⲣⲟⲫⲏⲧⲏⲥ ϣⲏⲡ · ϩⲙ ⲡⲉϥ ϯⲙⲉ ⲙⲉⲣⲉ ⲥⲟⲓⲛ ⲣⲑⲉⲣⲁⲡⲉⲩⲉ ⲛ ⲛ ⲉⲧ ⲥⲟⲟⲩⲛ ⲙⲙⲟ ϥ",
+      "attested_surviving": "λέγει Ἰς οὐκ ἔστιν δεκτὸς προφήτης ἐν τῇ πρίδι αὐτῦ οὐδὲ ἰατρὸς ποιεῖ θεραπείας εἰς τοὺς γεινώσκοντας αὐτό",
+      "attested_editorial": "λέγει Ἰησοῦς οὐκ ἔστιν δεκτὸς προφήτης ἐν τῇ πατρίδι αὐτοῦ οὐδὲ ἰατρὸς ποιεῖ θεραπείας εἰς τοὺς γεινώσκοντας αὐτόν",
+      "predicted_greek": "εἶπεν δέ ὁ Ἰησοῦς καί ὁ προφήτης ἐν τῇ κώμῃ αὐτοῦ οὐ ἔξεστιν τοῖς γινώσκουσιν αὐτόν",
+      "surviving_words": 18,
+      "gold_content_lemmas": [
+        "λέγω",
+        "οὐ",
+        "εἰμί",
+        "δεκτός",
+        "προφήτης",
+        "πατρίς",
+        "ἰατρός",
+        "ποιέω",
+        "θεραπεία",
+        "γινώσκω"
+      ],
+      "matched_content_lemmas": [
+        "λεγω",
+        "ου",
+        "προφητησ",
+        "γινωσκω"
+      ],
+      "surviving_char_f1_itacism": 0.5691
+    },
+    {
+      "span_id": "thomas.32.poxy1.a",
+      "unit_id": "thomas.32",
+      "transcription_id": "poxy-1-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ϫⲉ ⲟⲩ ⲡⲟⲗⲓⲥ ⲉ ⲩ ⲕⲱⲧ ⲙⲙⲟ ⲥ ϩⲓϫⲛ ⲟⲩ ⲧⲟⲟⲩ ⲉ ϥ ϫⲟⲥⲉ ⲉ ⲥ ⲧⲁϫⲣⲏⲩ ⲙⲛ ϭⲟⲙ ⲛ ⲥ ϩⲉ ⲟⲩⲇⲉ ⲥ ⲛⲁ ϣ ϩⲱⲡ ⲟⲛ",
+      "attested_surviving": "λέγει Ἰς πόλις οἰκοδομημένη ἐπ’ ἄκρον ρους ὑψηλοῦς καὶ ἐστηριγμένη οὔτε πεεῖν δύναται οὔτε κρυῆναι",
+      "attested_editorial": "λέγει Ἰησοῦς πόλις οἰκοδομημένη ἐπ’ ἄκρον ὄρους ὑψηλοῦς καὶ ἐστηριγμένη οὔτε πεσεῖν δύναται οὔτε κρυβῆναι",
+      "predicted_greek": "καί εἶπεν ὁ Ἰησοῦς πόλις οἰκοδομημένη ἐπί ὄρος ὑψηλόν καί δυνάμεως ὡς οὐ μή λυθῇ ἔτι",
+      "surviving_words": 15,
+      "gold_content_lemmas": [
+        "λέγω",
+        "πόλις",
+        "οἰκοδομέω",
+        "ἄκρον",
+        "ὑψηλός",
+        "στηρίζω",
+        "δύναμαι"
+      ],
+      "matched_content_lemmas": [
+        "λεγω",
+        "πολισ",
+        "οικοδομεω",
+        "υψηλοσ"
+      ],
+      "surviving_char_f1_itacism": 0.6179
+    },
+    {
+      "span_id": "thomas.33.poxy1.a",
+      "unit_id": "thomas.33",
+      "transcription_id": "poxy-1-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ⲡ ⲉⲧ ⲕ ⲛⲁ ⲥⲱⲧⲙ ⲉⲣⲟ ϥ ϩⲙ ⲡⲉⲕ ⲙⲁⲁϫⲉ ϩⲙ ⲡ ⲕⲉ ⲙⲁⲁϫⲉ",
+      "attested_surviving": "λέγει Ἰς ἀκούεις ς ὸ ίον σου",
+      "attested_editorial": "λέγει Ἰησοῦς ἀκούεις ις τὸ ε τίον σου το",
+      "predicted_greek": "εἶπεν δέ ὁ Ἰησοῦς ὅς ἀκούσῃ ἐν τῷ ὠτί σου ἐν τῷ εὐαγγελίῳ",
+      "surviving_words": 7,
+      "gold_content_lemmas": [
+        "λέγω",
+        "ἀκούω"
+      ],
+      "matched_content_lemmas": [
+        "λεγω",
+        "ακουω"
+      ],
+      "surviving_char_f1_itacism": 0.6286
+    },
+    {
+      "span_id": "thomas.36.poxy655.a",
+      "unit_id": "thomas.36",
+      "transcription_id": "poxy-655-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ⲙⲡⲣ ϥⲓⲣⲟⲟⲩϣ ϫⲓⲛ ϩⲧⲟⲟⲩⲉ ϣⲁ ⲣⲟⲩϩⲉ ⲁⲩⲱ ϫⲓⲛ ϩⲓⲣⲟⲩϩⲉ ϣⲁ ϩⲧⲟⲟⲩⲉ",
+      "attested_surviving": "πρωὶ ε ἀ ἑσπ ωὶ",
+      "attested_editorial": "λέγει Ἰησοῦς μὴ μεριμνᾶτε ἀπὸ πρωὶ ἕως ὀψὲ μήτε ἀφ’ ἑσπέρας ἕως πρωὶ",
+      "predicted_greek": "εἶπεν δέ ὁ Ἰησοῦς μή μεριμνήσητε ἀπό πρωί ἕως ἑσπέρας καί ἀπό πρωΐ",
+      "surviving_words": 5,
+      "gold_content_lemmas": [
+        "πρωΐ"
+      ],
+      "matched_content_lemmas": [
+        "πρωι"
+      ],
+      "surviving_char_f1_itacism": 0.8421
+    },
+    {
+      "span_id": "thomas.36.poxy655.b",
+      "unit_id": "thomas.36",
+      "transcription_id": "poxy-655-dclp",
+      "divergent_witness": true,
+      "coptic_text": "",
+      "attested_surviving": "μήτε ν ί φά",
+      "attested_editorial": "μήτε τῇ τροφῇ ὑμῶν τί φάγητε",
+      "predicted_greek": "",
+      "surviving_words": 4,
+      "gold_content_lemmas": [],
+      "matched_content_lemmas": [],
+      "surviving_char_f1_itacism": 0.0
+    },
+    {
+      "span_id": "thomas.36.poxy655.c",
+      "unit_id": "thomas.36",
+      "transcription_id": "poxy-655-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ϫⲉ ⲟⲩ ⲡ ⲉⲧ ⲉⲧⲛ ⲛⲁ ⲧⲁⲁ ϥ ϩⲓⲱⲧ ⲧⲏⲩⲧⲛ",
+      "attested_surviving": "τῇ στ ί νδύ",
+      "attested_editorial": "μήτε τῇ στολῇ ὑμῶν τί ἐνδύσησθε",
+      "predicted_greek": "ἕως ὥρας τί παραδώσω ὑμῖν",
+      "surviving_words": 4,
+      "gold_content_lemmas": [],
+      "matched_content_lemmas": [],
+      "surviving_char_f1_itacism": 0.4615
+    },
+    {
+      "span_id": "thomas.36.poxy655.d",
+      "unit_id": "thomas.36",
+      "transcription_id": "poxy-655-dclp",
+      "divergent_witness": true,
+      "coptic_text": "",
+      "attested_surviving": "λῷ κρ ἐ ῶν ὐ ξνει ὲν μα ν αὶ μεῖς τίς ἂν θη ἐπὶ τὴν εἰλικίαν ὑμῶν αὐτὸ ώι ὑμεῖν τὸ ἔνδυμα μῶν",
+      "attested_editorial": "πολλῷ κρεισσονές ἐστε τῶν κρίνων ἅτινα οὐ ξαίνει οὐδὲ νήθει μηδὲν ἔχοντα ἔνδυμα τί ἐνδεῖτε καὶ ὑμεῖς τίς ἂν προσθείη ἐπὶ τὴν εἰλικίαν ὑμῶν αὐτὸς δώσει ὑμεῖν τὸ ἔνδυμα ὑμῶν",
+      "predicted_greek": "",
+      "surviving_words": 24,
+      "gold_content_lemmas": [
+        "μεῖς",
+        "ἡλικία",
+        "ἔνδυμα",
+        "μῶν"
+      ],
+      "matched_content_lemmas": [],
+      "surviving_char_f1_itacism": 0.0
+    },
+    {
+      "span_id": "thomas.37.poxy655.a",
+      "unit_id": "thomas.37",
+      "transcription_id": "poxy-655-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲛⲉϥ ⲙⲁⲑⲏⲧⲏⲥ ϫⲉ ⲁϣ ⲛ ϩⲟⲟⲩ ⲉ ⲕ ⲛⲁ ⲟⲩⲱⲛϩ ⲉⲃⲟⲗ ⲛⲁ ⲛ ⲁⲩⲱ ⲁϣ ⲛ ϩⲟⲟⲩ ⲉ ⲛ ⲛⲁ ⲛⲁⲩ ⲉⲣⲟ ⲕ ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ϫⲉ ϩⲟⲧⲁⲛ ⲉⲧⲉⲧⲛϣⲁⲛ ⲕⲉⲕ ⲧⲏⲩⲧⲛ ⲁϩⲏⲩ ⲙⲡⲉ ⲧⲛ ϣⲓⲡⲉ",
+      "attested_surviving": "λέγουσιν αὐτῷ οἱ μαθηταὶ αὐτοῦ πότε ὑμεῖν ἐμφανὴς ἔσει καὶ πότε σε ὀψόμεθα λέγει ὅταν ἐκδύσησθε μ αἰσχυνθῆτε",
+      "attested_editorial": "λέγουσιν αὐτῷ οἱ μαθηταὶ αὐτοῦ πότε ὑμεῖν ἐμφανὴς ἔσει καὶ πότε σε ὀψόμεθα λέγει ὅταν ἐκδύσησθε καί μὴ αἰσχυνθῆτε",
+      "predicted_greek": "καί εἶπαν οἱ μαθηταί αὐτοῦ πῶς φανῇ ἡμῖν καί πῶς σε εἴδομεν λέγει ὁ Ἰησοῦς ὅταν γυμνόν ἔχητε καί οὐ ἐπαισχύνετε",
+      "surviving_words": 18,
+      "gold_content_lemmas": [
+        "λέγω",
+        "μαθητής",
+        "ποτέ",
+        "ἐμφανής",
+        "εἰμί",
+        "ποτέ",
+        "ὁράω",
+        "λέγω",
+        "ἐκδύσησθε",
+        "μ",
+        "αἰσχυνθῆτε"
+      ],
+      "matched_content_lemmas": [
+        "λεγω",
+        "λεγω",
+        "μαθητησ",
+        "οραω"
+      ],
+      "surviving_char_f1_itacism": 0.6531
+    },
+    {
+      "span_id": "thomas.38.poxy655.a",
+      "unit_id": "thomas.38",
+      "transcription_id": "poxy-655-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ϫⲉ ϩⲁϩ ⲛ ⲥⲟⲡ · ⲁ ⲧⲉⲧⲛ ⲣⲉⲡⲓⲑⲩⲙⲉⲓ ⲉ ⲥⲱⲧⲙ ⲁ ⲛⲉⲓ ϣⲁϫⲉ ⲛⲁⲓ · ⲉⲧ ϯ ϫⲱ ⲙⲙⲟ ⲟⲩ ⲛⲏ ⲧⲛ ⲁⲩⲱ ⲙⲛⲧⲏ ⲧⲛ ⲕⲉ ⲟⲩⲁ ⲉ ⲥⲟⲧⲙ ⲟⲩ ⲛⲧⲟⲟⲧ ϥ ⲟⲩⲛ ϩⲉⲛ ϩⲟⲟⲩ ⲛⲁ ϣⲱⲡⲉ ⲛⲧⲉ ⲧⲛ ϣⲓⲛⲉ ⲛⲥⲱ ⲓ ⲧⲉⲧⲛ ⲛⲁ ϩⲉ ⲁⲛ ⲉⲣⲟ ⲓ",
+      "attested_surviving": "λέ ο τ γ κ ν κ ἡ σ",
+      "attested_editorial": "λέγει Ἰησοῦς πολλάκις οὖν ἐπεθυμεῖτε τούτους τοὺς λόγους μου ἀκοῦσαι καὶ ἔχετε οὐδενὸς ἄλλου ἀκοῦσαι καὶ ἐλεύσονται ἡμέραι ὅτε ζητήσετέ με καὶ οὐ μὴ εὑρήσετέ με",
+      "predicted_greek": "εἶπεν δέ ὁ Ἰησοῦς πολλάκις ἐπεθύμησα ἀκούειν ταῦτα τά ῥήματα ἅ λέγω ὑμῖν καί οὐ ἔχετε ἄλλον ἀκούειν παρά αὐτοῦ ἔσονται ἡμέραι καί ζητεῖτε με οὐ εὑρήσετε με",
+      "surviving_words": 9,
+      "gold_content_lemmas": [],
+      "matched_content_lemmas": [],
+      "surviving_char_f1_itacism": 0.625
+    },
+    {
+      "span_id": "thomas.39.poxy655.a",
+      "unit_id": "thomas.39",
+      "transcription_id": "poxy-655-dclp",
+      "divergent_witness": false,
+      "coptic_text": "ⲡⲉϫⲉ ⲓⲏⲥⲟⲩⲥ ϫⲉ ⲙ ⲫⲁⲣⲓⲥⲁⲓⲟⲥ ⲙⲛ ⲛ ⲅⲣⲁⲙⲙⲁⲧⲉⲩⲥ ⲁ ⲩ ϫⲓ ⲛ ϣⲁϣⲧ · ⲛ ⲧ ⲅⲛⲱⲥⲓⲥ ⲁ ⲩ ϩⲟⲡ ⲟⲩ ⲟⲩⲧⲉ ⲙⲡ ⲟⲩ ⲃⲱⲕ ⲉϩⲟⲩⲛ ⲁⲩⲱ ⲛ ⲉⲧ ⲟⲩⲱϣ ⲉ ⲃⲱⲕ ⲉϩⲟⲩⲛ ⲙⲡ ⲟⲩ ⲕⲁⲁ ⲩ ⲛⲧⲱⲧⲛ ⲇⲉ ϣⲱⲡⲉ ⲙ ⲫⲣⲟⲛⲓⲙⲟⲥ ⲛ ⲧ ϩⲉ ⲛ ⲛ ϩⲟϥ ⲁⲩⲱ ⲛ ⲁⲕⲉⲣⲁⲓⲟⲥ ⲛ ⲧ ϩⲉ ⲛ ⲛ ϭⲣⲟⲙⲡⲉ",
+      "attested_surviving": "ἔλ τῆς κρυψ εἰσῆ εἰσερ καν δὲ γεί μοι ὡ κέραι",
+      "attested_editorial": "λέγει Ἰησοῦς οἱ Φαρισαῖοι καὶ οἱ γραμματεῖς ἔλαβον τὰς κλεῖδας τῆς γνώσεως καὶ ἔκρυψαν αὐτάς·ὄυτε εἰσῆλθον ὄυτε τοὺς εἰσερχομένους ἀφῆκαν εἰσελθεῖν ὑμεῖς δὲ γείνεσθε φρόνιμοι ὡς ὄφεις καὶ ἀκέραιοι ὡς περιστεραί",
+      "predicted_greek": "εἶπεν δέ ὁ Ἰησοῦς τοῖς Φαρισαίοις καί τοῖς γραμματέοις παρέλαβον τήν κυρίδα καί ἔκρυψαν αὐτούς οὔτε εἰσελθόντες καί ὅσοι ἤθελον εἰσελθεῖν καί οὐ ἐγκατέλιπον ὑμεῖς δέ φρόνιμοι ὡς ὄφεως καί ἀκέραιος ὡς σπλάγχνα",
+      "surviving_words": 11,
+      "gold_content_lemmas": [],
+      "matched_content_lemmas": [],
+      "surviving_char_f1_itacism": 0.6545
+    }
+  ]
+}

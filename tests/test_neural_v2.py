@@ -1,0 +1,159 @@
+# SPDX-License-Identifier: Apache-2.0
+"""Unit tests for from-scratch neural NMT model-v2 components & determinism."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import torch
+
+from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon, LoanwordEntry
+from zetodos_thomas.morphology.greek_inflector import GreekInflector
+from zetodos_thomas.neural.corpus import (
+    normalize_greek_target,
+    serialize_coptic_morphemes,
+)
+from zetodos_thomas.neural.decoder_v2 import (
+    NeuralKoineDecoder,
+    RerankWeights,
+    load_analyzer_inflector,
+    save_analyzer_shards,
+)
+from zetodos_thomas.neural.tokenizer import BilingualTokenizer
+from zetodos_thomas.neural.transformer import (
+    KoineCausalLM,
+    KoineCausalLMConfig,
+    KoineSeq2SeqTransformer,
+    Seq2SeqConfig,
+)
+from zetodos_thomas.schemas.linguistic import CopticMorpheme, CopticUnit
+from zetodos_thomas.schemas.source import UnitKind
+
+
+def test_neural_corpus_normalization_and_serialization() -> None:
+    assert (
+        normalize_greek_target("Ἀβραὰμ ἐγέννησε(ν) τὸν Ἰσαάκ.")
+        == "Ἀβραάμ ἐγέννησεν τόν Ἰσαάκ"
+    )
+    ccl = CclLexicon(
+        loanwords={
+            "ϩⲉⲣⲙⲏⲛⲉⲓⲁ": [LoanwordEntry("ϩⲉⲣⲙⲏⲛⲉⲓⲁ", "ἑρμηνεία", "N-", gender="F")]
+        },
+        itacism_index={},
+        greek_genders={"ἑρμηνεία": "F"},
+    )
+    ms = [
+        CopticMorpheme(seq=0, group_seq=0, norm="ⲡ", lemma="ⲡ", pos="ART"),
+        CopticMorpheme(seq=1, group_seq=0, norm="ϩⲏⲡ⳿", lemma="ϩⲱⲡ⳿", pos="VSTAT"),
+        CopticMorpheme(
+            seq=2,
+            group_seq=1,
+            norm="ϩⲉⲣⲙⲏⲛⲉⲓⲁ",
+            lemma="ϩⲉⲣⲙⲏⲛⲉⲓⲁ",
+            pos="N",
+            lang="Greek",
+        ),
+    ]
+    txt, spans = serialize_coptic_morphemes(
+        ms, ccl_lexicon=ccl, domain_tag="<DOM_NT>", v1_draft="ὁ λόγος ἑρμηνεία"
+    )
+    assert txt.startswith("<DOM_NT> ⲡ ")
+    assert "<POS_ART>" not in txt
+    assert "ϩⲏⲡ <LEM> ϩⲱⲡ <POS_VSTAT>" in txt
+    assert "<LOAN> ἑρμηνεία" in txt
+    assert "<V1> ὁ λόγος ἑρμηνεία" in txt
+    assert [sq for sq, _, _ in spans] == [0, 1, 2]
+
+
+def test_neural_v2_tokenizer_transformer_safetensors_and_determinism(
+    tmp_path: Path,
+) -> None:
+    ccl = CclLexicon(
+        loanwords={
+            "ϩⲉⲣⲙⲏⲛⲉⲓⲁ": [LoanwordEntry("ϩⲉⲣⲙⲏⲛⲉⲓⲁ", "ἑρμηνεία", "N-", gender="F")]
+        },
+        itacism_index={},
+        greek_genders={"ἑρμηνεία": "F"},
+    )
+    texts = [
+        "<DOM_NT> ⲡ <POS_ART> ϣⲁϫⲉ <POS_N> ϩⲏⲡ <LEM> ϩⲱⲡ <POS_VSTAT>",
+        "<DOM_NT> ⲧ <POS_ART> ϩⲉⲣⲙⲏⲛⲉⲓⲁ <POS_N> <LOAN> ἑρμηνεία",
+        "ὁ λόγος κεκρυμμένος ἐστίν",
+        "τήν ἑρμηνείαν τῶν λόγων τούτων",
+    ] * 8
+    tok = BilingualTokenizer.train(
+        texts=texts, out_prefix=tmp_path / "tokenizer", vocab_size=360
+    )
+    cfg = Seq2SeqConfig(
+        vocab_size=tok.vocab_size,
+        d_model=48,
+        n_heads=4,
+        d_ff=96,
+        num_enc_layers=2,
+        num_dec_layers=2,
+        dropout=0.0,
+        attn_dropout=0.0,
+    )
+    torch.manual_seed(7)
+    model = KoineSeq2SeqTransformer(cfg)
+    w_path = tmp_path / "forward-0.safetensors"
+    model.save_safetensors(w_path, fp16=True)
+    reloaded = KoineSeq2SeqTransformer.load_safetensors(w_path, cfg, device="cpu")
+
+    lm_cfg = KoineCausalLMConfig(
+        vocab_size=tok.vocab_size,
+        d_model=48,
+        n_heads=4,
+        d_ff=96,
+        num_layers=2,
+        dropout=0.0,
+        attn_dropout=0.0,
+    )
+    lm = KoineCausalLM(lm_cfg)
+    lm_path = tmp_path / "koine-lm.safetensors"
+    lm.save_safetensors(lm_path, fp16=True)
+    lm_reloaded = KoineCausalLM.load_safetensors(lm_path, lm_cfg, device="cpu")
+    scores = lm_reloaded.score_token_seqs([tok.encode("ὁ λόγος ἐστίν")])
+    assert len(scores) == 1 and scores[0] < 0.0
+
+    inf = GreekInflector(
+        paradigms={},
+        coarse_paradigms={},
+        lemma_genders={"λόγος": "M"},
+        surface_analyses={"λόγος": [("λόγος", "N-:----NSM-", -0.5)]},
+        known_lemmas={"λογος": ("λόγος", "N-")},
+    )
+    save_analyzer_shards(inf, tmp_path)
+    loaded_inf = load_analyzer_inflector(tmp_path)
+    assert loaded_inf.analyze_surface("λόγος")[0][0] == "λόγος"
+
+    dec = NeuralKoineDecoder(
+        tokenizer=tok,
+        forward_models=[reloaded],
+        ccl_lexicon=ccl,
+        analyzer_inflector=loaded_inf,
+        reverse_model=reloaded,
+        koine_lm=lm_reloaded,
+        weights=RerankWeights(w_fwd=1.0, w_rev=0.2, w_lm=0.1, beam_size=3),
+        device="cpu",
+    )
+    unit = CopticUnit(
+        unit_id="thomas.test.v2",
+        source_id="dilley-thomas",
+        book="thomas",
+        chapter=1,
+        verse=1,
+        kind=UnitKind.LOGION,
+        original_text="test",
+        normalized_text="test",
+        morphemes=[
+            CopticMorpheme(seq=0, group_seq=0, norm="ⲡ", lemma="ⲡ", pos="ART"),
+            CopticMorpheme(seq=1, group_seq=0, norm="ϣⲁϫⲉ", lemma="ϣⲁϫⲉ", pos="N"),
+            CopticMorpheme(seq=2, group_seq=1, norm="ϩⲏⲡ", lemma="ϩⲱⲡ", pos="VSTAT"),
+        ],
+    )
+    out1 = dec.decode_unit(unit)
+    out2 = dec.decode_unit(unit)
+    assert out1.greek_text == out2.greek_text
+    assert len(out1.tokens) > 0
+    assert all(len(t.coptic_seqs) > 0 for t in out1.tokens)

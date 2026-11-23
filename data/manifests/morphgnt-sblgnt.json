@@ -1,0 +1,22 @@
+{
+  "id": "morphgnt-sblgnt",
+  "title": "MorphGNT: SBLGNT Edition (SBL Greek New Testament + morphological parsing & lemmas)",
+  "version": "6.12 (aaed91e57c8e)",
+  "url": "https://github.com/morphgnt/sblgnt",
+  "spdx_or_custom": "CC-BY-SA-3.0",
+  "attribution": "SBL Greek New Testament (Michael W. Holmes, Society of Biblical Literature / Logos, CC BY 4.0 / SBLGNT EULA); morphological parsing and lemmatization by J. K. Tauber and contributors (MorphGNT, CC BY-SA 3.0, DOI 10.5281/zenodo.376200).",
+  "mode": "setup-download",
+  "checksum": "sha256:95b360228bedd1c2d06655469111d3f028a4ce1d46939d440ed549feee8b73ec",
+  "notes": "Default Greek NT spine (replaces raw diplomatic ntvmr-vaticanus-b). Checksum pins 61-Mt-morphgnt.txt at commit aaed91e57c8e4a8dc9a2383e129ca5e75fe6393d; all 27 NT book files are cloned/fetched at that immutable git SHA during thomas setup. Provides polytonic Koine surfaces, dictionary lemmas, and 8-slot morphological parses across all 27 NT books (~7,950 verses). Derived mapping models carry ShareAlike.",
+  "editor": "Michael W. Holmes (SBLGNT); J. K. Tauber (MorphGNT)",
+  "language": "grc",
+  "dialect": "Koine",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "local_path": "data/downloads/morphgnt-sblgnt/",
+  "redistributable": true,
+  "gate": null,
+  "module_name": null,
+  "sword_version_date": null,
+  "text_source": "SBLGNT + MorphGNT parsing layer (commit aaed91e57c8e4a8dc9a2383e129ca5e75fe6393d)",
+  "counterpart_source_id": "copsahhorner"
+}
