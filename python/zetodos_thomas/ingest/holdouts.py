@@ -487,8 +487,6 @@ def write_training_provenance(
         "excluded_dev_count": len(set(excluded_dev_ids)),
         "excluded_synoptic_thomas_count": len(syn_sorted),
         "excluded_synoptic_thomas_unit_ids": syn_sorted,
-        "zero_curated_thomas_idioms": True,
-        "zero_ccl_manual_fallbacks": True,
         "artifact_sha256": artifact_hashes,
     }
     if extra:

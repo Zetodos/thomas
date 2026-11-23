@@ -91,25 +91,27 @@ def eval_run(
     )
     typer.echo(
         f"NT Holdout ({nt.unit_count} verses): "
-        f"Content Lemma F1={nt.content_lemma_f1:.4f} "
-        f"(Ord={nt.ordered_content_lemma_f1:.4f}, "
-        f"P={nt.content_lemma_precision:.4f}, R={nt.content_lemma_recall:.4f}), "
-        f"Surface F1={nt.inflected_surface_f1:.4f} "
-        f"(Ord={nt.ordered_inflected_surface_f1:.4f}), "
+        f"Ordered Lemma F1={nt.ordered_content_lemma_f1:.4f} "
+        f"(P={nt.ordered_content_lemma_precision:.4f}, "
+        f"R={nt.ordered_content_lemma_recall:.4f}; "
+        f"Bag={nt.content_lemma_f1:.4f}), "
+        f"Ordered Surface F1={nt.ordered_inflected_surface_f1:.4f} "
+        f"(Bag={nt.inflected_surface_f1:.4f}), "
         f"Morph={nt.morph_accuracy_on_matched_lemmas:.4f}, "
         f"chrF++={nt.chrf_pp:.4f}, BLEU-4={nt.bleu_4:.4f}, Cov={nt.coverage:.4f}"
     )
     typer.echo(
         f"P.Oxy. Convergent ({cv.span_count} spans / {cv.unit_count} units): "
-        f"Content Lemma F1={cv.content_lemma_f1:.4f} "
-        f"(Ord={cv.ordered_content_lemma_f1:.4f}, "
-        f"SurvOnly F1/R={cv.surviving_only_content_lemma_f1:.4f}/"
-        f"{cv.surviving_only_content_lemma_recall:.4f}, "
-        f"R={cv.content_lemma_recall:.4f}, "
-        f"Top-3 R={cv.top3_content_lemma_recall:.4f}), "
-        f"Char F1 exact/itac={cv.surviving_char_f1_exact:.4f}/"
+        f"SurvOnly Ordered Lemma F1={cv.surviving_only_ordered_content_lemma_f1:.4f} "
+        f"(P={cv.surviving_only_ordered_content_lemma_precision:.4f}, "
+        f"R={cv.surviving_only_ordered_content_lemma_recall:.4f}; "
+        f"Editorial Ord={cv.ordered_content_lemma_f1:.4f}, "
+        f"Bag={cv.content_lemma_f1:.4f}), "
+        f"Char F1 clear/unclear/all="
+        f"{cv.clear_surviving_char_f1_itacism:.4f}/"
+        f"{cv.unclear_surviving_char_f1_itacism:.4f}/"
         f"{cv.surviving_char_f1_itacism:.4f}, "
-        f"Loanwords={lw_str} ({cv.loanword_total})"
+        f"Aligned Loanwords={lw_str} ({cv.loanword_total})"
     )
     if (
         report.poxy_convergent_non_synoptic is not None
@@ -119,24 +121,26 @@ def eval_run(
         sy = report.poxy_convergent_synoptic
         typer.echo(
             f"  Non-Synoptic ({ns.span_count} spans/{ns.unit_count} units): "
-            f"Lemma F1={ns.content_lemma_f1:.4f} "
-            f"(Ord={ns.ordered_content_lemma_f1:.4f}, "
-            f"SurvOnly={ns.surviving_only_content_lemma_f1:.4f}), "
-            f"Char Itac={ns.surviving_char_f1_itacism:.4f}"
+            f"SurvOnly Ord Lemma F1={ns.surviving_only_ordered_content_lemma_f1:.4f} "
+            f"(R={ns.surviving_only_ordered_content_lemma_recall:.4f}; "
+            f"Editorial Ord={ns.ordered_content_lemma_f1:.4f}), "
+            f"Char Clear/All={ns.clear_surviving_char_f1_itacism:.4f}/"
+            f"{ns.surviving_char_f1_itacism:.4f}"
         )
         typer.echo(
             f"  Synoptic-Parallel ({sy.span_count} spans/{sy.unit_count} units): "
-            f"Lemma F1={sy.content_lemma_f1:.4f} "
-            f"(Ord={sy.ordered_content_lemma_f1:.4f}, "
-            f"SurvOnly={sy.surviving_only_content_lemma_f1:.4f}), "
-            f"Char Itac={sy.surviving_char_f1_itacism:.4f}"
+            f"SurvOnly Ord Lemma F1={sy.surviving_only_ordered_content_lemma_f1:.4f} "
+            f"(R={sy.surviving_only_ordered_content_lemma_recall:.4f}; "
+            f"Editorial Ord={sy.ordered_content_lemma_f1:.4f}), "
+            f"Char Clear/All={sy.clear_surviving_char_f1_itacism:.4f}/"
+            f"{sy.surviving_char_f1_itacism:.4f}"
         )
     typer.echo(
         f"P.Oxy. Overall ({ov.span_count} spans / {ov.unit_count} units): "
-        f"Content Lemma F1={ov.content_lemma_f1:.4f} "
-        f"(Ord={ov.ordered_content_lemma_f1:.4f}, "
-        f"SurvOnly={ov.surviving_only_content_lemma_f1:.4f}, "
-        f"R={ov.content_lemma_recall:.4f}), "
-        f"Char F1 itacism={ov.surviving_char_f1_itacism:.4f}"
+        f"SurvOnly Ordered Lemma F1={ov.surviving_only_ordered_content_lemma_f1:.4f} "
+        f"(R={ov.surviving_only_ordered_content_lemma_recall:.4f}; "
+        f"Editorial Ord={ov.ordered_content_lemma_f1:.4f}), "
+        f"Char F1 clear/all={ov.clear_surviving_char_f1_itacism:.4f}/"
+        f"{ov.surviving_char_f1_itacism:.4f}"
     )
     typer.echo(f"Wrote {json_path} ({json_path.stat().st_size} bytes) and {md_path}")

@@ -4,116 +4,153 @@
   "nt_holdout": {
     "unit_count": 41,
     "coverage": 1.0,
-    "content_lemma_precision": 0.6461,
-    "content_lemma_recall": 0.665,
-    "content_lemma_f1": 0.6554,
+    "ordered_content_lemma_precision": 0.5796,
+    "ordered_content_lemma_recall": 0.5966,
     "ordered_content_lemma_f1": 0.588,
-    "all_token_lemma_f1": 0.6405,
-    "inflected_surface_f1": 0.3827,
     "ordered_inflected_surface_f1": 0.3475,
     "morph_accuracy_on_matched_lemmas": 0.5887,
     "chrf_pp": 0.2897,
-    "bleu_4": 0.0418
+    "bleu_4": 0.0418,
+    "content_lemma_precision": 0.6461,
+    "content_lemma_recall": 0.665,
+    "content_lemma_f1": 0.6554,
+    "all_token_lemma_f1": 0.6405,
+    "inflected_surface_f1": 0.3827
   },
   "poxy_convergent": {
     "span_count": 23,
     "unit_count": 19,
-    "surviving_word_count": 312,
-    "surviving_char_count": 1103,
+    "surviving_only_word_count": 232,
+    "surviving_only_ordered_content_lemma_precision": 0.2761,
+    "surviving_only_ordered_content_lemma_recall": 0.6271,
+    "surviving_only_ordered_content_lemma_f1": 0.3834,
+    "surviving_only_content_lemma_precision": 0.2873,
+    "surviving_only_content_lemma_recall": 0.6525,
+    "surviving_only_content_lemma_f1": 0.399,
+    "clear_surviving_word_count": 292,
+    "clear_surviving_char_f1_itacism": 0.725,
+    "unclear_surviving_word_count": 20,
+    "unclear_surviving_char_f1_itacism": 0.6742,
     "surviving_char_f1_exact": 0.7036,
     "surviving_char_f1_itacism": 0.7185,
     "surviving_char_3gram_recall_itacism": 0.5956,
+    "loanword_exact_match_rate": 0.9091,
+    "loanword_total": 11,
+    "surviving_word_count": 312,
+    "surviving_char_count": 1103,
+    "ordered_content_lemma_f1": 0.543,
     "content_lemma_precision": 0.4776,
     "content_lemma_recall": 0.6919,
     "content_lemma_f1": 0.5651,
-    "ordered_content_lemma_f1": 0.543,
-    "surviving_only_word_count": 232,
-    "surviving_only_content_lemma_recall": 0.6525,
-    "surviving_only_content_lemma_f1": 0.399,
-    "surviving_only_ordered_content_lemma_f1": 0.3834,
-    "top3_content_lemma_recall": 0.7784,
-    "loanword_exact_match_rate": 1.0,
-    "loanword_total": 17
+    "top3_content_lemma_recall": 0.7784
   },
   "poxy_convergent_non_synoptic": {
     "span_count": 7,
     "unit_count": 6,
-    "surviving_word_count": 106,
-    "surviving_char_count": 387,
+    "surviving_only_word_count": 97,
+    "surviving_only_ordered_content_lemma_precision": 0.4304,
+    "surviving_only_ordered_content_lemma_recall": 0.6415,
+    "surviving_only_ordered_content_lemma_f1": 0.5152,
+    "surviving_only_content_lemma_precision": 0.4557,
+    "surviving_only_content_lemma_recall": 0.6792,
+    "surviving_only_content_lemma_f1": 0.5455,
+    "clear_surviving_word_count": 103,
+    "clear_surviving_char_f1_itacism": 0.7374,
+    "unclear_surviving_word_count": 3,
+    "unclear_surviving_char_f1_itacism": 0.5882,
     "surviving_char_f1_exact": 0.7234,
     "surviving_char_f1_itacism": 0.734,
     "surviving_char_3gram_recall_itacism": 0.603,
+    "loanword_exact_match_rate": 1.0,
+    "loanword_total": 6,
+    "surviving_word_count": 106,
+    "surviving_char_count": 387,
+    "ordered_content_lemma_f1": 0.5857,
     "content_lemma_precision": 0.5443,
     "content_lemma_recall": 0.7049,
     "content_lemma_f1": 0.6143,
-    "ordered_content_lemma_f1": 0.5857,
-    "surviving_only_word_count": 97,
-    "surviving_only_content_lemma_recall": 0.6792,
-    "surviving_only_content_lemma_f1": 0.5455,
-    "surviving_only_ordered_content_lemma_f1": 0.5152,
-    "top3_content_lemma_recall": 0.7541,
-    "loanword_exact_match_rate": 1.0,
-    "loanword_total": 7
+    "top3_content_lemma_recall": 0.7541
   },
   "poxy_convergent_synoptic": {
     "span_count": 16,
     "unit_count": 13,
-    "surviving_word_count": 206,
-    "surviving_char_count": 716,
+    "surviving_only_word_count": 135,
+    "surviving_only_ordered_content_lemma_precision": 0.2116,
+    "surviving_only_ordered_content_lemma_recall": 0.6154,
+    "surviving_only_ordered_content_lemma_f1": 0.315,
+    "surviving_only_content_lemma_precision": 0.2169,
+    "surviving_only_content_lemma_recall": 0.6308,
+    "surviving_only_content_lemma_f1": 0.3228,
+    "clear_surviving_word_count": 189,
+    "clear_surviving_char_f1_itacism": 0.7181,
+    "unclear_surviving_word_count": 17,
+    "unclear_surviving_char_f1_itacism": 0.6944,
     "surviving_char_f1_exact": 0.6929,
     "surviving_char_f1_itacism": 0.7101,
     "surviving_char_3gram_recall_itacism": 0.5914,
+    "loanword_exact_match_rate": 0.8,
+    "loanword_total": 5,
+    "surviving_word_count": 206,
+    "surviving_char_count": 716,
+    "ordered_content_lemma_f1": 0.524,
     "content_lemma_precision": 0.4497,
     "content_lemma_recall": 0.6855,
     "content_lemma_f1": 0.5431,
-    "ordered_content_lemma_f1": 0.524,
-    "surviving_only_word_count": 135,
-    "surviving_only_content_lemma_recall": 0.6308,
-    "surviving_only_content_lemma_f1": 0.3228,
-    "surviving_only_ordered_content_lemma_f1": 0.315,
-    "top3_content_lemma_recall": 0.7903,
-    "loanword_exact_match_rate": 1.0,
-    "loanword_total": 10
+    "top3_content_lemma_recall": 0.7903
   },
   "poxy_divergent": {
     "span_count": 6,
     "unit_count": 5,
-    "surviving_word_count": 56,
-    "surviving_char_count": 156,
+    "surviving_only_word_count": 30,
+    "surviving_only_ordered_content_lemma_precision": 0.1515,
+    "surviving_only_ordered_content_lemma_recall": 0.3846,
+    "surviving_only_ordered_content_lemma_f1": 0.2174,
+    "surviving_only_content_lemma_precision": 0.1515,
+    "surviving_only_content_lemma_recall": 0.3846,
+    "surviving_only_content_lemma_f1": 0.2174,
+    "clear_surviving_word_count": 40,
+    "clear_surviving_char_f1_itacism": 0.4294,
+    "unclear_surviving_word_count": 16,
+    "unclear_surviving_char_f1_itacism": 0.2857,
     "surviving_char_f1_exact": 0.3882,
     "surviving_char_f1_itacism": 0.3796,
     "surviving_char_3gram_recall_itacism": 0.2712,
+    "loanword_exact_match_rate": null,
+    "loanword_total": 0,
+    "surviving_word_count": 56,
+    "surviving_char_count": 156,
+    "ordered_content_lemma_f1": 0.2034,
     "content_lemma_precision": 0.1818,
     "content_lemma_recall": 0.2308,
     "content_lemma_f1": 0.2034,
-    "ordered_content_lemma_f1": 0.2034,
-    "surviving_only_word_count": 30,
-    "surviving_only_content_lemma_recall": 0.3846,
-    "surviving_only_content_lemma_f1": 0.2174,
-    "surviving_only_ordered_content_lemma_f1": 0.2174,
-    "top3_content_lemma_recall": 0.2308,
-    "loanword_exact_match_rate": null,
-    "loanword_total": 0
+    "top3_content_lemma_recall": 0.2308
   },
   "poxy_overall": {
     "span_count": 29,
     "unit_count": 20,
-    "surviving_word_count": 368,
-    "surviving_char_count": 1259,
+    "surviving_only_word_count": 262,
+    "surviving_only_ordered_content_lemma_precision": 0.2625,
+    "surviving_only_ordered_content_lemma_recall": 0.6031,
+    "surviving_only_ordered_content_lemma_f1": 0.3657,
+    "surviving_only_content_lemma_precision": 0.2724,
+    "surviving_only_content_lemma_recall": 0.626,
+    "surviving_only_content_lemma_f1": 0.3796,
+    "clear_surviving_word_count": 332,
+    "clear_surviving_char_f1_itacism": 0.701,
+    "unclear_surviving_word_count": 36,
+    "unclear_surviving_char_f1_itacism": 0.5496,
     "surviving_char_f1_exact": 0.6738,
     "surviving_char_f1_itacism": 0.6867,
     "surviving_char_3gram_recall_itacism": 0.5641,
+    "loanword_exact_match_rate": 0.9091,
+    "loanword_total": 11,
+    "surviving_word_count": 368,
+    "surviving_char_count": 1259,
+    "ordered_content_lemma_f1": 0.5039,
     "content_lemma_precision": 0.4452,
     "content_lemma_recall": 0.6351,
     "content_lemma_f1": 0.5234,
-    "ordered_content_lemma_f1": 0.5039,
-    "surviving_only_word_count": 262,
-    "surviving_only_content_lemma_recall": 0.626,
-    "surviving_only_content_lemma_f1": 0.3796,
-    "surviving_only_ordered_content_lemma_f1": 0.3657,
-    "top3_content_lemma_recall": 0.7109,
-    "loanword_exact_match_rate": 1.0,
-    "loanword_total": 17
+    "top3_content_lemma_recall": 0.7109
   },
   "spans": [
     {
@@ -128,16 +165,12 @@
       "surviving_words": 12,
       "gold_content_lemmas": [
         "λόγος",
-        "λαλέω",
-        "Ἰησοῦς",
-        "ζάω",
-        "Θωμᾶς"
+        "ἰης",
+        "ζάω"
       ],
       "matched_content_lemmas": [
         "λογοσ",
-        "ιησουσ",
-        "ζαω",
-        "θωμασ"
+        "ζαω"
       ],
       "surviving_char_f1_itacism": 0.8462
     },
@@ -153,7 +186,6 @@
       "surviving_words": 9,
       "gold_content_lemmas": [
         "λέγω",
-        "ἑρμηνεία",
         "λόγος",
         "οὐ",
         "μή",
@@ -161,7 +193,6 @@
       ],
       "matched_content_lemmas": [
         "λεγω",
-        "ερμηνεια",
         "λογοσ",
         "ου",
         "γευομαι"
@@ -181,13 +212,11 @@
       "gold_content_lemmas": [
         "μή",
         "παύω",
-        "ζητέω",
         "εὑρίσκω",
         "εὑρίσκω"
       ],
       "matched_content_lemmas": [
         "μη",
-        "ζητεω",
         "ευρισκω"
       ],
       "surviving_char_f1_itacism": 0.6441
@@ -203,9 +232,7 @@
       "predicted_greek": "ταραχθῇ καί ταραχθῇ θαυμάζῃ καί βασιλεύσει ἐπί τοῦ παντός",
       "surviving_words": 4,
       "gold_content_lemmas": [
-        "θαμβηθεὶς",
-        "βασιλεύω",
-        "ἀναπαήσομαι"
+        "βασιλεύω"
       ],
       "matched_content_lemmas": [
         "βασιλευω"
@@ -224,20 +251,14 @@
       "surviving_words": 13,
       "gold_content_lemmas": [
         "λέγω",
-        "Ἰησοῦς",
         "ἕλκω",
         "βασιλεία",
-        "οὐρανός",
-        "πετεινόν",
-        "οὐρανός"
+        "πετεινόν"
       ],
       "matched_content_lemmas": [
         "λεγω",
-        "ιησουσ",
         "ελκω",
-        "βασιλεια",
-        "ουρανοσ",
-        "ουρανοσ"
+        "βασιλεια"
       ],
       "surviving_char_f1_itacism": 0.8511
     },
@@ -253,14 +274,10 @@
       "surviving_words": 11,
       "gold_content_lemmas": [
         "γῆ",
-        "εἰμί",
-        "ἰχθύς",
-        "θάλασσα",
-        "προφθάσαντες"
+        "ἰχθύς"
       ],
       "matched_content_lemmas": [
-        "ιχθυσ",
-        "θαλασσα"
+        "ιχθυσ"
       ],
       "surviving_char_f1_itacism": 0.6333
     },
@@ -275,28 +292,19 @@
       "predicted_greek": "ἀλλά ἡ βασιλεία αὐτόν ἐντός ὑμῶν καί ἐστιν ἐκτός ὑμῶν ὅταν γινώσκητε ὑμᾶς τότε γνώσονται ὑμᾶς καί γνώσεσθε ὅτι ὑμεῖς ἐστε οἱ υἱοί τοῦ πατρός τοῦ ζῶντος ἐάν δέ οὐ γινώσκητε ὑμᾶς ἄρα εἰμί ἐν πτωχείᾳ καί ὑμεῖς ἐστε ἡ πτωχεία",
       "surviving_words": 24,
       "gold_content_lemmas": [
-        "βασιλεία",
         "ἐντός",
         "γινώσκω",
-        "εὑρίσκω",
         "γινώσκω",
         "εἰμί",
         "πατήρ",
-        "ζάω",
-        "γινώσκω",
-        "εἰμί",
-        "πτωχεία"
+        "εἰμί"
       ],
       "matched_content_lemmas": [
-        "βασιλεια",
-        "γινωσκω",
         "γινωσκω",
         "γινωσκω",
         "ειμι",
         "ειμι",
-        "πατηρ",
-        "ζαω",
-        "πτωχεια"
+        "πατηρ"
       ],
       "surviving_char_f1_itacism": 0.7976
     },
@@ -313,28 +321,17 @@
       "gold_content_lemmas": [
         "οὐ",
         "ἀποκνήσει",
-        "ἄνθρωπος",
-        "ἡμέρα",
         "ἐπερωτάω",
-        "παιδίον",
-        "ἡμέρα",
         "τόπος",
-        "ζάω",
         "πολύς",
         "εἰμί",
         "ἔσχατος",
-        "πρῶτος",
-        "καταντήσω"
+        "πρῶτος"
       ],
       "matched_content_lemmas": [
         "ου",
-        "ανθρωποσ",
-        "ημερα",
-        "ημερα",
         "επερωταω",
-        "παιδιον",
         "τοποσ",
-        "ζαω",
         "πολυσ",
         "ειμι",
         "πρωτοσ"
@@ -353,20 +350,13 @@
       "surviving_words": 16,
       "gold_content_lemmas": [
         "λέγω",
-        "Ἰησοῦς",
-        "γινώσκω",
+        "ἰης",
         "ὄψις",
-        "ἀποκαλύπτω",
-        "εἰμί",
         "κρυπτός",
-        "οὐ",
-        "φανερός"
+        "οὐ"
       ],
       "matched_content_lemmas": [
         "λεγω",
-        "ιησουσ",
-        "γινωσκω",
-        "αποκαλυπτω",
         "ου"
       ],
       "surviving_char_f1_itacism": 0.6038
@@ -382,8 +372,7 @@
       "predicted_greek": "",
       "surviving_words": 4,
       "gold_content_lemmas": [
-        "θάπτω",
-        "οὐ"
+        "θάπτω"
       ],
       "matched_content_lemmas": [],
       "surviving_char_f1_itacism": 0.0
@@ -399,36 +388,15 @@
       "predicted_greek": "ἐπηρώτησαν αὐτόν οἱ μαθηταί αὐτοῦ λέγουσιν αὐτῷ ὅτι θέλεις νηστεύομεν καί τίς ἐστιν ὁ τρόπος προσευξόμεθα ἐλεημοσύνη καί παρατηρήσομεν εἰς τίς βρώματος εἶπεν Ἰησοῦς μή ψεύδεσθε καί ὁ μισῶν μή ποιεῖτε αὐτόν ὅτι ἀποκαλύπτω πᾶς αὐτούς ἀπό τό πρόσωπον ἀπό τοῦ οὐρανοῦ οὐδέν γάρ κεκρυμμένον · οὐ ὀφθήσεται ἐκ",
       "surviving_words": 23,
       "gold_content_lemmas": [
-        "ἐκτάζω",
-        "λέγω",
         "πῶς",
-        "νηστεύω",
-        "προσεύχομαι",
         "πῶς",
-        "παρατηρέω",
-        "βρῶμα",
         "λέγω",
-        "Ἰησοῦς",
-        "μισέω",
-        "μή",
-        "ποιέω",
-        "ἀλήθεια",
-        "ἀναφαίνω",
-        "εἰμί",
-        "ἀποκρύπτω"
+        "ἰης",
+        "μή"
       ],
       "matched_content_lemmas": [
         "λεγω",
-        "λεγω",
-        "νηστευω",
-        "προσευχομαι",
-        "παρατηρεω",
-        "βρωμα",
-        "ιησουσ",
-        "μισεω",
-        "μη",
-        "ποιεω",
-        "ειμι"
+        "μη"
       ],
       "surviving_char_f1_itacism": 0.6154
     },
@@ -443,16 +411,10 @@
       "predicted_greek": "μακάριος ἐστιν ὁ λέων τοῦτον ὅν ὁ ἄνθρωπος φάγεται καί καί ὁ λέων ἔσται ἄνθρωπος καί ἐξολεθρεύω · ὁ ἄνθρωπος οὗτος ὅν ὁ λέων φάγεται καί ὁ λέων ἔσται ἄνθρωπος",
       "surviving_words": 4,
       "gold_content_lemmas": [
-        "μακάριος",
-        "εἰμί",
-        "λέων",
         "εἰμί"
       ],
       "matched_content_lemmas": [
-        "μακαριοσ",
-        "ειμι",
-        "ειμι",
-        "λεων"
+        "ειμι"
       ],
       "surviving_char_f1_itacism": 0.8462
     },
@@ -534,8 +496,6 @@
       "surviving_words": 38,
       "gold_content_lemmas": [
         "λέγω",
-        "Ἰησοῦς",
-        "εἰμί",
         "μέσος",
         "κόσμος",
         "σάρξ",
@@ -545,7 +505,7 @@
         "μεθύω",
         "οὐδείς",
         "εὑρίσκω",
-        "διψάω",
+        "δειψῶτα",
         "πονεῖ",
         "ψυχή",
         "υἱός",
@@ -556,7 +516,6 @@
       ],
       "matched_content_lemmas": [
         "λεγω",
-        "ιησουσ",
         "μεσοσ",
         "κοσμοσ",
         "σαρξ",
@@ -565,7 +524,6 @@
         "ευρισκω",
         "πασ",
         "ουδεισ",
-        "διψαω",
         "ψυχη",
         "υιοσ",
         "ανθρωποσ",
@@ -585,7 +543,7 @@
       "predicted_greek": "ὅτι ἦλθον εἰς τόν κόσμον κενός · ζητοῦσιν πάλιν ἐξελθεῖν ἀπό ἐν τῷ κόσμῳ ρουμένῳ πλήν νῦν μεθύσκομαι ὅταν ἀποτινάσσωσι τόν οἶνον αὐτῶν τότε μετανοήσουσιν",
       "surviving_words": 5,
       "gold_content_lemmas": [
-        "βλεισ",
+        "κ",
         "πτωχεία"
       ],
       "matched_content_lemmas": [],
@@ -602,20 +560,17 @@
       "predicted_greek": "εἶπεν Ἰησοῦς ὅτι ὁ τόπος ἐστιν τρεῖς θεοί ἐκεῖ θεοί εἰσιν ὁ τόπος ἐστιν δύο ἤ εἷς ἐγώ εἰμί μετά αὐτοῦ ·",
       "surviving_words": 15,
       "gold_content_lemmas": [
-        "λέγω",
         "εἰμί",
-        "εἰμί",
-        "ἄθεος",
+        "θεός",
         "εἰμί",
         "μόνος",
         "εἰμί"
       ],
       "matched_content_lemmas": [
-        "λεγω",
         "ειμι",
         "ειμι",
         "ειμι",
-        "ειμι"
+        "θεοσ"
       ],
       "surviving_char_f1_itacism": 0.7013
     },
@@ -630,7 +585,6 @@
       "predicted_greek": "αἴρω τόν λίθον εἰς καί εὑρήσετε με ἐκεῖ",
       "surviving_words": 6,
       "gold_content_lemmas": [
-        "ἐγείρω",
         "λίθος",
         "εὑρίσκω"
       ],
@@ -674,7 +628,6 @@
       "surviving_words": 18,
       "gold_content_lemmas": [
         "λέγω",
-        "Ἰησοῦς",
         "οὐ",
         "εἰμί",
         "δεκτός",
@@ -687,7 +640,6 @@
       ],
       "matched_content_lemmas": [
         "λεγω",
-        "ιησουσ",
         "ου",
         "ειμι",
         "προφητησ",
@@ -707,23 +659,17 @@
       "surviving_words": 15,
       "gold_content_lemmas": [
         "λέγω",
-        "Ἰησοῦς",
         "πόλις",
         "οἰκοδομέω",
         "ἄκρον",
-        "ὄρος",
         "ὑψηλός",
         "στηρίζω",
-        "πίπτω",
-        "δύναμαι",
-        "κρύπτω"
+        "δύναμαι"
       ],
       "matched_content_lemmas": [
         "λεγω",
-        "ιησουσ",
         "πολισ",
         "οικοδομεω",
-        "οροσ",
         "στηριζω",
         "δυναμαι"
       ],
@@ -741,13 +687,10 @@
       "surviving_words": 7,
       "gold_content_lemmas": [
         "λέγω",
-        "Ἰησοῦς",
-        "ἀκούω",
-        "τίον"
+        "ἀκούω"
       ],
       "matched_content_lemmas": [
         "λεγω",
-        "ιησουσ",
         "ακουω"
       ],
       "surviving_char_f1_itacism": 0.5405
@@ -763,13 +706,10 @@
       "predicted_greek": "εἶπεν Ἰησοῦς μή μεριμνᾶτε ἀπό ἡμέρας πρός ἑσπέραν καί ἀπό ἑσπέρα πρός πρωΐ",
       "surviving_words": 5,
       "gold_content_lemmas": [
-        "πρωΐ",
-        "ἑσπέρα",
         "πρωΐ"
       ],
       "matched_content_lemmas": [
-        "πρωι",
-        "εσπερα"
+        "πρωι"
       ],
       "surviving_char_f1_itacism": 0.8
     },
@@ -783,9 +723,7 @@
       "attested_editorial": "μήτε τῇ τροφῇ ὑμῶν τί φάγητε",
       "predicted_greek": "",
       "surviving_words": 4,
-      "gold_content_lemmas": [
-        "ἐσθίω"
-      ],
+      "gold_content_lemmas": [],
       "matched_content_lemmas": [],
       "surviving_char_f1_itacism": 0.0
     },
@@ -799,10 +737,7 @@
       "attested_editorial": "μήτε τῇ στολῇ ὑμῶν τί ἐνδύσησθε",
       "predicted_greek": "τίς ὁ παραδιδούς αὐτόν ἐπί ὑμῶν",
       "surviving_words": 4,
-      "gold_content_lemmas": [
-        "στολή",
-        "ἐνδύω"
-      ],
+      "gold_content_lemmas": [],
       "matched_content_lemmas": [],
       "surviving_char_f1_itacism": 0.4706
     },
@@ -817,17 +752,10 @@
       "predicted_greek": "",
       "surviving_words": 24,
       "gold_content_lemmas": [
-        "πολύς",
-        "κρεισσονές",
-        "εἰμί",
-        "ξαίνει",
-        "μηδείς",
-        "ἔνδυμα",
-        "ἐνδεῖτε",
-        "προστίθημι",
+        "μεῖς",
         "ἡλικία",
-        "δίδωμι",
-        "ἔνδυμα"
+        "ἔνδυμα",
+        "μῶν"
       ],
       "matched_content_lemmas": [],
       "surviving_char_f1_itacism": 0.0
@@ -852,7 +780,7 @@
         "ὁράω",
         "λέγω",
         "ἐκδύσησθε",
-        "μή",
+        "μ",
         "αἰσχυνθῆτε"
       ],
       "matched_content_lemmas": [
@@ -873,19 +801,8 @@
       "attested_editorial": "λέγει Ἰησοῦς πολλάκις οὖν ἐπεθυμεῖτε τούτους τοὺς λόγους μου ἀκοῦσαι καὶ ἔχετε οὐδενὸς ἄλλου ἀκοῦσαι καὶ ἐλεύσονται ἡμέραι ὅτε ζητήσετέ με καὶ οὐ μὴ εὑρήσετέ με",
       "predicted_greek": "εἶπεν Ἰησοῦς ὅτι πολύς ἅπαξ · ἠπιθυμήσατε ἀκοῦσαι καί τῶν λόγων τούτων · οἵ λέγω ὑμῖν καί ἐστιν ὑμᾶς ἄλλος εἷς ἀκοῦσαι αὐτούς παρά αὐτοῦ ἐστιν ἡμέραι γενήσεται καί ζητήσομεν ὀπίσω μου οὐ εὑρήσετε με",
       "surviving_words": 9,
-      "gold_content_lemmas": [
-        "λέγω",
-        "λόγος",
-        "οὐδείς",
-        "ἡμέρα",
-        "ζητέω"
-      ],
-      "matched_content_lemmas": [
-        "λεγω",
-        "λογοσ",
-        "ημερα",
-        "ζητεω"
-      ],
+      "gold_content_lemmas": [],
+      "matched_content_lemmas": [],
       "surviving_char_f1_itacism": 0.5714
     },
     {
@@ -898,26 +815,8 @@
       "attested_editorial": "λέγει Ἰησοῦς οἱ Φαρισαῖοι καὶ οἱ γραμματεῖς ἔλαβον τὰς κλεῖδας τῆς γνώσεως καὶ ἔκρυψαν αὐτάς·ὄυτε εἰσῆλθον ὄυτε τοὺς εἰσερχομένους ἀφῆκαν εἰσελθεῖν ὑμεῖς δὲ γείνεσθε φρόνιμοι ὡς ὄφεις καὶ ἀκέραιοι ὡς περιστεραί",
       "predicted_greek": "εἶπεν Ἰησοῦς ὅτι ὁ Φαρισαῖος μετά τῶν γραμματέων ἔλαβον κλεῖν · τήν γνῶσιν ἔκρυψαν ἑαυτούς οὔτε οὐ εἰσῆλθον εἰς καί οἱ θέλοντες εἰσέρχεται ἐγγύς οὐ ἀφῆκαν αὐτούς ὑμεῖς δέ γίνεσθε φρόνιμος τόν τρόπον τῶν ὄφεων καί ἀκέραιος τῆς ὡς τῶν περιστερῶν",
       "surviving_words": 11,
-      "gold_content_lemmas": [
-        "λαμβάνω",
-        "κρύπτω",
-        "εἰσέρχομαι",
-        "εἰσέρχομαι",
-        "ἀφίημι",
-        "γίνομαι",
-        "φρόνιμος",
-        "ἀκέραιος"
-      ],
-      "matched_content_lemmas": [
-        "λαμβανω",
-        "κρυπτω",
-        "εισερχομαι",
-        "εισερχομαι",
-        "αφιημι",
-        "γινομαι",
-        "φρονιμοσ",
-        "ακεραιοσ"
-      ],
+      "gold_content_lemmas": [],
+      "matched_content_lemmas": [],
       "surviving_char_f1_itacism": 0.7931
     }
   ]

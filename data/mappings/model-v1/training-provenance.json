@@ -76,8 +76,6 @@
     "matthew.7.7",
     "matthew.7.8"
   ],
-  "zero_curated_thomas_idioms": true,
-  "zero_ccl_manual_fallbacks": true,
   "artifact_sha256": {
     "ccl-loanwords.json": "f9a33933e812e274cdd740c331f7b2ebaf656cd3b1f387d95a42d533c9422589",
     "coptic-groups-0.json": "ce2517b9f56f606031b08b5c9100794b24b1e0d40a917746179c492ba4261fc6",

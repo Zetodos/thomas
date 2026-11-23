@@ -9,11 +9,15 @@ from zetodos_thomas.eval.benchmark import (
     _aggregate_frag_stratum,
     _AttestedGreekLemmatiser,
     _lcs_len,
+    _loanword_script_stem_matches,
     _monotone_surviving_char_overlap,
+    _prf,
     koine_itacism_fold,
     score_fragment_span_lacuna_aware,
     strip_greek_diacritics,
 )
+from zetodos_thomas.ingest.fragments import load_fragment_corpus
+from zetodos_thomas.ingest.paths import resolve_fragments_corpus_path
 from zetodos_thomas.morphology.greek_inflector import GreekInflector
 from zetodos_thomas.schemas.evidence import FragmentClauseSpan
 from zetodos_thomas.schemas.fragment import FragmentWord
@@ -21,13 +25,20 @@ from zetodos_thomas.schemas.generated import GeneratedToken
 from zetodos_thomas.schemas.linguistic import GreekMorphFeatures
 
 
-def _tok(seq: int, surf: str, lemma: str, pos: str) -> GeneratedToken:
+def _tok(
+    seq: int,
+    surf: str,
+    lemma: str,
+    pos: str,
+    *,
+    coptic_seqs: list[int] | None = None,
+) -> GeneratedToken:
     return GeneratedToken(
         seq=seq,
         surface=surf,
         lemma=lemma,
         morph=GreekMorphFeatures(pos=pos),
-        coptic_seqs=[seq],
+        coptic_seqs=list(coptic_seqs) if coptic_seqs is not None else [seq],
         provenance="N",
         confidence=1.0,
     )
@@ -100,14 +111,16 @@ def test_lacuna_only_words_excluded_and_truncated_prefix_scored_fairly() -> None
         frag_words=words,
         pred_tokens=preds,
         lemmatiser=lemmatiser,
-        loanword_lemmas=[],
+        greek_loan_morphemes=(),
     )
-    # Only the 1 surviving word (θαλά[σσης]) has gold lemma `θάλασσα`, matching oracle!
+    # Secondary editorial-assisted span includes truncated `θαλά[σσης]` -> `θάλασσα`
     assert counts["cl_gold"] == 1
     assert counts["cl_matched"] == 1
+    # Primary strictly unrestored gold excludes truncated/restored words completely
+    assert counts["so_gold"] == 0
+    assert summary.gold_content_lemmas == []
     # Truncated prefix `θαλά` scores 4/4 = 1.000 char F1 against predicted `θαλάσσης`
     assert summary.surviving_char_f1_itacism == 1.0
-    assert summary.gold_content_lemmas == ["θάλασσα"]
 
 
 def test_stage9_attested_lemmatiser_poxy_morphology() -> None:
@@ -225,16 +238,202 @@ def test_order_sensitive_lcs_surviving_only_and_zero_loanword_none() -> None:
         _tok(0, "λόγος", "λόγος", "N-"),
         _tok(1, "θαλάσσης", "θάλασσα", "N-"),
     ]
-    counts, _ = score_fragment_span_lacuna_aware(
+    counts, summary = score_fragment_span_lacuna_aware(
         span=span,
         frag_words=[fw_trunc, fw_intact],
         pred_tokens=preds,
         lemmatiser=lemmatiser,
-        loanword_lemmas=[],
+        greek_loan_morphemes=(),
     )
     stratum = _aggregate_frag_stratum([counts], [span])
     assert stratum.content_lemma_f1 == 1.0
     assert stratum.ordered_content_lemma_f1 == 0.5
     assert stratum.surviving_only_word_count == 1
+    assert summary.gold_content_lemmas == ["λόγος"]
+    assert stratum.surviving_only_ordered_content_lemma_recall == 1.0
+    assert stratum.surviving_only_ordered_content_lemma_precision == 0.5
     assert stratum.loanword_total == 0
     assert stratum.loanword_exact_match_rate is None
+
+
+def test_restorations_excluded_from_primary_gold_and_char_scoring() -> None:
+    """Ported JAK-40 invariant: editorial [...] never enters primary gold."""
+    lemmatiser = _AttestedGreekLemmatiser(
+        exact_map={"μακαριοσ": ("μακάριος", "A-")},
+        ita_map={},
+    )
+    fw_restored = FragmentWord(
+        word_index=0,
+        line_id="main.40",
+        surviving_text="κάρι",
+        restored_text="μαός",
+        full_editorial_word="μακάριός",
+        is_truncated=True,
+    )
+    assert lemmatiser.resolve_word(fw_restored, surviving_only=True) is None
+    span = FragmentClauseSpan(
+        span_id="test.restoration",
+        unit_id="thomas.7",
+        transcription_id="poxy-654-dclp",
+        coptic_start=0,
+        coptic_end=1,
+        frag_word_start=0,
+        frag_word_end=1,
+    )
+    # Prediction matching ONLY restored letters ("μαός") must not get surviving credit
+    preds = [_tok(0, "μαός", "μακάριος", "A-")]
+    counts, summary = score_fragment_span_lacuna_aware(
+        span=span,
+        frag_words=[fw_restored],
+        pred_tokens=preds,
+        lemmatiser=lemmatiser,
+        greek_loan_morphemes=(),
+    )
+    assert counts["so_gold"] == 0
+    assert summary.gold_content_lemmas == []
+    assert summary.attested_surviving == "κάρι"
+    assert summary.surviving_char_f1_itacism < 0.5
+
+
+def test_unclear_surviving_tokens_are_a_separate_stratum() -> None:
+    """Ported integrity invariant: unclear/dotted letters are stratified separately."""
+    lemmatiser = _AttestedGreekLemmatiser(
+        exact_map={"λογοσ": ("λόγος", "N-")},
+        ita_map={},
+    )
+    fw_clear = FragmentWord(
+        word_index=0,
+        line_id="main.33",
+        surviving_text="λόγος",
+        full_editorial_word="λόγος",
+        has_unclear=False,
+    )
+    fw_unclear = FragmentWord(
+        word_index=1,
+        line_id="main.33",
+        surviving_text="ουσιν",
+        full_editorial_word="ουσιν",
+        has_unclear=True,
+    )
+    span = FragmentClauseSpan(
+        span_id="test.unclear",
+        unit_id="thomas.5",
+        transcription_id="poxy-654-dclp",
+        coptic_start=0,
+        coptic_end=2,
+        frag_word_start=0,
+        frag_word_end=2,
+    )
+    # Predicting only the unclear word hits 1.0 on unclear stratum, low on clear stratum
+    counts, _ = score_fragment_span_lacuna_aware(
+        span=span,
+        frag_words=[fw_clear, fw_unclear],
+        pred_tokens=[_tok(0, "ουσιν", "εἰμί", "V-")],
+        lemmatiser=lemmatiser,
+        greek_loan_morphemes=(),
+    )
+    stratum = _aggregate_frag_stratum([counts], [span])
+    assert stratum.clear_surviving_word_count == 1
+    assert stratum.unclear_surviving_word_count == 1
+    assert stratum.unclear_surviving_char_f1_itacism == 1.0
+    assert stratum.clear_surviving_char_f1_itacism < 0.5
+
+    # Also verify real P.Oxy. 654 corpus preserves unclear annotations on lines 33 & 42
+    repo_root = Path(__file__).resolve().parents[1]
+    real = load_fragment_corpus(resolve_fragments_corpus_path(repo_root))
+    found_tokens: dict[str, str] = {}
+    unclear_words = 0
+    for tx in real.transcriptions:
+        if tx.id != "poxy-654-dclp":
+            continue
+        unclear_words = sum(1 for w in tx.words if w.has_unclear)
+        for line in tx.lines:
+            for tok in line.tokens:
+                if tok.certainty == "unclear" and line.line_id in {
+                    "main.33",
+                    "main.42",
+                }:
+                    found_tokens[line.line_id] = tok.text
+    assert found_tokens["main.33"] == "ουσιν"
+    assert found_tokens["main.42"] == "ὃν"
+    assert unclear_words >= 10
+
+
+def test_duplicate_token_precision_cannot_game_ordered_lcs() -> None:
+    """Ported JAK-40 invariant: duplicate predictions cannot score precision=1.0."""
+    pred = ["οτι", "οτι", "η", "βασιλεια"]
+    gold = ["οτι", "η", "βασιλεια"]
+    lcs = _lcs_len(pred, gold)
+    prec, rec, f1 = _prf(lcs, len(pred), len(gold))
+    assert lcs == 3
+    assert rec == 1.0
+    assert prec == 0.75
+    assert prec < 1.0
+    assert f1 < 1.0
+
+
+def test_token_aligned_loanword_rejects_wrong_seq_and_cognate_shift() -> None:
+    """Zero-CCL loanword scoring requires exact m.seq alignment and keeps misses."""
+    # Phonological double-consonant expansion handles ⲥⲁⲣⲝ -> σαρκί without
+    # false-matching unrelated 3-char prefixes like πόλις vs πολλοί.
+    assert _loanword_script_stem_matches("σαρξ", "σαρκι") is True
+    assert _loanword_script_stem_matches("πολισ", "πολλυ") is False
+
+    lemmatiser = _AttestedGreekLemmatiser(
+        exact_map={
+            "κοσμον": ("κόσμος", "N-"),
+            "θεραπειασ": ("θεραπεία", "N-"),
+        },
+        ita_map={},
+    )
+    words = [
+        FragmentWord(
+            word_index=0,
+            line_id="main.1",
+            surviving_text="κόσμον",
+            full_editorial_word="κόσμον",
+        ),
+        FragmentWord(
+            word_index=1,
+            line_id="main.1",
+            surviving_text="θεραπείας",
+            full_editorial_word="θεραπείας",
+        ),
+    ]
+    span = FragmentClauseSpan(
+        span_id="test.loanword",
+        unit_id="thomas.31",
+        transcription_id="poxy-1-dclp",
+        coptic_start=0,
+        coptic_end=15,
+        frag_word_start=0,
+        frag_word_end=2,
+    )
+    loan_ms = [(5, "ⲕⲟⲥⲙⲟⲥ"), (11, "ⲣⲑⲉⲣⲁⲡⲉⲩⲉ")]
+
+    # Case 1: right Greek lemma predicted on WRONG Coptic seq (99 instead of 5) -> 0
+    counts_wrong_seq, _ = score_fragment_span_lacuna_aware(
+        span=span,
+        frag_words=words,
+        pred_tokens=[_tok(0, "κόσμον", "κόσμος", "N-", coptic_seqs=[99])],
+        lemmatiser=lemmatiser,
+        greek_loan_morphemes=loan_ms,
+    )
+    assert counts_wrong_seq["lw_total"] == 2
+    assert counts_wrong_seq["lw_hits"] == 0
+
+    # Case 2: aligned `κόσμος` hits, while verb `θεραπεύω` vs attested noun `θεραπεία`
+    # stays in the denominator as an honest miss (1/2 = 0.5, NOT dropped to 1/1 = 1.0!)
+    counts_shift, _ = score_fragment_span_lacuna_aware(
+        span=span,
+        frag_words=words,
+        pred_tokens=[
+            _tok(0, "κόσμον", "κόσμος", "N-", coptic_seqs=[5]),
+            _tok(1, "θεραπεύει", "θεραπεύω", "V-", coptic_seqs=[11]),
+        ],
+        lemmatiser=lemmatiser,
+        greek_loan_morphemes=loan_ms,
+    )
+    stratum = _aggregate_frag_stratum([counts_shift], [span])
+    assert stratum.loanword_total == 2
+    assert stratum.loanword_exact_match_rate == 0.5
