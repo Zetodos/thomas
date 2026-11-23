@@ -1,42 +1,40 @@
 # SPDX-License-Identifier: Apache-2.0
-"""Evaluation readiness, blinded scoring, feasibility gate (JAK-40/41/43)."""
+"""Evaluation benchmarks for NT holdouts and lacuna-aware P.Oxy. fragments."""
 
-from zetodos_thomas.eval.blinded_reconstruct import (
-    BlindedReconstructError,
-    reconstruct_blinded_package,
-    write_committed_reconstruction_artifacts,
-    write_reconstruction_package,
-)
-from zetodos_thomas.eval.feasibility import (
-    assert_baseline_identical_inputs,
-    build_feasibility_report,
-    write_feasibility_artifacts,
-)
-from zetodos_thomas.eval.review_gate import (
-    EvalReviewGateError,
-    assert_eval_package_human_checked,
-    load_blinded_eval_package,
-    require_human_checked_review_status,
-)
-from zetodos_thomas.eval.surviving_letters import (
-    extract_surviving_letter_gold,
-    score_thomas7_surviving,
-    try_score_thomas7_or_gate_report,
+from zetodos_thomas.eval.benchmark import (
+    BENCHMARK_DOC_REL,
+    EVAL_REPORT_REL,
+    FRAGMENT_CLAUSE_MAP_REL,
+    EvalReport,
+    FragStratumMetrics,
+    NtHoldoutMetrics,
+    SpanEvalSummary,
+    compute_bleu_4,
+    compute_chrf_pp,
+    evaluate_nt_holdouts,
+    evaluate_poxy_fragments,
+    format_benchmark_markdown,
+    koine_itacism_fold,
+    run_full_evaluation,
+    score_fragment_span_lacuna_aware,
+    strip_greek_diacritics,
 )
 
 __all__ = [
-    "BlindedReconstructError",
-    "EvalReviewGateError",
-    "assert_baseline_identical_inputs",
-    "assert_eval_package_human_checked",
-    "build_feasibility_report",
-    "extract_surviving_letter_gold",
-    "load_blinded_eval_package",
-    "reconstruct_blinded_package",
-    "require_human_checked_review_status",
-    "score_thomas7_surviving",
-    "try_score_thomas7_or_gate_report",
-    "write_committed_reconstruction_artifacts",
-    "write_feasibility_artifacts",
-    "write_reconstruction_package",
+    "BENCHMARK_DOC_REL",
+    "EVAL_REPORT_REL",
+    "FRAGMENT_CLAUSE_MAP_REL",
+    "EvalReport",
+    "FragStratumMetrics",
+    "NtHoldoutMetrics",
+    "SpanEvalSummary",
+    "compute_bleu_4",
+    "compute_chrf_pp",
+    "evaluate_nt_holdouts",
+    "evaluate_poxy_fragments",
+    "format_benchmark_markdown",
+    "koine_itacism_fold",
+    "run_full_evaluation",
+    "score_fragment_span_lacuna_aware",
+    "strip_greek_diacritics",
 ]

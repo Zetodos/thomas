@@ -1,124 +1,89 @@
 # Thomas
 
-Offline-capable, evidence-based reconstruction and reader for the *Gospel of Thomas*.
+Offline, deterministic, auditable **Koine Greek reconstruction (`Generated Greek`, Category C)** and witness-separated evidence benchmark for the *Gospel of Thomas*.
 
 **Repository:** <https://github.com/Zetodos/thomas>
-**Status:** Phase 0–1 foundation — licensing, Python toolchain, Horner × Vaticanus B* NT pilot (JAK-24), Dilley SCRIPTORIUM Coptic Thomas (JAK-30), Greek Thomas P.Oxy. fragments (JAK-31), alignment schema (JAK-32), Thomas 7/17/30/77 evidence pilot (JAK-34), and Greek–Sahidic alignment benchmark pilot (JAK-28). Reconstruction feasibility is not yet proven.
+**Architecture:** Deterministic two-stage bilingual Coptic→Koine clause-transfer & beam-search pipeline (`model-v1`), completely free of LLMs and network calls after setup.
 
 ## Objective
 
-Develop a reproducible **Koine Greek reconstruction** of the Gospel of Thomas, primarily reconstructing Greek that could underlie the extant Coptic manuscript, and publish:
+Reconstruct grammatically coherent Koine Greek for all 115 units (`thomas.0`–`thomas.114`) of the Sahidic Coptic *Gospel of Thomas* while enforcing strict provenance boundaries:
 
-1. **Generated Greek (C)** — a deterministic, Coptic-derived reconstruction from an approved mapping model.
-2. **Critical Greek** — a manually curated reconstruction assessed against Greek fragments, loanwords, NT/LXX parallels, and other early attestations.
+1. **Attested Greek Fragments (Category G)** — P.Oxy. 1 / 654 / 655 DCLP EpiDoc TEI witnesses preserving surviving letters, unclear ink, lacunae, abbreviations, and editorial restorations as separate layers (`evaluation-witness` only — never leaked into training or decoding).
+2. **Generated Greek (Category C)** — 100% deterministic, offline reconstructions from Coptic (`model-v1`) with morpheme-level provenance (`L` loanword, `N` NT bitext, `P` OT/LXX bitext, `C` grammatical transfer).
+3. **Critical Greek** — Separately authored scholarly edition (not automated output).
 
-A static web reader will expose Coptic, generated and critical Greek, rough English, and ancient evidence per logion, with bidirectional phrase alignment and search.
+The pipeline does **not** claim to recover a lost archetype with certainty; convergent and redactionally divergent P.Oxy. clauses are reported separately in [`docs/benchmark-report.md`](docs/benchmark-report.md).
 
-This project does **not** claim to recover a uniquely certain lost Greek original. It distinguishes attested from reconstructed material and documents disagreements among witnesses.
+## Corpora & Licensing
 
-## Licensing
+Project-owned Python code under `python/` and tests under `tests/` are licensed under Apache 2.0 (see [`LICENSE`](LICENSE)). Third-party corpora keep their upstream terms recorded under [`data/manifests/`](data/manifests/):
 
-Project-owned source code is licensed under the Apache License, Version 2.0. Third-party source texts and linguistic datasets, as well as Zetodos's reconstructed texts, translations, and derived mapping datasets, may have separate terms recorded in their respective manifests.
+| Role | Source | License |
+| --- | --- | --- |
+| **Coptic Thomas (target)** | **Dilley / Coptic SCRIPTORIUM** (`dilley-thomas-v6.2.0.json`, 115 units / 6,516 morphemes) | CC BY 4.0 |
+| **Sahidic NT** | **Horner** via CrossWire `CopSahHorner` | Public Domain |
+| **Greek NT spine** | **MorphGNT / SBLGNT** (`morphgnt-sblgnt`, 27 books, gold lemmas + 8-slot parses) | CC BY 4.0 / CC BY-SA 3.0 |
+| **Sahidic OT + Coptic morphology** | **Coptic SCRIPTORIUM Sahidic OT** (`sahidic.ot_TT.zip`) | CC BY-SA 4.0 |
+| **LXX secondary bitext** | **Swete LXX** (`lxx-swete`) | Public Domain / MIT |
+| **Loanwords & compounds** | **Comprehensive Coptic Lexicon v1.2 / DDGLC** | CC BY-SA 4.0 |
+| **Greek Thomas fragments** | **DCLP P.Oxy. 1 / 654 / 655** (`greek-thomas-fragments.json`, `evaluation-witness`) | CC BY 4.0 / CC BY-SA 3.0 |
 
-The root [`LICENSE`](LICENSE) covers **project-owned software only** (Python tooling, TypeScript web app, project schemas/tests/config). It is **not** an umbrella license for corpora or editorial datasets. See [`docs/source-licenses.md`](docs/source-licenses.md).
+Gated corpora (Wells **Sahidica**, **NTAEG**, **Bohairica**, `UD_Coptic`) are **never** fetched, read, or bundled. Every tracked/generated file under the repo stays strictly `< 1024 KiB` (`--maxkb=1024`).
 
-## Documentation
+## Pipeline Overview
 
-| Doc | Purpose |
-| --- | --- |
-| [`PLAN.md`](PLAN.md) | Full implementation plan |
-| [`docs/source-licenses.md`](docs/source-licenses.md) | Dual code/data policy, setup modes, never-ship list, manifest schema |
-| [`docs/licensing-provenance-audit.md`](docs/licensing-provenance-audit.md) | 2026-11-09 provenance audit (updated for Horner decision) |
-| [`docs/horner-vaticanus-alignment-notes.md`](docs/horner-vaticanus-alignment-notes.md) | CopSahHorner + Vaticanus B* pilot notes (JAK-24/28) |
-| [`docs/alignment-pilot-splits.md`](docs/alignment-pilot-splits.md) | Train/dev/holdout/omission passage splits (JAK-28) |
-| [`docs/alignment-pilot-benchmark.md`](docs/alignment-pilot-benchmark.md) | Lexical baseline benchmark + limitations (JAK-28) |
-| [`docs/id-scheme.md`](docs/id-scheme.md) | Stable unit/token/span IDs + retokenization rule (JAK-32) |
-| [`docs/greek-thomas-fragments.md`](docs/greek-thomas-fragments.md) | P.Oxy. 1/654/655 DCLP ingest notes (JAK-31) |
-| [`docs/pilot-evidence-set.md`](docs/pilot-evidence-set.md) | Phase 1 Thomas 7/17/30/77 evidence pilot (JAK-34) |
-| [`docs/benchmark-holdouts.md`](docs/benchmark-holdouts.md) | Train/dev/holdout + omission/leakage policy (JAK-33) |
-| [`docs/greek-thomas-fragment-divergences.md`](docs/greek-thomas-fragment-divergences.md) | Greek fragment vs Coptic divergences (JAK-33) |
-| [`data/manifests/`](data/manifests/) | Per-source JSON manifests (Horner, Vaticanus B*, Dilley, DCLP fragments) |
-| [`data/sources/pilot/`](data/sources/pilot/) | Bundled Horner × Vaticanus B* pilot excerpt |
-| [`data/sources/thomas/`](data/sources/thomas/) | Unit-level Dilley / SCRIPTORIUM Coptic Thomas import (JAK-30; not alignment-ready) |
-| [`data/sources/fragments/`](data/sources/fragments/) | Bundled Greek Thomas fragments (evaluation-witness) |
-| [`data/evidence/pilot/`](data/evidence/pilot/) | Thomas 7/17/30/77 evidence inventory (JSON + JSONL) |
-| [`data/training/splits/`](data/training/splits/) | Canonical NT train/dev/holdout split v2 (JAK-33; consumed by JAK-28) |
-| [`data/sources/alignment/`](data/sources/alignment/) | Provisional gold sample + benchmark JSON (JAK-28) |
-| [`docs/statistical-aligner-comparison.md`](docs/statistical-aligner-comparison.md) | eflomal vs fast_align; Jake keep-both (JAK-36) |
-| [`docs/lexical-candidates.md`](docs/lexical-candidates.md) | Coptic→Greek lexical candidate layers (JAK-37) |
-| [`data/sources/lexicon/`](data/sources/lexicon/) | Lexical candidate table + train-link JSON (JAK-37) |
-| [`docs/phrase-loanword-mappings.md`](docs/phrase-loanword-mappings.md) | Statistical constructions + verified loanwords + ablation (JAK-38) |
-| [`data/sources/mappings/`](data/sources/mappings/) | Phrase/construction + CCL/DDGLC loanword + ablation JSON (JAK-38) |
-| [`docs/deterministic-decoder.md`](docs/deterministic-decoder.md) | Minimal deterministic decoder, ranking, abstention (JAK-39) |
-| [`docs/blinded-reconstruction.md`](docs/blinded-reconstruction.md) | Blinded Thomas 7 / NT holdout reconstruct + surviving-letter eval (JAK-40) |
-| [`data/reconstructions/jak40/`](data/reconstructions/jak40/) | Blinded reconstruction + eval artifacts (JAK-40) |
-| [`docs/phase2-feasibility-report.md`](docs/phase2-feasibility-report.md) | Phase 2 feasibility metrics vs baseline + gate recommendation (JAK-41) |
-| [`data/reconstructions/jak41/`](data/reconstructions/jak41/) | Feasibility metrics JSON (JAK-41) |
+1. **Bidirectional Morphology (`python/zetodos_thomas/morphology/`):**
+   - `CopticAnalyzer`: Finite-state + lexicon + trigram POS Viterbi bound-group segmenter & lemmatizer trained strictly on `sahidic.ot_TT.zip` + `CCL v1.2` (zero Thomas).
+   - `GreekInflector`: Empirical MorphGNT paradigms + pure-Python regular Koine declensions/conjugations + MIT `greek-accentuation` + Koine phonological sandhi.
+2. **Loanwords, Idioms & Alignment (`lexicon/`, `align/`):**
+   - `CclLexicon`: Full DDGLC Greek loanword & light-verb compound (`ⲣ-`/`ϯ-`/`ϫⲓ-`) index (`363/363` Dilley `<lang="Greek">` coverage).
+   - `LexicalTranslationModel`: Seeded bidirectional `eflomal` (3× NT domain weight over OT/Swete, excluding holdout, dev & Synoptic 5-grams) with count-smoothed bidirectional association and Sahidic vocalic fallback.
+   - `IdiomAndValencyTable`: Multiword Sahidic phrasal patterns and MorphGNT verb/preposition case frames.
+3. **Clause Transfer, LM & Beam Search (`reconstruct/`):**
+   - Clause chunker + Coptic→Koine morphosyntactic transfer grammar (VBD speech formulas, `ⲛϭⲓ` postposed subjects, `οὐ μή` + subjunctive, attributive/articular participles, conditionals, modal infinitives, copular agreement).
+   - Smoothed 3-gram Koine LM (`train` split + Swete LXX) + deterministic log-linear beam search (`beam_size=8`, weights tuned strictly on 51-verse NT `dev`).
 
-## Never ship (summary)
+## Verified Benchmark Results (`model-v1`)
 
-Do **not** bundle or redistribute:
+See [`docs/benchmark-report.md`](docs/benchmark-report.md) and [`data/generated/eval-report-v1.json`](data/generated/eval-report-v1.json):
 
-- NA28 / UBS GNT (Deutsche Bibelgesellschaft)
-- Rahlfs-Hanhart LXX 2006 (DBG)
-- Layton / Attridge continuous critical Thomas Greek
-- Crum dictionary OCR dumps
-- Brill / DBG full texts used only as scholarly references
-- Wells **Sahidica**, **NTAEG**, or **Bohairica** (gated; not default)
-- Vatican / NTVMR **manuscript images** of Vat. gr. 1209 (transcription CC BY 4.0 ≠ image rights)
+- **41 Intact NT Gospel Holdouts:** Coverage `1.0000`, Content Lemma F1 `0.5586` (`P=0.5700, R=0.5477`), All-Token Lemma F1 `0.5789`, Surface F1 `0.3335`, Morph Accuracy `0.5605`, chrF++ `0.2423`, BLEU-4 `0.0312`.
+- **Span-Aligned, Lacuna-Aware P.Oxy. 1 / 654 / 655 (20 overlapping units):**
+  - **Convergent Clauses (23 spans / 19 units / 312 surviving words):** Content Lemma Recall **`0.6432`**, Top-3 Recall **`0.6973`**, Content Lemma F1 **`0.5324`**, Surviving Char F1 (exact / Koine itacism) **`0.7116` / `0.7260`**, Loanwords **`1.0000` (14/14)**.
+  - **Overall (29 spans / 20 units / 368 surviving words):** Content Lemma Recall `0.5849`, Content Lemma F1 `0.4901`, Surviving Char F1 (itacism) `0.6934`.
 
-Full list and allowlist: [`docs/source-licenses.md`](docs/source-licenses.md#never-ship).
+## CLI Workflow
 
-## Text baselines (Phase 0–1 decisions)
-
-- **Coptic Thomas (target):** **Dilley / Coptic SCRIPTORIUM** annotated Gospel of Thomas v6.2.0 (**CC BY 4.0**). Unit-level ingest with original + normalized layers (JAK-30); **not** token-complete / **not** alignment-ready yet. Manifest: [`data/manifests/dilley-thomas.json`](data/manifests/dilley-thomas.json).
-- **Sahidic NT:** **Horner** via CrossWire **`CopSahHorner`** v1.5 (Public Domain). Do **not** treat Wells Sahidica as the NT baseline. Verified + pilot-imported: JAK-24.
-- **Greek NT:** **INTF/NTVMR Codex Vaticanus GA 03 firsthand (B\*)** (`docID` 20003), CC BY 4.0 transcription (JAK-25 GO; updates the JAK-15 WH default). Do **not** mix Westcott–Hort or SBLGNT into lacunae. Do **not** ship manuscript images. Do **not** change this Greek spine in Coptic Thomas ingest work.
-- **LXX / lexicon / critical texts:** Swete LXX, CCL TEI, and CC BY 4.0 for project-authored critical Greek/English — see [`docs/source-licenses.md`](docs/source-licenses.md).
-
-Bundled corpora: [`data/sources/pilot/horner-vaticanus-nt-pilot.json`](data/sources/pilot/horner-vaticanus-nt-pilot.json) (NT pilot), [`data/sources/thomas/dilley-thomas-v6.2.0.json`](data/sources/thomas/dilley-thomas-v6.2.0.json) (Dilley Thomas), and [`data/sources/fragments/`](data/sources/fragments/) (Greek Thomas fragments, evidence type G / `evaluation-witness`). Full downloads stay under gitignored `data/downloads/` (see that README).
-
-## Python setup
-
-Requires [uv](https://docs.astral.sh/uv/) and Python 3.12+.
+Requires [uv](https://docs.astral.sh/uv/) and Python 3.12+:
 
 ```bash
 uv sync --locked
-uv run thomas --help
+
+# One-time setup (downloads corpora/lexicons to data/downloads/ and builds local eflomal)
+uv run thomas setup
+
+# Build & validate normalized sources and zero-leakage NT splits
+uv run thomas sources build
 uv run thomas sources validate
+
+# Train/freeze offline model-v1 (<1024 KiB shards under data/mappings/model-v1/)
+uv run thomas model build
+
+# Reconstruct Thomas (100% offline, deterministic)
+uv run thomas reconstruct run --all
+uv run thomas reconstruct run --saying thomas.2
+
+# Run offline holdout & lacuna-aware P.Oxy. evaluation suite
+uv run thomas eval run
 ```
 
-### Pre-commit hooks
-
-Install git hooks with one command (after `uv sync --locked`):
-
-```bash
-uv run pre-commit install
-```
-
-That installs the same suite CI runs (`uv run pre-commit run --all-files`): `uv lock --check`, ruff format/check, `ty`, pytest (fast suite), trailing whitespace / EOF / YAML / TOML checks, large-file guard, and SPDX headers on `python/` and `tests/`. Hook revisions are pinned in [`.pre-commit-config.yaml`](.pre-commit-config.yaml); Dependabot (and a weekly autoupdate workflow) keep them current.
-
-The weekly autoupdate workflow opens a PR only when repository secret `PRE_COMMIT_AUTOUPDATE_TOKEN` is set to a fine-grained PAT or GitHub App token with `contents` + `pull-requests` write (so the PR can trigger CI). Without that secret it still runs `pre-commit autoupdate` and skips PR creation; Dependabot remains the primary update path.
-
-Manual equivalents without hooks:
+Quality & zero-leakage checks:
 
 ```bash
 uv run ruff check .
 uv run ruff format --check .
 uv run ty check
 uv run pytest
+uv run python scripts/check_spdx_headers.py python/zetodos_thomas/*.py
 ```
-
-The `thomas` console script exposes `sources validate|download|build-pilot|build-thomas|build-fragments`, `align validate|benchmark|eflomal-probe|aligner-probe|setup-aligners|statistical-eval`, `lexicon generate-candidates|validate-candidates`, `mappings …`, `decode run|validate|ranking-rules`, and `eval reconstruct|score-thomas7|score-nt-holdouts|validate-reconstruction`. Further subcommands live in [`PLAN.md`](PLAN.md). Statistical aligner notes: [`docs/statistical-aligner-comparison.md`](docs/statistical-aligner-comparison.md). Lexical candidates: [`docs/lexical-candidates.md`](docs/lexical-candidates.md). Decoder: [`docs/deterministic-decoder.md`](docs/deterministic-decoder.md). Blinded eval: [`docs/blinded-reconstruction.md`](docs/blinded-reconstruction.md).
-
-Package sources live under `python/zetodos_thomas/`. TypeScript stays under `web/` only (not started yet).
-
-## Offline workflow
-
-After clone and `uv sync --locked`:
-
-1. **Offline immediately:** `uv run thomas sources validate` and `uv run thomas align validate` / `align benchmark` use committed manifests + bundled corpora + pilot gold only (no network).
-2. **Optional setup downloads** (gitignored): `uv run thomas sources download` (see [`data/downloads/README.md`](data/downloads/README.md)); then `build-pilot` / `build-thomas` to regenerate imports.
-3. After setup, CLI work must remain offline (no cloud APIs, CDNs, or hidden network fetches).
-
-Default CLI/CI never fetches Sahidica, NTAEG, or Bohairica.
