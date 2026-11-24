@@ -18,7 +18,7 @@ from torch import Tensor
 from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon
 from zetodos_thomas.neural.corpus import (
     ParallelExample,
-    normalize_greek_target,
+    normalize_greek_for_model,
     serialize_coptic_morphemes,
 )
 from zetodos_thomas.neural.tokenizer import BilingualTokenizer
@@ -463,7 +463,12 @@ def train_seq2seq(
                     model, sb.to(device), max_new_tokens=min(140, max_len)
                 )
                 for p_ids in pred_seqs:
-                    hyps.append(normalize_greek_target(tokenizer.decode(p_ids)))
+                    hyps.append(
+                        normalize_greek_for_model(
+                            tokenizer.decode(p_ids),
+                            unaccented=config.unaccented_target,
+                        )
+                    )
             dev_chrf = _quick_chrf(refs, hyps)
 
         improved = (
@@ -516,8 +521,10 @@ def generate_backtranslations(
     batch_size: int = 64,
     max_len: int = 240,
     device: torch.device,
+    domain_tag: str = "<DOM_BT>",
+    target_tag: str | None = None,
 ) -> list[tuple[str, str]]:
-    """Back-translate clean Swete LXX Koine sentences into synthetic Coptic inputs."""
+    """Back-translate clean Koine sentences into synthetic Coptic inputs."""
     reverse_model.to(device)
     reverse_model.eval()
 
@@ -527,6 +534,18 @@ def generate_backtranslations(
         if 4 <= len(s_ids) <= max_len:
             encoded.append((s_ids, g_txt))
     encoded.sort(key=lambda item: len(item[0]))
+
+    strip_prefixes = (
+        "<DOM_NT>",
+        "<DOM_OT>",
+        "<DOM_BT>",
+        "<DOM_PAT>",
+        "<DOM_APOP>",
+        "<DOM_LEX>",
+        "<TGT_GRC>",
+        "<TGT_ENG>",
+    )
+    prefix = f"{domain_tag} {target_tag}" if target_tag else domain_tag
 
     bt_pairs: list[tuple[str, str]] = []
     for start in range(0, len(encoded), batch_size):
@@ -547,12 +566,15 @@ def generate_backtranslations(
                 continue
             if len(set(c_toks)) < max(2, len(c_toks) // 5):
                 continue
-            # Ensure domain prefix is cleanly <DOM_BT>
-            for dom in ("<DOM_NT>", "<DOM_OT>", "<DOM_BT>", "<DOM_LEX>"):
-                if c_txt.startswith(dom):
-                    c_txt = c_txt[len(dom) :].strip()
-                    break
-            bt_pairs.append((f"<DOM_BT> {c_txt}", g_txt))
+            changed = True
+            while changed:
+                changed = False
+                for dom in strip_prefixes:
+                    if c_txt.startswith(dom):
+                        c_txt = c_txt[len(dom) :].strip()
+                        changed = True
+            if c_txt:
+                bt_pairs.append((f"{prefix} {c_txt}", g_txt))
         if (start // batch_size) % 25 == 0:
             _clear_mps_cache(device)
     reverse_model.to("cpu")
@@ -749,6 +771,11 @@ def make_forward_pairs_epoch(
     loan_drop_p: float = 0.05,
     morpheme_drop_p: float = 0.03,
     rng: random.Random,
+    greekify: bool = False,
+    unaccented_hints: bool = False,
+    native_gloss_hints: Mapping[str, str] | None = None,
+    target_tag: str | None = None,
+    multitask_pairs: Sequence[tuple[str, str]] = (),
 ) -> list[tuple[str, str]]:
     """Build one randomized-augmentation epoch of Coptic -> Koine training pairs."""
 
@@ -771,6 +798,10 @@ def make_forward_pairs_epoch(
                 loan_drop_p=loan_drop_p,
                 morpheme_drop_p=morpheme_drop_p,
                 rng=rng,
+                greekify=greekify,
+                unaccented_hints=unaccented_hints,
+                native_gloss_hints=native_gloss_hints,
+                target_tag=target_tag,
             )
             pairs.append((s_txt, ex.greek_target))
     for ex in ot_train:
@@ -782,6 +813,10 @@ def make_forward_pairs_epoch(
             loan_drop_p=loan_drop_p,
             morpheme_drop_p=morpheme_drop_p,
             rng=rng,
+            greekify=greekify,
+            unaccented_hints=unaccented_hints,
+            native_gloss_hints=native_gloss_hints,
+            target_tag=target_tag,
         )
         pairs.append((s_txt, ex.greek_target))
     for ex in clause_aug:
@@ -793,11 +828,17 @@ def make_forward_pairs_epoch(
             loan_drop_p=loan_drop_p,
             morpheme_drop_p=0.0,
             rng=rng,
+            greekify=greekify,
+            unaccented_hints=unaccented_hints,
+            native_gloss_hints=native_gloss_hints,
+            target_tag=target_tag,
         )
         pairs.append((s_txt, ex.greek_target))
     pairs.extend(bt_pairs)
-    # Sample ~35% of CCL lexical pairs per epoch to reinforce rare Greek lemmas
+    if multitask_pairs:
+        pairs.extend(multitask_pairs)
+    # Sample CCL + native gloss-bridge lexical pairs per epoch to reinforce rare lemmas
     if lex_aug:
-        k_lex = min(len(lex_aug), 2500)
+        k_lex = min(len(lex_aug), 3000)
         pairs.extend(rng.sample(list(lex_aug), k_lex))
     return pairs

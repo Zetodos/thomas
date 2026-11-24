@@ -221,6 +221,7 @@ class EvalReport(BaseModel):
 
     id: str = "eval-report-v1"
     model_id: str = "model-v1"
+    synoptic_parallels_excluded: int | None = None
     nt_holdout: NtHoldoutMetrics
     poxy_convergent: FragStratumMetrics
     poxy_convergent_non_synoptic: FragStratumMetrics | None = None
@@ -1212,10 +1213,15 @@ def format_benchmark_markdown(report: EvalReport) -> str:
                 False,
             )
         )
+    syn_label = (
+        "Convergent — Synoptic-Parallel (NT parallels excl.)"
+        if (report.synoptic_parallels_excluded or 0) > 0
+        else "Convergent — Synoptic-Parallel (canonical NT train incl.)"
+    )
     if report.poxy_convergent_synoptic is not None:
         strata.append(
             (
-                "Convergent — Synoptic-Parallel (NT parallels excl.)",
+                syn_label,
                 report.poxy_convergent_synoptic,
                 False,
             )
@@ -1245,14 +1251,20 @@ def format_benchmark_markdown(report: EvalReport) -> str:
         "Generated Category C Koine | Itacism Char F1 |"
     )
 
+    nt_policy_note = (
+        f"{report.synoptic_parallels_excluded} Synoptic parallels of "
+        "scored P.Oxy. logia excluded from training"
+        if (report.synoptic_parallels_excluded or 0) > 0
+        else "full canonical NT TRAIN (7,782 verses) included; zero Gospel of "
+        "Thomas or P.Oxy. material in training"
+    )
     lines = [
         f"# Benchmark Evaluation Report (`{report.model_id}`)",
         "",
         "Offline, zero-leakage evaluation across 41 NT holdout verses "
-        "and span-aligned P.Oxy. 1/654/655 papyri (63 Synoptic parallels of "
-        "scored P.Oxy. logia excluded from training; zero curated Thomas idioms, "
-        "zero CCL manual fallbacks, zero P.Oxy. eval stem cribs, and zero CCL XML "
-        "loaded by the evaluator).",
+        f"and span-aligned P.Oxy. 1/654/655 papyri ({nt_policy_note}; "
+        "zero curated Thomas idioms, zero CCL manual fallbacks, zero P.Oxy. "
+        "eval stem cribs, and zero CCL XML loaded by the evaluator).",
         "",
         "## 1. Intact NT Gospel Holdout Split (`41 verses`)",
         "",
@@ -1401,9 +1413,16 @@ def run_full_evaluation(
         if model_id.startswith("model-")
         else f"eval-report-{model_id}"
     )
+    syn_excl: int | None = None
+    prov_p = mdir / "training-provenance.json"
+    if prov_p.is_file():
+        prov_data = json.loads(prov_p.read_text(encoding="utf-8"))
+        if "excluded_synoptic_thomas_count" in prov_data:
+            syn_excl = int(prov_data["excluded_synoptic_thomas_count"])
     return EvalReport(
         id=rep_id,
         model_id=model_id,
+        synoptic_parallels_excluded=syn_excl,
         nt_holdout=nt,
         poxy_convergent=conv,
         poxy_convergent_non_synoptic=nonsyn,

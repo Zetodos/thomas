@@ -343,9 +343,15 @@ def validate_holdout_artifacts(
 
 
 def clean_nt_train_ids(
-    split: NtCorpusSplit, *, exclude_synoptic_thomas: bool = True
+    split: NtCorpusSplit, *, exclude_synoptic_thomas: bool = False
 ) -> set[str]:
-    """Return NT train unit IDs with Synoptic parallels of P.Oxy. logia excluded."""
+    """Return canonical NT train unit IDs (optionally excluding Synoptic parallels).
+
+    By default all canonical NT TRAIN verses (7,782) are retained so models learn
+    direct Coptic-to-Koine Gospel expectations; only Gospel of Thomas / P.Oxy.
+    material plus NT HOLDOUT, DEV, and omission fixtures are excluded. Pass
+    ``exclude_synoptic_thomas=True`` for the stricter Synoptic-exclusion ablation.
+    """
     train_ids = _unit_ids_by_role(split, PassageRole.TRAIN)
     if exclude_synoptic_thomas:
         return train_ids - SYNOPTIC_THOMAS_PARALLEL_EXCLUSIONS
@@ -356,9 +362,9 @@ def all_excluded_nt_ids(
     split: NtCorpusSplit,
     *,
     include_dev: bool = True,
-    exclude_synoptic_thomas: bool = True,
+    exclude_synoptic_thomas: bool = False,
 ) -> set[str]:
-    """Return all NT unit IDs forbidden from training (holdout + dev + Synoptic)."""
+    """Return NT unit IDs excluded from training (holdout + optional dev/Synoptic)."""
     excluded = _unit_ids_by_role(split, PassageRole.HOLDOUT)
     if include_dev:
         excluded |= _unit_ids_by_role(split, PassageRole.DEV)

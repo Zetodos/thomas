@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import math
 import re
 import unicodedata
 import zipfile
@@ -10,6 +11,7 @@ from collections import defaultdict
 from dataclasses import dataclass
 from pathlib import Path
 
+from zetodos_thomas.ingest.normalize import normalize_coptic
 from zetodos_thomas.schemas.ids import token_id
 from zetodos_thomas.schemas.linguistic import (
     CopticMorpheme,
@@ -448,12 +450,204 @@ def _choose_swete_text(
     return best if best_name else {}
 
 
+_COPTIC_TO_GREEK_FOLD: dict[str, str] = {
+    "ⲁ": "α",
+    "ⲃ": "β",
+    "ⲅ": "γ",
+    "ⲇ": "δ",
+    "ⲉ": "ε",
+    "ⲍ": "ζ",
+    "ⲏ": "η",
+    "ⲑ": "θ",
+    "ⲓ": "ι",
+    "ⲕ": "κ",
+    "ⲗ": "λ",
+    "ⲙ": "μ",
+    "ⲛ": "ν",
+    "ⲝ": "ξ",
+    "ⲟ": "ο",
+    "ⲡ": "π",
+    "ⲣ": "ρ",
+    "ⲥ": "σ",
+    "ⲧ": "τ",
+    "ⲩ": "υ",
+    "ⲫ": "φ",
+    "ⲭ": "χ",
+    "ⲯ": "ψ",
+    "ⲱ": "ω",
+}
+
+
+def _strip_greek_bare(word: str) -> str:
+    nfd = unicodedata.normalize("NFD", word)
+    return (
+        "".join(ch for ch in nfd if unicodedata.category(ch) != "Mn")
+        .lower()
+        .replace("ς", "σ")
+    )
+
+
+def _coptic_greek_stems(c_unit: CopticUnit) -> set[str]:
+    """Extract >=4-char Greek-derived stems from a Sahidic OT unit for DP anchors."""
+    stems: set[str] = set()
+    for m in c_unit.morphemes:
+        if m.lang == "Greek" or m.pos == "NPROP":
+            raw = normalize_coptic(m.lemma or m.norm).replace("\u2cff", "")
+            if raw.startswith(("ⲣ", "ϯ")) and len(raw) >= 5:
+                raw = raw[1:]
+            folded = "".join(_COPTIC_TO_GREEK_FOLD.get(ch, "") for ch in raw)
+            if len(folded) >= 4:
+                stems.add(folded[:4])
+    return stems
+
+
+def _greek_word_stems(words: list[str]) -> set[str]:
+    return {b[:4] for w in words if len(b := _strip_greek_bare(w)) >= 4}
+
+
+def _normalize_book_keys(
+    book: str, coptic: dict[tuple[int, int], CopticUnit]
+) -> dict[tuple[int, int], CopticUnit]:
+    """Normalize known CoptOT vs Swete LXX chapter-numbering divergences."""
+    if book == "Epistle_of_Jeremiah":
+        # Swete 52.Epistula_Jeremiae uses chapter 0; CoptOT labels verses ch. 1 (or 6)
+        out: dict[tuple[int, int], CopticUnit] = {}
+        for (ch, vs), u in coptic.items():
+            key = (0, vs) if ch in {1, 6} else (ch, vs)
+            out.setdefault(key, u)
+        return out
+    if book == "Joel":
+        # LXX Joel merges ch. 3 (5 vv) onto end of ch. 2 (2:28-32) and shifts ch. 4 -> 3
+        out = {}
+        for (ch, vs), u in coptic.items():
+            if ch == 3:
+                out[(2, vs + 27)] = u
+            elif ch == 4:
+                out[(3, vs)] = u
+            else:
+                out[(ch, vs)] = u
+        return out
+    return coptic
+
+
+def _recover_chapter_pairs_dp(
+    c_unmatched: list[tuple[int, CopticUnit]],
+    g_unmatched: list[tuple[int, list[str]]],
+    *,
+    max_verse_drift: int = 4,
+    min_pair_score: float = 0.55,
+) -> list[tuple[int, CopticUnit, int, list[str]]]:
+    """Monotone chapter-level DP recovering shifted-versification OT x Swete pairs."""
+    if not c_unmatched or not g_unmatched:
+        return []
+    m = len(c_unmatched)
+    n = len(g_unmatched)
+    c_stems = [_coptic_greek_stems(u) for _, u in c_unmatched]
+    g_stems = [_greek_word_stems(ws) for _, ws in g_unmatched]
+
+    def _pair_score(i: int, j: int) -> float:
+        cv, cu = c_unmatched[i]
+        gv, gw = g_unmatched[j]
+        drift = abs(cv - gv)
+        if drift > max_verse_drift:
+            return -1.0
+        n_c = len(cu.morphemes)
+        n_g = len(gw)
+        if n_c == 0 or n_g == 0:
+            return -1.0
+        tok_ratio = max(n_c, n_g) / min(n_c, n_g)
+        if tok_ratio > MAX_TOKEN_RATIO:
+            return -1.0
+        # Target ratio of Greek words / Coptic morphemes is ~0.58
+        g_over_c = n_g / n_c
+        len_sim = math.exp(-0.5 * ((math.log(g_over_c / 0.58)) / 0.35) ** 2)
+        # Verse proximity prior
+        prox = math.exp(-0.35 * drift)
+        # Shared Greek loanword / proper-noun 4-char stem bonus
+        shared_stems = len(c_stems[i] & g_stems[j])
+        # Require either a shared lexical/proper-noun anchor or a very tight +-1
+        # verse shift with closely matching length so unrelated verses never pair.
+        if shared_stems == 0 and (drift > 1 or len_sim < 0.85):
+            return -1.0
+        anchor_bonus = min(0.60, 0.30 * shared_stems)
+        return 0.55 * len_sim + 0.45 * prox + anchor_bonus
+
+    dp = [[0.0] * (n + 1) for _ in range(m + 1)]
+    back = [[0] * (n + 1) for _ in range(m + 1)]  # 1=skip_i, 2=skip_j, 3=match
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            best = dp[i - 1][j]
+            ch = 1
+            if dp[i][j - 1] > best:
+                best = dp[i][j - 1]
+                ch = 2
+            sc = _pair_score(i - 1, j - 1)
+            if sc >= min_pair_score:
+                cand = dp[i - 1][j - 1] + sc
+                if cand > best:
+                    best = cand
+                    ch = 3
+            dp[i][j] = best
+            back[i][j] = ch
+
+    recovered: list[tuple[int, CopticUnit, int, list[str]]] = []
+    i, j = m, n
+    while i > 0 and j > 0:
+        ch = back[i][j]
+        if ch == 3:
+            cv, cu = c_unmatched[i - 1]
+            gv, gw = g_unmatched[j - 1]
+            recovered.append((cv, cu, gv, gw))
+            i -= 1
+            j -= 1
+        elif ch == 1:
+            i -= 1
+        else:
+            j -= 1
+    recovered.reverse()
+    return recovered
+
+
+def _make_swete_greek_unit(
+    c_unit: CopticUnit, chapter: int, verse: int, g_words: list[str]
+) -> GreekUnit:
+    unit_id = c_unit.unit_id
+    g_tokens = [
+        GreekToken(
+            id=token_id(SWETE_SOURCE_ID, unit_id, seq),
+            unit_id=unit_id,
+            seq=seq,
+            surface=word,
+            normalized=_greek_lower(word),
+            lemma=_greek_lower(word),
+            morph=GreekMorphFeatures(pos="UNK"),
+        )
+        for seq, word in enumerate(g_words)
+    ]
+    return GreekUnit(
+        unit_id=unit_id,
+        source_id=SWETE_SOURCE_ID,
+        book=c_unit.book,
+        chapter=chapter,
+        verse=verse,
+        original_text=" ".join(g_words),
+        normalized_text=" ".join(t.normalized for t in g_tokens),
+        tokens=g_tokens,
+    )
+
+
 def load_ot_swete_pairs(
     *,
     tt_zip: Path,
     swete_dir: Path,
+    recover_versification: bool = False,
 ) -> list[tuple[CopticUnit, GreekUnit]]:
-    """Pair Sahidic OT annotated verses with Swete LXX Greek verses."""
+    """Pair Sahidic OT annotated verses with Swete LXX Greek verses.
+
+    When ``recover_versification=True`` (used by ``model-v3``), normalizes known
+    chapter divergences (Epistle of Jeremiah, Joel) and runs monotone chapter-level
+    DP recovery over unmatched verses within a ``+-4`` verse drift window.
+    """
     if not swete_dir.is_dir():
         msg = f"missing Swete LXX directory: {swete_dir}"
         raise FileNotFoundError(msg)
@@ -461,7 +655,12 @@ def load_ot_swete_pairs(
     coptic_by_book = load_sahidic_ot_chapters(tt_zip)
     swete_cache: dict[str, dict[tuple[int, int], list[str]]] = {}
     pairs: list[tuple[CopticUnit, GreekUnit]] = []
-    for book, coptic in sorted(coptic_by_book.items()):
+    for book, raw_coptic in sorted(coptic_by_book.items()):
+        coptic = (
+            _normalize_book_keys(book, raw_coptic)
+            if recover_versification
+            else raw_coptic
+        )
         spec = BOOK_TO_SWETE[book]
         names = (spec,) if isinstance(spec, str) else spec
         loaded: dict[str, dict[tuple[int, int], list[str]]] = {}
@@ -481,6 +680,9 @@ def load_ot_swete_pairs(
         )
         if not greek:
             continue
+
+        matched_c_keys: set[tuple[int, int]] = set()
+        matched_g_keys: set[tuple[int, int]] = set()
         for key in sorted(set(coptic) & set(greek)):
             c_unit = coptic[key]
             g_words = greek[key]
@@ -492,28 +694,25 @@ def load_ot_swete_pairs(
             if ratio > MAX_TOKEN_RATIO:
                 continue
             chapter, verse = key
-            unit_id = c_unit.unit_id
-            g_tokens = [
-                GreekToken(
-                    id=token_id(SWETE_SOURCE_ID, unit_id, seq),
-                    unit_id=unit_id,
-                    seq=seq,
-                    surface=word,
-                    normalized=_greek_lower(word),
-                    lemma=_greek_lower(word),
-                    morph=GreekMorphFeatures(pos="UNK"),
-                )
-                for seq, word in enumerate(g_words)
-            ]
-            g_unit = GreekUnit(
-                unit_id=unit_id,
-                source_id=SWETE_SOURCE_ID,
-                book=c_unit.book,
-                chapter=chapter,
-                verse=verse,
-                original_text=" ".join(g_words),
-                normalized_text=" ".join(t.normalized for t in g_tokens),
-                tokens=g_tokens,
+            matched_c_keys.add(key)
+            matched_g_keys.add(key)
+            pairs.append(
+                (c_unit, _make_swete_greek_unit(c_unit, chapter, verse, g_words))
             )
-            pairs.append((c_unit, g_unit))
+
+        if recover_versification:
+            c_by_ch: dict[int, list[tuple[int, CopticUnit]]] = defaultdict(list)
+            g_by_ch: dict[int, list[tuple[int, list[str]]]] = defaultdict(list)
+            for (ch, vs), u in sorted(coptic.items()):
+                if (ch, vs) not in matched_c_keys and u.morphemes:
+                    c_by_ch[ch].append((vs, u))
+            for (ch, vs), ws in sorted(greek.items()):
+                if (ch, vs) not in matched_g_keys and ws:
+                    g_by_ch[ch].append((vs, ws))
+            for ch, c_rem in sorted(c_by_ch.items()):
+                g_rem = g_by_ch.get(ch, [])
+                if not g_rem:
+                    continue
+                for _cv, cu, gv, gw in _recover_chapter_pairs_dp(c_rem, g_rem):
+                    pairs.append((cu, _make_swete_greek_unit(cu, ch, gv, gw)))
     return pairs
