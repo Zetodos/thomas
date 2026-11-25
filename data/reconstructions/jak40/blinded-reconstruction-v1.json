@@ -1,0 +1,4419 @@
+{
+  "id": "jak40-blinded-reconstruction-v1",
+  "title": "Blinded Thomas 7 reconstruction (JAK-40)",
+  "owned_by": "JAK-40",
+  "schema_version": "1",
+  "ablation_condition": "nt_aligner_plus_verified_loanwords",
+  "ranking_rules_id": "jak39-stable-ranking-v1",
+  "phase2_active_aligners": [
+    "eflomal",
+    "fast_align"
+  ],
+  "adopted_aligner": null,
+  "units": [
+    {
+      "unit_id": "thomas.7",
+      "target_kind": "thomas_pilot",
+      "source_id": "dilley-thomas",
+      "coptic_surfaces": [
+        "ⲡⲉϫⲉ",
+        "ⲓⲏⲥⲟⲩⲥ",
+        "ⲟⲩ",
+        "ⲙⲁⲕⲁⲣⲓⲟⲥ",
+        "ⲡⲉ",
+        "ⲡ",
+        "ⲙⲟⲩⲓ",
+        "ⲡⲁⲓ",
+        "ⲉⲧⲉ",
+        "ⲡ",
+        "ⲣⲱⲙⲉ",
+        "ⲛⲁ",
+        "ⲟⲩⲟⲙ",
+        "ϥ",
+        "ⲁⲩⲱ",
+        "ⲛⲧⲉ",
+        "ⲡ",
+        "ⲙⲟⲩⲓ",
+        "ϣⲱⲡⲉ",
+        "ⲛ",
+        "ⲣⲱⲙⲉ",
+        "ⲁⲩⲱ",
+        "ϥ",
+        "ⲃⲏⲧ",
+        "·",
+        "ⲛϭⲓ",
+        "ⲡ",
+        "ⲣⲱⲙⲉ",
+        "ⲡⲁⲓ",
+        "ⲉⲧⲉ",
+        "ⲡ",
+        "ⲙⲟⲩⲓ",
+        "ⲛⲁ",
+        "ⲟⲩⲟⲙ",
+        "ϥ",
+        "ⲁⲩⲱ",
+        "ⲡ",
+        "ⲙⲟⲩⲓ",
+        "ⲛⲁ",
+        "ϣⲱⲡⲉ",
+        "ⲣ",
+        "ⲣⲱⲙⲉ"
+      ],
+      "segmentation": "dilley-normalized-whitespace-v1",
+      "id_scheme_version": "1",
+      "decode_result": {
+        "id": "decode-result:jak40-blinded-thomas.7",
+        "title": "Blinded decode thomas.7",
+        "owned_by": "JAK-39",
+        "schema_version": "1",
+        "request_id": "jak40-blinded-thomas.7",
+        "ablation_condition": "nt_aligner_plus_verified_loanwords",
+        "unit_id": "thomas.7",
+        "spans": [
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t0-0",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲡⲉϫⲉ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t0-0",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/0"
+              ],
+              "surfaces": [
+                "ⲡⲉϫⲉ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t1-1",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲓⲏⲥⲟⲩⲥ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t1-1",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/1"
+              ],
+              "surfaces": [
+                "ⲓⲏⲥⲟⲩⲥ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t2-2",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲟⲩ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "το"
+                ],
+                "form_kind": "attested_surface",
+                "score": 865.583332,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲟⲩ->το",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -15,
+                  -0.5833324697396783,
+                  1,
+                  "το",
+                  "observed:ⲟⲩ->το"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "ουδε"
+                ],
+                "form_kind": "attested_surface",
+                "score": 864.550982,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲟⲩ->ουδε",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -14,
+                  -0.550981981981982,
+                  1,
+                  "ουδε",
+                  "observed:ⲟⲩ->ουδε"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "τι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 860.540318,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲟⲩ->τι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -10,
+                  -0.5403184653184653,
+                  1,
+                  "τι",
+                  "observed:ⲟⲩ->τι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "εν"
+                ],
+                "form_kind": "attested_surface",
+                "score": 858.570736,
+                "uncertainty": 0.15,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲟⲩ->εν",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -8,
+                  -0.5707357357357358,
+                  1,
+                  "εν",
+                  "observed:ⲟⲩ->εν"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 855.547424,
+                "uncertainty": 0.225,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲟⲩ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -5,
+                  -0.5474244405696018,
+                  1,
+                  "ο",
+                  "observed:ⲟⲩ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t2-2",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/2"
+              ],
+              "surfaces": [
+                "ⲟⲩ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t3-3",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲙⲁⲕⲁⲣⲓⲟⲥ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "μακαριος"
+                ],
+                "form_kind": "lemma_clue",
+                "score": 751.0,
+                "uncertainty": 0.55,
+                "evidence": [
+                  {
+                    "kind": "independently_verified_loanword",
+                    "evidence_class": "independently_verified",
+                    "ref_id": "verified-makarios",
+                    "layer": null,
+                    "notes": "Lemma-level L-clue only — not an attested surface inflection; illustrative NT spans are non-training and are not consumed."
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  2,
+                  0,
+                  -1,
+                  -0.0,
+                  1,
+                  "μακαριος",
+                  "verified-makarios"
+                ],
+                "grammatical_notes": [
+                  "verified_loanword_lemma",
+                  "matched_coptic_form=ⲙⲁⲕⲁⲣⲓⲟⲥ"
+                ],
+                "restrictions": "Lexical clue only — not automatic proof of case/tense/number/syntax."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t3-3",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/3"
+              ],
+              "surfaces": [
+                "ⲙⲁⲕⲁⲣⲓⲟⲥ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t4-4",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲡⲉ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 880.675862,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡⲉ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -30,
+                  -0.6758621289626614,
+                  1,
+                  "ο",
+                  "observed:ⲡⲉ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "εστιν"
+                ],
+                "form_kind": "attested_surface",
+                "score": 866.621955,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡⲉ->εστιν",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -16,
+                  -0.6219551560598913,
+                  1,
+                  "εστιν",
+                  "observed:ⲡⲉ->εστιν"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "ην"
+                ],
+                "form_kind": "attested_surface",
+                "score": 861.579729,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡⲉ->ην",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -11,
+                  -0.5797293321565166,
+                  1,
+                  "ην",
+                  "observed:ⲡⲉ->ην"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "ει"
+                ],
+                "form_kind": "attested_surface",
+                "score": 859.547981,
+                "uncertainty": 0.125,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡⲉ->ει",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -9,
+                  -0.5479810238305384,
+                  1,
+                  "ει",
+                  "observed:ⲡⲉ->ει"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "ουρανου"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.48828,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡⲉ->ουρανου",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.48828016643550626,
+                  1,
+                  "ουρανου",
+                  "observed:ⲡⲉ->ουρανου"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t4-4",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/4"
+              ],
+              "surfaces": [
+                "ⲡⲉ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t5-5",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲡ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 867.622816,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -17,
+                  -0.6228163134232498,
+                  1,
+                  "ο",
+                  "observed:ⲡ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "το"
+                ],
+                "form_kind": "attested_surface",
+                "score": 864.612745,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->το",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -14,
+                  -0.6127450980392157,
+                  1,
+                  "το",
+                  "observed:ⲡ->το"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "ουτος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 860.569976,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ουτος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -10,
+                  -0.569975631219116,
+                  1,
+                  "ουτος",
+                  "observed:ⲡ->ουτος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "ου"
+                ],
+                "form_kind": "attested_surface",
+                "score": 853.489334,
+                "uncertainty": 0.275,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ου",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -3,
+                  -0.48933428209993673,
+                  1,
+                  "ου",
+                  "observed:ⲡ->ου"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "παραδοι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 851.385188,
+                "uncertainty": 0.325,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->παραδοι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -0.38518755328218246,
+                  1,
+                  "παραδοι",
+                  "observed:ⲡ->παραδοι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t5-5",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/5"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t6-6",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲙⲟⲩⲓ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t6-6",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/6"
+              ],
+              "surfaces": [
+                "ⲙⲟⲩⲓ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t7-7",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲡⲁⲓ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t7-7",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/7"
+              ],
+              "surfaces": [
+                "ⲡⲁⲓ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t8-8",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲉⲧⲉ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ουκ"
+                ],
+                "form_kind": "attested_surface",
+                "score": 855.516693,
+                "uncertainty": 0.225,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲉⲧⲉ->ουκ",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -5,
+                  -0.5166927490871153,
+                  1,
+                  "ουκ",
+                  "observed:ⲉⲧⲉ->ουκ"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "την"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.515887,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲉⲧⲉ->την",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.5158869395711501,
+                  1,
+                  "την",
+                  "observed:ⲉⲧⲉ->την"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "εαν"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.510185,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲉⲧⲉ->εαν",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.5101851851851852,
+                  1,
+                  "εαν",
+                  "observed:ⲉⲧⲉ->εαν"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "τη"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.50748,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲉⲧⲉ->τη",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.5074795574795575,
+                  1,
+                  "τη",
+                  "observed:ⲉⲧⲉ->τη"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "οταν"
+                ],
+                "form_kind": "attested_surface",
+                "score": 852.447203,
+                "uncertainty": 0.3,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲉⲧⲉ->οταν",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -2,
+                  -0.44720252167060676,
+                  1,
+                  "οταν",
+                  "observed:ⲉⲧⲉ->οταν"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t8-8",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/8"
+              ],
+              "surfaces": [
+                "ⲉⲧⲉ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t9-9",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲡ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 867.622816,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -17,
+                  -0.6228163134232498,
+                  1,
+                  "ο",
+                  "observed:ⲡ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "το"
+                ],
+                "form_kind": "attested_surface",
+                "score": 864.612745,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->το",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -14,
+                  -0.6127450980392157,
+                  1,
+                  "το",
+                  "observed:ⲡ->το"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "ουτος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 860.569976,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ουτος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -10,
+                  -0.569975631219116,
+                  1,
+                  "ουτος",
+                  "observed:ⲡ->ουτος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "ου"
+                ],
+                "form_kind": "attested_surface",
+                "score": 853.489334,
+                "uncertainty": 0.275,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ου",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -3,
+                  -0.48933428209993673,
+                  1,
+                  "ου",
+                  "observed:ⲡ->ου"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "παραδοι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 851.385188,
+                "uncertainty": 0.325,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->παραδοι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -0.38518755328218246,
+                  1,
+                  "παραδοι",
+                  "observed:ⲡ->παραδοι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t9-9",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/9"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t10-10",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲣⲱⲙⲉ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ανθρωπος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 856.688885,
+                "uncertainty": 0.2,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανθρωπος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -6,
+                  -0.6888846447669977,
+                  1,
+                  "ανθρωπος",
+                  "observed:ⲣⲱⲙⲉ->ανθρωπος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "ανθρωποις"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.604062,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανθρωποις",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.6040616246498599,
+                  1,
+                  "ανθρωποις",
+                  "observed:ⲣⲱⲙⲉ->ανθρωποις"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "ανδρι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 853.560565,
+                "uncertainty": 0.275,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανδρι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -3,
+                  -0.5605650154798761,
+                  1,
+                  "ανδρι",
+                  "observed:ⲣⲱⲙⲉ->ανδρι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t10-10",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/10"
+              ],
+              "surfaces": [
+                "ⲣⲱⲙⲉ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t11-11",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲛⲁ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t11-11",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/11"
+              ],
+              "surfaces": [
+                "ⲛⲁ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t12-12",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲟⲩⲟⲙ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t12-12",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/12"
+              ],
+              "surfaces": [
+                "ⲟⲩⲟⲙ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t13-13",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ϥ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 855.570646,
+                "uncertainty": 0.225,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ϥ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -5,
+                  -0.5706463675213675,
+                  1,
+                  "ο",
+                  "observed:ϥ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "αυτος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.6375,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ϥ->αυτος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.6375,
+                  1,
+                  "αυτος",
+                  "observed:ϥ->αυτος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t13-13",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/13"
+              ],
+              "surfaces": [
+                "ϥ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t14-14",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲁⲩⲱ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "και"
+                ],
+                "form_kind": "attested_surface",
+                "score": 1029.910347,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲁⲩⲱ->και",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -179,
+                  -0.9103474936830859,
+                  1,
+                  "και",
+                  "observed:ⲁⲩⲱ->και"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "λογος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 852.43353,
+                "uncertainty": 0.3,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲁⲩⲱ->λογος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -2,
+                  -0.4335304034000522,
+                  1,
+                  "λογος",
+                  "observed:ⲁⲩⲱ->λογος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t14-14",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/14"
+              ],
+              "surfaces": [
+                "ⲁⲩⲱ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t15-15",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲛⲧⲉ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "σου"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.554454,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛⲧⲉ->σου",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.5544538706256628,
+                  1,
+                  "σου",
+                  "observed:ⲛⲧⲉ->σου"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "θυ"
+                ],
+                "form_kind": "attested_surface",
+                "score": 851.432745,
+                "uncertainty": 0.325,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛⲧⲉ->θυ",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -0.4327445652173913,
+                  1,
+                  "θυ",
+                  "observed:ⲛⲧⲉ->θυ"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "αγαλ"
+                ],
+                "form_kind": "attested_surface",
+                "score": 851.421584,
+                "uncertainty": 0.325,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛⲧⲉ->αγαλ",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -0.421583850931677,
+                  1,
+                  "αγαλ",
+                  "observed:ⲛⲧⲉ->αγαλ"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "νατε"
+                ],
+                "form_kind": "attested_surface",
+                "score": 851.421584,
+                "uncertainty": 0.325,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛⲧⲉ->νατε",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -0.421583850931677,
+                  1,
+                  "νατε",
+                  "observed:ⲛⲧⲉ->νατε"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "τελειοι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 851.421584,
+                "uncertainty": 0.325,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛⲧⲉ->τελειοι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -0.421583850931677,
+                  1,
+                  "τελειοι",
+                  "observed:ⲛⲧⲉ->τελειοι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t15-15",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/15"
+              ],
+              "surfaces": [
+                "ⲛⲧⲉ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t16-16",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲡ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 867.622816,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -17,
+                  -0.6228163134232498,
+                  1,
+                  "ο",
+                  "observed:ⲡ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "το"
+                ],
+                "form_kind": "attested_surface",
+                "score": 864.612745,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->το",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -14,
+                  -0.6127450980392157,
+                  1,
+                  "το",
+                  "observed:ⲡ->το"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "ουτος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 860.569976,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ουτος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -10,
+                  -0.569975631219116,
+                  1,
+                  "ουτος",
+                  "observed:ⲡ->ουτος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "ου"
+                ],
+                "form_kind": "attested_surface",
+                "score": 853.489334,
+                "uncertainty": 0.275,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ου",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -3,
+                  -0.48933428209993673,
+                  1,
+                  "ου",
+                  "observed:ⲡ->ου"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "παραδοι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 851.385188,
+                "uncertainty": 0.325,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->παραδοι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -0.38518755328218246,
+                  1,
+                  "παραδοι",
+                  "observed:ⲡ->παραδοι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t16-16",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/16"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t17-17",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲙⲟⲩⲓ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t17-17",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/17"
+              ],
+              "surfaces": [
+                "ⲙⲟⲩⲓ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t18-18",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ϣⲱⲡⲉ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "εσεσθε"
+                ],
+                "form_kind": "attested_surface",
+                "score": 852.517507,
+                "uncertainty": 0.3,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ϣⲱⲡⲉ->εσεσθε",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -2,
+                  -0.5175070028011204,
+                  1,
+                  "εσεσθε",
+                  "observed:ϣⲱⲡⲉ->εσεσθε"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "δι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 852.508578,
+                "uncertainty": 0.3,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ϣⲱⲡⲉ->δι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -2,
+                  -0.508578431372549,
+                  1,
+                  "δι",
+                  "observed:ϣⲱⲡⲉ->δι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t18-18",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/18"
+              ],
+              "surfaces": [
+                "ϣⲱⲡⲉ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t19-19",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲛ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 861.573272,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -11,
+                  -0.573271744595274,
+                  1,
+                  "ο",
+                  "observed:ⲛ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "σου"
+                ],
+                "form_kind": "attested_surface",
+                "score": 857.521172,
+                "uncertainty": 0.175,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛ->σου",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -7,
+                  -0.5211724527033516,
+                  1,
+                  "σου",
+                  "observed:ⲛ->σου"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "εξ"
+                ],
+                "form_kind": "attested_surface",
+                "score": 857.501386,
+                "uncertainty": 0.175,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛ->εξ",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -7,
+                  -0.501385865183035,
+                  1,
+                  "εξ",
+                  "observed:ⲛ->εξ"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "οπισω"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.470299,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛ->οπισω",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.4702991452991453,
+                  1,
+                  "οπισω",
+                  "observed:ⲛ->οπισω"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "παντες"
+                ],
+                "form_kind": "attested_surface",
+                "score": 853.450445,
+                "uncertainty": 0.275,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛ->παντες",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -3,
+                  -0.45044538794538797,
+                  1,
+                  "παντες",
+                  "observed:ⲛ->παντες"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t19-19",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/19"
+              ],
+              "surfaces": [
+                "ⲛ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t20-20",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲣⲱⲙⲉ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ανθρωπος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 856.688885,
+                "uncertainty": 0.2,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανθρωπος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -6,
+                  -0.6888846447669977,
+                  1,
+                  "ανθρωπος",
+                  "observed:ⲣⲱⲙⲉ->ανθρωπος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "ανθρωποις"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.604062,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανθρωποις",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.6040616246498599,
+                  1,
+                  "ανθρωποις",
+                  "observed:ⲣⲱⲙⲉ->ανθρωποις"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "ανδρι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 853.560565,
+                "uncertainty": 0.275,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανδρι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -3,
+                  -0.5605650154798761,
+                  1,
+                  "ανδρι",
+                  "observed:ⲣⲱⲙⲉ->ανδρι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t20-20",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/20"
+              ],
+              "surfaces": [
+                "ⲣⲱⲙⲉ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t21-21",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲁⲩⲱ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "και"
+                ],
+                "form_kind": "attested_surface",
+                "score": 1029.910347,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲁⲩⲱ->και",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -179,
+                  -0.9103474936830859,
+                  1,
+                  "και",
+                  "observed:ⲁⲩⲱ->και"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "λογος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 852.43353,
+                "uncertainty": 0.3,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲁⲩⲱ->λογος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -2,
+                  -0.4335304034000522,
+                  1,
+                  "λογος",
+                  "observed:ⲁⲩⲱ->λογος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t21-21",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/21"
+              ],
+              "surfaces": [
+                "ⲁⲩⲱ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t22-22",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ϥ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 855.570646,
+                "uncertainty": 0.225,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ϥ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -5,
+                  -0.5706463675213675,
+                  1,
+                  "ο",
+                  "observed:ϥ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "αυτος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.6375,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ϥ->αυτος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.6375,
+                  1,
+                  "αυτος",
+                  "observed:ϥ->αυτος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t22-22",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/22"
+              ],
+              "surfaces": [
+                "ϥ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t23-23",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲃⲏⲧ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t23-23",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/23"
+              ],
+              "surfaces": [
+                "ⲃⲏⲧ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t24-24",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "·"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t24-24",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/24"
+              ],
+              "surfaces": [
+                "·"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t25-25",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲛϭⲓ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 870.630097,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛϭⲓ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -20,
+                  -0.630097208239968,
+                  1,
+                  "ο",
+                  "observed:ⲛϭⲓ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "οι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 863.598969,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛϭⲓ->οι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -13,
+                  -0.5989693865615026,
+                  1,
+                  "οι",
+                  "observed:ⲛϭⲓ->οι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "η"
+                ],
+                "form_kind": "attested_surface",
+                "score": 862.570835,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛϭⲓ->η",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -12,
+                  -0.5708353777099348,
+                  1,
+                  "η",
+                  "observed:ⲛϭⲓ->η"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "αυτον"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.506004,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛϭⲓ->αυτον",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.5060042367271284,
+                  1,
+                  "αυτον",
+                  "observed:ⲛϭⲓ->αυτον"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "τα"
+                ],
+                "form_kind": "attested_surface",
+                "score": 852.460665,
+                "uncertainty": 0.3,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲛϭⲓ->τα",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -2,
+                  -0.46066544659651265,
+                  1,
+                  "τα",
+                  "observed:ⲛϭⲓ->τα"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t25-25",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/25"
+              ],
+              "surfaces": [
+                "ⲛϭⲓ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t26-26",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲡ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 867.622816,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -17,
+                  -0.6228163134232498,
+                  1,
+                  "ο",
+                  "observed:ⲡ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "το"
+                ],
+                "form_kind": "attested_surface",
+                "score": 864.612745,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->το",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -14,
+                  -0.6127450980392157,
+                  1,
+                  "το",
+                  "observed:ⲡ->το"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "ουτος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 860.569976,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ουτος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -10,
+                  -0.569975631219116,
+                  1,
+                  "ουτος",
+                  "observed:ⲡ->ουτος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "ου"
+                ],
+                "form_kind": "attested_surface",
+                "score": 853.489334,
+                "uncertainty": 0.275,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ου",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -3,
+                  -0.48933428209993673,
+                  1,
+                  "ου",
+                  "observed:ⲡ->ου"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "παραδοι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 851.385188,
+                "uncertainty": 0.325,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->παραδοι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -0.38518755328218246,
+                  1,
+                  "παραδοι",
+                  "observed:ⲡ->παραδοι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t26-26",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/26"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t27-27",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲣⲱⲙⲉ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ανθρωπος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 856.688885,
+                "uncertainty": 0.2,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανθρωπος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -6,
+                  -0.6888846447669977,
+                  1,
+                  "ανθρωπος",
+                  "observed:ⲣⲱⲙⲉ->ανθρωπος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "ανθρωποις"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.604062,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανθρωποις",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.6040616246498599,
+                  1,
+                  "ανθρωποις",
+                  "observed:ⲣⲱⲙⲉ->ανθρωποις"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "ανδρι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 853.560565,
+                "uncertainty": 0.275,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανδρι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -3,
+                  -0.5605650154798761,
+                  1,
+                  "ανδρι",
+                  "observed:ⲣⲱⲙⲉ->ανδρι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t27-27",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/27"
+              ],
+              "surfaces": [
+                "ⲣⲱⲙⲉ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t28-28",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲡⲁⲓ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t28-28",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/28"
+              ],
+              "surfaces": [
+                "ⲡⲁⲓ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t29-29",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲉⲧⲉ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ουκ"
+                ],
+                "form_kind": "attested_surface",
+                "score": 855.516693,
+                "uncertainty": 0.225,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲉⲧⲉ->ουκ",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -5,
+                  -0.5166927490871153,
+                  1,
+                  "ουκ",
+                  "observed:ⲉⲧⲉ->ουκ"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "την"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.515887,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲉⲧⲉ->την",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.5158869395711501,
+                  1,
+                  "την",
+                  "observed:ⲉⲧⲉ->την"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "εαν"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.510185,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲉⲧⲉ->εαν",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.5101851851851852,
+                  1,
+                  "εαν",
+                  "observed:ⲉⲧⲉ->εαν"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "τη"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.50748,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲉⲧⲉ->τη",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.5074795574795575,
+                  1,
+                  "τη",
+                  "observed:ⲉⲧⲉ->τη"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "οταν"
+                ],
+                "form_kind": "attested_surface",
+                "score": 852.447203,
+                "uncertainty": 0.3,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲉⲧⲉ->οταν",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -2,
+                  -0.44720252167060676,
+                  1,
+                  "οταν",
+                  "observed:ⲉⲧⲉ->οταν"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t29-29",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/29"
+              ],
+              "surfaces": [
+                "ⲉⲧⲉ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t30-30",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲡ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 867.622816,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -17,
+                  -0.6228163134232498,
+                  1,
+                  "ο",
+                  "observed:ⲡ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "το"
+                ],
+                "form_kind": "attested_surface",
+                "score": 864.612745,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->το",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -14,
+                  -0.6127450980392157,
+                  1,
+                  "το",
+                  "observed:ⲡ->το"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "ουτος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 860.569976,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ουτος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -10,
+                  -0.569975631219116,
+                  1,
+                  "ουτος",
+                  "observed:ⲡ->ουτος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "ου"
+                ],
+                "form_kind": "attested_surface",
+                "score": 853.489334,
+                "uncertainty": 0.275,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ου",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -3,
+                  -0.48933428209993673,
+                  1,
+                  "ου",
+                  "observed:ⲡ->ου"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "παραδοι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 851.385188,
+                "uncertainty": 0.325,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->παραδοι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -0.38518755328218246,
+                  1,
+                  "παραδοι",
+                  "observed:ⲡ->παραδοι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t30-30",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/30"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t31-31",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲙⲟⲩⲓ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t31-31",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/31"
+              ],
+              "surfaces": [
+                "ⲙⲟⲩⲓ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t32-32",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲛⲁ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t32-32",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/32"
+              ],
+              "surfaces": [
+                "ⲛⲁ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t33-33",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲟⲩⲟⲙ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t33-33",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/33"
+              ],
+              "surfaces": [
+                "ⲟⲩⲟⲙ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t34-34",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ϥ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 855.570646,
+                "uncertainty": 0.225,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ϥ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -5,
+                  -0.5706463675213675,
+                  1,
+                  "ο",
+                  "observed:ϥ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "αυτος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.6375,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ϥ->αυτος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.6375,
+                  1,
+                  "αυτος",
+                  "observed:ϥ->αυτος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t34-34",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/34"
+              ],
+              "surfaces": [
+                "ϥ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t35-35",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲁⲩⲱ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "και"
+                ],
+                "form_kind": "attested_surface",
+                "score": 1029.910347,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲁⲩⲱ->και",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -179,
+                  -0.9103474936830859,
+                  1,
+                  "και",
+                  "observed:ⲁⲩⲱ->και"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "λογος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 852.43353,
+                "uncertainty": 0.3,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲁⲩⲱ->λογος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -2,
+                  -0.4335304034000522,
+                  1,
+                  "λογος",
+                  "observed:ⲁⲩⲱ->λογος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t35-35",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/35"
+              ],
+              "surfaces": [
+                "ⲁⲩⲱ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t36-36",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲡ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ο"
+                ],
+                "form_kind": "attested_surface",
+                "score": 867.622816,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ο",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -17,
+                  -0.6228163134232498,
+                  1,
+                  "ο",
+                  "observed:ⲡ->ο"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "το"
+                ],
+                "form_kind": "attested_surface",
+                "score": 864.612745,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->το",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -14,
+                  -0.6127450980392157,
+                  1,
+                  "το",
+                  "observed:ⲡ->το"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "ουτος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 860.569976,
+                "uncertainty": 0.1,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ουτος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -10,
+                  -0.569975631219116,
+                  1,
+                  "ουτος",
+                  "observed:ⲡ->ουτος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 4,
+                "greek_surfaces": [
+                  "ου"
+                ],
+                "form_kind": "attested_surface",
+                "score": 853.489334,
+                "uncertainty": 0.275,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->ου",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -3,
+                  -0.48933428209993673,
+                  1,
+                  "ου",
+                  "observed:ⲡ->ου"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 5,
+                "greek_surfaces": [
+                  "παραδοι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 851.385188,
+                "uncertainty": 0.325,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲡ->παραδοι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -1,
+                  -0.38518755328218246,
+                  1,
+                  "παραδοι",
+                  "observed:ⲡ->παραδοι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t36-36",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/36"
+              ],
+              "surfaces": [
+                "ⲡ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t37-37",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲙⲟⲩⲓ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t37-37",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/37"
+              ],
+              "surfaces": [
+                "ⲙⲟⲩⲓ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t38-38",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲛⲁ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t38-38",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/38"
+              ],
+              "surfaces": [
+                "ⲛⲁ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t39-39",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ϣⲱⲡⲉ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "εσεσθε"
+                ],
+                "form_kind": "attested_surface",
+                "score": 852.517507,
+                "uncertainty": 0.3,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ϣⲱⲡⲉ->εσεσθε",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -2,
+                  -0.5175070028011204,
+                  1,
+                  "εσεσθε",
+                  "observed:ϣⲱⲡⲉ->εσεσθε"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "δι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 852.508578,
+                "uncertainty": 0.3,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ϣⲱⲡⲉ->δι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -2,
+                  -0.508578431372549,
+                  1,
+                  "δι",
+                  "observed:ϣⲱⲡⲉ->δι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t39-39",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/39"
+              ],
+              "surfaces": [
+                "ϣⲱⲡⲉ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t40-40",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲣ"
+            ],
+            "construction_id": null,
+            "status": "abstain",
+            "candidates": [],
+            "abstention_reason": "no_attested_evidence",
+            "abstention_detail": "no statistical construction, observed wordform, or allowed loanword",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t40-40",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/40"
+              ],
+              "surfaces": [
+                "ⲣ"
+              ]
+            }
+          },
+          {
+            "span_id": "v1:dilley-thomas/thomas.7/s/t41-41",
+            "unit_id": "thomas.7",
+            "surfaces": [
+              "ⲣⲱⲙⲉ"
+            ],
+            "construction_id": null,
+            "status": "candidates",
+            "candidates": [
+              {
+                "rank": 1,
+                "greek_surfaces": [
+                  "ανθρωπος"
+                ],
+                "form_kind": "attested_surface",
+                "score": 856.688885,
+                "uncertainty": 0.2,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανθρωπος",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -6,
+                  -0.6888846447669977,
+                  1,
+                  "ανθρωπος",
+                  "observed:ⲣⲱⲙⲉ->ανθρωπος"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 2,
+                "greek_surfaces": [
+                  "ανθρωποις"
+                ],
+                "form_kind": "attested_surface",
+                "score": 854.604062,
+                "uncertainty": 0.25,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανθρωποις",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -4,
+                  -0.6040616246498599,
+                  1,
+                  "ανθρωποις",
+                  "observed:ⲣⲱⲙⲉ->ανθρωποις"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              },
+              {
+                "rank": 3,
+                "greek_surfaces": [
+                  "ανδρι"
+                ],
+                "form_kind": "attested_surface",
+                "score": 853.560565,
+                "uncertainty": 0.275,
+                "evidence": [
+                  {
+                    "kind": "lexical_observed_wordform",
+                    "evidence_class": null,
+                    "ref_id": "observed:ⲣⲱⲙⲉ->ανδρι",
+                    "layer": "observed_wordform",
+                    "notes": ""
+                  }
+                ],
+                "ranking_key": [
+                  1,
+                  1,
+                  0,
+                  -3,
+                  -0.5605650154798761,
+                  1,
+                  "ανδρι",
+                  "observed:ⲣⲱⲙⲉ->ανδρι"
+                ],
+                "grammatical_notes": [
+                  "attested_train_wordform"
+                ],
+                "restrictions": "Attested train surface only — morphology not generated."
+              }
+            ],
+            "abstention_reason": null,
+            "abstention_detail": "",
+            "input_span": {
+              "span_id": "v1:dilley-thomas/thomas.7/s/t41-41",
+              "source_id": "dilley-thomas",
+              "unit_id": "thomas.7",
+              "token_ids": [
+                "v1:dilley-thomas/thomas.7/t/41"
+              ],
+              "surfaces": [
+                "ⲣⲱⲙⲉ"
+              ]
+            }
+          }
+        ],
+        "ranking_rules_id": "jak39-stable-ranking-v1",
+        "phase2_active_aligners": [
+          "eflomal",
+          "fast_align"
+        ],
+        "adopted_aligner": null,
+        "summary": {
+          "span_count": 42,
+          "spans_with_candidates": 26,
+          "spans_abstained": 16,
+          "ablation_condition": "nt_aligner_plus_verified_loanwords",
+          "includes_verified_loanwords": true,
+          "max_candidates_per_span": 5
+        },
+        "provenance": {
+          "ablation_path": "/agent/repos/thomas/data/sources/mappings/ablation-nt-aligner-plus-loanwords-v1.json",
+          "lexical_path": "/agent/repos/thomas/data/sources/lexicon/coptic-greek-lexical-candidates-v1.json",
+          "constructions_path": "/agent/repos/thomas/data/sources/mappings/statistical-phrase-constructions-v1.json",
+          "loanwords_path": "/agent/repos/thomas/data/sources/mappings/verified-loanwords-ccl-ddglc-v1.json",
+          "loanwords_emit_candidates": true,
+          "phase2_active_aligners": [
+            "eflomal",
+            "fast_align"
+          ],
+          "adopted_aligner": null,
+          "owned_by": "JAK-39",
+          "artifact_digests": {
+            "lexical_sha256": "f142bab608f7532783bec220ed4f5199a980b1ca7ebed0e53467d9e3192b759e",
+            "constructions_sha256": "64641200f8a32eaaeb8f298f0599df679fb987d51f008f4d649b562417dde989",
+            "loanwords_sha256": "472b0b19ab3147030ca6f1c37943b2fb39d482d6a92ae7dcb0608405dd6f2a61",
+            "ablation_sha256": "52566caedc3f92af5410727355fef66d019d0d984d861e75ab57c0c580ae37c4"
+          },
+          "evidence_provenance": {
+            "pilot_corpus_id": "horner-vaticanus-nt-pilot-v3",
+            "split_id": "horner-vaticanus-nt-split-v3",
+            "greek_source_id": "ntvmr-vaticanus-b",
+            "sahidic_source_id": "copsahhorner",
+            "coptic_segmentation": "bound-group-v1",
+            "bitext_checksum_sha256": "4467a9534c1bd2d426390a5f844ae0a49ddc98118d0d076f8291f4a0a6a31d03"
+          },
+          "lexical_table_id": "coptic-greek-lexical-candidates-v1",
+          "constructions_table_id": "statistical-phrase-constructions-v1",
+          "loanwords_table_id": "verified-loanwords-ccl-ddglc-v1",
+          "validation": "jak37_jak38_fail_closed",
+          "request_id": "jak40-blinded-thomas.7",
+          "ranking_rules_id": "jak39-stable-ranking-v1",
+          "llm": false,
+          "network": false
+        },
+        "notes": [
+          "Minimal Phase 2 feasibility decoder (JAK-39).",
+          "Does not invent unsupported Greek; abstention is explicit.",
+          "Statistical constructions and verified loanwords stay separate.",
+          "Keep-both aligners: eflomal + fast_align (adopted_aligner=null).",
+          "Verified loanwords are lemma-level L-clues below attested surfaces.",
+          "Blinded reconstruction input (JAK-40): Coptic only.",
+          "P.Oxy. / evaluation Greek must not be consulted on this path.",
+          "segmentation=dilley-normalized-whitespace-v1",
+          "Covering spans include multi-token JAK-38 constructions when matched."
+        ]
+      },
+      "top1_greek_surfaces": [
+        null,
+        null,
+        "το",
+        "μακαριος",
+        "ο",
+        "ο",
+        null,
+        null,
+        "ουκ",
+        "ο",
+        "ανθρωπος",
+        null,
+        null,
+        "ο",
+        "και",
+        "σου",
+        "ο",
+        null,
+        "εσεσθε",
+        "ο",
+        "ανθρωπος",
+        "και",
+        "ο",
+        null,
+        null,
+        "ο",
+        "ο",
+        "ανθρωπος",
+        null,
+        "ουκ",
+        "ο",
+        null,
+        null,
+        null,
+        "ο",
+        "και",
+        "ο",
+        null,
+        null,
+        "εσεσθε",
+        null,
+        "ανθρωπος"
+      ],
+      "covering_span_kinds": [
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton",
+        "singleton"
+      ],
+      "notes": [
+        "Blinded: no evaluation Greek consulted during decode.",
+        "ablation=nt_aligner_plus_verified_loanwords",
+        "segmentation=dilley-normalized-whitespace-v1",
+        "multi_token_construction_spans=0",
+        "covering_spans=42"
+      ]
+    }
+  ],
+  "word_for_word_baseline": [
+    {
+      "unit_id": "thomas.7",
+      "target_kind": "thomas_pilot",
+      "source_id": "dilley-thomas",
+      "coptic_surfaces": [
+        "ⲡⲉϫⲉ",
+        "ⲓⲏⲥⲟⲩⲥ",
+        "ⲟⲩ",
+        "ⲙⲁⲕⲁⲣⲓⲟⲥ",
+        "ⲡⲉ",
+        "ⲡ",
+        "ⲙⲟⲩⲓ",
+        "ⲡⲁⲓ",
+        "ⲉⲧⲉ",
+        "ⲡ",
+        "ⲣⲱⲙⲉ",
+        "ⲛⲁ",
+        "ⲟⲩⲟⲙ",
+        "ϥ",
+        "ⲁⲩⲱ",
+        "ⲛⲧⲉ",
+        "ⲡ",
+        "ⲙⲟⲩⲓ",
+        "ϣⲱⲡⲉ",
+        "ⲛ",
+        "ⲣⲱⲙⲉ",
+        "ⲁⲩⲱ",
+        "ϥ",
+        "ⲃⲏⲧ",
+        "·",
+        "ⲛϭⲓ",
+        "ⲡ",
+        "ⲣⲱⲙⲉ",
+        "ⲡⲁⲓ",
+        "ⲉⲧⲉ",
+        "ⲡ",
+        "ⲙⲟⲩⲓ",
+        "ⲛⲁ",
+        "ⲟⲩⲟⲙ",
+        "ϥ",
+        "ⲁⲩⲱ",
+        "ⲡ",
+        "ⲙⲟⲩⲓ",
+        "ⲛⲁ",
+        "ϣⲱⲡⲉ",
+        "ⲣ",
+        "ⲣⲱⲙⲉ"
+      ],
+      "predicted_greek": [
+        null,
+        null,
+        "και",
+        null,
+        "ο",
+        "το",
+        null,
+        null,
+        "υμιν",
+        "το",
+        "ανθρωπος",
+        null,
+        null,
+        "αυτος",
+        "και",
+        "μετ",
+        "το",
+        null,
+        "εσεσθε",
+        "και",
+        "ανθρωπος",
+        "και",
+        "αυτος",
+        null,
+        null,
+        "ο",
+        "το",
+        "ανθρωπος",
+        null,
+        "υμιν",
+        "το",
+        null,
+        null,
+        null,
+        "αυτος",
+        "και",
+        "το",
+        null,
+        null,
+        "εσεσθε",
+        null,
+        "ανθρωπος"
+      ],
+      "method": "train-cooccurrence-argmax-v1",
+      "segmentation": "dilley-normalized-whitespace-v1",
+      "notes": [
+        "Train-cooccurrence argmax; target Greek never consulted.",
+        "covered_surfaces=25/42",
+        "segmentation=dilley-normalized-whitespace-v1",
+        "Decoder comparison deferred to JAK-41."
+      ]
+    }
+  ],
+  "artifact_digests": {
+    "dilley_thomas_sha256": "a5b5849405ae0db6412127d74820d633ed4cdfa7912d81b05f73d88fee33303a",
+    "pilot_corpus_sha256": "4f82df7f4f797839447f8afedc9b2b0794cd683d4f8599fcb83d04f9aea92845",
+    "nt_split_sha256": "7c1ec2bf2ee840c7a03c448ea46df608b884638c7fcd16cf7aa70bf7f71c30db"
+  },
+  "evidence_provenance": {
+    "ablation_path": "/agent/repos/thomas/data/sources/mappings/ablation-nt-aligner-plus-loanwords-v1.json",
+    "lexical_path": "/agent/repos/thomas/data/sources/lexicon/coptic-greek-lexical-candidates-v1.json",
+    "constructions_path": "/agent/repos/thomas/data/sources/mappings/statistical-phrase-constructions-v1.json",
+    "loanwords_path": "/agent/repos/thomas/data/sources/mappings/verified-loanwords-ccl-ddglc-v1.json",
+    "loanwords_emit_candidates": true,
+    "phase2_active_aligners": [
+      "eflomal",
+      "fast_align"
+    ],
+    "adopted_aligner": null,
+    "owned_by": "JAK-39",
+    "artifact_digests": {
+      "lexical_sha256": "f142bab608f7532783bec220ed4f5199a980b1ca7ebed0e53467d9e3192b759e",
+      "constructions_sha256": "64641200f8a32eaaeb8f298f0599df679fb987d51f008f4d649b562417dde989",
+      "loanwords_sha256": "472b0b19ab3147030ca6f1c37943b2fb39d482d6a92ae7dcb0608405dd6f2a61",
+      "ablation_sha256": "52566caedc3f92af5410727355fef66d019d0d984d861e75ab57c0c580ae37c4"
+    },
+    "evidence_provenance": {
+      "pilot_corpus_id": "horner-vaticanus-nt-pilot-v3",
+      "split_id": "horner-vaticanus-nt-split-v3",
+      "greek_source_id": "ntvmr-vaticanus-b",
+      "sahidic_source_id": "copsahhorner",
+      "coptic_segmentation": "bound-group-v1",
+      "bitext_checksum_sha256": "4467a9534c1bd2d426390a5f844ae0a49ddc98118d0d076f8291f4a0a6a31d03"
+    },
+    "lexical_table_id": "coptic-greek-lexical-candidates-v1",
+    "constructions_table_id": "statistical-phrase-constructions-v1",
+    "loanwords_table_id": "verified-loanwords-ccl-ddglc-v1",
+    "validation": "jak37_jak38_fail_closed"
+  },
+  "blinding": {
+    "protocol": "surviving-letter-blinded-v1",
+    "greek_consulted_during_reconstruction": false,
+    "poxy_654_sealed_until": "scoring",
+    "thomas_unit_id": "thomas.7",
+    "nt_holdout_unit_count": 0,
+    "train_dev_not_scored_as_holdout": true,
+    "omission_fixtures_excluded": true,
+    "fragment_corpus_opened": false,
+    "dilley_segmentation": "dilley-normalized-whitespace-v1",
+    "horner_segmentation": "bound-group-v1",
+    "multi_token_construction_spans": 0
+  },
+  "summary": {
+    "unit_count": 1,
+    "thomas_units": 1,
+    "nt_holdout_units": 0,
+    "spans_with_candidates": 26,
+    "spans_abstained": 16,
+    "word_for_word_units": 1,
+    "ablation_condition": "nt_aligner_plus_verified_loanwords",
+    "multi_token_construction_spans": 0
+  },
+  "provenance": {
+    "owned_by": "JAK-40",
+    "decoder": "JAK-39",
+    "llm": false,
+    "network": false,
+    "phase2_active_aligners": [
+      "eflomal",
+      "fast_align"
+    ],
+    "adopted_aligner": null,
+    "pilot_corpus_id": null,
+    "split_id": null,
+    "coptic_segmentation_train": null
+  },
+  "notes": [
+    "Blinded reconstruction: Coptic Dilley thomas.7 + NT holdout Sahidic only.",
+    "P.Oxy. 654 Greek is not consulted on this path (evaluation witness).",
+    "Dual aligners kept (eflomal + fast_align); adopted_aligner=null.",
+    "No LLM on the reconstruction path.",
+    "NT uses bound-group-v1; Dilley uses dilley-normalized-whitespace-v1.",
+    "Covering spans apply multi-token JAK-38 constructions when matched.",
+    "Word-for-word baseline uses train-parity bound-group-v1 cooccurrence.",
+    "Committed artifact is Thomas 7 only; NT holdouts are a sibling file."
+  ]
+}

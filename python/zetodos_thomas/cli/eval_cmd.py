@@ -15,6 +15,14 @@ from zetodos_thomas.eval.benchmark import (
     format_benchmark_markdown,
     run_full_evaluation,
 )
+from zetodos_thomas.eval.surviving_letters import (
+    DEFAULT_RECON_REL,
+    DEFAULT_SCORE_REL,
+    load_reconstruction_package,
+    score_thomas7_surviving,
+    try_score_thomas7_or_gate_report,
+    write_surviving_letter_report,
+)
 from zetodos_thomas.ingest.paths import require_repo_root
 
 EVAL_REPORT_V2_REL = Path("data/generated/eval-report-v2.json")
@@ -24,7 +32,10 @@ BENCHMARK_DOC_V3_REL = Path("docs/benchmark-report-v3.md")
 
 eval_app = typer.Typer(
     name="eval",
-    help="Run offline NT holdout and lacuna-aware P.Oxy. fragment evaluations.",
+    help=(
+        "Run offline NT holdout and lacuna-aware P.Oxy. fragment evaluations. "
+        "Thomas 7 surviving-letter scoring is a separate gate-blocked score."
+    ),
     no_args_is_help=True,
 )
 
@@ -177,3 +188,90 @@ def eval_run(
         f"{ov.surviving_char_f1_itacism:.4f}"
     )
     typer.echo(f"Wrote {json_path} ({json_path.stat().st_size} bytes) and {md_path}")
+
+
+@eval_app.command("score-thomas7")
+def score_thomas7_cmd(
+    repo_root: Path | None = typer.Option(
+        None,
+        "--repo-root",
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        resolve_path=True,
+    ),
+    reconstruction: Path | None = typer.Option(
+        None,
+        "--reconstruction",
+        "-r",
+        exists=True,
+        dir_okay=False,
+        readable=True,
+        help="Frozen BlindedReconstructionPackage JSON. Not recomputed.",
+    ),
+    output: Path | None = typer.Option(
+        None,
+        "--output",
+        "-o",
+        help="Write the surviving-letter report JSON.",
+    ),
+    allow_unreviewed: bool = typer.Option(
+        False,
+        "--allow-unreviewed/--require-human-checked",
+        help=(
+            "Protocol smoke only: score without the human-checked gate "
+            "(official=false). Does not relabel the eval package."
+        ),
+    ),
+    gate_report: bool = typer.Option(
+        False,
+        "--gate-report/--fail-closed",
+        help=(
+            "When review is pending, write the gate-blocked report instead of "
+            "exiting non-zero. This is the restored Thomas 7 score."
+        ),
+    ),
+) -> None:
+    """Score the frozen Thomas 7 reconstruction against surviving letters.
+
+    Official scoring stays blocked until review_status is human-checked.
+    This command does not rewrite the frozen predictions and does not read
+    the model-v3 papyrus table.
+    """
+    try:
+        root = require_repo_root(repo_root)
+    except FileNotFoundError as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+
+    recon_path = reconstruction or (root / DEFAULT_RECON_REL)
+    if not recon_path.is_file():
+        typer.secho(f"missing reconstruction: {recon_path}", fg=typer.colors.RED)
+        raise typer.Exit(code=1)
+
+    package = load_reconstruction_package(recon_path)
+    try:
+        if gate_report and not allow_unreviewed:
+            report = try_score_thomas7_or_gate_report(root, package)
+        else:
+            report = score_thomas7_surviving(
+                root,
+                package,
+                require_human_checked=not allow_unreviewed,
+            )
+    except (OSError, ValueError, KeyError) as exc:
+        typer.secho(str(exc), fg=typer.colors.RED)
+        raise typer.Exit(code=1) from exc
+
+    out = output or (root / DEFAULT_SCORE_REL)
+    write_surviving_letter_report(out, report)
+    typer.echo(f"Wrote {out}")
+    typer.echo(
+        f"official={report.official} review_status={report.review_status} "
+        f"scores={len(report.scores)} "
+        f"gate_blocked={report.blinding.get('gate_blocked', False)}"
+    )
+    if not report.official and not allow_unreviewed and not gate_report:
+        raise typer.Exit(code=1)
+    if report.blinding.get("gate_blocked") and not gate_report:
+        raise typer.Exit(code=1)
