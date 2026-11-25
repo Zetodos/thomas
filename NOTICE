@@ -32,8 +32,23 @@ Setup-downloaded corpora and lexicons (data/manifests/):
   - Lexicon: Comprehensive Coptic Lexicon TEI v1.2 / DDGLC Greek loanwords
     (Burns, Feder, John, Kupreyev; BBAW TLA; DDGLC FU Berlin, CC BY-SA 4.0,
     DOI https://doi.org/10.17169/refubium-27566). DIOSKOROS is not used.
+  - Strong's Greek: Ulrik Sandborg-Petersen; MorphGNT project
+    (morphgnt/strongs-dictionary-xml, CC0 1.0)
+  - Apostolic Fathers: James Tauber and Seumas Macdonald (eds.), Open
+    Apostolic Fathers (CC BY-SA 4.0). This CC BY-SA text is already
+    incorporated in the published model-v3 weights.
+  - First1K Koine prose: Open Greek and Latin Project (First1KGreek),
+    University of Leipzig / Tufts University; Epictetus and Philo of
+    Alexandria (CC BY-SA 4.0). This CC BY-SA text is already incorporated
+    in the published model-v3 weights.
+  - Apophthegmata Patrum: Coptic SCRIPTORIUM (Caroline T. Schroeder,
+    Amir Zeldes, Elizabeth Davidson, Christine Luckritz Marquis,
+    Elizabeth Platte, Nicholas Wagner, et al.), v6.2.0 (CC BY 4.0)
 
 Derived mapping models and lexical tables under data/mappings/ incorporate
 CC BY-SA 4.0 / CC BY-SA 3.0 adaptations and are licensed CC BY-SA 4.0.
+Published model-v3 weights (data/mappings/model-v3/, Git LFS) already
+include adaptations of the CC BY-SA 4.0 Apostolic Fathers and First1K
+Koine prose corpora named above.
 Generated Greek reconstructions for Thomas carry no copied copyrighted editions
 and are licensed CC BY 4.0.
