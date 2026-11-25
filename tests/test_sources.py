@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import json
+import tomllib
 from pathlib import Path
 
 import pytest
@@ -97,6 +98,21 @@ def test_committed_manifests_validate() -> None:
     assert dilley.checksum.startswith("sha256:")
     assert dilley.url == TT_TAG_URL
     assert "Dilley" in dilley.attribution or "Dilley" in dilley.title
+
+
+def test_wheel_force_includes_committed_manifests() -> None:
+    """An installed wheel must ship every committed source manifest."""
+    pyproject = tomllib.loads(
+        (REPO_ROOT / "pyproject.toml").read_text(encoding="utf-8")
+    )
+    force = pyproject["tool"]["hatch"]["build"]["targets"]["wheel"]["force-include"]
+    missing = [
+        path.name
+        for path in sorted(MANIFESTS_DIR.glob("*.json"))
+        if force.get(f"data/manifests/{path.name}")
+        != f"zetodos_thomas/data/manifests/{path.name}"
+    ]
+    assert missing == []
 
 
 def test_gated_source_rejected_in_default_set() -> None:

@@ -45,14 +45,18 @@ packages = ["python/zetodos_thomas"]
 
 # Map redistributable data directly from data/ into the wheel without duplicating files in git.
 [tool.hatch.build.targets.wheel.force-include]
+"data/manifests/apostolic-fathers.json" = "zetodos_thomas/data/manifests/apostolic-fathers.json"
 "data/manifests/ccl-ddglc-tei.json" = "zetodos_thomas/data/manifests/ccl-ddglc-tei.json"
 "data/manifests/copsahhorner.json" = "zetodos_thomas/data/manifests/copsahhorner.json"
 "data/manifests/dclp-poxy-1.json" = "zetodos_thomas/data/manifests/dclp-poxy-1.json"
 "data/manifests/dclp-poxy-654.json" = "zetodos_thomas/data/manifests/dclp-poxy-654.json"
 "data/manifests/dclp-poxy-655.json" = "zetodos_thomas/data/manifests/dclp-poxy-655.json"
 "data/manifests/dilley-thomas.json" = "zetodos_thomas/data/manifests/dilley-thomas.json"
+"data/manifests/first1k-koine-prose.json" = "zetodos_thomas/data/manifests/first1k-koine-prose.json"
 "data/manifests/morphgnt-sblgnt.json" = "zetodos_thomas/data/manifests/morphgnt-sblgnt.json"
+"data/manifests/scriptorium-apophthegmata.json" = "zetodos_thomas/data/manifests/scriptorium-apophthegmata.json"
 "data/manifests/scriptorium-sahidic-ot.json" = "zetodos_thomas/data/manifests/scriptorium-sahidic-ot.json"
+"data/manifests/strongs-greek.json" = "zetodos_thomas/data/manifests/strongs-greek.json"
 "data/manifests/swete-lxx.json" = "zetodos_thomas/data/manifests/swete-lxx.json"
 "data/sources/thomas/dilley-thomas-v6.2.0.json" = "zetodos_thomas/data/sources/thomas/dilley-thomas-v6.2.0.json"
 "data/sources/fragments/greek-thomas-fragments.json" = "zetodos_thomas/data/sources/fragments/greek-thomas-fragments.json"

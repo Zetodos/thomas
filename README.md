@@ -3,14 +3,14 @@
 Offline, deterministic, auditable **Koine Greek reconstruction (`Generated Greek`, Category C)** and witness-separated evidence benchmark for the *Gospel of Thomas*.
 
 **Repository:** <https://github.com/Zetodos/thomas>
-**Architecture:** Deterministic two-stage bilingual Coptic→Koine clause-transfer & beam-search pipeline (`model-v1`), completely free of LLMs and network calls after setup.
+**Architecture:** The default track is the deterministic two-stage bilingual Coptic→Koine clause-transfer and beam-search pipeline (`model-v1`), offline after setup. Published beside it: from-scratch neural `model-v2`, and from-scratch Greekified + Patristic neural `model-v3`. `thomas reconstruct run` and `thomas eval run` default to `model-v1`.
 
 ## Objective
 
 Reconstruct grammatically coherent Koine Greek for all 115 units (`thomas.0`–`thomas.114`) of the Sahidic Coptic *Gospel of Thomas* while enforcing strict provenance boundaries:
 
 1. **Attested Greek Fragments (Category G)** — P.Oxy. 1 / 654 / 655 DCLP EpiDoc TEI witnesses preserving surviving letters, unclear ink, lacunae, abbreviations, and editorial restorations as separate layers (`evaluation-witness` only — never leaked into training or decoding).
-2. **Generated Greek (Category C)** — 100% deterministic, offline reconstructions from Coptic (`model-v1`) with morpheme-level provenance (`L` loanword, `N` NT bitext, `P` OT/LXX bitext, `C` grammatical transfer).
+2. **Generated Greek (Category C)** — deterministic, offline reconstructions from Coptic. The default track is `model-v1`, with morpheme-level provenance (`L` loanword, `N` NT bitext, `P` OT/LXX bitext, `C` grammatical transfer). `model-v2` and `model-v3` are optional neural tracks (`--model v2`, `--model v3`).
 3. **Critical Greek** — Separately authored scholarly edition (not automated output).
 
 The pipeline does **not** claim to recover a lost archetype with certainty; convergent and redactionally divergent P.Oxy. clauses are reported separately in [`docs/benchmark-report.md`](docs/benchmark-report.md).
@@ -27,9 +27,13 @@ Project-owned Python code under `python/` and tests under `tests/` are licensed 
 | **Sahidic OT + Coptic morphology** | **Coptic SCRIPTORIUM Sahidic OT** (`sahidic.ot_TT.zip`) | CC BY-SA 4.0 |
 | **LXX secondary bitext** | **Swete LXX** (`lxx-swete`) | Public Domain / MIT |
 | **Loanwords & compounds** | **Comprehensive Coptic Lexicon v1.2 / DDGLC** | CC BY-SA 4.0 |
+| **Strong's Greek** | **morphgnt/strongs-dictionary-xml** (`strongs-greek`) | CC0 1.0 |
+| **Apostolic Fathers** | **Open Apostolic Fathers** (`apostolic-fathers`; CC BY-SA text already inside `model-v3` weights) | CC BY-SA 4.0 |
+| **First1K Koine prose** | **First1KGreek** Epictetus and Philo (`first1k-koine-prose`; CC BY-SA text already inside `model-v3` weights) | CC BY-SA 4.0 |
+| **Apophthegmata Patrum** | **Coptic SCRIPTORIUM** (`scriptorium-apophthegmata`) | CC BY 4.0 |
 | **Greek Thomas fragments** | **DCLP P.Oxy. 1 / 654 / 655** (`greek-thomas-fragments.json`, `evaluation-witness`) | CC BY 4.0 / CC BY-SA 3.0 |
 
-Gated corpora (Wells **Sahidica**, **NTAEG**, **Bohairica**, `UD_Coptic`) are **never** fetched, read, or bundled. Every tracked/generated file under the repo stays strictly `< 1024 KiB` (`--maxkb=1024`).
+Gated corpora (Wells **Sahidica**, **NTAEG**, **Bohairica**, `UD_Coptic`) are **never** fetched, read, or bundled. Ordinary tracked and generated files stay strictly `< 1024 KiB` (`--maxkb=1024`). Neural weights for `model-v2` and `model-v3` (`data/mappings/model-v2/` and `data/mappings/model-v3/` `*.safetensors` and `*.model`) are Git LFS and sit outside that cap (`.gitattributes`, `.pre-commit-config.yaml`).
 
 ## Pipeline Overview
 
@@ -44,6 +48,8 @@ Gated corpora (Wells **Sahidica**, **NTAEG**, **Bohairica**, `UD_Coptic`) are **
    - Clause chunker + Coptic→Koine morphosyntactic transfer grammar (VBD speech formulas, `ⲛϭⲓ` postposed subjects, `οὐ μή` + subjunctive, attributive/articular participles, conditionals, modal infinitives, copular agreement).
    - Smoothed 3-gram Koine LM (`train` split + Swete LXX) + deterministic log-linear beam search (`beam_size=8`, weights tuned strictly on 51-verse NT `dev`).
 
+`model-v2` and `model-v3` are separate from-scratch neural decoders. `model-v3` can condition on a leak-free `model-v1` draft. Their weights are the Git LFS files named above. The commands below still build and run `model-v1`.
+
 ## Verified Benchmark Results (`model-v1`)
 
 See [`docs/benchmark-report.md`](docs/benchmark-report.md) and [`data/generated/eval-report-v1.json`](data/generated/eval-report-v1.json):
@@ -52,6 +58,13 @@ See [`docs/benchmark-report.md`](docs/benchmark-report.md) and [`data/generated/
 - **Span-Aligned, Lacuna-Aware P.Oxy. 1 / 654 / 655 (20 overlapping units):**
   - **Convergent Clauses (23 spans / 19 units / 312 surviving words):** Content Lemma Recall **`0.6432`**, Top-3 Recall **`0.6973`**, Content Lemma F1 **`0.5324`**, Surviving Char F1 (exact / Koine itacism) **`0.7116` / `0.7260`**, Loanwords **`1.0000` (14/14)**.
   - **Overall (29 spans / 20 units / 368 surviving words):** Content Lemma Recall `0.5849`, Content Lemma F1 `0.4901`, Surviving Char F1 (itacism) `0.6934`.
+
+## Published neural tracks
+
+`model-v1` stays the default. Two neural tracks are published and still tracked:
+
+- **`model-v2`** — from-scratch neural Coptic→Koine. Weights under `data/mappings/model-v2/` are Git LFS. Report: [`docs/benchmark-report-v2.md`](docs/benchmark-report-v2.md).
+- **`model-v3`** — from-scratch Greekified + Patristic neural model. Training uses the full canonical NT train split (7,782 verses), Sahidic OT / Swete, Strong's Greek (CC0), SCRIPTORIUM Apophthegmata (CC BY 4.0), and the CC BY-SA 4.0 Apostolic Fathers and First1K Koine prose corpora. Those two CC BY-SA texts are already inside the weights under `data/mappings/model-v3/` (Git LFS). On the 41-verse NT holdout the published report records ordered content lemma F1 `0.6334` and chrF++ `0.4747`. Report: [`docs/benchmark-report-v3.md`](docs/benchmark-report-v3.md).
 
 ## CLI Workflow
 
@@ -77,6 +90,8 @@ uv run thomas reconstruct run --saying thomas.2
 # Run offline holdout & lacuna-aware P.Oxy. evaluation suite
 uv run thomas eval run
 ```
+
+`thomas reconstruct run` and `thomas eval run` default to `--model v1`. `--model v2` and `--model v3` select the neural tracks. `thomas model build-v2` and `thomas model build-v3` train them. The committed `model-v2` and `model-v3` weights remain Git LFS.
 
 Quality & zero-leakage checks:
 

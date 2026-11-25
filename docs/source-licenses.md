@@ -42,6 +42,10 @@ Adopted redistributable core (JAK-15 Done). Pin versions at ingest. Sahidica is 
 | SCRIPTORIUM `sahidic.ot` | `setup-download` / `bundled` | CC BY-SA 4.0 (secondary) |
 | **Swete LXX** (First1KGreek / nathans/lxx-swete) | `setup-download` | CC BY-SA 4.0 (JAK-18); not Rahlfs-Hanhart; Rahlfs 1935 not preferred |
 | **CCL / DDGLC TEI** | `setup-download` / minimal verified subset `bundled` | CC BY-SA 4.0 (JAK-19); manifest `ccl-ddglc-tei`; JAK-38 ships spot-checked subset only; do not wait on DIOSKOROS; no scrape |
+| **Strong's Greek** (`strongs-greek`) | `setup-download` | **CC0 1.0**. Ulrik Sandborg-Petersen / MorphGNT `strongs-dictionary-xml`. Lexical bridge used by model-v3. Manifest: [`data/manifests/strongs-greek.json`](../data/manifests/strongs-greek.json). |
+| **Apostolic Fathers** (`apostolic-fathers`) | `setup-download` | **CC BY-SA 4.0**. James Tauber and Seumas Macdonald, Open Apostolic Fathers. Koine prose used by model-v3. This CC BY-SA text is already inside the published model-v3 weights. Manifest: [`data/manifests/apostolic-fathers.json`](../data/manifests/apostolic-fathers.json). |
+| **First1K Koine prose** (`first1k-koine-prose`) | `setup-download` | **CC BY-SA 4.0**. Open Greek and Latin First1KGreek selection (Epictetus and Philo of Alexandria). Koine prose used by model-v3. This CC BY-SA text is already inside the published model-v3 weights. Manifest: [`data/manifests/first1k-koine-prose.json`](../data/manifests/first1k-koine-prose.json). |
+| **SCRIPTORIUM Apophthegmata** (`scriptorium-apophthegmata`) | `setup-download` | **CC BY 4.0**. Coptic SCRIPTORIUM Apophthegmata Patrum v6.2.0 (Sahidic). Used by model-v3. Manifest: [`data/manifests/scriptorium-apophthegmata.json`](../data/manifests/scriptorium-apophthegmata.json). |
 | WEB English passages | `bundled` (passages) | Public domain; trademark care |
 
 ### Attribution — Dilley / SCRIPTORIUM Coptic Thomas (CC BY 4.0)
@@ -56,12 +60,20 @@ Required credit for the Greek TEI and derived pilot Greek: **Institut für neute
 
 Default Greek NT is **Vaticanus B\*** (JAK-25). SBLGNT (CC BY 4.0) and Westcott–Hort remain non-default and must not be mixed into empty B\* slots.
 
+### Attribution — model-v3 setup corpora
+
+- **Strong's Greek** (`strongs-greek`): Ulrik Sandborg-Petersen; MorphGNT project (`morphgnt/strongs-dictionary-xml`). [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+- **Apostolic Fathers** (`apostolic-fathers`): James Tauber and Seumas Macdonald (eds.), Open Apostolic Fathers. [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). This text is already inside the published `model-v3` weights.
+- **First1K Koine prose** (`first1k-koine-prose`): Open Greek and Latin Project (First1KGreek), University of Leipzig / Tufts University; pinned Epictetus and Philo of Alexandria files. [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/). This text is already inside the published `model-v3` weights.
+- **SCRIPTORIUM Apophthegmata** (`scriptorium-apophthegmata`): Coptic SCRIPTORIUM (Caroline T. Schroeder, Amir Zeldes, Elizabeth Davidson, Christine Luckritz Marquis, Elizabeth Platte, Nicholas Wagner, et al.), v6.2.0. [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+
 ## ShareAlike policy (JAK-16 Done)
 
 - Apply ShareAlike **only** when published outputs are legally **adaptations** of BY-SA material.
 - Do **not** blanket-SA the whole project, all learned statistics, or independent critical texts.
 - Keep separable: raw source imports, adapted tables/DBs, independent critical Greek/English, and Apache-2.0 code.
 - Manifest each published artifact with license and derivation notes.
+- Published `model-v3` weights under `data/mappings/model-v3/` (Git LFS) already incorporate the **CC BY-SA 4.0** Apostolic Fathers and First1K Koine prose corpora named above, together with the other CC BY-SA sources in this allowlist, and are licensed **CC BY-SA 4.0**. Strong's Greek is CC0 1.0. SCRIPTORIUM Apophthegmata is CC BY 4.0.
 
 ## Gated: Wells Sahidica / NTAEG / Bohairica
 
