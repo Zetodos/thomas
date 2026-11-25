@@ -7,7 +7,7 @@ import hashlib
 import json
 import re
 from collections import defaultdict
-from collections.abc import Collection, Iterable, Mapping
+from collections.abc import Collection, Iterable, Mapping, Set
 from pathlib import Path
 
 from zetodos_thomas.schemas.holdout import (
@@ -192,6 +192,18 @@ def greek_token_ngrams(text: str, order: int = GREEK_NGRAM_ORDER) -> set[str]:
     if len(tokens) < order:
         return set()
     return {" ".join(tokens[i : i + order]) for i in range(len(tokens) - order + 1)}
+
+
+def shares_greek_token_ngram(
+    text: str,
+    blocked: Set[str],
+    *,
+    order: int = GREEK_NGRAM_ORDER,
+) -> bool:
+    """Return whether ``text`` contains an exact token n-gram from ``blocked``."""
+    if not blocked:
+        return False
+    return not greek_token_ngrams(text, order=order).isdisjoint(blocked)
 
 
 def cross_split_greek_ngram_leaks(

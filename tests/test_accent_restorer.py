@@ -7,11 +7,17 @@ from pathlib import Path
 
 import pytest
 
-from zetodos_thomas.ingest.holdouts import all_excluded_nt_ids, load_nt_split
+from zetodos_thomas.ingest.holdouts import (
+    all_excluded_nt_ids,
+    greek_token_ngrams,
+    load_nt_split,
+)
 from zetodos_thomas.ingest.morphgnt import load_morphgnt_nt
 from zetodos_thomas.neural.accent_restorer import (
     KoineAccentRestorer,
+    _normalized_sentence,
     _recessive_accent_fallback,
+    shares_holdout_greek_ngram,
     strip_greek_to_bare,
 )
 from zetodos_thomas.neural.corpus import normalize_greek_unit_target
@@ -20,6 +26,28 @@ from zetodos_thomas.schemas.holdout import PassageRole
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DOWNLOADS = REPO_ROOT / "data" / "downloads"
 SPLIT_PATH = REPO_ROOT / "data" / "training" / "splits" / "nt-split-v1.json"
+
+
+def test_shares_holdout_greek_ngram_matches_movable_nu_and_capital() -> None:
+    beatitude = (
+        "μακάριοι οἱ πτωχοί τῷ πνεύματι ὅτι αὐτῶν ἐστί(ν) ἡ βασιλεία τῶν οὐρανῶν"
+    )
+    blocked = greek_token_ngrams(_normalized_sentence(beatitude.split()).lower())
+    polycarp = (
+        "καὶ ὅτι μακάριοι οἱ πτωχοὶ καὶ οἱ διωκόμενοι ἕνεκεν δικαιοσύνης,"
+        " ὅτι αὐτῶν ἐστὶν ἡ βασιλεία τοῦ θεοῦ."
+    )
+    assert shares_holdout_greek_ngram(polycarp, blocked)
+    soil = "καί ἕτερον ἔπεσεν εἰς τήν γῆν τήν ἀγαθήν καί φυέν"
+    blocked_soil = greek_token_ngrams(_normalized_sentence(soil.split()).lower())
+    assert shares_holdout_greek_ngram(
+        "Εἰς τὴν γῆν τὴν ἀγαθήν, γῆν ῥέουσαν γάλα καὶ μέλι;",
+        blocked_soil,
+    )
+    assert not shares_holdout_greek_ngram(
+        "ὁ λόγος ἦν πρὸς τὸν θεόν, ἐν ἀρχῇ τῆς ζωῆς.",
+        blocked,
+    )
 
 
 def test_strip_greek_to_bare_and_recessive_fallback() -> None:

@@ -19,6 +19,7 @@ from zetodos_thomas.ingest.holdouts import (
     load_fragment_divergences,
     load_nt_split,
     load_omission_fixtures,
+    shares_greek_token_ngram,
     validate_holdout_artifacts,
 )
 from zetodos_thomas.schemas.holdout import (
@@ -192,3 +193,11 @@ def test_cross_split_greek_ngram_leaks_detects_shared_5gram() -> None:
     assert "εν αρχη ην ο λογος" in leaks
     with pytest.raises(HoldoutValidationError, match="5-token"):
         assert_no_train_holdout_greek_ngram_leakage(split, greek_texts)
+
+
+def test_shares_greek_token_ngram_requires_exact_five_tokens() -> None:
+    blocked = {"εν αρχη ην ο λογος"}
+    assert shares_greek_token_ngram("ειπεν εν αρχη ην ο λογος υμιν", blocked)
+    assert not shares_greek_token_ngram("εν αρχη ην ο θεος", blocked)
+    assert not shares_greek_token_ngram("εν αρχη ην ο", blocked)
+    assert not shares_greek_token_ngram("εν αρχη ην ο λογος", set())

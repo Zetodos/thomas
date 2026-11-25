@@ -3,8 +3,10 @@
 
 Trained strictly without NT holdout, NT dev, Dilley Thomas, or P.Oxy. witnesses
 (using MorphGNT TRAIN + Swete LXX + pure CCL + optional Apostolic Fathers /
-First1KGreek). Restores unaccented lowercase Koine decoder outputs to acute-only
-polytonic NFC Greek (matching MorphGNT normalized surfaces) before lemmatization.
+First1KGreek). Patristic sentences that share a lowercase Greek token 5-gram
+with an NT holdout verse are not ingested. Restores unaccented lowercase Koine
+decoder outputs to acute-only polytonic NFC Greek (matching MorphGNT normalized
+surfaces) before lemmatization.
 """
 
 from __future__ import annotations
@@ -12,14 +14,22 @@ from __future__ import annotations
 import json
 import unicodedata
 from collections import Counter, defaultdict
-from collections.abc import Collection, Iterable
+from collections.abc import Collection, Iterable, Mapping, Set
 from pathlib import Path
 
-from zetodos_thomas.ingest.holdouts import assert_clean_training_unit
+from zetodos_thomas.ingest.holdouts import (
+    assert_clean_training_unit,
+    greek_token_ngrams,
+    load_nt_split,
+    shares_greek_token_ngram,
+)
 from zetodos_thomas.ingest.koine_patristics import load_all_patristic_koine_sentences
 from zetodos_thomas.ingest.morphgnt import load_morphgnt_nt
 from zetodos_thomas.ingest.ot_swete import parse_swete_file
+from zetodos_thomas.ingest.paths import resolve_nt_split_path
 from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon
+from zetodos_thomas.schemas.holdout import PassageRole
+from zetodos_thomas.schemas.linguistic import GreekUnit
 
 _GREEK_VOWELS = frozenset({"α", "ε", "η", "ι", "ο", "υ", "ω"})
 _GREEK_DIPHTHONGS = frozenset({"αι", "αυ", "ει", "ευ", "ηυ", "οι", "ου", "υι"})
@@ -232,6 +242,42 @@ def _recessive_accent_fallback(bare: str) -> str:
     return unicodedata.normalize("NFC", "".join(chars))
 
 
+def _normalized_sentence(words: Iterable[str]) -> str:
+    """Join tokens in the same acute-only form as MorphGNT normalized text."""
+    normalized = [_normalize_polytonic_acute(word) for word in words]
+    return " ".join(word for word in normalized if word)
+
+
+def shares_holdout_greek_ngram(sentence: str, blocked: Set[str]) -> bool:
+    """Return whether ``sentence`` shares a lowercase Greek 5-gram with ``blocked``."""
+    text = _normalized_sentence(sentence.split())
+    return shares_greek_token_ngram(text.lower(), blocked)
+
+
+def nt_holdout_lowercase_ngrams(units: Mapping[str, GreekUnit]) -> set[str]:
+    """Lowercase token 5-grams of the 41 NT holdout verses in ``units``."""
+    split_path = resolve_nt_split_path(None)
+    if not split_path.is_file():
+        msg = f"missing NT split for patristic holdout exclusion: {split_path}"
+        raise FileNotFoundError(msg)
+    split = load_nt_split(split_path)
+    blocked: set[str] = set()
+    for passage in split.passages:
+        if passage.role is not PassageRole.HOLDOUT:
+            continue
+        for uid in passage.unit_ids:
+            unit = units.get(uid)
+            if unit is None:
+                continue
+            words = [
+                tok.normalized or tok.surface
+                for tok in unit.tokens
+                if tok.morph.pos != "X-" and (tok.normalized or tok.surface)
+            ]
+            blocked.update(greek_token_ngrams(_normalized_sentence(words).lower()))
+    return blocked
+
+
 class KoineAccentRestorer:
     """Deterministic offline unigram + bigram + enclitic + recessive restorer."""
 
@@ -375,9 +421,12 @@ class KoineAccentRestorer:
                 for e in entries:
                     _ingest_aux_tokens((e.greek_lemma,))
 
-        # 4. Pinned Patristic & 1st-century Koine prose
+        # 4. Pinned Patristic & 1st-century Koine prose, minus NT-holdout 5-grams
         if include_patristics and downloads_dir is not None:
+            holdout_ngrams = nt_holdout_lowercase_ngrams(mg_units)
             for _uid, sent in load_all_patristic_koine_sentences(downloads_dir):
+                if shares_holdout_greek_ngram(sent, holdout_ngrams):
+                    continue
                 _ingest_aux_tokens(sent.split())
 
         # Unigram resolution: MorphGNT TRAIN wins when attested; else auxiliary

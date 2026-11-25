@@ -11,6 +11,7 @@ from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon, LoanwordEntry
 from zetodos_thomas.morphology.greek_inflector import GreekInflector
 from zetodos_thomas.neural.corpus import (
     normalize_greek_target,
+    select_patristic_training_sentences,
     serialize_coptic_morphemes,
 )
 from zetodos_thomas.neural.decoder_v2 import (
@@ -281,3 +282,72 @@ def test_model_v3_greekification_unaccented_and_decoder_roundtrip(
     u2 = dec.decode_unit(unit)
     assert u1.greek_text == u2.greek_text
     assert len(u1.tokens) > 0
+
+
+# The seven patristic/First1K sentences that share a lowercase Greek 5-gram
+# with the 41-verse NT holdout after model normalization.
+_HOLDOUT_VERSES = (
+    "οὐ πᾶς ὁ λέγων μοι κύριε κύριε εἰσελεύσεται εἰς τήν βασιλείαν τῶν οὐρανῶν"
+    " ἀλλά ὁ ποιῶν τό θέλημα τοῦ πατρός μου τοῦ ἐν τοῖς οὐρανοῖς",
+    "μακάριοι οἱ πτωχοί τῷ πνεύματι ὅτι αὐτῶν ἐστί(ν) ἡ βασιλεία τῶν οὐρανῶν",
+    "μακάριοι οἱ δεδιωγμένοι ἕνεκεν δικαιοσύνης ὅτι αὐτῶν ἐστί(ν) ἡ βασιλεία"
+    " τῶν οὐρανῶν",
+    "καί ἕτερον ἔπεσεν εἰς τήν γῆν τήν ἀγαθήν καί φυέν ἐποίησεν καρπόν",
+    "ἐξῆλθεν ὁ σπείρων τοῦ σπεῖραι τόν σπόρον αὐτοῦ καί ἐν τῷ σπείρειν αὐτόν"
+    " ὅ μέν ἔπεσεν παρά τήν ὁδόν καί κατεπατήθη καί τά πετεινά τοῦ οὐρανοῦ"
+    " κατέφαγεν αὐτό",
+    "ὅ μικρότερον μέν ἐστίν πάντων τῶν σπερμάτων ὅταν δέ αὐξηθῇ μεῖζον τῶν"
+    " λαχάνων ἐστίν καί γίνεται δένδρον ὥστε ἐλθεῖν τά πετεινά τοῦ οὐρανοῦ καί"
+    " κατασκηνοῦν ἐν τοῖς κλάδοις αὐτοῦ",
+)
+_PATRISTIC_HITS = (
+    (
+        "af.002-ii_clement.88",
+        "Ἀδελφοί μου οὗτοί εἰσιν οἱ ποιοῦντες τὸ θέλημα τοῦ πατρός μου.",
+    ),
+    (
+        "af.010-polycarp-philippians.15",
+        "καὶ ὅτι μακάριοι οἱ πτωχοὶ καὶ οἱ διωκόμενοι ἕνεκεν δικαιοσύνης,"
+        " ὅτι αὐτῶν ἐστὶν ἡ βασιλεία τοῦ θεοῦ.",
+    ),
+    (
+        "af.012-barnabas.122",
+        "Εἰσέλθατε εἰς τὴν γῆν τὴν ἀγαθήν, ἣν ὤμοσεν κύριος τῷ Ἀβραὰμ καὶ Ἰσαὰκ"
+        " καὶ Ἰακώβ, καὶ κατακληρονομήσατε αὐτήν, γῆν ῥέουσαν γάλα καὶ μέλι.",
+    ),
+    ("af.012-barnabas.125", "Εἰς τὴν γῆν τὴν ἀγαθήν, γῆν ῥέουσαν γάλα καὶ μέλι;"),
+    (
+        "af.012-barnabas.144",
+        "οὐκοῦν ἡμεῖς ἐσμέν, οὓς εἰσήγαγεν εἰς τὴν γῆν τὴν ἀγαθήν.",
+    ),
+    (
+        "af.013-shepherd.1777",
+        "καὶ ὅλον τὸ ὄρος εὐθηνοῦν καὶ πᾶν γένος κτηνῶν καὶ τὰ πετεινὰ τοῦ"
+        " οὐρανοῦ ἐνέμοντο τὰς βοτάνας ἐκ τούτῳ τῷ ὄρει,",
+    ),
+    (
+        "f1k.tlg0018.tlg002.1st1k-grc1.532",
+        "καὶ ἔπλασεν ὁ θεὸς ἔτι ἐκ τῆς γῆς πάντα τὰ θηρία τοῦ ἀγροῦ καὶ πάντα"
+        " τὰ πετεινὰ τοῦ οὐρανοῦ καὶ ἤγαγεν αὐτὰ πρὸς τὸν Ἀδάμ, ἰδεῖν τί καλέσει αὐτά·",
+    ),
+)
+
+
+def test_select_patristic_training_sentences_drops_holdout_5grams() -> None:
+    control = ("af.control", "ὁ λόγος ἦν πρὸς τὸν θεόν, ἐν ἀρχῇ τῆς ζωῆς.")
+    near_miss = ("af.near", "εἰς τὴν γῆν τὴν καλὴν ἦν ὁ σπόρος")
+    kept = select_patristic_training_sentences(
+        [*_PATRISTIC_HITS, control, near_miss, ("af.short", "καί ὁ λόγος")],
+        seen_exact=set(),
+        holdout_verses=_HOLDOUT_VERSES,
+    )
+    assert kept == [
+        normalize_greek_target(control[1]),
+        normalize_greek_target(near_miss[1]),
+    ]
+    again = select_patristic_training_sentences(
+        [control],
+        seen_exact={normalize_greek_target(control[1])},
+        holdout_verses=(),
+    )
+    assert again == []
