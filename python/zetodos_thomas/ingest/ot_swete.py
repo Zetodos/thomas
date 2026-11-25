@@ -487,22 +487,38 @@ def _strip_greek_bare(word: str) -> str:
     )
 
 
-def _coptic_greek_stems(c_unit: CopticUnit) -> set[str]:
-    """Extract >=4-char Greek-derived stems from a Sahidic OT unit for DP anchors."""
-    stems: set[str] = set()
+_ANCHOR_COPTIC_POS = frozenset({"N", "NPROP", "V", "VSTAT", "A"})
+
+
+def _coptic_greek_stems(c_unit: CopticUnit) -> tuple[set[str], set[str]]:
+    """Extract content Greek-loanword / proper-noun stems (4-char and 5-char)."""
+    stems4: set[str] = set()
+    stems5: set[str] = set()
     for m in c_unit.morphemes:
+        if m.pos not in _ANCHOR_COPTIC_POS:
+            continue
         if m.lang == "Greek" or m.pos == "NPROP":
             raw = normalize_coptic(m.lemma or m.norm).replace("\u2cff", "")
             if raw.startswith(("ⲣ", "ϯ")) and len(raw) >= 5:
                 raw = raw[1:]
             folded = "".join(_COPTIC_TO_GREEK_FOLD.get(ch, "") for ch in raw)
             if len(folded) >= 4:
-                stems.add(folded[:4])
-    return stems
+                stems4.add(folded[:4])
+            if len(folded) >= 5:
+                stems5.add(folded[:5])
+    return stems4, stems5
 
 
-def _greek_word_stems(words: list[str]) -> set[str]:
-    return {b[:4] for w in words if len(b := _strip_greek_bare(w)) >= 4}
+def _greek_word_stems(words: list[str]) -> tuple[set[str], set[str]]:
+    stems4: set[str] = set()
+    stems5: set[str] = set()
+    for w in words:
+        b = _strip_greek_bare(w)
+        if len(b) >= 4:
+            stems4.add(b[:4])
+        if len(b) >= 5:
+            stems5.add(b[:5])
+    return stems4, stems5
 
 
 def _normalize_book_keys(
@@ -534,10 +550,17 @@ def _recover_chapter_pairs_dp(
     c_unmatched: list[tuple[int, CopticUnit]],
     g_unmatched: list[tuple[int, list[str]]],
     *,
-    max_verse_drift: int = 4,
-    min_pair_score: float = 0.55,
+    max_verse_drift: int = 3,
+    min_pair_score: float = 0.65,
 ) -> list[tuple[int, CopticUnit, int, list[str]]]:
-    """Monotone chapter-level DP recovering shifted-versification OT x Swete pairs."""
+    """Monotone chapter-level DP recovering lexically-anchored OT x Swete pairs.
+
+    Strictly forbids unanchored matching (``shared_stems == 0`` is always rejected):
+    - ``drift <= 1`` requires ``>= 2`` shared 4-char content/proper-noun stems OR
+      ``>= 1`` shared 5-char stem with closely matching length (``len_sim >= 0.78``).
+    - ``drift in (2, 3)`` strictly requires ``>= 2`` shared 4-char content/proper-noun
+      stems and ``len_sim >= 0.50``.
+    """
     if not c_unmatched or not g_unmatched:
         return []
     m = len(c_unmatched)
@@ -563,13 +586,17 @@ def _recover_chapter_pairs_dp(
         len_sim = math.exp(-0.5 * ((math.log(g_over_c / 0.58)) / 0.35) ** 2)
         # Verse proximity prior
         prox = math.exp(-0.35 * drift)
-        # Shared Greek loanword / proper-noun 4-char stem bonus
-        shared_stems = len(c_stems[i] & g_stems[j])
-        # Require either a shared lexical/proper-noun anchor or a very tight +-1
-        # verse shift with closely matching length so unrelated verses never pair.
-        if shared_stems == 0 and (drift > 1 or len_sim < 0.85):
+        # Content Greek-loanword / proper-noun lexical anchors (zero unanchored pairs)
+        shared4 = len(c_stems[i][0] & g_stems[j][0])
+        shared5 = len(c_stems[i][1] & g_stems[j][1])
+        if shared4 == 0:
             return -1.0
-        anchor_bonus = min(0.60, 0.30 * shared_stems)
+        if shared4 < 2:
+            if drift > 1 or shared5 == 0 or len_sim < 0.78:
+                return -1.0
+        elif len_sim < 0.50:
+            return -1.0
+        anchor_bonus = min(0.60, 0.25 * shared4 + 0.10 * shared5)
         return 0.55 * len_sim + 0.45 * prox + anchor_bonus
 
     dp = [[0.0] * (n + 1) for _ in range(m + 1)]

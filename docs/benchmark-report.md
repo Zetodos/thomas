@@ -32,11 +32,11 @@ Offline, zero-leakage evaluation across 41 NT holdout verses and span-aligned P.
 
 | Stratum | Spans | Units | Unrest. Words | **Surv.-Only Ordered Lemma F1 (LCS)** | Surv.-Only Ordered P / R | Clear Ink Char F1 (Itacism, n) | Unclear Ink Char F1 (Itacism, n) | All Surv. Char F1 (Exact / Itacism) | Aligned Loanword Retention *(unrestored, CCL-assisted decode)* |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| **Convergent Clauses** | 23 | 19 | 232 | **0.3834** | 0.2761 / 0.6271 | 0.7250 (292) | 0.6742 (20) | 0.7036 / 0.7185 | 0.9091 (11) |
-| Convergent — Non-Synoptic / Unique Thomas | 7 | 6 | 97 | 0.5152 | 0.4304 / 0.6415 | 0.7374 (103) | 0.5882 (3) | 0.7234 / 0.7340 | 1.0000 (6) |
-| Convergent — Synoptic-Parallel (NT parallels excl.) | 16 | 13 | 135 | 0.3150 | 0.2116 / 0.6154 | 0.7181 (189) | 0.6944 (17) | 0.6929 / 0.7101 | 0.8000 (5) |
+| **Convergent Clauses** | 23 | 19 | 232 | **0.4175** | 0.3022 / 0.6750 | 0.7250 (292) | 0.6742 (20) | 0.7036 / 0.7185 | 0.9091 (11) |
+| Convergent — Non-Synoptic / Unique Thomas | 7 | 6 | 97 | 0.5455 | 0.4557 / 0.6792 | 0.7374 (103) | 0.5882 (3) | 0.7234 / 0.7340 | 1.0000 (6) |
+| Convergent — Synoptic-Parallel (NT parallels excl.) | 16 | 13 | 135 | 0.3516 | 0.2381 / 0.6716 | 0.7181 (189) | 0.6944 (17) | 0.6929 / 0.7101 | 0.8000 (5) |
 | Divergent / Redactional | 6 | 5 | 30 | 0.2174 | 0.1515 / 0.3846 | 0.4294 (40) | 0.2857 (16) | 0.3882 / 0.3796 | n/a (0) |
-| **Overall** | 29 | 20 | 262 | **0.3657** | 0.2625 / 0.6031 | 0.7010 (332) | 0.5496 (36) | 0.6738 / 0.6867 | 0.9091 (11) |
+| **Overall** | 29 | 20 | 262 | **0.3963** | 0.2857 / 0.6466 | 0.7010 (332) | 0.5496 (36) | 0.6738 / 0.6867 | 0.9091 (11) |
 
 > **Methodology notes:** Unrestored words exclude all `[...]` restorations and truncated words (`is_truncated=False`, `restored_text == ""`); surviving-only precision is a conservative lower bound because predicted words falling into papyrus lacunae cannot match intact ink. Clear (`has_unclear=False`) and Unclear (`has_unclear=True`) ink strata score only surviving papyrus letters (`w.surviving_text`) via monotone character LCS. Aligned Loanword Retention matches Dilley `lang="Greek"` content morphemes directly against intact unrestored P.Oxy. words via script-stem fold (zero CCL XML in evaluator) and requires the exact gold lemma on the predicted token aligned to `m.seq` (`m.seq in t.coptic_seqs`); decoders themselves use manifest-verified CCL/DDGLC XML at decode time.
 
@@ -44,11 +44,11 @@ Offline, zero-leakage evaluation across 41 NT holdout verses and span-aligned P.
 
 | Stratum | Spans | Surv. Words | Surv.-Only Multiset F1 / R | Editorial Ordered Lemma F1 (LCS) | Editorial Multiset P / R / F1 | Top-3 Editorial Recall | 3g Recall (Itacism) |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
-| **Convergent Clauses** | 23 | 312 | 0.3990 / 0.6525 | 0.5430 | 0.4776 / 0.6919 / 0.5651 | 0.7784 | 0.5956 |
-| Convergent — Non-Synoptic / Unique Thomas | 7 | 106 | 0.5455 / 0.6792 | 0.5857 | 0.5443 / 0.7049 / 0.6143 | 0.7541 | 0.6030 |
-| Convergent — Synoptic-Parallel (NT parallels excl.) | 16 | 206 | 0.3228 / 0.6308 | 0.5240 | 0.4497 / 0.6855 / 0.5431 | 0.7903 | 0.5914 |
+| **Convergent Clauses** | 23 | 312 | 0.4330 / 0.7000 | 0.5430 | 0.4776 / 0.6919 / 0.5651 | 0.7784 | 0.5956 |
+| Convergent — Non-Synoptic / Unique Thomas | 7 | 106 | 0.5758 / 0.7170 | 0.5857 | 0.5443 / 0.7049 / 0.6143 | 0.7541 | 0.6030 |
+| Convergent — Synoptic-Parallel (NT parallels excl.) | 16 | 206 | 0.3594 / 0.6866 | 0.5240 | 0.4497 / 0.6855 / 0.5431 | 0.7903 | 0.5914 |
 | Divergent / Redactional | 6 | 56 | 0.2174 / 0.3846 | 0.2034 | 0.1818 / 0.2308 / 0.2034 | 0.2308 | 0.2712 |
-| **Overall** | 29 | 368 | 0.3796 / 0.6260 | 0.5039 | 0.4452 / 0.6351 / 0.5234 | 0.7109 | 0.5641 |
+| **Overall** | 29 | 368 | 0.4101 / 0.6692 | 0.5039 | 0.4452 / 0.6351 / 0.5234 | 0.7109 | 0.5641 |
 
 ## 3. Side-by-Side Comparison on Key P.Oxy. Convergent Spans (Surviving Ink Only)
 

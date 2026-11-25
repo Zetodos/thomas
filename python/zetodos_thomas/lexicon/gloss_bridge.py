@@ -27,6 +27,22 @@ from zetodos_thomas.lexicon.ccl_lexicon import _GRAMGRP_POS_MAP, _TEI_NS
 _XML_LANG = "{http://www.w3.org/XML/1998/namespace}lang"
 _WORD_RE = re.compile(r"[a-z]{3,}")
 _CLEAN_GREEK_RE = re.compile(r"[()\[\]<>·.,;;:!?\"'«»]+")
+# Lexicographic meta-glosses expressing uncertainty, editorial status, or generic
+# taxonomic placeholders ("unknown", "meaning uncertain", "a certain ...", "month")
+# that would otherwise collide with Strong's lemmas like ἄγνωστος / δεῖνα / τετράμηνον.
+_META_GLOSS_RE = re.compile(
+    r"\b("
+    r"unknown|uncertain|unidentified|unclear|obscure|doubtful|unexplained|"
+    r"fragmentary|corrupt|untranslated|dubious|"
+    r"meaning\s+(?:unknown|uncertain|obscure|doubtful|unclear)|"
+    r"a\s+certain|some\s+kind\s+of|kind\s+of|sort\s+of|type\s+of|species\s+of|"
+    r"name\s+of|designation\s+of|epithet\s+of|title\s+of|"
+    r"measure\s+of|weight\s+of|coin\s+of|vessel\s+for|"
+    r"(?:first|second|third|fourth|fifth|sixth|seventh|eighth|ninth|tenth|"
+    r"eleventh|twelfth)\s+month|month\s+of"
+    r")\b",
+    re.IGNORECASE,
+)
 
 _EN_STOPWORDS: frozenset[str] = frozenset(
     {
@@ -100,6 +116,8 @@ _EN_STOPWORDS: frozenset[str] = frozenset(
         "something",
         "someone",
         "person",
+        "man",
+        "men",
         "thing",
         "things",
         "state",
@@ -157,8 +175,37 @@ _EN_STOPWORDS: frozenset[str] = frozenset(
         "you",
         "your",
         "our",
+        "unknown",
+        "uncertain",
+        "unidentified",
+        "unclear",
+        "certain",
+        "meaning",
+        "obscure",
+        "doubtful",
+        "unexplained",
+        "dubious",
+        "fragmentary",
+        "corrupt",
+        "variant",
+        "designation",
+        "epithet",
+        "species",
+        "month",
+        "months",
+        "measure",
+        "vessel",
+        "bear",
+        "bears",
+        "bearer",
+        "bearing",
     }
 )
+
+
+def _is_meta_gloss(text: str) -> bool:
+    """Return True if an English dictionary gloss is a lexicographic placeholder."""
+    return bool(_META_GLOSS_RE.search(text))
 
 
 def _nfc(text: str) -> str:
@@ -282,10 +329,16 @@ def _parse_ccl_native_entries(
                 continue
             for orth in form.findall(f"{_TEI_NS}orth"):
                 raw_o = (orth.text or "").strip()
-                if not raw_o or "-" in raw_o or " " in raw_o:
+                if (
+                    not raw_o
+                    or raw_o.startswith("*")
+                    or "-" in raw_o
+                    or " " in raw_o
+                    or "⸗" in raw_o
+                ):
                     continue
                 norm_o = normalize_coptic(raw_o).replace("\u2cff", "")
-                if len(norm_o) >= 2:
+                if len(norm_o) >= 2 and not norm_o.startswith("*"):
                     sah_lemmas.append(norm_o)
         if not sah_lemmas:
             elem.clear()
@@ -312,6 +365,8 @@ def _parse_ccl_native_entries(
         en_words: set[str] = set()
         for quote in elem.findall(f".//{_TEI_NS}quote"):
             if quote.attrib.get(_XML_LANG) == "en" and quote.text:
+                if _is_meta_gloss(quote.text):
+                    continue
                 en_words.update(_extract_en_content_words(quote.text))
         if en_words:
             lem = sah_lemmas[0]
@@ -387,6 +442,7 @@ def build_ccl_strongs_bridge(
     strongs_xml: Path,
     min_score: float = 0.38,
     max_matches_per_coptic: int = 2,
+    max_coptic_per_greek: int = 4,
 ) -> GlossBridgeResult:
     """Bridge native Sahidic CCL lemmas to Strong's Greek via IDF gloss overlap."""
     c_entries = _parse_ccl_native_entries(ccl_xml)
@@ -464,6 +520,20 @@ def build_ccl_strongs_bridge(
             kept += 1
             if kept >= max_matches_per_coptic:
                 break
+
+    # Third pass: cap many-to-one fan-in per Greek target so generic/noisy Greek
+    # lemmas cannot accumulate dozens of unrelated Sahidic lemmas.
+    if max_coptic_per_greek > 0:
+        by_greek: dict[str, list[NativeGlossMatch]] = defaultdict(list)
+        for m in matches:
+            by_greek[m.greek_lemma].append(m)
+        filtered: list[NativeGlossMatch] = []
+        for g_lem in sorted(by_greek):
+            bucket = by_greek[g_lem]
+            bucket.sort(key=lambda m: (-m.score, m.coptic_lemma, m.coptic_pos))
+            filtered.extend(bucket[:max_coptic_per_greek])
+        filtered.sort(key=lambda m: (m.coptic_lemma, -m.score, m.greek_lemma))
+        matches = filtered
 
     return GlossBridgeResult(
         native_pairs=matches,

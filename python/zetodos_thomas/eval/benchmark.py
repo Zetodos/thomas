@@ -86,36 +86,36 @@ _COPTIC_GREEK_SCRIPT_FOLD: dict[str, str] = {
     "ϩ": "",
 }
 
-# Canonical Koine nomina sacra & scribal abbreviations (unaccented -> (lemma, pos))
+# Universal early-Christian nomina sacra (Traube/Paap canon), keyed in medial-sigma
+# diacritic-stripped form matching ``strip_greek_diacritics`` (which folds ς -> σ).
 _NOMINA_SACRA: dict[str, tuple[str, str]] = {
-    "ις": ("Ἰησοῦς", "N-"),
-    "ιης": ("Ἰησοῦς", "N-"),
+    "ισ": ("Ἰησοῦς", "N-"),
+    "ιησ": ("Ἰησοῦς", "N-"),
     "ιν": ("Ἰησοῦς", "N-"),
     "ιυ": ("Ἰησοῦς", "N-"),
     "ιηυ": ("Ἰησοῦς", "N-"),
-    "θς": ("θεός", "N-"),
+    "θσ": ("θεός", "N-"),
     "θυ": ("θεός", "N-"),
     "θω": ("θεός", "N-"),
     "θν": ("θεός", "N-"),
     "πρ": ("πατήρ", "N-"),
-    "πρς": ("πατήρ", "N-"),
+    "πρσ": ("πατήρ", "N-"),
     "πρα": ("πατήρ", "N-"),
     "πρι": ("πατήρ", "N-"),
-    "πριδι": ("πατρίς", "N-"),
-    "ανς": ("ἄνθρωπος", "N-"),
+    "ανσ": ("ἄνθρωπος", "N-"),
     "ανου": ("ἄνθρωπος", "N-"),
     "ανω": ("ἄνθρωπος", "N-"),
     "ανον": ("ἄνθρωπος", "N-"),
     "ανων": ("ἄνθρωπος", "N-"),
-    "ανοις": ("ἄνθρωπος", "N-"),
+    "ανοισ": ("ἄνθρωπος", "N-"),
     "πνα": ("πνεῦμα", "N-"),
-    "πνς": ("πνεῦμα", "N-"),
+    "πνσ": ("πνεῦμα", "N-"),
     "πνι": ("πνεῦμα", "N-"),
-    "κς": ("κύριος", "N-"),
+    "κσ": ("κύριος", "N-"),
     "κυ": ("κύριος", "N-"),
     "κω": ("κύριος", "N-"),
     "κν": ("κύριος", "N-"),
-    "χς": ("Χριστός", "N-"),
+    "χσ": ("Χριστός", "N-"),
     "χυ": ("Χριστός", "N-"),
     "χω": ("Χριστός", "N-"),
     "χν": ("Χριστός", "N-"),
@@ -593,7 +593,7 @@ class _AttestedGreekLemmatiser:
         ):
             return None
 
-        # Check universal Koine nomina sacra & scribal abbreviations first
+        # Check universal early-Christian nomina sacra (Traube/Paap canon) first
         surv_key = strip_greek_diacritics(word.surviving_text)
         if surv_key in _NOMINA_SACRA:
             return _NOMINA_SACRA[surv_key]
@@ -621,6 +621,8 @@ class _AttestedGreekLemmatiser:
                 for lem, mf, _lp in parses:
                     if mf.pos != "UNK":
                         return (unicodedata.normalize("NFC", lem), mf.pos)
+        if surviving_only and word.is_abbreviation:
+            return None
         return (unicodedata.normalize("NFC", form.lower()), "N-")
 
 

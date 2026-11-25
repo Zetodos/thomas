@@ -5,6 +5,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from zetodos_thomas.ingest.holdouts import all_excluded_nt_ids, load_nt_split
 from zetodos_thomas.ingest.morphgnt import load_morphgnt_nt
 from zetodos_thomas.neural.accent_restorer import (
@@ -54,7 +56,7 @@ def test_accent_restorer_high_accuracy_on_unseen_nt_dev() -> None:
     mg_dir = DOWNLOADS / "morphgnt-sblgnt"
     swete_dir = DOWNLOADS / "lxx-swete"
     if not mg_dir.is_dir():
-        return
+        pytest.skip("MorphGNT not downloaded in this test environment")
     split = load_nt_split(SPLIT_PATH)
     excl = all_excluded_nt_ids(split, include_dev=True)
     ar = KoineAccentRestorer.build(

@@ -1,6 +1,7 @@
 {
   "id": "eval-report-v1",
   "model_id": "model-v1",
+  "synoptic_parallels_excluded": 63,
   "nt_holdout": {
     "unit_count": 41,
     "coverage": 1.0,
@@ -21,12 +22,12 @@
     "span_count": 23,
     "unit_count": 19,
     "surviving_only_word_count": 232,
-    "surviving_only_ordered_content_lemma_precision": 0.2761,
-    "surviving_only_ordered_content_lemma_recall": 0.6271,
-    "surviving_only_ordered_content_lemma_f1": 0.3834,
-    "surviving_only_content_lemma_precision": 0.2873,
-    "surviving_only_content_lemma_recall": 0.6525,
-    "surviving_only_content_lemma_f1": 0.399,
+    "surviving_only_ordered_content_lemma_precision": 0.3022,
+    "surviving_only_ordered_content_lemma_recall": 0.675,
+    "surviving_only_ordered_content_lemma_f1": 0.4175,
+    "surviving_only_content_lemma_precision": 0.3134,
+    "surviving_only_content_lemma_recall": 0.7,
+    "surviving_only_content_lemma_f1": 0.433,
     "clear_surviving_word_count": 292,
     "clear_surviving_char_f1_itacism": 0.725,
     "unclear_surviving_word_count": 20,
@@ -48,12 +49,12 @@
     "span_count": 7,
     "unit_count": 6,
     "surviving_only_word_count": 97,
-    "surviving_only_ordered_content_lemma_precision": 0.4304,
-    "surviving_only_ordered_content_lemma_recall": 0.6415,
-    "surviving_only_ordered_content_lemma_f1": 0.5152,
-    "surviving_only_content_lemma_precision": 0.4557,
-    "surviving_only_content_lemma_recall": 0.6792,
-    "surviving_only_content_lemma_f1": 0.5455,
+    "surviving_only_ordered_content_lemma_precision": 0.4557,
+    "surviving_only_ordered_content_lemma_recall": 0.6792,
+    "surviving_only_ordered_content_lemma_f1": 0.5455,
+    "surviving_only_content_lemma_precision": 0.481,
+    "surviving_only_content_lemma_recall": 0.717,
+    "surviving_only_content_lemma_f1": 0.5758,
     "clear_surviving_word_count": 103,
     "clear_surviving_char_f1_itacism": 0.7374,
     "unclear_surviving_word_count": 3,
@@ -75,12 +76,12 @@
     "span_count": 16,
     "unit_count": 13,
     "surviving_only_word_count": 135,
-    "surviving_only_ordered_content_lemma_precision": 0.2116,
-    "surviving_only_ordered_content_lemma_recall": 0.6154,
-    "surviving_only_ordered_content_lemma_f1": 0.315,
-    "surviving_only_content_lemma_precision": 0.2169,
-    "surviving_only_content_lemma_recall": 0.6308,
-    "surviving_only_content_lemma_f1": 0.3228,
+    "surviving_only_ordered_content_lemma_precision": 0.2381,
+    "surviving_only_ordered_content_lemma_recall": 0.6716,
+    "surviving_only_ordered_content_lemma_f1": 0.3516,
+    "surviving_only_content_lemma_precision": 0.2434,
+    "surviving_only_content_lemma_recall": 0.6866,
+    "surviving_only_content_lemma_f1": 0.3594,
     "clear_surviving_word_count": 189,
     "clear_surviving_char_f1_itacism": 0.7181,
     "unclear_surviving_word_count": 17,
@@ -129,12 +130,12 @@
     "span_count": 29,
     "unit_count": 20,
     "surviving_only_word_count": 262,
-    "surviving_only_ordered_content_lemma_precision": 0.2625,
-    "surviving_only_ordered_content_lemma_recall": 0.6031,
-    "surviving_only_ordered_content_lemma_f1": 0.3657,
-    "surviving_only_content_lemma_precision": 0.2724,
-    "surviving_only_content_lemma_recall": 0.626,
-    "surviving_only_content_lemma_f1": 0.3796,
+    "surviving_only_ordered_content_lemma_precision": 0.2857,
+    "surviving_only_ordered_content_lemma_recall": 0.6466,
+    "surviving_only_ordered_content_lemma_f1": 0.3963,
+    "surviving_only_content_lemma_precision": 0.2957,
+    "surviving_only_content_lemma_recall": 0.6692,
+    "surviving_only_content_lemma_f1": 0.4101,
     "clear_surviving_word_count": 332,
     "clear_surviving_char_f1_itacism": 0.701,
     "unclear_surviving_word_count": 36,
@@ -165,11 +166,12 @@
       "surviving_words": 12,
       "gold_content_lemmas": [
         "λόγος",
-        "ἰης",
+        "Ἰησοῦς",
         "ζάω"
       ],
       "matched_content_lemmas": [
         "λογοσ",
+        "ιησουσ",
         "ζαω"
       ],
       "surviving_char_f1_itacism": 0.8462
@@ -350,13 +352,14 @@
       "surviving_words": 16,
       "gold_content_lemmas": [
         "λέγω",
-        "ἰης",
+        "Ἰησοῦς",
         "ὄψις",
         "κρυπτός",
         "οὐ"
       ],
       "matched_content_lemmas": [
         "λεγω",
+        "ιησουσ",
         "ου"
       ],
       "surviving_char_f1_itacism": 0.6038
@@ -391,11 +394,12 @@
         "πῶς",
         "πῶς",
         "λέγω",
-        "ἰης",
+        "Ἰησοῦς",
         "μή"
       ],
       "matched_content_lemmas": [
         "λεγω",
+        "ιησουσ",
         "μη"
       ],
       "surviving_char_f1_itacism": 0.6154
@@ -496,6 +500,7 @@
       "surviving_words": 38,
       "gold_content_lemmas": [
         "λέγω",
+        "Ἰησοῦς",
         "μέσος",
         "κόσμος",
         "σάρξ",
@@ -505,7 +510,6 @@
         "μεθύω",
         "οὐδείς",
         "εὑρίσκω",
-        "δειψῶτα",
         "πονεῖ",
         "ψυχή",
         "υἱός",
@@ -516,6 +520,7 @@
       ],
       "matched_content_lemmas": [
         "λεγω",
+        "ιησουσ",
         "μεσοσ",
         "κοσμοσ",
         "σαρξ",
@@ -628,11 +633,11 @@
       "surviving_words": 18,
       "gold_content_lemmas": [
         "λέγω",
+        "Ἰησοῦς",
         "οὐ",
         "εἰμί",
         "δεκτός",
         "προφήτης",
-        "πατρίς",
         "ἰατρός",
         "ποιέω",
         "θεραπεία",
@@ -640,6 +645,7 @@
       ],
       "matched_content_lemmas": [
         "λεγω",
+        "ιησουσ",
         "ου",
         "ειμι",
         "προφητησ",
@@ -659,6 +665,7 @@
       "surviving_words": 15,
       "gold_content_lemmas": [
         "λέγω",
+        "Ἰησοῦς",
         "πόλις",
         "οἰκοδομέω",
         "ἄκρον",
@@ -668,6 +675,7 @@
       ],
       "matched_content_lemmas": [
         "λεγω",
+        "ιησουσ",
         "πολισ",
         "οικοδομεω",
         "στηριζω",
@@ -687,10 +695,12 @@
       "surviving_words": 7,
       "gold_content_lemmas": [
         "λέγω",
+        "Ἰησοῦς",
         "ἀκούω"
       ],
       "matched_content_lemmas": [
         "λεγω",
+        "ιησουσ",
         "ακουω"
       ],
       "surviving_char_f1_itacism": 0.5405

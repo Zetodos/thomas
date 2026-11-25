@@ -7,7 +7,6 @@ import dataclasses
 import json
 import math
 import unicodedata
-from collections import Counter
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -862,20 +861,38 @@ class NeuralKoineDecoder:
         )
 
 
+def _seq_lcs_len(a: Sequence[str], b: Sequence[str]) -> int:
+    """Order-preserving Longest Common Subsequence length for dev rerank tuning."""
+    if not a or not b:
+        return 0
+    prev = [0] * (len(b) + 1)
+    for x in a:
+        cur = [0] * (len(b) + 1)
+        for j, y in enumerate(b, start=1):
+            if x == y:
+                cur[j] = prev[j - 1] + 1
+            else:
+                cur[j] = prev[j] if prev[j] >= cur[j - 1] else cur[j - 1]
+        prev = cur
+    return prev[len(b)]
+
+
 def tune_rerank_weights_on_dev(
     *,
     decoder: NeuralKoineDecoder,
     dev_units: Sequence[tuple[CopticUnit, GreekUnit]],
 ) -> RerankWeights:
-    """Grid-search noisy-channel reranking weights strictly on 51-verse NT DEV."""
+    """Grid-search noisy-channel rerank weights via ordered LCS on 51-verse NT DEV."""
     # Precompute candidate sets & unnormalized log-likelihoods once for fast search
     content_pos = {"N-", "V-", "A-", "D-"}
-    # Cand row: (text, tgt_len, fwd_ll, rev_ll, c_len, lm_ll, loan_ratio, cov_ratio)
+    # Cand row: (t_len, fwd, rev, c_len, lm, lb, cb, lm_lcs, lm_p, sf_lcs, sf_p)
     cached: list[
         tuple[
-            list[tuple[str, int, float, float, int, float, float, float]],
-            Counter[str],
-            Counter[str],
+            list[
+                tuple[int, float, float, int, float, float, float, int, int, int, int]
+            ],
+            int,
+            int,
         ]
     ] = []
 
@@ -949,24 +966,41 @@ def tune_rerank_weights_on_dev(
                 if d_mf.pos in content_pos:
                     draft_lems.add(_strip_bare(d_lem))
 
-        cand_rows: list[tuple[str, int, float, float, int, float, float, float]] = []
+        g_lem_seq = [
+            _strip_bare(t.lemma) for t in g_unit.tokens if t.morph.pos in content_pos
+        ]
+        g_surf_seq = [
+            norm_s
+            for t in g_unit.tokens
+            if t.morph.pos != "X-"
+            and (norm_s := normalize_greek_target(t.normalized or t.surface).lower())
+        ]
+
+        cand_rows: list[
+            tuple[int, float, float, int, float, float, float, int, int, int, int]
+        ] = []
         for idx, (seq, gt) in enumerate(zip(c_ids, c_txts, strict=True)):
             t_len = max(len(seq) - 1, 1)
             restored_gt = decoder._restore_surface_sentence(gt) if gt else ""
             lb = 0.0
             cb = 0.0
-            if (exp_loans or draft_lems) and restored_gt:
-                gl = set()
+            p_lem_seq: list[str] = []
+            p_surf_seq = restored_gt.lower().split() if restored_gt else []
+            if restored_gt:
+                gl: set[str] = set()
                 for w in restored_gt.split():
-                    gl.add(_strip_bare(decoder.inflector.analyze_surface(w)[0][0]))
+                    lem, mf, _ = decoder.inflector.analyze_surface(w)[0]
+                    bl = _strip_bare(lem)
+                    gl.add(bl)
                     gl.add(_strip_bare(w))
+                    if mf.pos in content_pos:
+                        p_lem_seq.append(bl)
                 if exp_loans:
                     lb = sum(1 for el in exp_loans if el in gl) / len(exp_loans)
                 if draft_lems:
                     cb = sum(1 for dl in draft_lems if dl in gl) / len(draft_lems)
             cand_rows.append(
                 (
-                    restored_gt,
                     t_len,
                     fwd_raw[idx],
                     rev_raw[idx],
@@ -974,18 +1008,13 @@ def tune_rerank_weights_on_dev(
                     lm_raw[idx],
                     lb,
                     cb,
+                    _seq_lcs_len(p_lem_seq, g_lem_seq),
+                    len(p_lem_seq),
+                    _seq_lcs_len(p_surf_seq, g_surf_seq),
+                    len(p_surf_seq),
                 )
             )
-
-        g_lem_c = Counter(
-            _strip_bare(t.lemma) for t in g_unit.tokens if t.morph.pos in content_pos
-        )
-        g_surf_c = Counter(
-            normalize_greek_target(t.normalized or t.surface).lower()
-            for t in g_unit.tokens
-            if t.morph.pos != "X-" and normalize_greek_target(t.normalized or t.surface)
-        )
-        cached.append((cand_rows, g_lem_c, g_surf_c))
+        cached.append((cand_rows, len(g_lem_seq), len(g_surf_seq)))
 
     alpha_grid = (1.0, 0.9, 0.8, 1.1)
     rev_grid = (0.25, 0.5, 0.0, 0.75) if decoder.reverse_model is not None else (0.0,)
@@ -1002,29 +1031,23 @@ def tune_rerank_weights_on_dev(
                     for wcv in cov_grid:
                         lm_m = lm_p = lm_g = 0
                         sf_m = sf_p = sf_g = 0
-                        for cand_rows, g_lem_c, g_surf_c in cached:
-                            best_gt = max(
+                        for cand_rows, n_g_lem, n_g_surf in cached:
+                            best_r = max(
                                 cand_rows,
                                 key=lambda r: (
-                                    r[2] / (r[1] ** alpha)
-                                    + wr * (r[3] / (r[4] ** alpha))
-                                    + wl * (r[5] / (r[1] ** alpha))
-                                    + wln * r[6]
-                                    + wcv * r[7]
+                                    r[1] / (r[0] ** alpha)
+                                    + wr * (r[2] / (r[3] ** alpha))
+                                    + wl * (r[4] / (r[0] ** alpha))
+                                    + wln * r[5]
+                                    + wcv * r[6]
                                 ),
-                            )[0]
-                            p_surf = Counter(best_gt.lower().split())
-                            p_lem: Counter[str] = Counter()
-                            for w in best_gt.split():
-                                lem, mf, _ = decoder.inflector.analyze_surface(w)[0]
-                                if mf.pos in content_pos:
-                                    p_lem[_strip_bare(lem)] += 1
-                            lm_m += sum((p_lem & g_lem_c).values())
-                            lm_p += sum(p_lem.values())
-                            lm_g += sum(g_lem_c.values())
-                            sf_m += sum((p_surf & g_surf_c).values())
-                            sf_p += sum(p_surf.values())
-                            sf_g += sum(g_surf_c.values())
+                            )
+                            lm_m += best_r[7]
+                            lm_p += best_r[8]
+                            lm_g += n_g_lem
+                            sf_m += best_r[9]
+                            sf_p += best_r[10]
+                            sf_g += n_g_surf
                         lf1 = 2 * lm_m / max(lm_p + lm_g, 1)
                         sf1 = 2 * sf_m / max(sf_p + sf_g, 1)
                         obj = 0.60 * lf1 + 0.40 * sf1

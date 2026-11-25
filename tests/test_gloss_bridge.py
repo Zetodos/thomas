@@ -3,6 +3,8 @@
 
 from __future__ import annotations
 
+import json
+from collections import Counter
 from pathlib import Path
 
 import pytest
@@ -14,6 +16,7 @@ from zetodos_thomas.ingest.koine_patristics import (
 )
 from zetodos_thomas.lexicon.gloss_bridge import (
     _extract_en_content_words,
+    _is_meta_gloss,
     _pos_compatible,
     build_ccl_strongs_bridge,
 )
@@ -29,21 +32,91 @@ def test_gloss_bridge_helpers_and_pos_filter() -> None:
     assert _pos_compatible("V", "V-") is True
     assert _pos_compatible("V", "N-") is False
     assert _pos_compatible("N", "N-") is True
+    # Lexicographic uncertainty & placeholder meta-glosses must be rejected
+    assert _is_meta_gloss("unknown") is True
+    assert _is_meta_gloss("meaning uncertain") is True
+    assert _is_meta_gloss("a certain plant") is True
+    assert _is_meta_gloss("fourth month of the year") is True
+    assert _is_meta_gloss("tree, wood") is False
+
+
+def test_gloss_bridge_rejects_meta_glosses_and_reconstructed_lemmas(
+    tmp_path: Path,
+) -> None:
+    ccl_xml = tmp_path / "ccl.xml"
+    ccl_xml.write_text(
+        """<?xml version="1.0" encoding="UTF-8"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0"><text><body>
+  <entry>
+    <form type="lemma"><orth>ϣϫⲓⲗ</orth><usg type="geo">S</usg></form>
+    <gramGrp><pos>Subst.</pos></gramGrp>
+    <sense><quote xml:lang="en">meaning unknown</quote></sense>
+  </entry>
+  <entry>
+    <form type="lemma"><orth>*ⲛⲉⲙⲟⲩⲣⲉ</orth><usg type="geo">S</usg></form>
+    <gramGrp><pos>Subst.</pos></gramGrp>
+    <sense><quote xml:lang="en">tree</quote></sense>
+  </entry>
+  <entry>
+    <form type="lemma"><orth>ⲃⲱ</orth><usg type="geo">S</usg></form>
+    <gramGrp><pos>Subst.</pos></gramGrp>
+    <sense><quote xml:lang="en">tree</quote></sense>
+  </entry>
+</body></text></TEI>
+""",
+        encoding="utf-8",
+    )
+    strongs_xml = tmp_path / "strongs.xml"
+    strongs_xml.write_text(
+        """<?xml version="1.0" encoding="UTF-8"?>
+<strongsdictionary><entries>
+  <entry><greek unicode="ἄγνωστος"/><strongs_def>unknown</strongs_def></entry>
+  <entry><greek unicode="δένδρον"/><strongs_def>a tree</strongs_def></entry>
+</entries></strongsdictionary>
+""",
+        encoding="utf-8",
+    )
+    res = build_ccl_strongs_bridge(ccl_xml=ccl_xml, strongs_xml=strongs_xml)
+    pairs = {(m.coptic_lemma, m.greek_lemma) for m in res.native_pairs}
+    assert ("ⲃⲱ", "δένδρον") in pairs
+    assert all(m.greek_lemma != "ἄγνωστος" for m in res.native_pairs)
+    assert all(not m.coptic_lemma.startswith("*") for m in res.native_pairs)
+
+
+def test_committed_v3_native_gloss_hints_free_of_meta_collisions() -> None:
+    """Runs on CI too: verifies committed model-v3 hints have no meta-gloss piles."""
+    hints_path = (
+        REPO_ROOT / "data" / "mappings" / "model-v3" / "native-gloss-hints.json"
+    )
+    if not hints_path.is_file():
+        pytest.skip("model-v3 native-gloss-hints.json not generated yet")
+    hints = json.loads(hints_path.read_text(encoding="utf-8"))
+    assert len(hints) >= 200
+    assert all(not k.startswith("*") for k in hints)
+    counts = Counter(hints.values())
+    for meta_greek in ("ἄγνωστος", "δεῖνα", "ἀδηλότης", "ἄρκτος"):
+        assert counts[meta_greek] == 0, f"Meta-gloss collision on {meta_greek}"
+    assert max(counts.values()) <= 4
 
 
 def test_real_ccl_strongs_bridge_produces_clean_native_pairs() -> None:
     ccl_xml = DOWNLOADS / "ccl-ddglc" / "Comprehensive_Coptic_Lexicon-v1.2-2020.xml"
     strongs_xml = DOWNLOADS / "strongs-greek" / "strongsgreek.xml"
     if not (ccl_xml.is_file() and strongs_xml.is_file()):
-        return
+        pytest.skip("CCL or Strong's XML not downloaded in this test environment")
     res = build_ccl_strongs_bridge(ccl_xml=ccl_xml, strongs_xml=strongs_xml)
     assert res.native_coptic_count >= 4000
     assert res.strongs_entry_count >= 5000
-    assert len(res.native_pairs) >= 2500
+    assert len(res.native_pairs) >= 2000
     assert len(res.grc_eng_pairs) >= 4000
     pair_map = {(m.coptic_lemma, m.greek_lemma) for m in res.native_pairs}
     assert ("ⲃⲱ", "δένδρον") in pair_map
     assert ("ⲃⲉⲛⲓⲡⲉ", "σίδηρος") in pair_map
+    counts = Counter(m.greek_lemma for m in res.native_pairs)
+    assert counts["ἄγνωστος"] == 0
+    assert counts["δεῖνα"] == 0
+    assert counts["ἀδηλότης"] == 0
+    assert max(counts.values()) <= 4
 
 
 def test_first1k_rejects_non_allowlisted_xml_and_parses_patristics(
