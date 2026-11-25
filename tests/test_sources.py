@@ -66,14 +66,18 @@ def test_committed_manifests_validate() -> None:
     manifests = validate_manifests_dir(MANIFESTS_DIR)
     ids = {m.id for m in manifests}
     assert ids == {
+        "apostolic-fathers",
         "ccl-ddglc-tei",
         "copsahhorner",
         "dclp-poxy-1",
         "dclp-poxy-654",
         "dclp-poxy-655",
         "dilley-thomas",
+        "first1k-koine-prose",
         "morphgnt-sblgnt",
+        "scriptorium-apophthegmata",
         "scriptorium-sahidic-ot",
+        "strongs-greek",
         "swete-lxx",
     }
     assert ids.isdisjoint(GATED_DEFAULT_SOURCE_IDS)

@@ -7,7 +7,6 @@ import dataclasses
 import json
 import math
 import unicodedata
-from collections import Counter
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -18,8 +17,14 @@ from torch import Tensor
 
 from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon
 from zetodos_thomas.morphology.greek_inflector import GreekInflector
+from zetodos_thomas.neural.accent_restorer import (
+    KoineAccentRestorer,
+    _accent_class,
+    _bare_key,
+)
 from zetodos_thomas.neural.corpus import (
     make_sub_coptic_unit,
+    normalize_greek_for_model,
     normalize_greek_target,
     resolve_morpheme_loan_hint,
     serialize_coptic_morphemes,
@@ -184,6 +189,11 @@ class NeuralKoineDecoder:
         v1_decoder: KoineBeamDecoder | None = None,
         weights: RerankWeights | None = None,
         device: torch.device | str = "cpu",
+        accent_restorer: KoineAccentRestorer | None = None,
+        native_gloss_hints: dict[str, str] | None = None,
+        greekify_source: bool = False,
+        unaccented_target: bool = False,
+        use_target_lang_tag: bool = False,
     ) -> None:
         self.tokenizer = tokenizer
         self.forward_models = forward_models
@@ -194,6 +204,11 @@ class NeuralKoineDecoder:
         self.v1_decoder = v1_decoder
         self.weights = weights or RerankWeights()
         self.device = torch.device(device)
+        self.accent_restorer = accent_restorer
+        self.native_gloss_hints = native_gloss_hints
+        self._greekify = greekify_source
+        self._unaccented = unaccented_target
+        self._tgt_grc_tag: str | None = "<TGT_GRC>" if use_target_lang_tag else None
 
         for m in self.forward_models:
             m.to(self.device)
@@ -205,6 +220,14 @@ class NeuralKoineDecoder:
             self.koine_lm.to(self.device)
             self.koine_lm.eval()
 
+    def _norm_model_greek(self, text: str) -> str:
+        return normalize_greek_for_model(text, unaccented=self._unaccented)
+
+    def _restore_surface_sentence(self, text: str) -> str:
+        if self._unaccented and self.accent_restorer is not None:
+            return self.accent_restorer.restore_sentence(text)
+        return normalize_greek_target(text)
+
     @classmethod
     def from_model_dir(
         cls,
@@ -213,7 +236,7 @@ class NeuralKoineDecoder:
         v1_model_dir: Path | None = None,
         device: str = "cpu",
     ) -> NeuralKoineDecoder:
-        """Load frozen model-v2 weights and offline analyzer tables."""
+        """Load frozen model-v2 or model-v3 weights and offline analyzer tables."""
         tokenizer = BilingualTokenizer.load(model_dir / "tokenizer.model")
         cfg = Seq2SeqConfig.model_validate(
             json.loads((model_dir / "seq2seq-config.json").read_text(encoding="utf-8"))
@@ -254,6 +277,17 @@ class NeuralKoineDecoder:
         ccl_lexicon = CclLexicon.load_json(ccl_path)
         analyzer_inflector = load_analyzer_inflector(model_dir)
 
+        accent_restorer: KoineAccentRestorer | None = None
+        if cfg.unaccented_target and any(model_dir.glob("accent-uni-*.json")):
+            accent_restorer = KoineAccentRestorer.load_shards(model_dir)
+
+        native_gloss_hints: dict[str, str] | None = None
+        gloss_path = model_dir / "native-gloss-hints.json"
+        if cfg.use_gloss_hints and gloss_path.is_file():
+            raw_gh = json.loads(gloss_path.read_text(encoding="utf-8"))
+            if isinstance(raw_gh, dict):
+                native_gloss_hints = {str(k): str(v) for k, v in raw_gh.items()}
+
         w_path = model_dir / "rerank-weights.json"
         weights = (
             RerankWeights.load_json(w_path) if w_path.is_file() else RerankWeights()
@@ -283,6 +317,11 @@ class NeuralKoineDecoder:
             v1_decoder=v1_dec,
             weights=weights,
             device=device,
+            accent_restorer=accent_restorer,
+            native_gloss_hints=native_gloss_hints,
+            greekify_source=cfg.greekify_source,
+            unaccented_target=cfg.unaccented_target,
+            use_target_lang_tag=cfg.use_target_lang_tag,
         )
 
     @torch.no_grad()
@@ -461,10 +500,10 @@ class NeuralKoineDecoder:
         w = self.weights
         cands_ids: list[list[int]] = [seq for seq, _ in beam_hyps]
         cands_txt: list[str] = [
-            normalize_greek_target(self.tokenizer.decode(seq)) for seq in cands_ids
+            self._norm_model_greek(self.tokenizer.decode(seq)) for seq in cands_ids
         ]
         if v1_candidate_text and w.include_v1_candidate:
-            v1_norm = normalize_greek_target(v1_candidate_text)
+            v1_norm = self._norm_model_greek(v1_candidate_text)
             if v1_norm and v1_norm not in cands_txt:
                 cands_ids.append(self.tokenizer.encode(v1_norm))
                 cands_txt.append(v1_norm)
@@ -514,7 +553,8 @@ class NeuralKoineDecoder:
             cov_bonus = 0.0
             if (expected_loans or draft_content_lems) and g_txt:
                 g_lems = set()
-                for gw in g_txt.split():
+                restored_cand = self._restore_surface_sentence(g_txt)
+                for gw in restored_cand.split():
                     p0 = self.inflector.analyze_surface(gw)[0]
                     g_lems.add(_strip_bare(p0[0]))
                     g_lems.add(_strip_bare(gw))
@@ -548,6 +588,9 @@ class NeuralKoineDecoder:
             morphemes,
             ccl_lexicon=self.ccl_lexicon,
             domain_tag=domain_tag,
+            greekify=self._greekify,
+            unaccented_hints=self._unaccented,
+            native_gloss_hints=self.native_gloss_hints,
         )
         draft_arg = v1_chunk_greek if self.weights.use_v1_draft else None
         src_text, char_spans = serialize_coptic_morphemes(
@@ -555,6 +598,10 @@ class NeuralKoineDecoder:
             ccl_lexicon=self.ccl_lexicon,
             domain_tag=domain_tag,
             v1_draft=draft_arg,
+            greekify=self._greekify,
+            unaccented_hints=self._unaccented,
+            native_gloss_hints=self.native_gloss_hints,
+            target_tag=self._tgt_grc_tag,
         )
         src_ids, tok_to_seq = self.tokenizer.encode_with_coptic_seq_map(
             src_text, char_spans
@@ -606,7 +653,7 @@ class NeuralKoineDecoder:
         alt_beams: list[list[tuple[str, str, str, float]]] = []
         for _a_ids, a_txt, a_sc in ranked[1:6]:
             a_words: list[tuple[str, str, str, float]] = []
-            for aw in a_txt.split():
+            for aw in self._restore_surface_sentence(a_txt).split():
                 lem, mf, _ = self.inflector.analyze_surface(aw)[0]
                 a_words.append((aw, lem, mf.signature(), round(a_sc, 3)))
             if a_words:
@@ -641,9 +688,36 @@ class NeuralKoineDecoder:
             for idx, sq in enumerate(chunk_seqs)
         }
 
+        norm_words = [self._norm_model_greek(wr) for wr, _piece_pos in word_groups]
+        bare_for_ctx = [_bare_key(w) for w in norm_words]
+        prev_acc = "BOS"
+
         out_tokens: list[GeneratedToken] = []
-        for w_idx, (word_raw, piece_positions) in enumerate(word_groups):
-            word = normalize_greek_target(word_raw)
+        for w_idx, ((_word_raw, piece_positions), model_word) in enumerate(
+            zip(word_groups, norm_words, strict=True)
+        ):
+            if not model_word:
+                continue
+            if self._unaccented and self.accent_restorer is not None:
+                prev_b = (
+                    bare_for_ctx[w_idx - 1]
+                    if w_idx > 0 and bare_for_ctx[w_idx - 1]
+                    else "<BOS>"
+                )
+                next_b = (
+                    bare_for_ctx[w_idx + 1]
+                    if w_idx + 1 < len(bare_for_ctx) and bare_for_ctx[w_idx + 1]
+                    else "<EOS>"
+                )
+                word = self.accent_restorer.restore_word(
+                    model_word,
+                    prev_bare=prev_b,
+                    next_bare=next_b,
+                    prev_accent=prev_acc,
+                )
+                prev_acc = _accent_class(word)
+            else:
+                word = normalize_greek_target(model_word)
             if not word:
                 continue
             # De-sinked cross-attention with gentle monotonic prior -> Top-1 Coptic seq
@@ -731,7 +805,9 @@ class NeuralKoineDecoder:
                 )
             )
 
-        alt_strings = [txt for _, txt, _ in ranked[:3] if txt]
+        alt_strings = [
+            self._restore_surface_sentence(txt) for _, txt, _ in ranked[:3] if txt
+        ]
         return out_tokens, alt_strings
 
     def _v1_draft_for_chunk(
@@ -785,20 +861,38 @@ class NeuralKoineDecoder:
         )
 
 
+def _seq_lcs_len(a: Sequence[str], b: Sequence[str]) -> int:
+    """Order-preserving Longest Common Subsequence length for dev rerank tuning."""
+    if not a or not b:
+        return 0
+    prev = [0] * (len(b) + 1)
+    for x in a:
+        cur = [0] * (len(b) + 1)
+        for j, y in enumerate(b, start=1):
+            if x == y:
+                cur[j] = prev[j - 1] + 1
+            else:
+                cur[j] = prev[j] if prev[j] >= cur[j - 1] else cur[j - 1]
+        prev = cur
+    return prev[len(b)]
+
+
 def tune_rerank_weights_on_dev(
     *,
     decoder: NeuralKoineDecoder,
     dev_units: Sequence[tuple[CopticUnit, GreekUnit]],
 ) -> RerankWeights:
-    """Grid-search noisy-channel reranking weights strictly on 51-verse NT DEV."""
+    """Grid-search noisy-channel rerank weights via ordered LCS on 51-verse NT DEV."""
     # Precompute candidate sets & unnormalized log-likelihoods once for fast search
     content_pos = {"N-", "V-", "A-", "D-"}
-    # Cand row: (text, tgt_len, fwd_ll, rev_ll, c_len, lm_ll, loan_ratio, cov_ratio)
+    # Cand row: (t_len, fwd, rev, c_len, lm, lb, cb, lm_lcs, lm_p, sf_lcs, sf_p)
     cached: list[
         tuple[
-            list[tuple[str, int, float, float, int, float, float, float]],
-            Counter[str],
-            Counter[str],
+            list[
+                tuple[int, float, float, int, float, float, float, int, int, int, int]
+            ],
+            int,
+            int,
         ]
     ] = []
 
@@ -808,7 +902,12 @@ def tune_rerank_weights_on_dev(
         if not ms or len(ms) > 80:
             continue
         coptic_only, _ = serialize_coptic_morphemes(
-            ms, ccl_lexicon=decoder.ccl_lexicon, domain_tag="<DOM_NT>"
+            ms,
+            ccl_lexicon=decoder.ccl_lexicon,
+            domain_tag="<DOM_NT>",
+            greekify=decoder._greekify,
+            unaccented_hints=decoder._unaccented,
+            native_gloss_hints=decoder.native_gloss_hints,
         )
         v1_t = decoder._v1_draft_for_chunk(c_unit, ms)
         src_text, _ = serialize_coptic_morphemes(
@@ -816,6 +915,10 @@ def tune_rerank_weights_on_dev(
             ccl_lexicon=decoder.ccl_lexicon,
             domain_tag="<DOM_NT>",
             v1_draft=v1_t if w_base.use_v1_draft else None,
+            greekify=decoder._greekify,
+            unaccented_hints=decoder._unaccented,
+            native_gloss_hints=decoder.native_gloss_hints,
+            target_tag=decoder._tgt_grc_tag,
         )
         src_ids = decoder.tokenizer.encode(src_text)
         n_np = sum(1 for m in ms if m.pos != "PUNCT")
@@ -829,10 +932,12 @@ def tune_rerank_weights_on_dev(
             len_alpha=w_base.len_alpha,
         )
         c_ids = [s for s, _ in beam_hyps]
-        c_txts = [normalize_greek_target(decoder.tokenizer.decode(s)) for s in c_ids]
-        if v1_t and w_base.include_v1_candidate and v1_t not in c_txts:
-            c_ids.append(decoder.tokenizer.encode(v1_t))
-            c_txts.append(v1_t)
+        c_txts = [decoder._norm_model_greek(decoder.tokenizer.decode(s)) for s in c_ids]
+        if v1_t and w_base.include_v1_candidate:
+            v1_m = decoder._norm_model_greek(v1_t)
+            if v1_m and v1_m not in c_txts:
+                c_ids.append(decoder.tokenizer.encode(v1_m))
+                c_txts.append(v1_m)
 
         fwd_raw = decoder._score_seq2seq(decoder.forward_models, src_ids, c_ids)
         c_tgt_ids = decoder.tokenizer.encode(coptic_only)
@@ -861,33 +966,55 @@ def tune_rerank_weights_on_dev(
                 if d_mf.pos in content_pos:
                     draft_lems.add(_strip_bare(d_lem))
 
-        cand_rows: list[tuple[str, int, float, float, int, float, float, float]] = []
+        g_lem_seq = [
+            _strip_bare(t.lemma) for t in g_unit.tokens if t.morph.pos in content_pos
+        ]
+        g_surf_seq = [
+            norm_s
+            for t in g_unit.tokens
+            if t.morph.pos != "X-"
+            and (norm_s := normalize_greek_target(t.normalized or t.surface).lower())
+        ]
+
+        cand_rows: list[
+            tuple[int, float, float, int, float, float, float, int, int, int, int]
+        ] = []
         for idx, (seq, gt) in enumerate(zip(c_ids, c_txts, strict=True)):
             t_len = max(len(seq) - 1, 1)
+            restored_gt = decoder._restore_surface_sentence(gt) if gt else ""
             lb = 0.0
             cb = 0.0
-            if (exp_loans or draft_lems) and gt:
-                gl = set()
-                for w in gt.split():
-                    gl.add(_strip_bare(decoder.inflector.analyze_surface(w)[0][0]))
+            p_lem_seq: list[str] = []
+            p_surf_seq = restored_gt.lower().split() if restored_gt else []
+            if restored_gt:
+                gl: set[str] = set()
+                for w in restored_gt.split():
+                    lem, mf, _ = decoder.inflector.analyze_surface(w)[0]
+                    bl = _strip_bare(lem)
+                    gl.add(bl)
                     gl.add(_strip_bare(w))
+                    if mf.pos in content_pos:
+                        p_lem_seq.append(bl)
                 if exp_loans:
                     lb = sum(1 for el in exp_loans if el in gl) / len(exp_loans)
                 if draft_lems:
                     cb = sum(1 for dl in draft_lems if dl in gl) / len(draft_lems)
             cand_rows.append(
-                (gt, t_len, fwd_raw[idx], rev_raw[idx], c_len, lm_raw[idx], lb, cb)
+                (
+                    t_len,
+                    fwd_raw[idx],
+                    rev_raw[idx],
+                    c_len,
+                    lm_raw[idx],
+                    lb,
+                    cb,
+                    _seq_lcs_len(p_lem_seq, g_lem_seq),
+                    len(p_lem_seq),
+                    _seq_lcs_len(p_surf_seq, g_surf_seq),
+                    len(p_surf_seq),
+                )
             )
-
-        g_lem_c = Counter(
-            _strip_bare(t.lemma) for t in g_unit.tokens if t.morph.pos in content_pos
-        )
-        g_surf_c = Counter(
-            normalize_greek_target(t.normalized or t.surface).lower()
-            for t in g_unit.tokens
-            if t.morph.pos != "X-" and normalize_greek_target(t.normalized or t.surface)
-        )
-        cached.append((cand_rows, g_lem_c, g_surf_c))
+        cached.append((cand_rows, len(g_lem_seq), len(g_surf_seq)))
 
     alpha_grid = (1.0, 0.9, 0.8, 1.1)
     rev_grid = (0.25, 0.5, 0.0, 0.75) if decoder.reverse_model is not None else (0.0,)
@@ -904,29 +1031,23 @@ def tune_rerank_weights_on_dev(
                     for wcv in cov_grid:
                         lm_m = lm_p = lm_g = 0
                         sf_m = sf_p = sf_g = 0
-                        for cand_rows, g_lem_c, g_surf_c in cached:
-                            best_gt = max(
+                        for cand_rows, n_g_lem, n_g_surf in cached:
+                            best_r = max(
                                 cand_rows,
                                 key=lambda r: (
-                                    r[2] / (r[1] ** alpha)
-                                    + wr * (r[3] / (r[4] ** alpha))
-                                    + wl * (r[5] / (r[1] ** alpha))
-                                    + wln * r[6]
-                                    + wcv * r[7]
+                                    r[1] / (r[0] ** alpha)
+                                    + wr * (r[2] / (r[3] ** alpha))
+                                    + wl * (r[4] / (r[0] ** alpha))
+                                    + wln * r[5]
+                                    + wcv * r[6]
                                 ),
-                            )[0]
-                            p_surf = Counter(best_gt.lower().split())
-                            p_lem: Counter[str] = Counter()
-                            for w in best_gt.split():
-                                lem, mf, _ = decoder.inflector.analyze_surface(w)[0]
-                                if mf.pos in content_pos:
-                                    p_lem[_strip_bare(lem)] += 1
-                            lm_m += sum((p_lem & g_lem_c).values())
-                            lm_p += sum(p_lem.values())
-                            lm_g += sum(g_lem_c.values())
-                            sf_m += sum((p_surf & g_surf_c).values())
-                            sf_p += sum(p_surf.values())
-                            sf_g += sum(g_surf_c.values())
+                            )
+                            lm_m += best_r[7]
+                            lm_p += best_r[8]
+                            lm_g += n_g_lem
+                            sf_m += best_r[9]
+                            sf_p += best_r[10]
+                            sf_g += n_g_surf
                         lf1 = 2 * lm_m / max(lm_p + lm_g, 1)
                         sf1 = 2 * sf_m / max(sf_p + sf_g, 1)
                         obj = 0.60 * lf1 + 0.40 * sf1

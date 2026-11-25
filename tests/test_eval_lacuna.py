@@ -6,6 +6,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from zetodos_thomas.eval.benchmark import (
+    _NOMINA_SACRA,
     _aggregate_frag_stratum,
     _AttestedGreekLemmatiser,
     _lcs_len,
@@ -437,3 +438,40 @@ def test_token_aligned_loanword_rejects_wrong_seq_and_cognate_shift() -> None:
     stratum = _aggregate_frag_stratum([counts_shift], [span])
     assert stratum.loanword_total == 2
     assert stratum.loanword_exact_match_rate == 0.5
+
+
+def test_nomina_sacra_medial_sigma_and_no_fragment_cribs() -> None:
+    """Universal nomina sacra match medial-sigma keys; ad-hoc suspensions excluded."""
+    assert all("ς" not in k for k in _NOMINA_SACRA)
+    assert "πριδι" not in _NOMINA_SACRA
+
+    lemmatiser = _AttestedGreekLemmatiser(exact_map={}, ita_map={})
+    for ink, expected in (
+        ("Ἰς", ("Ἰησοῦς", "N-")),
+        ("Ἰης", ("Ἰησοῦς", "N-")),
+        ("θῦ", ("θεός", "N-")),
+        ("πρα", ("πατήρ", "N-")),
+        ("ἀνων", ("ἄνθρωπος", "N-")),
+    ):
+        fw = FragmentWord(
+            word_index=0,
+            line_id="main.1",
+            surviving_text=ink,
+            restored_text="",
+            full_editorial_word=ink,
+            is_truncated=False,
+            is_abbreviation=True,
+        )
+        assert lemmatiser.resolve_word(fw, surviving_only=True) == expected
+
+    # Single-fragment P.Oxy. 1 suspension πρίδι must NOT be cribbed on surviving_only
+    fw_pridi = FragmentWord(
+        word_index=1,
+        line_id="main.31",
+        surviving_text="πρίδι",
+        restored_text="",
+        full_editorial_word="πατρίδι",
+        is_truncated=False,
+        is_abbreviation=True,
+    )
+    assert lemmatiser.resolve_word(fw_pridi, surviving_only=True) is None

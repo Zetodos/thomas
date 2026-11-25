@@ -8,13 +8,14 @@ from pathlib import Path
 
 import typer
 
-from zetodos_thomas.cli.model_cmd import MODEL_REL, MODEL_V2_REL
+from zetodos_thomas.cli.model_cmd import MODEL_REL, MODEL_V2_REL, MODEL_V3_REL
 from zetodos_thomas.ingest.dilley_thomas import load_thomas_corpus
 from zetodos_thomas.ingest.paths import require_repo_root, resolve_thomas_path
 from zetodos_thomas.reconstruct.decoder import KoineBeamDecoder
 
 GENERATED_THOMAS_REL = Path("data/generated/thomas-generated-v1.json")
 GENERATED_THOMAS_V2_REL = Path("data/generated/thomas-generated-v2.json")
+GENERATED_THOMAS_V3_REL = Path("data/generated/thomas-generated-v3.json")
 
 reconstruct_app = typer.Typer(
     name="reconstruct",
@@ -48,12 +49,12 @@ def reconstruct_run(
         None,
         "--out",
         "-o",
-        help="Output JSON path (default: data/generated/thomas-generated-v{1|2}.json)",
+        help="Output JSON path (default: data/generated/thomas-generated-v*.json)",
     ),
     model: str = typer.Option(
         "v1",
         "--model",
-        help="Model track: v1 (classical transfer) or v2 (from-scratch neural NMT)",
+        help="Model track: v1 (classical), v2 (neural), or v3 (greekified patristic)",
     ),
 ) -> None:
     """Deterministically reconstruct Koine Greek for Thomas saying(s) offline."""
@@ -62,12 +63,23 @@ def reconstruct_run(
         raise typer.Exit(code=2)
 
     root = require_repo_root(repo_root)
-    is_v2 = model.lower() in {"v2", "model-v2"}
+    m_low = model.lower()
+    is_v3 = m_low in {"v3", "model-v3"}
+    is_v2 = m_low in {"v2", "model-v2"}
+    is_neural = is_v2 or is_v3
     v1_dir = root / MODEL_REL
-    model_dir = (root / MODEL_V2_REL) if is_v2 else v1_dir
-    marker = "seq2seq-config.json" if is_v2 else "decoder-weights.json"
+    model_dir = (
+        (root / MODEL_V3_REL) if is_v3 else (root / MODEL_V2_REL) if is_v2 else v1_dir
+    )
+    marker = "seq2seq-config.json" if is_neural else "decoder-weights.json"
     if not (model_dir / marker).is_file():
-        cmd = "thomas model build-v2" if is_v2 else "thomas model build"
+        cmd = (
+            "thomas model build-v3"
+            if is_v3
+            else "thomas model build-v2"
+            if is_v2
+            else "thomas model build"
+        )
         typer.secho(
             f"Missing frozen model at {model_dir}; run `{cmd}` first",
             fg=typer.colors.RED,
@@ -75,13 +87,13 @@ def reconstruct_run(
         raise typer.Exit(code=1)
 
     corpus = load_thomas_corpus(resolve_thomas_path(root))
-    if is_v2:
+    if is_neural:
         from zetodos_thomas.neural.decoder_v2 import NeuralKoineDecoder
 
-        decoder_v2 = NeuralKoineDecoder.from_model_dir(
+        decoder_nn = NeuralKoineDecoder.from_model_dir(
             model_dir, v1_model_dir=v1_dir, device="cpu"
         )
-        decoder: object = decoder_v2
+        decoder: object = decoder_nn
     else:
         decoder = KoineBeamDecoder.from_model_dir(model_dir)
 
@@ -105,8 +117,18 @@ def reconstruct_run(
         typer.echo(f"{gen.unit_id}: {gen.greek_text}")
         return
 
-    generated = decoder.decode_corpus(corpus.units)  # type: ignore[attr-defined]
-    default_rel = GENERATED_THOMAS_V2_REL if is_v2 else GENERATED_THOMAS_REL
+    model_id = "model-v3" if is_v3 else "model-v2" if is_v2 else "model-v1"
+    if is_neural:
+        generated = decoder.decode_corpus(corpus.units, model_id=model_id)  # type: ignore[attr-defined]
+    else:
+        generated = decoder.decode_corpus(corpus.units)  # type: ignore[attr-defined]
+    default_rel = (
+        GENERATED_THOMAS_V3_REL
+        if is_v3
+        else GENERATED_THOMAS_V2_REL
+        if is_v2
+        else GENERATED_THOMAS_REL
+    )
     out_path = out or (root / default_rel)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     payload = generated.model_dump(mode="json", exclude_defaults=True)

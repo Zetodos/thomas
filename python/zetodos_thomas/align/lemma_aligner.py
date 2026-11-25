@@ -523,10 +523,13 @@ class LexicalTranslationModel:
         ccl_lexicon: CclLexicon,
         nt_weight: float = 3.0,
         repo_root: Path | None = None,
+        exclude_synoptic_thomas: bool = False,
     ) -> LexicalTranslationModel:
         """Run full leak-free alignment on clean NT TRAIN split + Sahidic OT x Swete."""
         split = load_nt_split(split_path)
-        train_ids = clean_nt_train_ids(split, exclude_synoptic_thomas=True)
+        train_ids = clean_nt_train_ids(
+            split, exclude_synoptic_thomas=exclude_synoptic_thomas
+        )
         raw_nt = pair_horner_morphgnt(
             sword_root=downloads_dir / "sword",
             morphgnt_dir=downloads_dir / "morphgnt-sblgnt",

@@ -1,0 +1,22 @@
+{
+  "id": "apostolic-fathers",
+  "title": "Open Apostolic Fathers (jtauber/apostolic-fathers, corrected Kirsopp Lake Greek text)",
+  "version": "a07f9207902d",
+  "url": "https://github.com/jtauber/apostolic-fathers",
+  "spdx_or_custom": "CC-BY-SA-4.0",
+  "attribution": "James Tauber and Seumas Macdonald (eds.), Open Apostolic Fathers (based on Kirsopp Lake, Loeb Classical Library, Perseus / Open Greek and Latin). Licensed CC BY-SA 4.0.",
+  "mode": "setup-download",
+  "checksum": "sha256:2e3a191d7b90a76a5bd916826d1152ec7aa36c1057fec7b914bbcda9753a5b22",
+  "notes": "15 early Christian Koine Greek prose works (1-2 Clement, Ignatius, Polycarp, Didache, Barnabas, Shepherd of Hermas, Martyrdom of Polycarp, Diognetus) for monolingual Koine LM, span denoising, and synthetic back-translation in model-v3. Checksum pins texts/001-i_clement.txt at commit a07f9207902d2a7a88aa3e7c8fb3671d7ef6f0ff. Strictly zero Gospel of Thomas or P.Oxy. texts.",
+  "editor": "James Tauber & Seumas Macdonald",
+  "language": "grc",
+  "dialect": "Koine (Early Christian Patristic)",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "local_path": "data/downloads/apostolic-fathers/",
+  "redistributable": true,
+  "gate": null,
+  "module_name": null,
+  "sword_version_date": null,
+  "text_source": "jtauber/apostolic-fathers texts/*.txt @ a07f9207902d2a7a88aa3e7c8fb3671d7ef6f0ff",
+  "counterpart_source_id": null
+}

@@ -28,6 +28,10 @@ class Seq2SeqConfig(BaseModel):
     pad_id: int = 0
     bos_id: int = 1
     eos_id: int = 2
+    greekify_source: bool = False
+    unaccented_target: bool = False
+    use_gloss_hints: bool = False
+    use_target_lang_tag: bool = False
 
 
 class KoineCausalLMConfig(BaseModel):
@@ -44,6 +48,7 @@ class KoineCausalLMConfig(BaseModel):
     pad_id: int = 0
     bos_id: int = 1
     eos_id: int = 2
+    unaccented_target: bool = False
 
 
 class _SinusoidalPositionalEncoding(nn.Module):

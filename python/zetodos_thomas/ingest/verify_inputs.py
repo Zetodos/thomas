@@ -9,8 +9,12 @@ from pathlib import Path
 
 from zetodos_thomas.ingest.dclp_fragments import DCLP_THOMAS_FRAGMENTS
 from zetodos_thomas.ingest.download import (
+    APOPHTHEGMATA_PIN_REL,
+    APOSTOLIC_FATHERS_PIN_REL,
     CCL_TEI_FILENAME,
+    FIRST1K_PINNED_FILES,
     SAHIDIC_OT_ZIP_FILENAME,
+    STRONGS_XML_FILENAME,
     DownloadError,
     sha256_file,
     verify_checksum,
@@ -84,6 +88,46 @@ def verify_downloaded_sources(
         msg = f"missing CCL TEI at {ccl_path}; run `thomas setup` first"
         raise DownloadError(msg)
     verify_checksum(ccl_path, ccl_manifest.checksum)
+
+    # Optional/v3 pinned sources: verify when manifest exists
+    strongs_mf = manifests_dir / "strongs-greek.json"
+    if strongs_mf.is_file():
+        strongs_m = load_manifest(strongs_mf)
+        strongs_p = downloads_dir / "strongs-greek" / STRONGS_XML_FILENAME
+        if not strongs_p.is_file():
+            msg = f"missing Strong's Greek XML at {strongs_p}; run `thomas setup` first"
+            raise DownloadError(msg)
+        verify_checksum(strongs_p, strongs_m.checksum)
+
+    af_mf = manifests_dir / "apostolic-fathers.json"
+    if af_mf.is_file():
+        af_m = load_manifest(af_mf)
+        af_p = downloads_dir / "apostolic-fathers" / APOSTOLIC_FATHERS_PIN_REL
+        if not af_p.is_file():
+            msg = f"missing Apostolic Fathers at {af_p}; run `thomas setup` first"
+            raise DownloadError(msg)
+        verify_checksum(af_p, af_m.checksum)
+
+    f1k_mf = manifests_dir / "first1k-koine-prose.json"
+    if f1k_mf.is_file():
+        f1k_m = load_manifest(f1k_mf)
+        f1k_dir = downloads_dir / "first1k-koine-prose"
+        for rel_path, expected_sha in FIRST1K_PINNED_FILES:
+            fpath = f1k_dir / Path(rel_path).name
+            if not fpath.is_file():
+                msg = f"missing First1KGreek file at {fpath}; run `thomas setup` first"
+                raise DownloadError(msg)
+            verify_checksum(fpath, expected_sha)
+        verify_checksum(f1k_dir / "tlg0018.tlg001.1st1K-grc1.xml", f1k_m.checksum)
+
+    ap_mf = manifests_dir / "scriptorium-apophthegmata.json"
+    if ap_mf.is_file():
+        ap_m = load_manifest(ap_mf)
+        ap_p = downloads_dir / "apophthegmata-patrum" / APOPHTHEGMATA_PIN_REL
+        if not ap_p.is_file():
+            msg = f"missing Apophthegmata Patrum at {ap_p}; run `thomas setup` first"
+            raise DownloadError(msg)
+        verify_checksum(ap_p, ap_m.checksum)
 
 
 def verify_fragment_rebuild_inputs(

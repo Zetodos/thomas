@@ -1,0 +1,22 @@
+{
+  "id": "first1k-koine-prose",
+  "title": "First1KGreek Selected 1st-Century Koine Prose (Epictetus & Philo of Alexandria)",
+  "version": "ed91552c5253",
+  "url": "https://github.com/OpenGreekAndLatin/First1KGreek",
+  "spdx_or_custom": "CC-BY-SA-4.0",
+  "attribution": "Open Greek and Latin Project (First1KGreek), University of Leipzig / Tufts University. Licensed CC BY-SA 4.0.",
+  "mode": "setup-download",
+  "checksum": "sha256:93dcbd16b852ef66753ddaa56a2b27a0c2bfde82860d1cfecdcd9b58ea57cd6b",
+  "notes": "Explicit TLG allowlist of 10 pinned 1st-century Koine Greek TEI-XML files at commit ed91552c52530c8f5a3ddf2dd767e899372a804c: Epictetus (tlg0557.tlg004, tlg0557.tlg005) and Philo of Alexandria (tlg0018.tlg001 through tlg0018.tlg008). Checksum pins tlg0018.tlg001.1st1K-grc1.xml; individual per-file SHA-256 digests are enforced in download.py. Strictly zero Gospel of Thomas or P.Oxy. texts.",
+  "editor": "Open Greek and Latin / First1KGreek",
+  "language": "grc",
+  "dialect": "Koine (1st-c. Alexandrian & Stoic Prose)",
+  "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+  "local_path": "data/downloads/first1k-koine-prose/",
+  "redistributable": true,
+  "gate": null,
+  "module_name": null,
+  "sword_version_date": null,
+  "text_source": "OpenGreekAndLatin/First1KGreek (tlg0557.tlg004-005, tlg0018.tlg001-008) @ ed91552c52530c8f5a3ddf2dd767e899372a804c",
+  "counterpart_source_id": null
+}

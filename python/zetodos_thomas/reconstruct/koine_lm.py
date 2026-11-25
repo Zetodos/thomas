@@ -60,10 +60,13 @@ class KoineNgramLM:
         split_path: Path,
         inflector: GreekInflector,
         nt_weight: float = 3.0,
+        exclude_synoptic_thomas: bool = False,
     ) -> KoineNgramLM:
         """Train LM strictly on clean NT TRAIN split + Swete LXX."""
         split = load_nt_split(split_path)
-        train_ids = clean_nt_train_ids(split, exclude_synoptic_thomas=True)
+        train_ids = clean_nt_train_ids(
+            split, exclude_synoptic_thomas=exclude_synoptic_thomas
+        )
         morphgnt = load_morphgnt_nt(downloads_dir / "morphgnt-sblgnt")
 
         uni_c: dict[str, float] = defaultdict(float)

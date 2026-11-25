@@ -157,3 +157,127 @@ def test_neural_v2_tokenizer_transformer_safetensors_and_determinism(
     assert out1.greek_text == out2.greek_text
     assert len(out1.tokens) > 0
     assert all(len(t.coptic_seqs) > 0 for t in out1.tokens)
+
+
+def test_model_v3_greekification_unaccented_and_decoder_roundtrip(
+    tmp_path: Path,
+) -> None:
+    from zetodos_thomas.neural.accent_restorer import KoineAccentRestorer
+    from zetodos_thomas.neural.corpus import (
+        SPECIAL_USER_SYMBOLS_V3,
+        greekify_coptic,
+    )
+
+    # Script unification maps Greek-derived loanwords identically to bare Greek
+    assert greekify_coptic("ⲕⲟⲥⲙⲟⲥ") == "κοσμος"
+    assert greekify_coptic("ⲡⲟⲗⲓⲥ") == "πολις"
+    # Demotic letters remain distinct & intact
+    assert greekify_coptic("ϣⲁϫⲉ") == "ϣαϫε"
+    assert greekify_coptic("ϩⲉⲣⲙⲏⲛⲉⲓⲁ") == "ϩερμηνεια"
+
+    ccl = CclLexicon(
+        loanwords={
+            "ⲕⲟⲥⲙⲟⲥ": [
+                LoanwordEntry(
+                    coptic_lemma="ⲕⲟⲥⲙⲟⲥ",
+                    greek_lemma="κόσμος",
+                    greek_pos="N-",
+                )
+            ]
+        },
+        itacism_index={},
+        greek_genders={},
+    )
+    ms = [
+        CopticMorpheme(seq=0, group_seq=0, norm="ⲡ", lemma="ⲡ", pos="ART"),
+        CopticMorpheme(
+            seq=1, group_seq=0, norm="ⲕⲟⲥⲙⲟⲥ", lemma="ⲕⲟⲥⲙⲟⲥ", pos="N", lang="Greek"
+        ),
+        CopticMorpheme(seq=2, group_seq=1, norm="ⲃⲱ", lemma="ⲃⲱ", pos="N"),
+    ]
+    gloss_hints = {"ⲃⲱ": "δενδρον"}
+    s_txt, spans = serialize_coptic_morphemes(
+        ms,
+        ccl_lexicon=ccl,
+        domain_tag="<DOM_NT>",
+        greekify=True,
+        unaccented_hints=True,
+        native_gloss_hints=gloss_hints,
+        target_tag="<TGT_GRC>",
+    )
+    assert s_txt.startswith("<DOM_NT> <TGT_GRC> π κοσμος <LOAN> κοσμος")
+    assert "<GLOSS> δενδρον" in s_txt
+    assert len(spans) == 3
+
+    # Unified BPE tokenizer shares pieces between Greekified loanword & bare Greek
+    texts = [s_txt, "ο κοσμος δενδρον", "η πολη του κοσμου"] * 25
+    tok = BilingualTokenizer.train(
+        texts=texts,
+        out_prefix=tmp_path / "tokenizer",
+        vocab_size=360,
+        user_defined_symbols=SPECIAL_USER_SYMBOLS_V3,
+    )
+    assert tok.has_piece("<TGT_GRC>")
+    assert tok.has_piece("<GLOSS>")
+    assert tok.encode("κοσμος", add_bos=False, add_eos=False) == tok.encode(
+        greekify_coptic("ⲕⲟⲥⲙⲟⲥ"), add_bos=False, add_eos=False
+    )
+
+    cfg = Seq2SeqConfig(
+        vocab_size=tok.vocab_size,
+        d_model=32,
+        n_heads=4,
+        d_ff=64,
+        num_enc_layers=2,
+        num_dec_layers=2,
+        greekify_source=True,
+        unaccented_target=True,
+        use_gloss_hints=True,
+        use_target_lang_tag=True,
+    )
+    (tmp_path / "seq2seq-config.json").write_text(
+        cfg.model_dump_json(indent=2) + "\n", encoding="utf-8"
+    )
+    model = KoineSeq2SeqTransformer(cfg)
+    model.save_safetensors(tmp_path / "forward-0.safetensors", fp16=True)
+    ccl.save_json(tmp_path / "ccl-loanwords.json")
+    (tmp_path / "native-gloss-hints.json").write_text(
+        '{"ⲃⲱ":"δενδρον"}\n', encoding="utf-8"
+    )
+    ar = KoineAccentRestorer(
+        unigrams={"ο": "ὁ", "κοσμος": "κόσμος", "δενδρον": "δένδρον"},
+        prev_bigrams={},
+    )
+    ar.save_shards(tmp_path)
+    inf = GreekInflector(
+        paradigms={},
+        coarse_paradigms={},
+        lemma_genders={},
+        surface_analyses={
+            "κόσμος": [("κόσμος", "N- ----NSM-", 0.0)],
+            "δένδρον": [("δένδρον", "N- ----NSN-", 0.0)],
+        },
+        known_lemmas={},
+    )
+    save_analyzer_shards(inf, tmp_path)
+    RerankWeights(beam_size=2).save_json(tmp_path / "rerank-weights.json")
+
+    dec = NeuralKoineDecoder.from_model_dir(tmp_path, device="cpu")
+    assert dec._greekify is True
+    assert dec._unaccented is True
+    assert dec.accent_restorer is not None
+    assert dec.native_gloss_hints == {"ⲃⲱ": "δενδρον"}
+    unit = CopticUnit(
+        unit_id="test.v3",
+        source_id="test",
+        book="test",
+        chapter=1,
+        verse=1,
+        original_text="ⲡⲕⲟⲥⲙⲟⲥ ⲃⲱ",
+        normalized_text="ⲡ ⲕⲟⲥⲙⲟⲥ ⲃⲱ",
+        morphemes=ms,
+    )
+    u1 = dec.decode_unit(unit)
+    u2 = dec.decode_unit(unit)
+    assert u1.greek_text == u2.greek_text
+    assert len(u1.tokens) > 0

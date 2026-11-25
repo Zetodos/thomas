@@ -8,7 +8,7 @@ from pathlib import Path
 
 import typer
 
-from zetodos_thomas.cli.model_cmd import MODEL_REL, MODEL_V2_REL
+from zetodos_thomas.cli.model_cmd import MODEL_REL, MODEL_V2_REL, MODEL_V3_REL
 from zetodos_thomas.eval.benchmark import (
     BENCHMARK_DOC_REL,
     EVAL_REPORT_REL,
@@ -19,6 +19,8 @@ from zetodos_thomas.ingest.paths import require_repo_root
 
 EVAL_REPORT_V2_REL = Path("data/generated/eval-report-v2.json")
 BENCHMARK_DOC_V2_REL = Path("docs/benchmark-report-v2.md")
+EVAL_REPORT_V3_REL = Path("data/generated/eval-report-v3.json")
+BENCHMARK_DOC_V3_REL = Path("docs/benchmark-report-v3.md")
 
 eval_app = typer.Typer(
     name="eval",
@@ -51,16 +53,31 @@ def eval_run(
     model: str = typer.Option(
         "v1",
         "--model",
-        help="Model track to evaluate: v1 or v2",
+        help="Model track to evaluate: v1, v2, or v3",
     ),
 ) -> None:
     """Run NT Gospel holdouts + P.Oxy. 1/654/655 benchmark and emit reports."""
     root = require_repo_root(repo_root)
-    is_v2 = model.lower() in {"v2", "model-v2"}
-    model_dir = (root / MODEL_V2_REL) if is_v2 else (root / MODEL_REL)
-    marker = "seq2seq-config.json" if is_v2 else "decoder-weights.json"
+    m_low = model.lower()
+    is_v3 = m_low in {"v3", "model-v3"}
+    is_v2 = m_low in {"v2", "model-v2"}
+    is_neural = is_v2 or is_v3
+    model_dir = (
+        (root / MODEL_V3_REL)
+        if is_v3
+        else (root / MODEL_V2_REL)
+        if is_v2
+        else (root / MODEL_REL)
+    )
+    marker = "seq2seq-config.json" if is_neural else "decoder-weights.json"
     if not (model_dir / marker).is_file():
-        cmd = "thomas model build-v2" if is_v2 else "thomas model build"
+        cmd = (
+            "thomas model build-v3"
+            if is_v3
+            else "thomas model build-v2"
+            if is_v2
+            else "thomas model build"
+        )
         typer.secho(
             f"Missing frozen model at {model_dir}; run `{cmd}` first",
             fg=typer.colors.RED,
@@ -69,9 +86,25 @@ def eval_run(
 
     report = run_full_evaluation(repo_root=root, model_dir=model_dir)
     json_path = report_out or (
-        root / (EVAL_REPORT_V2_REL if is_v2 else EVAL_REPORT_REL)
+        root
+        / (
+            EVAL_REPORT_V3_REL
+            if is_v3
+            else EVAL_REPORT_V2_REL
+            if is_v2
+            else EVAL_REPORT_REL
+        )
     )
-    md_path = doc_out or (root / (BENCHMARK_DOC_V2_REL if is_v2 else BENCHMARK_DOC_REL))
+    md_path = doc_out or (
+        root
+        / (
+            BENCHMARK_DOC_V3_REL
+            if is_v3
+            else BENCHMARK_DOC_V2_REL
+            if is_v2
+            else BENCHMARK_DOC_REL
+        )
+    )
     json_path.parent.mkdir(parents=True, exist_ok=True)
     md_path.parent.mkdir(parents=True, exist_ok=True)
 

@@ -1,0 +1,22 @@
+{
+  "id": "strongs-greek",
+  "title": "Strong's Greek Dictionary XML (morphgnt/strongs-dictionary-xml)",
+  "version": "dd6758b82f46",
+  "url": "https://raw.githubusercontent.com/morphgnt/strongs-dictionary-xml/dd6758b82f46b620804a8ea677d715844679eea1/strongsgreek.xml",
+  "spdx_or_custom": "CC0-1.0",
+  "attribution": "Ulrik Sandborg-Petersen; MorphGNT project (morphgnt/strongs-dictionary-xml). Released under CC0 1.0 Universal Public Domain Dedication.",
+  "mode": "setup-download",
+  "checksum": "sha256:91474213b208a4e487d35f85c10e5c90737acc69082dad15dec5431406003545",
+  "notes": "Public-domain Greek-English lexical entries used with CCL v1.2 native Egyptian English glosses to build a zero-leakage native Coptic->Greek lexical bridge for model-v3. Contains zero Gospel of Thomas or P.Oxy. material.",
+  "editor": "Ulrik Sandborg-Petersen / MorphGNT",
+  "language": "grc",
+  "dialect": "Koine",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "local_path": "data/downloads/strongs-greek/",
+  "redistributable": true,
+  "gate": null,
+  "module_name": null,
+  "sword_version_date": null,
+  "text_source": "morphgnt/strongs-dictionary-xml strongsgreek.xml @ dd6758b82f46b620804a8ea677d715844679eea1",
+  "counterpart_source_id": "ccl-ddglc-tei"
+}

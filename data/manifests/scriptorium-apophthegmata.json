@@ -1,0 +1,22 @@
+{
+  "id": "scriptorium-apophthegmata",
+  "title": "Apophthegmata Patrum (Sayings of the Desert Fathers, Sahidic Coptic via Coptic SCRIPTORIUM)",
+  "version": "6.2.0",
+  "url": "https://github.com/CopticScriptorium/corpora",
+  "spdx_or_custom": "CC-BY-4.0",
+  "attribution": "Coptic SCRIPTORIUM (Caroline T. Schroeder, Amir Zeldes, Elizabeth Davidson, Christine Luckritz Marquis, Elizabeth Platte, Nicholas Wagner, et al.). Licensed CC BY 4.0.",
+  "mode": "setup-download",
+  "checksum": "sha256:8e20050d4ef3e7462adc7bd8cde7bec9de0cc919c9e89b6e5a602607bdc0ab74",
+  "notes": "126 gold-annotated Sahidic Coptic sayings (AP/apophthegmata.patrum_TT/*.tt) with English translations from CopticScriptorium/corpora tag v6.2.0 (commit 6c2acf0ebebf62f40c3834259cf6fd734238e371) used for non-biblical Coptic span-denoising pretraining and cop->eng multi-task pivot training in model-v3. Checksum pins AP/apophthegmata.patrum_TT/AP.001.n135.mother.tt. Strictly zero Gospel of Thomas or P.Oxy. texts.",
+  "editor": "Coptic SCRIPTORIUM",
+  "language": "cop",
+  "dialect": "Sahidic",
+  "license_url": "https://creativecommons.org/licenses/by/4.0/",
+  "local_path": "data/downloads/apophthegmata-patrum/",
+  "redistributable": true,
+  "gate": null,
+  "module_name": "AP",
+  "sword_version_date": null,
+  "text_source": "CopticScriptorium/corpora v6.2.0 AP/apophthegmata.patrum_TT/*.tt @ 6c2acf0ebebf62f40c3834259cf6fd734238e371",
+  "counterpart_source_id": null
+}

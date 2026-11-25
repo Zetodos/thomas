@@ -1,0 +1,18 @@
+{
+  "vocab_size": 8000,
+  "d_model": 384,
+  "n_heads": 6,
+  "d_ff": 1536,
+  "num_enc_layers": 5,
+  "num_dec_layers": 5,
+  "dropout": 0.3,
+  "attn_dropout": 0.15,
+  "max_len": 512,
+  "pad_id": 0,
+  "bos_id": 1,
+  "eos_id": 2,
+  "greekify_source": true,
+  "unaccented_target": false,
+  "use_gloss_hints": true,
+  "use_target_lang_tag": true
+}

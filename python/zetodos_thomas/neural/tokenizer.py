@@ -38,8 +38,14 @@ class BilingualTokenizer:
         texts: Iterable[str],
         out_prefix: Path,
         vocab_size: int = 8000,
+        user_defined_symbols: Sequence[str] | None = None,
     ) -> BilingualTokenizer:
         """Train a deterministic SentencePiece BPE model strictly on train texts."""
+        symbols = (
+            list(user_defined_symbols)
+            if user_defined_symbols is not None
+            else list(SPECIAL_USER_SYMBOLS)
+        )
         out_prefix.parent.mkdir(parents=True, exist_ok=True)
         with tempfile.NamedTemporaryFile(
             mode="w", suffix=".txt", encoding="utf-8", delete=True
@@ -60,7 +66,7 @@ class BilingualTokenizer:
                 bos_id=BOS_ID,
                 eos_id=EOS_ID,
                 unk_id=UNK_ID,
-                user_defined_symbols=list(SPECIAL_USER_SYMBOLS),
+                user_defined_symbols=symbols,
                 byte_fallback=True,
                 shuffle_input_sentence=False,
                 num_threads=1,
@@ -68,6 +74,10 @@ class BilingualTokenizer:
             )
         model_file = out_prefix.with_suffix(".model")
         return cls.load(model_file)
+
+    def has_piece(self, piece: str) -> bool:
+        """Return True if ``piece`` is an explicit non-UNK vocabulary symbol."""
+        return int(self._sp.piece_to_id(piece)) != self.unk_id
 
     @classmethod
     def load(cls, model_path: Path) -> BilingualTokenizer:

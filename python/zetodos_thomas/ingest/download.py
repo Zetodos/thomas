@@ -36,6 +36,66 @@ MORPHGNT_COMMIT_SHA = "aaed91e57c8e4a8dc9a2383e129ca5e75fe6393d"
 SWETE_GIT_URL = "https://github.com/nathans/lxx-swete.git"
 SWETE_COMMIT_SHA = "26bad3eb42bba98471d154c954e36a6f30a0279d"
 
+STRONGS_COMMIT_SHA = "dd6758b82f46b620804a8ea677d715844679eea1"
+STRONGS_XML_URL = (
+    f"https://raw.githubusercontent.com/morphgnt/strongs-dictionary-xml/"
+    f"{STRONGS_COMMIT_SHA}/strongsgreek.xml"
+)
+STRONGS_XML_FILENAME = "strongsgreek.xml"
+
+APOSTOLIC_FATHERS_GIT_URL = "https://github.com/jtauber/apostolic-fathers.git"
+APOSTOLIC_FATHERS_COMMIT_SHA = "a07f9207902d2a7a88aa3e7c8fb3671d7ef6f0ff"
+APOSTOLIC_FATHERS_PIN_REL = Path("texts/001-i_clement.txt")
+
+APOPHTHEGMATA_GIT_URL = "https://github.com/CopticScriptorium/corpora.git"
+APOPHTHEGMATA_COMMIT_SHA = "6c2acf0ebebf62f40c3834259cf6fd734238e371"
+APOPHTHEGMATA_PIN_REL = Path("AP/apophthegmata.patrum_TT/AP.001.n135.mother.tt")
+
+FIRST1K_COMMIT_SHA = "ed91552c52530c8f5a3ddf2dd767e899372a804c"
+# Explicit TLG allowlist: Epictetus (tlg0557) & Philo (tlg0018), zero Thomas/P.Oxy.
+FIRST1K_PINNED_FILES: tuple[tuple[str, str], ...] = (
+    (
+        "data/tlg0557/tlg004/tlg0557.tlg004.1st1K-grc1.xml",
+        "sha256:0fbb4b3bbd24adb669f1927144feebc80d96e4c151c27ae027ae31351ae953a2",
+    ),
+    (
+        "data/tlg0557/tlg005/tlg0557.tlg005.1st1K-grc1.xml",
+        "sha256:4b5c4837561faef5806687881a6148339c48ae6571345e8656d4869d4dc0a974",
+    ),
+    (
+        "data/tlg0018/tlg001/tlg0018.tlg001.1st1K-grc1.xml",
+        "sha256:93dcbd16b852ef66753ddaa56a2b27a0c2bfde82860d1cfecdcd9b58ea57cd6b",
+    ),
+    (
+        "data/tlg0018/tlg002/tlg0018.tlg002.1st1K-grc1.xml",
+        "sha256:ef558dad43615bc7a146b087c92790a654433fa267aed2180c9ee8d5732376d9",
+    ),
+    (
+        "data/tlg0018/tlg003/tlg0018.tlg003.1st1K-grc1.xml",
+        "sha256:501518c0862b69886123dc3244128c0d573f480d19044d1eca62412e19a3b76f",
+    ),
+    (
+        "data/tlg0018/tlg004/tlg0018.tlg004.1st1K-grc1.xml",
+        "sha256:5d56ea855e5c3bfcd95ad3e28c0d7f3dc7a6fc7125a115e8c765450c5fcfa2b6",
+    ),
+    (
+        "data/tlg0018/tlg005/tlg0018.tlg005.1st1K-grc1.xml",
+        "sha256:0763e7af48f7b80ac6b2831696af1e17fe5ac88b1922fe10bf867855556e6e03",
+    ),
+    (
+        "data/tlg0018/tlg006/tlg0018.tlg006.1st1K-grc1.xml",
+        "sha256:f533b7e6e2566cbcadd3bb07898ed3ba08730e4a9084de3debc1f5ef6d3647d1",
+    ),
+    (
+        "data/tlg0018/tlg007/tlg0018.tlg007.1st1K-grc1.xml",
+        "sha256:6a9258755ef3424179beea5dd8f70a21ebd1734a8f61a07ed7cd0d872b1dffde",
+    ),
+    (
+        "data/tlg0018/tlg008/tlg0018.tlg008.1st1K-grc1.xml",
+        "sha256:e465ef5e4e88010e981ccd00cd01ab534925af95f7b5a287a1eaec5c656b125d",
+    ),
+)
+
 FETCH_RETRIES = 5
 
 
@@ -243,6 +303,121 @@ def download_swete_lxx(
     return dest
 
 
+def download_strongs_greek(
+    downloads_dir: Path,
+    *,
+    manifests_dir: Path,
+    force: bool = False,
+) -> Path:
+    """Download pinned Strong's Greek Dictionary XML (CC0-1.0)."""
+    manifest = load_manifest(manifests_dir / "strongs-greek.json")
+    dest = downloads_dir / "strongs-greek" / STRONGS_XML_FILENAME
+    if dest.is_file() and not force:
+        verify_checksum(dest, manifest.checksum)
+    else:
+        _fetch(STRONGS_XML_URL, dest)
+        verify_checksum(dest, manifest.checksum)
+    return dest
+
+
+def download_apostolic_fathers(
+    downloads_dir: Path,
+    *,
+    manifests_dir: Path,
+    force: bool = False,
+) -> Path:
+    """Clone pinned jtauber/apostolic-fathers and verify 1 Clement checksum."""
+    manifest = load_manifest(manifests_dir / "apostolic-fathers.json")
+    dest = downloads_dir / "apostolic-fathers"
+    _clone_pinned_repo(
+        APOSTOLIC_FATHERS_GIT_URL,
+        APOSTOLIC_FATHERS_COMMIT_SHA,
+        dest,
+        force=force,
+    )
+    verify_checksum(dest / APOSTOLIC_FATHERS_PIN_REL, manifest.checksum)
+    return dest
+
+
+def download_first1k_koine_prose(
+    downloads_dir: Path,
+    *,
+    manifests_dir: Path,
+    force: bool = False,
+) -> Path:
+    """Download pinned Epictetus & Philo TEI-XML files from First1KGreek."""
+    manifest = load_manifest(manifests_dir / "first1k-koine-prose.json")
+    dest_dir = downloads_dir / "first1k-koine-prose"
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    for rel_path, expected_sha in FIRST1K_PINNED_FILES:
+        fname = Path(rel_path).name
+        dst = dest_dir / fname
+        if dst.is_file() and not force:
+            verify_checksum(dst, expected_sha)
+        else:
+            url = (
+                f"https://raw.githubusercontent.com/OpenGreekAndLatin/"
+                f"First1KGreek/{FIRST1K_COMMIT_SHA}/{rel_path}"
+            )
+            _fetch(url, dst)
+            verify_checksum(dst, expected_sha)
+    verify_checksum(dest_dir / "tlg0018.tlg001.1st1K-grc1.xml", manifest.checksum)
+    return dest_dir
+
+
+def download_scriptorium_apophthegmata(
+    downloads_dir: Path,
+    *,
+    manifests_dir: Path,
+    force: bool = False,
+) -> Path:
+    """Sparse-checkout pinned CopticScriptorium v6.2.0 AP/*.tt files."""
+    manifest = load_manifest(manifests_dir / "scriptorium-apophthegmata.json")
+    dest = downloads_dir / "apophthegmata-patrum"
+    pin_path = dest / APOPHTHEGMATA_PIN_REL
+    if pin_path.is_file() and not force:
+        verify_checksum(pin_path, manifest.checksum)
+        return dest
+    if dest.exists():
+        shutil.rmtree(dest)
+    dest.mkdir(parents=True, exist_ok=True)
+    try:
+        subprocess.run(["git", "init", "-q"], cwd=dest, check=True)
+        subprocess.run(
+            ["git", "remote", "add", "origin", APOPHTHEGMATA_GIT_URL],
+            cwd=dest,
+            check=True,
+        )
+        subprocess.run(
+            ["git", "config", "core.sparseCheckout", "true"], cwd=dest, check=True
+        )
+        (dest / ".git" / "info" / "sparse-checkout").write_text(
+            "AP/README.md\nAP/apophthegmata.patrum_TT/\n", encoding="utf-8"
+        )
+        subprocess.run(
+            [
+                "git",
+                "fetch",
+                "-q",
+                "--depth",
+                "1",
+                "--filter=blob:none",
+                "origin",
+                APOPHTHEGMATA_COMMIT_SHA,
+            ],
+            cwd=dest,
+            check=True,
+        )
+        subprocess.run(
+            ["git", "checkout", "-q", "--force", "FETCH_HEAD"], cwd=dest, check=True
+        )
+    except (subprocess.SubprocessError, OSError) as exc:
+        msg = f"sparse git checkout failed for AP @ {APOPHTHEGMATA_COMMIT_SHA}: {exc}"
+        raise DownloadError(msg) from exc
+    verify_checksum(pin_path, manifest.checksum)
+    return dest
+
+
 def download_all_sources(
     repo_root: Path,
     *,
@@ -269,6 +444,18 @@ def download_all_sources(
             downloads_dir, manifests_dir=manifests_dir, force=force
         ),
         "swete_lxx": download_swete_lxx(
+            downloads_dir, manifests_dir=manifests_dir, force=force
+        ),
+        "strongs_greek": download_strongs_greek(
+            downloads_dir, manifests_dir=manifests_dir, force=force
+        ),
+        "apostolic_fathers": download_apostolic_fathers(
+            downloads_dir, manifests_dir=manifests_dir, force=force
+        ),
+        "first1k_koine_prose": download_first1k_koine_prose(
+            downloads_dir, manifests_dir=manifests_dir, force=force
+        ),
+        "scriptorium_apophthegmata": download_scriptorium_apophthegmata(
             downloads_dir, manifests_dir=manifests_dir, force=force
         ),
     }
