@@ -24,13 +24,29 @@ The committed unit has `unit_id`, `coptic_source_id`, `greek_text`, and `tokens`
 
 ## What model-v3 emitted
 
-model-v3 stores one Greek sentence for this unit, plus the token list below. The committed unit has no span records and no abstention field. The fenced block in the Greek sentence section is `greek_text`. It is the token `surface` values joined by single spaces, in `seq` order.
+model-v3 stores one Greek sentence for this unit, plus the token list below. The committed unit has no span records. The fenced block in the Greek sentence section is `greek_text`. It is the token `surface` values joined by single spaces, in `seq` order.
 
-The alignment table walks the 42 Coptic morphemes in that stored order. Where one or more Greek tokens list that index in `coptic_seqs`, the cell shows those surfaces in token-seq order, with the token `seq` in parentheses. Where no token lists the index, the cell says `abstain`. That word is an explicit abstention for this review: the committed output assigns that Coptic index no Greek token.
+Each Greek token stores one Coptic index in `coptic_seqs`. In `NeuralKoineDecoder._decode_chunk` (`python/zetodos_thomas/neural/decoder_v2.py`), that index is the top-1 cross-attention mass for the word. If that mass is empty, the decoder still stores one monotonic fallback index inside the chunk. On this unit every token has exactly one index. Twenty-seven Greek tokens can name at most 27 of the 42 morphemes. On this unit several tokens share an index, so 23 morphemes have no pointer. The file does not store a null for those morphemes.
 
-Several tokens can share one index, and token order is not Coptic order, so the Greek column is not a second sentence. Reading it from top to bottom does not rebuild `greek_text`.
+A dash in the Greek column means no stored token lists that index. The reading column sorts those 23 gaps. They are not one class:
 
-The stored pointers are not a one-to-one gloss. Token 0 `λέγει` lists Coptic index 3 (`ⲙⲁⲕⲁⲣⲓⲟⲥ`). Tokens 1 and 2, `ὁ` and `Ἰησοῦς`, list Coptic index 1 (`ⲓⲏⲥⲟⲩⲥ`). Coptic index 0 (`ⲡⲉϫⲉ`) is `abstain`. Those pointers are copied as stored.
+- **absorbed** — an analytic morpheme in a bound group whose inflected Greek word is in the sentence. Sahidic splits that word across the group (`ⲡ`+`ⲙⲟⲩⲓ`, `ⲛⲁ`+`ⲟⲩⲟⲙ`+`ϥ`, `ⲡⲁⲓ`+`ⲉⲧⲉ`, `ⲛϭⲓ`+`ⲡ`+`ⲣⲱⲙⲉ`, and the copula `ⲡⲉ` beside `ⲙⲁⲕⲁⲣⲓⲟⲥ`). The single pointer sits on one member of the group.
+- **pointer drift** — the Greek word is in the sentence, and its single top-1 index names a different morpheme. Token 0 `λέγει` lists index 3 `ⲙⲁⲕⲁⲣⲓⲟⲥ`, so index 0 `ⲡⲉϫⲉ` has no pointer.
+- **omitted** — index 41 `ⲣⲱⲙⲉ` only. No Greek token remains for that noun. The sentence ends at `ἔσται`.
+- Index 24 is the Dilley dot. It is punctuation, not the omitted noun.
+
+Token order is not Coptic order, so the Greek column is not a second sentence. Reading it from top to bottom does not rebuild `greek_text`. The pointers below are copied as stored.
+
+## Visible defects in the stored alignment
+
+The Greek text is the committed sentence in the Greek sentence section. These four mappings are what that sentence and its `coptic_seqs` show:
+
+| What is visible | Stored alignment |
+| --- | --- |
+| Final `ⲣⲱⲙⲉ` omitted | Index 41 has no Greek token. The sentence ends `καί ὁ λέων ἔσται`. |
+| `ⲃⲏⲧ` → `ἐβλασφήμησεν` | Index 23 is pointed by token 16 `ἐβλασφήμησεν` (and token 15 `καί`). |
+| `ϣⲱⲡⲉ ⲛ ⲣⲱⲙⲉ` → `τῶν ἀνθρώπων` | Index 18 `ϣⲱⲡⲉ` is pointed by `ἔσται` (10), index 19 `ⲛ` by `τῶν` (13), index 20 `ⲣⲱⲙⲉ` by `ἀνθρώπων` (14). |
+| `λέγει` → `ⲙⲁⲕⲁⲣⲓⲟⲥ` | Token 0 `λέγει` lists index 3 `ⲙⲁⲕⲁⲣⲓⲟⲥ`. Index 0 `ⲡⲉϫⲉ` has no pointer. |
 
 `provenance` is the stored code on each token (`L` loanword, `N` NT bitext, as on the generated-token schema). `confidence` is the stored number.
 
@@ -60,52 +76,52 @@ Analysis `normalized_text` (42 morphemes; this is the string the decoder copies 
 
 ## Alignment
 
-| Coptic seq | norm | lemma | pos | model-v3 Greek |
-| ---: | --- | --- | --- | --- |
-| 0 | ⲡⲉϫⲉ | ⲡⲉϫⲉ | VBD | abstain |
-| 1 | ⲓⲏⲥⲟⲩⲥ | ⲓⲏⲥⲟⲩⲥ | NPROP | ὁ (1); Ἰησοῦς (2) |
-| 2 | ⲟⲩ | ⲟⲩ | ART | abstain |
-| 3 | ⲙⲁⲕⲁⲣⲓⲟⲥ | ⲙⲁⲕⲁⲣⲓⲟⲥ | N | λέγει (0); μακάριος (3) |
-| 4 | ⲡⲉ | ⲡⲉ | COP | abstain |
-| 5 | ⲡ | ⲡ | ART | abstain |
-| 6 | ⲙⲟⲩⲓ | ⲙⲟⲩⲓ | N | ὁ (4); λέων (5) |
-| 7 | ⲡⲁⲓ | ⲡⲁⲓ | PDEM | ὅς (6) |
-| 8 | ⲉⲧⲉ | ⲉⲧⲉⲣⲉ | CREL | abstain |
-| 9 | ⲡ | ⲡ | ART | abstain |
-| 10 | ⲣⲱⲙⲉ | ⲣⲱⲙⲉ | N | abstain |
-| 11 | ⲛⲁ | ⲛⲁ | FUT | abstain |
-| 12 | ⲟⲩⲟⲙ | ⲟⲩⲱⲙ | V | φάγεται (7) |
-| 13 | ϥ | ⲛⲧⲟϥ | PPERO | abstain |
-| 14 | ⲁⲩⲱ | ⲁⲩⲱ | CONJ | ἄνθρωπος (8); καί (9) |
-| 15 | ⲛⲧⲉ | ⲛⲧⲉ | ACONJ | abstain |
-| 16 | ⲡ | ⲡ | ART | abstain |
-| 17 | ⲙⲟⲩⲓ | ⲙⲟⲩⲓ | N | ὁ (11); λέων (12) |
-| 18 | ϣⲱⲡⲉ | ϣⲱⲡⲉ | V | ἔσται (10) |
-| 19 | ⲛ | ⲛ | PREP | τῶν (13) |
-| 20 | ⲣⲱⲙⲉ | ⲣⲱⲙⲉ | N | ἀνθρώπων (14) |
-| 21 | ⲁⲩⲱ | ⲁⲩⲱ | CONJ | abstain |
-| 22 | ϥ | ⲛⲧⲟϥ | PPERS | abstain |
-| 23 | ⲃⲏⲧ | ⲃⲱⲧⲉ | VSTAT | καί (15); ἐβλασφήμησεν (16) |
-| 24 | · | · | PUNCT | abstain |
-| 25 | ⲛϭⲓ | ⲛϭⲓ | PTC | abstain |
-| 26 | ⲡ | ⲡ | ART | ὁ (17) |
-| 27 | ⲣⲱⲙⲉ | ⲣⲱⲙⲉ | N | ἄνθρωπος (18) |
-| 28 | ⲡⲁⲓ | ⲡⲁⲓ | PDEM | ὅν (19) |
-| 29 | ⲉⲧⲉ | ⲉⲧⲉⲣⲉ | CREL | abstain |
-| 30 | ⲡ | ⲡ | ART | abstain |
-| 31 | ⲙⲟⲩⲓ | ⲙⲟⲩⲓ | N | λέων (22) |
-| 32 | ⲛⲁ | ⲛⲁ | FUT | abstain |
-| 33 | ⲟⲩⲟⲙ | ⲟⲩⲱⲙ | V | φάγεται (20); ὁ (21) |
-| 34 | ϥ | ⲛⲧⲟϥ | PPERO | abstain |
-| 35 | ⲁⲩⲱ | ⲁⲩⲱ | CONJ | καί (23) |
-| 36 | ⲡ | ⲡ | ART | abstain |
-| 37 | ⲙⲟⲩⲓ | ⲙⲟⲩⲓ | N | ὁ (24); λέων (25) |
-| 38 | ⲛⲁ | ⲛⲁ | FUT | abstain |
-| 39 | ϣⲱⲡⲉ | ϣⲱⲡⲉ | V | abstain |
-| 40 | ⲣ | ⲛ | PREP | ἔσται (26) |
-| 41 | ⲣⲱⲙⲉ | ⲣⲱⲙⲉ | N | abstain |
+| Coptic seq | norm | lemma | pos | stored Greek pointer | reading |
+| ---: | --- | --- | --- | --- | --- |
+| 0 | ⲡⲉϫⲉ | ⲡⲉϫⲉ | VBD | — | pointer drift: `λέγει` (0) points at 3 |
+| 1 | ⲓⲏⲥⲟⲩⲥ | ⲓⲏⲥⲟⲩⲥ | NPROP | ὁ (1); Ἰησοῦς (2) | pointed |
+| 2 | ⲟⲩ | ⲟⲩ | ART | — | absorbed: article of `ⲙⲁⲕⲁⲣⲓⲟⲥ` (3) |
+| 3 | ⲙⲁⲕⲁⲣⲓⲟⲥ | ⲙⲁⲕⲁⲣⲓⲟⲥ | N | λέγει (0); μακάριος (3) | pointed |
+| 4 | ⲡⲉ | ⲡⲉ | COP | — | absorbed: copula beside `μακάριος` (3) |
+| 5 | ⲡ | ⲡ | ART | — | absorbed: article of `ⲙⲟⲩⲓ` (6) |
+| 6 | ⲙⲟⲩⲓ | ⲙⲟⲩⲓ | N | ὁ (4); λέων (5) | pointed |
+| 7 | ⲡⲁⲓ | ⲡⲁⲓ | PDEM | ὅς (6) | pointed |
+| 8 | ⲉⲧⲉ | ⲉⲧⲉⲣⲉ | CREL | — | absorbed: relative marker of `ⲡⲁⲓ` (7) |
+| 9 | ⲡ | ⲡ | ART | — | absorbed: article of `ⲣⲱⲙⲉ` (10) |
+| 10 | ⲣⲱⲙⲉ | ⲣⲱⲙⲉ | N | — | pointer drift: `ἄνθρωπος` (8) points at 14 |
+| 11 | ⲛⲁ | ⲛⲁ | FUT | — | absorbed: future of `φάγεται` (7) on 12 |
+| 12 | ⲟⲩⲟⲙ | ⲟⲩⲱⲙ | V | φάγεται (7) | pointed |
+| 13 | ϥ | ⲛⲧⲟϥ | PPERO | — | absorbed: object pronoun of `φάγεται` (7) |
+| 14 | ⲁⲩⲱ | ⲁⲩⲱ | CONJ | ἄνθρωπος (8); καί (9) | pointed |
+| 15 | ⲛⲧⲉ | ⲛⲧⲉ | ACONJ | — | absorbed: conjunctive auxiliary of `ϣⲱⲡⲉ` (18) |
+| 16 | ⲡ | ⲡ | ART | — | absorbed: article of `ⲙⲟⲩⲓ` (17) |
+| 17 | ⲙⲟⲩⲓ | ⲙⲟⲩⲓ | N | ὁ (11); λέων (12) | pointed |
+| 18 | ϣⲱⲡⲉ | ϣⲱⲡⲉ | V | ἔσται (10) | pointed |
+| 19 | ⲛ | ⲛ | PREP | τῶν (13) | pointed |
+| 20 | ⲣⲱⲙⲉ | ⲣⲱⲙⲉ | N | ἀνθρώπων (14) | pointed |
+| 21 | ⲁⲩⲱ | ⲁⲩⲱ | CONJ | — | pointer drift: `καί` (15) points at 23 |
+| 22 | ϥ | ⲛⲧⲟϥ | PPERS | — | absorbed: subject pronoun of `ⲃⲏⲧ` (23) |
+| 23 | ⲃⲏⲧ | ⲃⲱⲧⲉ | VSTAT | καί (15); ἐβλασφήμησεν (16) | pointed |
+| 24 | · | · | PUNCT | — | punctuation |
+| 25 | ⲛϭⲓ | ⲛϭⲓ | PTC | — | absorbed: subject marker; `ὁ ἄνθρωπος` points at 26–27 |
+| 26 | ⲡ | ⲡ | ART | ὁ (17) | pointed |
+| 27 | ⲣⲱⲙⲉ | ⲣⲱⲙⲉ | N | ἄνθρωπος (18) | pointed |
+| 28 | ⲡⲁⲓ | ⲡⲁⲓ | PDEM | ὅν (19) | pointed |
+| 29 | ⲉⲧⲉ | ⲉⲧⲉⲣⲉ | CREL | — | absorbed: relative marker of `ⲡⲁⲓ` (28) |
+| 30 | ⲡ | ⲡ | ART | — | absorbed: article of `ⲙⲟⲩⲓ` (31) |
+| 31 | ⲙⲟⲩⲓ | ⲙⲟⲩⲓ | N | λέων (22) | pointed |
+| 32 | ⲛⲁ | ⲛⲁ | FUT | — | absorbed: future of `φάγεται` (20) on 33 |
+| 33 | ⲟⲩⲟⲙ | ⲟⲩⲱⲙ | V | φάγεται (20); ὁ (21) | pointed |
+| 34 | ϥ | ⲛⲧⲟϥ | PPERO | — | absorbed: object pronoun of `φάγεται` (20) |
+| 35 | ⲁⲩⲱ | ⲁⲩⲱ | CONJ | καί (23) | pointed |
+| 36 | ⲡ | ⲡ | ART | — | absorbed: article of `ⲙⲟⲩⲓ` (37) |
+| 37 | ⲙⲟⲩⲓ | ⲙⲟⲩⲓ | N | ὁ (24); λέων (25) | pointed |
+| 38 | ⲛⲁ | ⲛⲁ | FUT | — | absorbed: future of `ϣⲱⲡⲉ` (39) |
+| 39 | ϣⲱⲡⲉ | ϣⲱⲡⲉ | V | — | pointer drift: `ἔσται` (26) points at 40 |
+| 40 | ⲣ | ⲛ | PREP | ἔσται (26) | pointed |
+| 41 | ⲣⲱⲙⲉ | ⲣⲱⲙⲉ | N | — | omitted |
 
-19 Coptic indexes have at least one Greek token. 23 are `abstain`.
+19 Coptic indexes have at least one Greek token. Of the 23 with no pointer, 17 are absorbed, 4 are pointer drift, 1 is punctuation, and 1 (index 41) is omitted.
 
 ## Greek tokens as stored
 
