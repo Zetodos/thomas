@@ -17,11 +17,13 @@ from zetodos_thomas.neural.accent_restorer import (
     KoineAccentRestorer,
     _normalized_sentence,
     _recessive_accent_fallback,
+    excluded_nt_lowercase_ngrams,
     shares_holdout_greek_ngram,
     strip_greek_to_bare,
 )
 from zetodos_thomas.neural.corpus import normalize_greek_unit_target
 from zetodos_thomas.schemas.holdout import PassageRole
+from zetodos_thomas.schemas.linguistic import GreekMorphFeatures, GreekToken, GreekUnit
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DOWNLOADS = REPO_ROOT / "data" / "downloads"
@@ -48,6 +50,61 @@ def test_shares_holdout_greek_ngram_matches_movable_nu_and_capital() -> None:
         "ὁ λόγος ἦν πρὸς τὸν θεόν, ἐν ἀρχῇ τῆς ζωῆς.",
         blocked,
     )
+
+
+def _greek_unit(uid: str, words: str) -> GreekUnit:
+    tokens = [
+        GreekToken(
+            id=f"{uid}.{seq}",
+            unit_id=uid,
+            seq=seq,
+            surface=word,
+            normalized=word,
+            lemma=word,
+            morph=GreekMorphFeatures.from_morphgnt("N-", "----NSN-"),
+        )
+        for seq, word in enumerate(words.split())
+    ]
+    return GreekUnit(
+        unit_id=uid,
+        source_id="morphgnt-sblgnt",
+        book="matthew",
+        chapter=1,
+        verse=1,
+        original_text=words,
+        normalized_text=words,
+        tokens=tokens,
+    )
+
+
+def test_excluded_nt_lowercase_ngrams_uses_only_caller_ids() -> None:
+    hold = _greek_unit(
+        "matthew.5.3",
+        "μακάριοι οἱ πτωχοί τῷ πνεύματι ὅτι αὐτῶν ἐστίν ἡ βασιλεία",
+    )
+    dev = _greek_unit("john.3.16", "οὕτως γὰρ ἠγάπησεν ὁ θεὸς τὸν κόσμον ὅλον")
+    train = _greek_unit("john.1.1", "ἐν ἀρχῇ ἦν ὁ λόγος καὶ ὁ λόγος ἦν θεός")
+    units = {unit.unit_id: unit for unit in (hold, dev, train)}
+    blocked = excluded_nt_lowercase_ngrams(
+        units, ["matthew.5.3", "john.3.16", "missing.1.1"]
+    )
+    assert shares_holdout_greek_ngram(
+        "ὅτι αὐτῶν ἐστίν ἡ βασιλεία τῶν οὐρανῶν ἐστίν", blocked
+    )
+    assert shares_holdout_greek_ngram(
+        "οὕτως γὰρ ἠγάπησεν ὁ θεὸς τὸν κόσμον ὅλον ἔδωκεν", blocked
+    )
+    assert not shares_holdout_greek_ngram(
+        "ἐν ἀρχῇ ἦν ὁ λόγος καὶ ὁ λόγος ἦν θεός ἀληθῶς", blocked
+    )
+    source = (
+        Path(__file__).resolve().parents[1]
+        / "python"
+        / "zetodos_thomas"
+        / "neural"
+        / "accent_restorer.py"
+    ).read_text(encoding="utf-8")
+    assert "resolve_nt_split_path" not in source
 
 
 def test_strip_greek_to_bare_and_recessive_fallback() -> None:

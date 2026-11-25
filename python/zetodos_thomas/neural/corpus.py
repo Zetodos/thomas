@@ -19,6 +19,7 @@ from pathlib import Path
 from zetodos_thomas.ingest.apophthegmata import load_apophthegmata_corpus
 from zetodos_thomas.ingest.download import STRONGS_XML_FILENAME
 from zetodos_thomas.ingest.holdouts import (
+    all_excluded_nt_ids,
     assert_clean_training_unit,
     clean_nt_train_ids,
     greek_token_ngrams,
@@ -556,19 +557,21 @@ def select_patristic_training_sentences(
     sentences: Iterable[tuple[str, str]],
     *,
     seen_exact: Collection[str],
-    holdout_verses: Iterable[str],
+    excluded_verses: Iterable[str],
     unaccented: bool = False,
 ) -> list[str]:
     """Return patristic Greek kept for the language model and back-translation.
 
     Drops an empty line, a line under five tokens, an exact duplicate of other
-    clean Greek, and any sentence that shares a whitespace token 5-gram with an
-    NT holdout verse. Holdout text is not in the exact-duplicate pool.
-    Comparison is lowercase after model normalization, so MorphGNT movable-nu
-    parentheses and a sentence-initial capital still count as the same tokens.
+    clean Greek, and any sentence that shares a whitespace token 5-gram with
+    an excluded NT verse. ``excluded_verses`` is the MorphGNT training
+    exclusion set: holdout, dev, and synoptic parallels when that flag is on.
+    Those verses are not in the exact-duplicate pool. Comparison is lowercase
+    after model normalization, so MorphGNT movable-nu parentheses and a
+    sentence-initial capital still count as the same tokens.
     """
     blocked: set[str] = set()
-    for verse in holdout_verses:
+    for verse in excluded_verses:
         normalized = normalize_greek_for_model(verse, unaccented=unaccented)
         if normalized:
             blocked.update(greek_token_ngrams(normalized.lower()))
@@ -737,24 +740,27 @@ def build_parallel_corpus_bundle(
     swete_unaligned_greek = [g for g in swete_unaligned_greek if g not in aligned_g_set]
 
     # Optional v3: Patristic & 1st-c. Koine prose (Apostolic Fathers, Epictetus, Philo).
-    # Exact-string dedupe never sees holdout Greek. Drop shared token 5-grams.
+    # Exact-string dedupe never sees holdout or dev Greek. Drop shared 5-grams
+    # against the same NT ids MorphGNT training excludes.
     patristic_greek: list[str] = []
     if include_patristics:
-        holdout_verses: list[str] = []
-        for passage in split.passages:
-            if passage.role is not PassageRole.HOLDOUT:
+        excluded_ids = all_excluded_nt_ids(
+            split,
+            include_dev=True,
+            exclude_synoptic_thomas=exclude_synoptic_thomas,
+        )
+        excluded_verses: list[str] = []
+        for uid in sorted(excluded_ids):
+            unit = morphgnt_all.get(uid)
+            if unit is None:
                 continue
-            for uid in passage.unit_ids:
-                unit = morphgnt_all.get(uid)
-                if unit is None:
-                    continue
-                text = _fmt_g(unit)
-                if text:
-                    holdout_verses.append(text)
+            text = _fmt_g(unit)
+            if text:
+                excluded_verses.append(text)
         patristic_greek = select_patristic_training_sentences(
             load_all_patristic_koine_sentences(downloads_dir),
             seen_exact=all_clean_greek,
-            holdout_verses=holdout_verses,
+            excluded_verses=excluded_verses,
             unaccented=unaccented_target,
         )
         all_clean_greek.extend(patristic_greek)

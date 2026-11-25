@@ -339,7 +339,7 @@ def test_select_patristic_training_sentences_drops_holdout_5grams() -> None:
     kept = select_patristic_training_sentences(
         [*_PATRISTIC_HITS, control, near_miss, ("af.short", "καί ὁ λόγος")],
         seen_exact=set(),
-        holdout_verses=_HOLDOUT_VERSES,
+        excluded_verses=_HOLDOUT_VERSES,
     )
     assert kept == [
         normalize_greek_target(control[1]),
@@ -348,6 +348,21 @@ def test_select_patristic_training_sentences_drops_holdout_5grams() -> None:
     again = select_patristic_training_sentences(
         [control],
         seen_exact={normalize_greek_target(control[1])},
-        holdout_verses=(),
+        excluded_verses=(),
     )
     assert again == []
+
+
+def test_select_patristic_training_sentences_drops_dev_5grams() -> None:
+    dev_verse = "μακάριοι οἱ πραεῖς ὅτι αὐτοὶ κληρονομήσουσιν τὴν γῆν"
+    hit = (
+        "af.dev",
+        "καὶ μακάριοι οἱ πραεῖς, ὅτι αὐτοὶ κληρονομήσουσιν τὴν γῆν σήμερον.",
+    )
+    control = ("af.control", "ὁ λόγος ἦν πρὸς τὸν θεόν, ἐν ἀρχῇ τῆς ζωῆς.")
+    kept = select_patristic_training_sentences(
+        [*_PATRISTIC_HITS, hit, control],
+        seen_exact=set(),
+        excluded_verses=[*_HOLDOUT_VERSES, dev_verse],
+    )
+    assert kept == [normalize_greek_target(control[1])]
