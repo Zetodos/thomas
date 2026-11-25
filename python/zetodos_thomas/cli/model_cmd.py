@@ -1589,6 +1589,9 @@ def build_model_v3(
             "apop_unit_count": len(bundle.apop_coptic_units),
             "use_patristic_bt": use_patristic_bt,
             "swete_bt_count": len(swete_bt_pairs),
+            # Frozen model-v3 keeps 10479 here: the pre-filter pair count.
+            # The next build writes the count after holdout and dev 5-gram
+            # exclusion. Do not edit that frozen number in place.
             "patristic_bt_count": len(patristic_bt_pairs),
             "train_lm": train_lm,
             "use_v1_draft": use_v1_draft,

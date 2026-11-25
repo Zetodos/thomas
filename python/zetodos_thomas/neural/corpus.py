@@ -12,16 +12,19 @@ import random
 import re
 import unicodedata
 from collections import Counter
-from collections.abc import Mapping, Sequence
+from collections.abc import Collection, Iterable, Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
 from zetodos_thomas.ingest.apophthegmata import load_apophthegmata_corpus
 from zetodos_thomas.ingest.download import STRONGS_XML_FILENAME
 from zetodos_thomas.ingest.holdouts import (
+    all_excluded_nt_ids,
     assert_clean_training_unit,
     clean_nt_train_ids,
+    greek_token_ngrams,
     load_nt_split,
+    shares_greek_token_ngram,
 )
 from zetodos_thomas.ingest.koine_patristics import load_all_patristic_koine_sentences
 from zetodos_thomas.ingest.morphgnt import load_morphgnt_nt, pair_horner_morphgnt
@@ -550,6 +553,41 @@ def _extract_clause_subpairs(
     return out
 
 
+def select_patristic_training_sentences(
+    sentences: Iterable[tuple[str, str]],
+    *,
+    seen_exact: Collection[str],
+    excluded_verses: Iterable[str],
+    unaccented: bool = False,
+) -> list[str]:
+    """Return patristic Greek kept for the language model and back-translation.
+
+    Drops an empty line, a line under five tokens, an exact duplicate of other
+    clean Greek, and any sentence that shares a whitespace token 5-gram with
+    an excluded NT verse. ``excluded_verses`` is the MorphGNT training
+    exclusion set: holdout, dev, and synoptic parallels when that flag is on.
+    Those verses are not in the exact-duplicate pool. Comparison is lowercase
+    after model normalization, so MorphGNT movable-nu parentheses and a
+    sentence-initial capital still count as the same tokens.
+    """
+    blocked: set[str] = set()
+    for verse in excluded_verses:
+        normalized = normalize_greek_for_model(verse, unaccented=unaccented)
+        if normalized:
+            blocked.update(greek_token_ngrams(normalized.lower()))
+    seen = set(seen_exact)
+    kept: list[str] = []
+    for _uid, raw in sentences:
+        greek = normalize_greek_for_model(raw, unaccented=unaccented)
+        if not greek or len(greek.split()) < 5 or greek in seen:
+            continue
+        if shares_greek_token_ngram(greek.lower(), blocked):
+            continue
+        seen.add(greek)
+        kept.append(greek)
+    return kept
+
+
 def build_parallel_corpus_bundle(
     *,
     downloads_dir: Path,
@@ -565,7 +603,11 @@ def build_parallel_corpus_bundle(
     include_gloss_bridge: bool = False,
     target_tag: str | None = None,
 ) -> ParallelCorpusBundle:
-    """Load leak-free NT train/dev, OT x Swete, Swete mono, CCL & v3 corpora."""
+    """Load leak-free NT train/dev, OT x Swete, Swete mono, CCL and v3 corpora.
+
+    Patristic sentences that share a Greek 5-gram with an NT holdout verse are
+    omitted. Exact-string dedupe cannot see those verses.
+    """
     split = load_nt_split(split_path)
     train_ids = clean_nt_train_ids(
         split, exclude_synoptic_thomas=exclude_synoptic_thomas
@@ -697,17 +739,31 @@ def build_parallel_corpus_bundle(
     aligned_g_set = {ex.greek_target for ex in ot_train}
     swete_unaligned_greek = [g for g in swete_unaligned_greek if g not in aligned_g_set]
 
-    # Optional v3: Patristic & 1st-c. Koine prose (Apostolic Fathers, Epictetus, Philo)
+    # Optional v3: Patristic & 1st-c. Koine prose (Apostolic Fathers, Epictetus, Philo).
+    # Exact-string dedupe never sees holdout or dev Greek. Drop shared 5-grams
+    # against the same NT ids MorphGNT training excludes.
     patristic_greek: list[str] = []
     if include_patristics:
-        seen_pat = set(all_clean_greek)
-        for _uid, raw_sent in load_all_patristic_koine_sentences(downloads_dir):
-            g_txt = normalize_greek_for_model(raw_sent, unaccented=unaccented_target)
-            if not g_txt or len(g_txt.split()) < 5 or g_txt in seen_pat:
+        excluded_ids = all_excluded_nt_ids(
+            split,
+            include_dev=True,
+            exclude_synoptic_thomas=exclude_synoptic_thomas,
+        )
+        excluded_verses: list[str] = []
+        for uid in sorted(excluded_ids):
+            unit = morphgnt_all.get(uid)
+            if unit is None:
                 continue
-            seen_pat.add(g_txt)
-            patristic_greek.append(g_txt)
-            all_clean_greek.append(g_txt)
+            text = _fmt_g(unit)
+            if text:
+                excluded_verses.append(text)
+        patristic_greek = select_patristic_training_sentences(
+            load_all_patristic_koine_sentences(downloads_dir),
+            seen_exact=all_clean_greek,
+            excluded_verses=excluded_verses,
+            unaccented=unaccented_target,
+        )
+        all_clean_greek.extend(patristic_greek)
 
     # Optional v3: Sahidic Apophthegmata Patrum sayings + English translations
     apop_coptic_units: list[CopticUnit] = []

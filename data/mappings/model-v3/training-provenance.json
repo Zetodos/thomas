@@ -45,6 +45,7 @@
     "use_patristic_bt": true,
     "swete_bt_count": 20659,
     "patristic_bt_count": 10479,
+    "patristic_bt_count_note": "10479 is the pre-filter back-translation pair count from the pool that trained this frozen model-v3. Holdout and dev 5-gram exclusion applies on the next model build. This file is not a retrain, and this count is not rewritten in place.",
     "train_lm": true,
     "use_v1_draft": true,
     "include_v1": false
