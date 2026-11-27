@@ -15,7 +15,11 @@ from collections import Counter, defaultdict
 from collections.abc import Collection, Iterable
 from pathlib import Path
 
-from zetodos_thomas.ingest.holdouts import assert_clean_training_unit
+from zetodos_thomas.ingest.holdouts import (
+    assert_clean_training_unit,
+    greek_token_ngrams,
+    shares_greek_token_ngram,
+)
 from zetodos_thomas.ingest.koine_patristics import load_all_patristic_koine_sentences
 from zetodos_thomas.ingest.morphgnt import load_morphgnt_nt
 from zetodos_thomas.ingest.ot_swete import parse_swete_file
@@ -348,17 +352,22 @@ class KoineAccentRestorer:
 
         # 1. MorphGNT TRAIN (canonical Gospel accentuation & proper-noun priority)
         mg_units = load_morphgnt_nt(morphgnt_dir)
+        blocked_ngrams: set[str] = set()
         for uid, unit in sorted(mg_units.items()):
-            if uid in excluded:
-                continue
-            assert_clean_training_unit(
-                uid, source_id=unit.source_id, excluded_ids=excluded
-            )
             toks = [
                 (t.normalized or t.surface)
                 for t in unit.tokens
                 if t.morph.pos != "X-" and (t.normalized or t.surface)
             ]
+            if uid in excluded:
+                norm_excl = " ".join(
+                    w for w in (_normalize_polytonic_acute(t) for t in toks) if w
+                ).lower()
+                blocked_ngrams.update(greek_token_ngrams(norm_excl))
+                continue
+            assert_clean_training_unit(
+                uid, source_id=unit.source_id, excluded_ids=excluded
+            )
             _ingest_nt_tokens(toks)
 
         # 2. Swete LXX (fallback for non-NT vocabulary)
@@ -375,9 +384,17 @@ class KoineAccentRestorer:
                 for e in entries:
                     _ingest_aux_tokens((e.greek_lemma,))
 
-        # 4. Pinned Patristic & 1st-century Koine prose
+        # 4. Pinned Patristic & 1st-century Koine prose (minus excluded-NT 5-grams)
         if include_patristics and downloads_dir is not None:
             for _uid, sent in load_all_patristic_koine_sentences(downloads_dir):
+                if blocked_ngrams:
+                    norm_sent = " ".join(
+                        w
+                        for w in (_normalize_polytonic_acute(t) for t in sent.split())
+                        if w
+                    ).lower()
+                    if shares_greek_token_ngram(norm_sent, blocked_ngrams):
+                        continue
                 _ingest_aux_tokens(sent.split())
 
         # Unigram resolution: MorphGNT TRAIN wins when attested; else auxiliary

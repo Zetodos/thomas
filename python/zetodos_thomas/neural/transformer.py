@@ -32,6 +32,7 @@ class Seq2SeqConfig(BaseModel):
     unaccented_target: bool = False
     use_gloss_hints: bool = False
     use_target_lang_tag: bool = False
+    canonicalize_preps: bool = False
 
 
 class KoineCausalLMConfig(BaseModel):

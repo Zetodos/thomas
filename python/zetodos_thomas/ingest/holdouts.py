@@ -194,6 +194,18 @@ def greek_token_ngrams(text: str, order: int = GREEK_NGRAM_ORDER) -> set[str]:
     return {" ".join(tokens[i : i + order]) for i in range(len(tokens) - order + 1)}
 
 
+def shares_greek_token_ngram(
+    text: str,
+    blocked: Collection[str],
+    *,
+    order: int = GREEK_NGRAM_ORDER,
+) -> bool:
+    """Return True if ``text`` shares any normalized Greek n-gram with ``blocked``."""
+    if not blocked or not text:
+        return False
+    return bool(greek_token_ngrams(text, order=order).intersection(blocked))
+
+
 def cross_split_greek_ngram_leaks(
     split: NtCorpusSplit,
     greek_texts: Mapping[str, str],

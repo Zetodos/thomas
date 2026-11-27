@@ -254,7 +254,7 @@ def test_runtime_refusal_of_thomas_poxy_and_excluded_units() -> None:
         )
 
 
-@pytest.mark.parametrize("model_name", ("model-v1", "model-v2", "model-v3"))
+@pytest.mark.parametrize("model_name", ("model-v1", "model-v2", "model-v3", "model-v4"))
 def test_frozen_model_provenance_and_ccl_checksum(model_name: str) -> None:
     """Verify corpus split/CCL checksums and manifest-to-artifact digest consistency.
 
@@ -333,7 +333,7 @@ def test_real_thomas_and_fragment_corpora_refused_at_runtime() -> None:
         )
 
 
-@pytest.mark.parametrize("model_name", ("model-v1", "model-v2", "model-v3"))
+@pytest.mark.parametrize("model_name", ("model-v1", "model-v2", "model-v3", "model-v4"))
 def test_committed_ccl_and_idiom_tables_contain_no_manual_fallbacks(
     model_name: str, tmp_path: Path
 ) -> None:

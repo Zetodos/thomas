@@ -1906,6 +1906,175 @@ class GreekInflector:
 
         return _cap(norm_lem)
 
+    def all_inflected_forms(
+        self,
+        lemma: str,
+        pos: str | None = None,
+        *,
+        max_forms: int = 48,
+    ) -> list[str]:
+        """Return deterministic acute-only NFC inflected surface forms of ``lemma``.
+
+        Combines attested MorphGNT/Swete paradigm forms with regular Koine
+        declension/conjugation rules so lexically-constrained decoding can choose
+        the contextually right case/number/tense/voice/mood for rare loanwords
+        and proper nouns.
+        """
+        norm_lem = _nfc(lemma).strip()
+        if not norm_lem:
+            return []
+        bare_target = _bare_greek_key(norm_lem)
+        is_cap = bool(norm_lem and norm_lem[0].isupper())
+
+        def _norm_acute(w: str) -> str:
+            w = w.strip()
+            if not w:
+                return ""
+            nfd = unicodedata.normalize("NFD", w).replace("\u0300", "\u0301")
+            out = _nfc(nfd)
+            if len(out) > 1 and out.endswith("σ"):
+                out = out[:-1] + "ς"
+            if is_cap and out and out[0].isalpha():
+                out = _nfc(out[0].upper() + out[1:])
+            return out
+
+        forms: list[str] = []
+        seen: set[str] = set()
+
+        def _add(raw: str) -> None:
+            s = _norm_acute(raw)
+            if s and s not in seen:
+                seen.add(s)
+                forms.append(s)
+            # Also allow movable-nu variant on 3pl/dat-pl/3sg forms
+            bare_s = _bare_greek_key(s)
+            if bare_s.endswith(("ουσι", "ασι", "ωσι", "ειπε", "ελεγε", "εστι", "εσι")):
+                sn = s + "ν"
+                if sn not in seen:
+                    seen.add(sn)
+                    forms.append(sn)
+            elif bare_s.endswith(("ουσιν", "ασιν", "ωσιν", "εσιν")) and len(s) > 4:
+                s0 = s[:-1]
+                if s0 not in seen:
+                    seen.add(s0)
+                    forms.append(s0)
+
+        _add(norm_lem)
+
+        # 1. All attested empirical paradigm forms matching this lemma
+        for (p_lem, _sig), surf in self._paradigms.items():
+            if _bare_greek_key(p_lem) == bare_target:
+                _add(surf)
+        for surf, parses in self._surface_analyses.items():
+            for p_lem, _sig, _lp in parses[:1]:
+                if _bare_greek_key(p_lem) == bare_target:
+                    _add(surf)
+
+        # Determine effective coarse Greek POS
+        eff_pos = pos
+        if not eff_pos:
+            kl = self._known_lemmas.get(bare_target)
+            if kl is not None:
+                eff_pos = kl[1]
+            elif bare_target.endswith(("ω", "ομαι", "μι")):
+                eff_pos = "V-"
+            else:
+                eff_pos = "N-"
+
+        # 2. Synthesize regular Koine paradigm forms
+        if eff_pos in {"N-", "A-", "NPROP"}:
+            gnd = self.lemma_gender(norm_lem)
+            genders = (
+                ("M", "F", "N")
+                if (eff_pos == "A-" or bare_target.endswith("ος"))
+                else (gnd or "M",)
+            )
+            numbers = ("S",) if eff_pos == "NPROP" else ("S", "P")
+            for num in numbers:
+                for g in genders:
+                    for case in ("N", "G", "D", "A", "V"):
+                        inf = self.inflect(
+                            norm_lem,
+                            GreekMorphFeatures(
+                                pos="A-" if eff_pos == "A-" else "N-",
+                                case=case,
+                                number=num,
+                                gender=g,
+                            ),
+                        )
+                        _add(inf)
+                        if len(forms) >= max_forms:
+                            return forms[:max_forms]
+        elif eff_pos == "V-":
+            # High-utility Koine verbal forms: indicative, subjunctive, imperative,
+            # infinitive, and nominative/accusative/genitive participles
+            voices = ("M", "P") if bare_target.endswith("ομαι") else ("A", "M", "P")
+            # Infinitives & imperatives first (very frequent in sayings)
+            for t in ("P", "A"):
+                for v in voices:
+                    _add(
+                        self.inflect(
+                            norm_lem,
+                            GreekMorphFeatures(pos="V-", tense=t, voice=v, mood="N"),
+                        )
+                    )
+                    for num in ("S", "P"):
+                        _add(
+                            self.inflect(
+                                norm_lem,
+                                GreekMorphFeatures(
+                                    pos="V-",
+                                    person="2",
+                                    tense=t,
+                                    voice=v,
+                                    mood="D",
+                                    number=num,
+                                ),
+                            )
+                        )
+            # Participles (Masc/Fem/Neut Nom & Acc Sg/Pl)
+            for t in ("P", "A"):
+                for v in voices[:2]:
+                    for num in ("S", "P"):
+                        for case in ("N", "A", "G"):
+                            _add(
+                                self.inflect(
+                                    norm_lem,
+                                    GreekMorphFeatures(
+                                        pos="V-",
+                                        tense=t,
+                                        voice=v,
+                                        mood="P",
+                                        case=case,
+                                        number=num,
+                                        gender="M",
+                                    ),
+                                )
+                            )
+            # Finite Indicative & Subjunctive
+            for mood in ("I", "S"):
+                tenses = ("P", "A", "F") if mood == "I" else ("P", "A")
+                for t in tenses:
+                    for v in voices[:2]:
+                        for num in ("S", "P"):
+                            for per in ("3", "2", "1"):
+                                _add(
+                                    self.inflect(
+                                        norm_lem,
+                                        GreekMorphFeatures(
+                                            pos="V-",
+                                            person=per,
+                                            tense=t,
+                                            voice=v,
+                                            mood=mood,
+                                            number=num,
+                                        ),
+                                    )
+                                )
+                                if len(forms) >= max_forms:
+                                    return forms[:max_forms]
+        return forms[:max_forms]
+
     def save_shards(self, out_dir: Path, *, max_bytes: int = 680_000) -> list[Path]:
         """Serialize compact model tables under ``out_dir``, each file < 1024 KiB."""
         out_dir.mkdir(parents=True, exist_ok=True)

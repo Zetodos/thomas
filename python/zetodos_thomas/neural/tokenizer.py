@@ -30,6 +30,24 @@ class BilingualTokenizer:
         self.unk_id: int = int(sp.unk_id())
         self.vocab_size: int = int(sp.get_piece_size())
         self.mask_id: int = int(sp.piece_to_id("<MASK>"))
+        self._word_start_flags: list[bool] | None = None
+
+    def word_start_flags(self) -> list[bool]:
+        """Return bool flag per vocab ID indicating a word-initial ``▁`` piece."""
+        if self._word_start_flags is None:
+            flags = [False] * self.vocab_size
+            for tid in range(self.vocab_size):
+                if tid in {self.pad_id, self.bos_id, self.eos_id}:
+                    continue
+                piece = str(self._sp.id_to_piece(tid))
+                if piece.startswith("\u2581"):
+                    flags[tid] = True
+            self._word_start_flags = flags
+        return self._word_start_flags
+
+    def id_to_piece(self, tid: int) -> str:
+        """Return the raw SentencePiece string for token ID ``tid``."""
+        return str(self._sp.id_to_piece(int(tid)))
 
     @classmethod
     def train(

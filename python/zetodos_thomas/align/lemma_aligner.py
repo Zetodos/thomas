@@ -60,7 +60,7 @@ _COARSE_COPTIC_POS: dict[str, str] = {
     "N": "N",
     "NPROP": "N",
     "V": "V",
-    "VSTAT": "V",
+    "VSTAT": "VS",
     "VBD": "V",
     "VIMP": "V",
     "PREP": "P",
@@ -103,6 +103,7 @@ _COARSE_GREEK_POS: dict[str, str] = {
 _COMPATIBLE_GREEK_POS: dict[str, set[str]] = {
     "N": {"N-", "A-", "NPROP"},
     "V": {"V-", "A-"},
+    "VS": {"V-", "A-", "N-"},
     "A": {"D-", "A-", "C-"},
     "P": {"P-", "C-", "D-"},
     "D": {"RA", "RD", "A-", "RI"},
@@ -597,6 +598,8 @@ class LexicalTranslationModel:
 
         cpos = coarse_coptic_pos(coptic_pos)
         align_hits = self._by_lemma_pos.get((coptic_lemma, cpos))
+        if not align_hits and cpos == "VS":
+            align_hits = self._by_lemma_pos.get((coptic_lemma, "V"))
         if not align_hits:
             align_hits = self._by_lemma.get(coptic_lemma, [])
         orth_discount = 0.0
