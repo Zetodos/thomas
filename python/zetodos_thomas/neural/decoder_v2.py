@@ -18,6 +18,7 @@ from torch import Tensor
 
 from zetodos_thomas.align.lemma_aligner import LexicalTranslationModel
 from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon
+from zetodos_thomas.morphology.agreement import KoineAgreementCritic
 from zetodos_thomas.morphology.greek_inflector import GreekInflector
 from zetodos_thomas.neural.accent_restorer import (
     KoineAccentRestorer,
@@ -33,12 +34,15 @@ from zetodos_thomas.neural.constrained_beam import (
     build_missing_content_constraints,
     constrained_ensemble_beam_search,
     count_spurious_adjacent_word_repeats,
+    count_spurious_phrase_repeats,
     filter_hard_loan_hyps,
     has_local_loop_repeat,
     is_bare_coptic_copy_word,
+    satisfies_hard_loans,
     wu_attention_coverage_penalty,
 )
 from zetodos_thomas.neural.corpus import (
+    greekify_coptic,
     make_sub_coptic_unit,
     normalize_greek_for_model,
     normalize_greek_target,
@@ -79,6 +83,7 @@ class RerankWeights(BaseModel):
     w_bipartite_cov: float = 0.0
     w_attn_cov: float = 0.0
     w_under_len: float = 0.0
+    w_agree: float = 0.0
     len_alpha: float = 0.9
     beam_size: int = 8
     max_morphemes: int = 36
@@ -251,6 +256,9 @@ class NeuralKoineDecoder:
             for k_len in range(1, len(b_l) + 1):
                 known_prefixes.add(b_l[:k_len])
         self._known_bare_prefixes: frozenset[str] = frozenset(known_prefixes)
+        self.agreement_critic = KoineAgreementCritic(
+            self.inflector, self.paradigm_inflector
+        )
 
         for m in self.forward_models:
             m.to(self.device)
@@ -704,11 +712,13 @@ class NeuralKoineDecoder:
             under_pen = 0.0
             attn_cov = 0.0
             bare_copy_pen = 0.0
+            agree_pen = 0.0
             if g_txt and (
                 expected_loans
                 or draft_content_lems
                 or coptic_cand_sets
                 or abs(w.w_under_len) > 1e-6
+                or abs(w.w_agree) > 1e-6
                 or w.use_constrained_beam
             ):
                 g_lems: set[str] = set()
@@ -716,8 +726,13 @@ class NeuralKoineDecoder:
                 g_content_seq: list[str] = []
                 restored_cand = self._restore_surface_sentence(g_txt)
                 cand_words = restored_cand.split()
+                if abs(w.w_agree) > 1e-6 and cand_words:
+                    agree_pen = self.agreement_critic.agreement_penalty(cand_words)
                 if w.use_constrained_beam:
                     bare_copy_pen += 0.8 * count_spurious_adjacent_word_repeats(
+                        cand_words, morphemes
+                    )
+                    bare_copy_pen += 0.9 * count_spurious_phrase_repeats(
                         cand_words, morphemes
                     )
                 for gw in cand_words:
@@ -787,6 +802,7 @@ class NeuralKoineDecoder:
                 + w.w_bipartite_cov * bip_bonus
                 + w.w_attn_cov * attn_cov
                 - w.w_under_len * under_pen
+                - w.w_agree * agree_pen
                 - bare_copy_pen
             )
             ranked.append((seq, g_txt, total))
@@ -839,14 +855,36 @@ class NeuralKoineDecoder:
         for ab in allowed_bare:
             for k_len in range(1, len(ab) + 1):
                 allowed_prefixes.add(ab[:k_len])
-        chunk_has_nprop = any(m.pos == "NPROP" for m in morphemes)
+        known_prefixes = self._known_bare_prefixes
+        # Only exempt capitalized OOV proper nouns whose stem actually reflects
+        # an OOV chunk NPROP (not hallucinated capitalized non-words like `Καῖδα`
+        # when `Καῖσαρ` is already in `allowed_prefixes`).
+        oov_nprop_starts: set[str] = set()
+        for m in morphemes:
+            if m.pos != "NPROP":
+                continue
+            g_np = _strip_bare(greekify_coptic(normalize_coptic(m.lemma or m.norm)))
+            if (
+                len(g_np) >= 2
+                and g_np not in known_prefixes
+                and g_np not in allowed_prefixes
+            ):
+                oov_nprop_starts.add(g_np[:2])
         chunk_lems = {
             normalize_coptic(m.lemma or m.norm).replace("\u2cff", "") for m in morphemes
         }
         forbid_hemera = "ⲉϩⲉ" in chunk_lems and "ϩⲟⲟⲩ" not in chunk_lems
-        known_prefixes = self._known_bare_prefixes
         w_cache: dict[tuple[int, ...], float] = {}
         p_cache: dict[tuple[int, ...], float] = {}
+
+        def _is_oov_nprop_word(raw_w: str, bare_w: str) -> bool:
+            return (
+                bool(oov_nprop_starts)
+                and bool(raw_w)
+                and raw_w[0].isupper()
+                and len(bare_w) >= 2
+                and bare_w[:2] in oov_nprop_starts
+            )
 
         def _word_pen(w_tup: tuple[int, ...]) -> float:
             if not w_tup:
@@ -872,7 +910,7 @@ class NeuralKoineDecoder:
                 mf.pos == "UNK"
                 and b_lem not in allowed_bare
                 and b_surf not in allowed_bare
-                and not (word[0].isupper() and chunk_has_nprop)
+                and not _is_oov_nprop_word(word, b_surf)
             ):
                 pen -= 2.5
             w_cache[w_tup] = pen
@@ -895,7 +933,7 @@ class NeuralKoineDecoder:
             pen = 0.0
             if forbid_hemera and bare.startswith("ημερ"):
                 pen -= 8.0
-            elif chunk_has_nprop and raw[0].isupper():
+            elif _is_oov_nprop_word(raw, bare):
                 pen = 0.0
             elif bare not in known_prefixes and bare not in allowed_prefixes:
                 # Allow regular stem-suffix inflections (e.g. `κρυπτοῦ`) that
@@ -1123,6 +1161,49 @@ class NeuralKoineDecoder:
                             v1_candidate_text=v1_chunk_greek,
                             tok_to_seq=tok_to_seq,
                         )
+        # Safe targeted morphological agreement repair: propose verified 1-edit
+        # inflected candidates from the top-2 hypotheses and re-score jointly
+        # with the full noisy-channel ensemble + Koine LM + agreement critic.
+        if self.weights.w_agree > 0.0 and ranked and ranked[0][1]:
+            ws_flags = self.tokenizer.word_start_flags()
+            has_hl = any(ct.is_hard_loan for ct in constraints)
+            rep_pool: list[tuple[list[int], float]] = [
+                (seq, sc) for seq, _txt, sc in ranked[:6]
+            ]
+            seen_rep = {tuple(s) for s, _ in rep_pool}
+            added_any = False
+            for _seq, r_txt, r_sc in ranked[:2]:
+                if not r_txt:
+                    continue
+                r_words = self._restore_surface_sentence(r_txt).split()
+                for fixed_words in self.agreement_critic.propose_repairs(
+                    r_words, max_candidates=6
+                ):
+                    fixed_txt = self._norm_model_greek(" ".join(fixed_words))
+                    if not fixed_txt:
+                        continue
+                    fixed_ids = self.tokenizer.encode(fixed_txt)
+                    if tuple(fixed_ids) in seen_rep:
+                        continue
+                    if has_hl and not satisfies_hard_loans(
+                        fixed_ids,
+                        constraints,
+                        ws_flags,
+                        eos_id=self.tokenizer.eos_id,
+                    ):
+                        continue
+                    seen_rep.add(tuple(fixed_ids))
+                    rep_pool.append((fixed_ids, r_sc))
+                    added_any = True
+            if added_any:
+                ranked = self._rerank_candidates(
+                    src_ids=src_ids,
+                    coptic_only_text=coptic_only_text,
+                    morphemes=morphemes,
+                    beam_hyps=rep_pool,
+                    v1_candidate_text=v1_chunk_greek,
+                    tok_to_seq=tok_to_seq,
+                )
         if not ranked or not ranked[0][1]:
             # Zero-null guarantee fallback
             fallback_seqs = [m.seq for m in morphemes[:1]] or [0]
@@ -1422,7 +1503,7 @@ def tune_rerank_weights_on_dev(
     """Grid-search noisy-channel rerank weights via ordered LCS on 51-verse NT DEV."""
     content_pos = {"N-", "V-", "A-", "D-"}
     # Row: (t_len, fwd, rev, c_len, lm, lb, cb, bip, attn_c, under_p,
-    #       lm_lcs, lm_p, sf_lcs, sf_p)
+    #       bare_pen, agree_p, lm_lcs, lm_p, sf_lcs, sf_p)
     cached: list[
         tuple[
             list[
@@ -1431,6 +1512,7 @@ def tune_rerank_weights_on_dev(
                     float,
                     float,
                     int,
+                    float,
                     float,
                     float,
                     float,
@@ -1645,6 +1727,7 @@ def tune_rerank_weights_on_dev(
                 float,
                 float,
                 float,
+                float,
                 int,
                 int,
                 int,
@@ -1660,14 +1743,17 @@ def tune_rerank_weights_on_dev(
             attn_c = 0.0
             under_p = 0.0
             bare_pen = 0.0
+            agree_p = 0.0
             p_lem_seq: list[str] = []
             p_surf_seq = restored_gt.lower().split() if restored_gt else []
             if restored_gt:
                 gl: set[str] = set()
                 gl_counts: Counter[str] = Counter()
                 r_words = restored_gt.split()
+                agree_p = decoder.agreement_critic.agreement_penalty(r_words)
                 if w_base.use_constrained_beam:
                     bare_pen += 0.8 * count_spurious_adjacent_word_repeats(r_words, ms)
+                    bare_pen += 0.9 * count_spurious_phrase_repeats(r_words, ms)
                 from zetodos_thomas.ingest.normalize import normalize_coptic
 
                 known_cand_bare: set[str] = set(exp_loans)
@@ -1743,6 +1829,7 @@ def tune_rerank_weights_on_dev(
                     attn_c,
                     under_p,
                     bare_pen,
+                    agree_p,
                     _seq_lcs_len(p_lem_seq, g_lem_seq),
                     len(p_lem_seq),
                     _seq_lcs_len(p_surf_seq, g_surf_seq),
@@ -1762,15 +1849,17 @@ def tune_rerank_weights_on_dev(
         bip_grid = (0.0,)
         attn_grid = (0.0,)
         under_grid = (0.0,)
+        agree_grid = (0.0,)
     else:
         alpha_grid = (0.85, 0.95, 1.0)
         rev_grid = (0.35, 0.65, 0.95) if decoder.reverse_model is not None else (0.0,)
-        lm_grid = (0.0, 0.10, 0.20) if decoder.koine_lm is not None else (0.0,)
+        lm_grid = (0.0, 0.08, 0.15) if decoder.koine_lm is not None else (0.0,)
         loan_grid = (1.2, 1.8)
         cov_grid = (0.0, 0.4) if w_base.use_v1_draft else (0.0,)
         bip_grid = (0.6, 1.2, 1.8)
         attn_grid = (0.15, 0.35, 0.60)
         under_grid = (0.5, 1.2)
+        agree_grid = (0.0, 0.35, 0.55)
 
     best_obj = -1.0
     best_w = w_base
@@ -1782,56 +1871,59 @@ def tune_rerank_weights_on_dev(
                         for wbip in bip_grid:
                             for wat in attn_grid:
                                 for wun in under_grid:
-                                    lm_m = lm_p = lm_g = 0
-                                    sf_m = sf_p = sf_g = 0
-                                    for cand_rows, n_g_lem, n_g_surf in cached:
-                                        best_r = max(
-                                            cand_rows,
-                                            key=lambda r: (
-                                                r[1] / (r[0] ** alpha)
-                                                + wr * (r[2] / (r[3] ** alpha))
-                                                + wl * (r[4] / (r[0] ** alpha))
-                                                + wln * r[5]
-                                                + wcv * r[6]
-                                                + wbip * r[7]
-                                                + wat * r[8]
-                                                - wun * r[9]
-                                                - r[10]
-                                            ),
-                                        )
-                                        lm_m += best_r[11]
-                                        lm_p += best_r[12]
-                                        lm_g += n_g_lem
-                                        sf_m += best_r[13]
-                                        sf_p += best_r[14]
-                                        sf_g += n_g_surf
-                                    lf1 = 2 * lm_m / max(lm_p + lm_g, 1)
-                                    sf1 = 2 * sf_m / max(sf_p + sf_g, 1)
-                                    if tune_faithfulness:
-                                        lrec = lm_m / max(lm_g, 1)
-                                        ratio = lm_p / max(lm_g, 1)
-                                        len_fid = max(0.0, 1.0 - abs(1.0 - ratio))
-                                        obj = (
-                                            0.45 * lf1
-                                            + 0.25 * sf1
-                                            + 0.20 * lrec
-                                            + 0.10 * len_fid
-                                        )
-                                    else:
-                                        obj = 0.60 * lf1 + 0.40 * sf1
-                                    if obj > best_obj:
-                                        best_obj = obj
-                                        best_w = w_base.model_copy(
-                                            update={
-                                                "len_alpha": alpha,
-                                                "w_rev": wr,
-                                                "w_lm": wl,
-                                                "w_loan": wln,
-                                                "w_cov": wcv,
-                                                "w_bipartite_cov": wbip,
-                                                "w_attn_cov": wat,
-                                                "w_under_len": wun,
-                                            }
-                                        )
+                                    for wag in agree_grid:
+                                        lm_m = lm_p = lm_g = 0
+                                        sf_m = sf_p = sf_g = 0
+                                        for cand_rows, n_g_lem, n_g_surf in cached:
+                                            best_r = max(
+                                                cand_rows,
+                                                key=lambda r: (
+                                                    r[1] / (r[0] ** alpha)
+                                                    + wr * (r[2] / (r[3] ** alpha))
+                                                    + wl * (r[4] / (r[0] ** alpha))
+                                                    + wln * r[5]
+                                                    + wcv * r[6]
+                                                    + wbip * r[7]
+                                                    + wat * r[8]
+                                                    - wun * r[9]
+                                                    - r[10]
+                                                    - wag * r[11]
+                                                ),
+                                            )
+                                            lm_m += best_r[12]
+                                            lm_p += best_r[13]
+                                            lm_g += n_g_lem
+                                            sf_m += best_r[14]
+                                            sf_p += best_r[15]
+                                            sf_g += n_g_surf
+                                        lf1 = 2 * lm_m / max(lm_p + lm_g, 1)
+                                        sf1 = 2 * sf_m / max(sf_p + sf_g, 1)
+                                        if tune_faithfulness:
+                                            lrec = lm_m / max(lm_g, 1)
+                                            ratio = lm_p / max(lm_g, 1)
+                                            len_fid = max(0.0, 1.0 - abs(1.0 - ratio))
+                                            obj = (
+                                                0.45 * lf1
+                                                + 0.25 * sf1
+                                                + 0.20 * lrec
+                                                + 0.10 * len_fid
+                                            )
+                                        else:
+                                            obj = 0.60 * lf1 + 0.40 * sf1
+                                        if obj > best_obj:
+                                            best_obj = obj
+                                            best_w = w_base.model_copy(
+                                                update={
+                                                    "len_alpha": alpha,
+                                                    "w_rev": wr,
+                                                    "w_lm": wl,
+                                                    "w_loan": wln,
+                                                    "w_cov": wcv,
+                                                    "w_bipartite_cov": wbip,
+                                                    "w_attn_cov": wat,
+                                                    "w_under_len": wun,
+                                                    "w_agree": wag,
+                                                }
+                                            )
     decoder.weights = best_w
     return best_w

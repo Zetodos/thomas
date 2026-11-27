@@ -50,7 +50,7 @@
     "lemma-ctx-0.json": "76db0c42e28134a8beca1c995aa86a27d636d1b9e9aec3e3c942192c07d90f70",
     "lemma-ctx-1.json": "8233c18033548a834fe7918acd2c0a669062fd91c1db94ff819ad8f71c18f722",
     "native-gloss-hints.json": "ffa542f1c3b8089e97e03a711f8230e3d7e88d74a84a7ad6dd883450d7ab395b",
-    "rerank-weights.json": "fc520a9653c7aa20645c22e1c7039785ae2aa105d0c2621da0dbd852d8ea9157",
+    "rerank-weights.json": "d2b1d22eeaf7e3e0916ef2ee834d521854eebc3db551a5eaa2393f041e1cec7b",
     "reverse.safetensors": "9bdede3cc46f77966abcf1d12b74bdc415163c8d7491ad7ebf3e304ea1b60f24",
     "seq2seq-config.json": "89b150c9e4e7d8dc28a1d47c29a03631613d49940642f205b35273b581384901",
     "tokenizer.model": "9efb29f771cfc9d0d83497227965b90164170ca31252ad15cc184229fde5a003",

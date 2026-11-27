@@ -209,6 +209,18 @@ def has_local_loop_repeat(seq: list[int], next_id: int) -> bool:
         for i in range(n - 7):
             if tuple(seq[i : i + 8]) == eight:
                 return True
+    # Block a 3rd occurrence of any identical 4-token span within a tight 22-token
+    # local window (prevents neural phrase-stutter loops like 3x `ἐν ταῖς χώραις`
+    # while allowing legitimate wide parallelisms like Lk 6:42 `ἐν τῷ ὀφθαλμῷ`).
+    if n >= 8:
+        four = (*seq[-3:], next_id)
+        hits = 0
+        win_start = max(0, n - 22)
+        for i in range(win_start, n - 3):
+            if tuple(seq[i : i + 4]) == four:
+                hits += 1
+                if hits >= 2:
+                    return True
     return False
 
 
@@ -241,6 +253,34 @@ def count_spurious_adjacent_word_repeats(
         if len(w_cur) >= 3 and w_cur == w_prev:
             dup += 1
     return dup
+
+
+def count_spurious_phrase_repeats(
+    greek_words: Sequence[str],
+    morphemes: Sequence[CopticMorpheme],
+) -> int:
+    """Count repeated 3-word phrases exceeding Coptic content-lemma multiplicity."""
+    if len(greek_words) < 6:
+        return 0
+    c_counts: dict[str, int] = defaultdict(int)
+    for m in morphemes:
+        if m.pos in CONTENT_COPTIC_POS:
+            lem = normalize_coptic(m.lemma or m.norm).replace("\u2cff", "")
+            if lem:
+                c_counts[lem] += 1
+    max_cop_mult = max(c_counts.values(), default=1)
+    bare_w = [_strip_bare(w) for w in greek_words]
+    tri_counts: dict[tuple[str, str, str], int] = defaultdict(int)
+    for i in range(len(bare_w) - 2):
+        tri = (bare_w[i], bare_w[i + 1], bare_w[i + 2])
+        if any(len(tok) >= 4 for tok in tri):
+            tri_counts[tri] += 1
+    cap = max(max_cop_mult, 1)
+    excess = 0
+    for cnt in tri_counts.values():
+        if cnt > cap and cnt >= 2:
+            excess += cnt - cap
+    return excess
 
 
 def _has_trigram_repeat(seq: list[int], next_id: int) -> bool:
@@ -1573,6 +1613,63 @@ def build_missing_content_constraints(
                 if _strip_bare(str(getattr(lc, "greek_lemma", ""))) != "ευρισκω"
             ]
         if not hits:
+            # OOV native Sahidic fallback: if lexical_model had zero NT/OT hits,
+            # check POS-matched CCL x Strong's native_gloss_hints.
+            if native_gloss_hints:
+                c_pos_key = "VS" if m.pos == "VSTAT" else m.pos
+                gl_oov = native_gloss_hints.get(f"{key_lem}|{c_pos_key}")
+                if gl_oov and not gl_oov[0].isupper():
+                    g_pos_oov = (
+                        "V-"
+                        if m.pos in {"V", "VSTAT", "VIMP"}
+                        else "N-"
+                        if m.pos == "N"
+                        else None
+                    )
+                    oov_forms = inflector.all_inflected_forms(
+                        gl_oov, pos=g_pos_oov, max_forms=32
+                    )
+                    if oov_forms:
+                        top_bare_oov = _strip_bare(gl_oov)
+                        if per_lemma_added[top_bare_oov] < 2:
+                            rel_p_oov = (m_idx + 0.5) / n_morphs
+                            min_st_oov = (
+                                0
+                                if cur_prec_content == 0
+                                else max(
+                                    cur_prec_content,
+                                    int((rel_p_oov - 0.16) * est_tgt),
+                                )
+                            )
+                            max_st_oov = (
+                                None
+                                if rel_p_oov >= 0.70
+                                else max(
+                                    min_st_oov + 10,
+                                    int((rel_p_oov + 0.18) * est_tgt) + 5,
+                                )
+                            )
+                            p1_hits_oov = sum(
+                                1 for gl in predicted_greek_lemmas if gl == top_bare_oov
+                            )
+                            oov_trie = ConstraintTrie.from_surfaces(
+                                label=gl_oov,
+                                lemma=gl_oov,
+                                surfaces=oov_forms,
+                                tokenizer=tokenizer,
+                                source_seq=m.seq,
+                                rel_pos=rel_p_oov,
+                                unaccented=unaccented,
+                                is_repair=True,
+                                min_step=min_st_oov,
+                                max_step=max_st_oov,
+                                min_count=p1_hits_oov + 1,
+                            )
+                            if oov_trie is not None:
+                                added.append(oov_trie)
+                                per_lemma_added[top_bare_oov] += 1
+                                if max_added is not None and len(added) >= max_added:
+                                    break
             continue
         top = hits[0]
         tot_cnt = float(getattr(top, "count_nt", 0.0)) + float(
@@ -1581,6 +1678,11 @@ def build_missing_content_constraints(
         top_prob = float(getattr(top, "prob_g_given_c", 0.0))
         top_prov = str(getattr(top, "provenance", ""))
         top_lem = str(getattr(top, "greek_lemma", ""))
+        top3_prob = sum(float(getattr(h, "prob_g_given_c", 0.0)) for h in hits[:3])
+        top3_cnt = sum(
+            float(getattr(h, "count_nt", 0.0)) + float(getattr(h, "count_ot", 0.0))
+            for h in hits[:3]
+        )
         if top_prov != "L":
             if m.pos in {"N", "NUM"}:
                 # Never drop an unmatched content noun/numeral just because
@@ -1597,7 +1699,14 @@ def build_missing_content_constraints(
                 if top_prob < 0.12 or tot_cnt < 1.0:
                     continue
             else:
-                if top_prob < min_prob or tot_cnt < 3.0:
+                # Allow high-frequency polysemous/synonymous verbs (e.g. ϣⲙϣⲉ,
+                # ⲕⲱ, ⲥⲱⲕ, ⲧⲥⲁⲃⲟ) whose probability mass splits across top-3
+                # valid Greek synonyms already unioned in the repair trie.
+                passes_single = top_prob >= min_prob and tot_cnt >= 3.0
+                passes_syn_mass = (
+                    top_prob >= 0.16 and top3_prob >= 0.34 and top3_cnt >= 10.0
+                )
+                if not (passes_single or passes_syn_mass):
                     continue
         allowed_cands = cand_by_seq.get(m.seq, set())
         top_pos = str(getattr(top, "greek_pos", ""))
@@ -1644,11 +1753,36 @@ def build_missing_content_constraints(
             if cur_prec_content == 0
             else max(cur_prec_content, int((rel_p - 0.16) * est_tgt))
         )
-        max_st = (
-            None
-            if rel_p >= 0.70
-            else max(min_st + 14, int((rel_p + 0.24) * est_tgt) + 8)
-        )
+        if rel_p >= 0.70:
+            max_st: int | None = None
+        else:
+            base_max = max(min_st + 12, int((rel_p + 0.18) * est_tgt) + 5)
+            # Lock early/mid-chunk repair tries before the next major clause
+            # boundary (after at least one intervening predicate) so words like
+            # `κύων` in `thomas.102` stay inside their own clause.
+            seen_pred_after = m.pos in {"V", "VSTAT", "VBD", "VIMP", "EXIST", "COP"}
+            cb_idx: int | None = None
+            for j_cb in range(m_idx + 1, len(morphemes)):
+                mj = morphemes[j_cb]
+                if mj.pos == "PUNCT":
+                    cb_idx = j_cb
+                    break
+                mj_lem = normalize_coptic(mj.lemma or mj.norm).replace("\u2cff", "")
+                if (
+                    seen_pred_after
+                    and mj.pos == "CONJ"
+                    and mj_lem
+                    in {"ϫⲉ", "ⲁⲩⲱ", "ⲁⲗⲗⲁ", "ϩⲟⲧⲁⲛ", "ⲉϣⲱⲡⲉ", "ϩⲓⲛⲁ", "ϫⲉⲕⲁⲥ", "ⲉⲡⲉⲓ"}
+                ):
+                    cb_idx = j_cb
+                    break
+                if mj.pos in {"V", "VSTAT", "VBD", "VIMP", "EXIST", "COP"}:
+                    seen_pred_after = True
+            if cb_idx is not None:
+                cb_cap = max(min_st + 6, int(((cb_idx + 0.5) / n_morphs) * est_tgt) + 2)
+                max_st = min(base_max, cb_cap)
+            else:
+                max_st = base_max
         syn_bare = {
             _strip_bare(str(getattr(lc, "greek_lemma", ""))) for lc in chosen_hits
         }
