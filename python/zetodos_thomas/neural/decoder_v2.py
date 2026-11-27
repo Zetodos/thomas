@@ -8,7 +8,7 @@ import json
 import math
 import unicodedata
 from collections import Counter
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from pathlib import Path
 
 import torch
@@ -237,6 +237,20 @@ class NeuralKoineDecoder:
         self._unaccented = unaccented_target
         self._tgt_grc_tag: str | None = "<TGT_GRC>" if use_target_lang_tag else None
         self._canonicalize_preps = canonicalize_preps
+        # Precompute bare prefixes of all zero-holdout known Greek surfaces and
+        # lemmas so beam search can immediately penalize dead subword prefixes
+        # (e.g. `δαπανήσει`, `φορτίοντίον`, `ἐξαλείπτας`) without delaying until
+        # word close.
+        known_prefixes: set[str] = set()
+        for s_key in self.inflector._surface_analyses:
+            b_s = _strip_bare(s_key)
+            for k_len in range(1, len(b_s) + 1):
+                known_prefixes.add(b_s[:k_len])
+        for l_key in self.inflector._known_lemmas:
+            b_l = _strip_bare(l_key)
+            for k_len in range(1, len(b_l) + 1):
+                known_prefixes.add(b_l[:k_len])
+        self._known_bare_prefixes: frozenset[str] = frozenset(known_prefixes)
 
         for m in self.forward_models:
             m.to(self.device)
@@ -431,6 +445,8 @@ class NeuralKoineDecoder:
         max_new_tokens: int,
         min_new_tokens: int = 1,
         len_alpha: float,
+        word_penalty_fn: Callable[[tuple[int, ...]], float] | None = None,
+        prefix_penalty_fn: Callable[[tuple[int, ...]], float] | None = None,
     ) -> list[tuple[list[int], float]]:
         """Deterministic probability-mixture ensemble beam search."""
         src_t = torch.tensor([src_ids], dtype=torch.long, device=self.device)
@@ -438,9 +454,19 @@ class NeuralKoineDecoder:
         bos_id = self.tokenizer.bos_id
         eos_id = self.tokenizer.eos_id
         n_models = len(self.forward_models)
+        word_starts = self.tokenizer.word_start_flags()
 
         active: list[tuple[list[int], float]] = [([bos_id], 0.0)]
         finished: list[tuple[list[int], float]] = []
+
+        def _last_wtup(s: list[int]) -> tuple[int, ...]:
+            n = len(s)
+            if n <= 1:
+                return ()
+            idx = n - 1
+            while idx > 1 and not word_starts[s[idx]]:
+                idx -= 1
+            return tuple(s[idx:])
 
         for _ in range(max_new_tokens):
             if not active:
@@ -475,21 +501,51 @@ class NeuralKoineDecoder:
 
             next_cands: list[tuple[list[int], float]] = []
             for b_i, (seq, score) in enumerate(active):
+                cur_w = (
+                    _last_wtup(seq)
+                    if len(seq) > 1
+                    and (word_penalty_fn is not None or prefix_penalty_fn is not None)
+                    else ()
+                )
+                closed_w_pen = (
+                    word_penalty_fn(cur_w)
+                    if word_penalty_fn is not None and cur_w
+                    else 0.0
+                )
                 for val, tid in zip(top_vals_cpu[b_i], top_idx_cpu[b_i], strict=True):
                     itid = int(tid)
                     if itid == self.tokenizer.pad_id or itid == bos_id:
                         continue
                     if itid != eos_id and _has_trigram_repeat(seq, itid):
                         continue
+                    if (
+                        itid != eos_id
+                        and not word_starts[itid]
+                        and len(seq) > 1
+                        and seq[-1] == itid
+                    ):
+                        continue
                     new_seq = [*seq, itid]
-                    new_score = score + float(val)
                     if itid == eos_id:
                         if seq_len < min_new_tokens:
                             continue
+                        new_score = score + closed_w_pen + float(val)
                         norm_sc = new_score / (max(seq_len, 1) ** len_alpha)
                         finished.append((new_seq, norm_sc))
                     else:
-                        next_cands.append((new_seq, new_score))
+                        if word_starts[itid]:
+                            w_pen = closed_w_pen + (
+                                prefix_penalty_fn((itid,))
+                                if prefix_penalty_fn is not None
+                                else 0.0
+                            )
+                        else:
+                            w_pen = (
+                                prefix_penalty_fn((*cur_w, itid))
+                                if prefix_penalty_fn is not None
+                                else 0.0
+                            )
+                        next_cands.append((new_seq, score + w_pen + float(val)))
 
             next_cands.sort(
                 key=lambda item: item[1] / (max(len(item[0]) - 1, 1) ** len_alpha),
@@ -585,12 +641,26 @@ class NeuralKoineDecoder:
             for idx, (seq, val) in enumerate(zip(cands_ids, raw_lm, strict=True)):
                 lm_scores[idx] = val / (max(len(seq) - 1, 1) ** w.len_alpha)
 
+        from zetodos_thomas.ingest.normalize import normalize_coptic
+
         # Expected Greek loanwords (multiset) from CCL/DDGLC & draft coverage set
         expected_loans: Counter[str] = Counter()
+        loan_inflected_bare: set[str] = set()
         for m in morphemes:
             g_hint = resolve_morpheme_loan_hint(m, self.ccl_lexicon)
             if g_hint:
                 expected_loans[_strip_bare(g_hint)] += 1
+                g_pos_h = (
+                    "V-"
+                    if m.pos in {"V", "VSTAT", "VIMP"}
+                    else "N-"
+                    if m.pos in {"N", "NPROP"}
+                    else None
+                )
+                for form in self.paradigm_inflector.all_inflected_forms(
+                    g_hint, pos=g_pos_h, max_forms=64
+                ):
+                    loan_inflected_bare.add(_strip_bare(form))
         n_exp_loans = sum(expected_loans.values())
 
         content_pos = {"N-", "V-", "A-", "D-", "X-"}
@@ -610,10 +680,14 @@ class NeuralKoineDecoder:
                 lexical_model=self.lexical_model,
                 native_gloss_hints=self.native_gloss_hints,
             )
-        known_cand_bare: set[str] = set(expected_loans)
+        known_cand_bare: set[str] = set(expected_loans) | loan_inflected_bare
         for _sq, cset in coptic_cand_sets:
             known_cand_bare.update(cset)
         chunk_has_nprop = any(m.pos == "NPROP" for m in morphemes)
+        chunk_lems = {
+            normalize_coptic(m.lemma or m.norm).replace("\u2cff", "") for m in morphemes
+        }
+        forbid_hemera = "ⲉϩⲉ" in chunk_lems and "ϩⲟⲟⲩ" not in chunk_lems
 
         content_seqs = [m.seq for m in morphemes if m.pos in CONTENT_COPTIC_POS]
         n_cop_content = len(content_seqs)
@@ -657,7 +731,9 @@ class NeuralKoineDecoder:
                     p0 = self.inflector.analyze_surface(gw)[0]
                     b_lem = _strip_bare(p0[0])
                     b_surf = _strip_bare(gw)
-                    if (
+                    if w.use_constrained_beam and forbid_hemera and b_lem == "ημερα":
+                        bare_copy_pen += 2.0
+                    elif (
                         w.use_constrained_beam
                         and not is_bare_copy
                         and p0[1].pos == "UNK"
@@ -665,9 +741,8 @@ class NeuralKoineDecoder:
                         and b_surf not in known_cand_bare
                         and not (gw[0].isupper() and chunk_has_nprop)
                     ):
-                        # Penalize unparseable/hallucinated Greek surfaces such
-                        # as `δαπανήσει`, `ἐξαλείπτας`, or `φορτίοντίον`.
-                        bare_copy_pen += 0.50
+                        # Penalize Greek surfaces that GreekInflector cannot parse.
+                        bare_copy_pen += 0.80
                     if not is_bare_copy:
                         g_lems.add(b_lem)
                         g_lems.add(b_surf)
@@ -719,6 +794,125 @@ class NeuralKoineDecoder:
         ranked.sort(key=lambda item: item[2], reverse=True)
         return ranked
 
+    def _build_beam_penalty_fns(
+        self,
+        morphemes: Sequence[CopticMorpheme],
+        constraints: Sequence[object],
+    ) -> tuple[
+        Callable[[tuple[int, ...]], float] | None,
+        Callable[[tuple[int, ...]], float] | None,
+    ]:
+        """Build memoized beam-time completed-word & live-prefix penalty fns."""
+        if not self.weights.use_constrained_beam:
+            return None, None
+        from zetodos_thomas.ingest.normalize import normalize_coptic
+
+        allowed_bare: set[str] = set()
+        for m in morphemes:
+            gh = resolve_morpheme_loan_hint(m, self.ccl_lexicon)
+            if gh:
+                allowed_bare.add(_strip_bare(gh))
+                g_pos_h = (
+                    "V-"
+                    if m.pos in {"V", "VSTAT", "VIMP"}
+                    else "N-"
+                    if m.pos in {"N", "NPROP"}
+                    else None
+                )
+                for form in self.paradigm_inflector.all_inflected_forms(
+                    gh, pos=g_pos_h, max_forms=64
+                ):
+                    allowed_bare.add(_strip_bare(form))
+        for ct in constraints:
+            bs = getattr(ct, "bare_surfaces", None)
+            if bs:
+                allowed_bare.update(bs)
+        csets = build_coptic_content_candidate_sets(
+            morphemes,
+            ccl_lexicon=self.ccl_lexicon,
+            lexical_model=self.lexical_model,
+            native_gloss_hints=self.native_gloss_hints,
+        )
+        for _sq, cset in csets:
+            allowed_bare.update(cset)
+        allowed_prefixes: set[str] = set()
+        for ab in allowed_bare:
+            for k_len in range(1, len(ab) + 1):
+                allowed_prefixes.add(ab[:k_len])
+        chunk_has_nprop = any(m.pos == "NPROP" for m in morphemes)
+        chunk_lems = {
+            normalize_coptic(m.lemma or m.norm).replace("\u2cff", "") for m in morphemes
+        }
+        forbid_hemera = "ⲉϩⲉ" in chunk_lems and "ϩⲟⲟⲩ" not in chunk_lems
+        known_prefixes = self._known_bare_prefixes
+        w_cache: dict[tuple[int, ...], float] = {}
+        p_cache: dict[tuple[int, ...], float] = {}
+
+        def _word_pen(w_tup: tuple[int, ...]) -> float:
+            if not w_tup:
+                return 0.0
+            hit = w_cache.get(w_tup)
+            if hit is not None:
+                return hit
+            raw = self._norm_model_greek(self.tokenizer.decode(list(w_tup)))
+            if not raw:
+                w_cache[w_tup] = 0.0
+                return 0.0
+            word = self._restore_surface_sentence(raw).strip()
+            if not word or " " in word:
+                w_cache[w_tup] = 0.0
+                return 0.0
+            lem, mf, _ = self.inflector.analyze_surface(word)[0]
+            b_lem = _strip_bare(lem)
+            b_surf = _strip_bare(word)
+            pen = 0.0
+            if forbid_hemera and b_lem == "ημερα":
+                pen -= 8.0
+            elif (
+                mf.pos == "UNK"
+                and b_lem not in allowed_bare
+                and b_surf not in allowed_bare
+                and not (word[0].isupper() and chunk_has_nprop)
+            ):
+                pen -= 2.5
+            w_cache[w_tup] = pen
+            return pen
+
+        def _prefix_pen(w_tup: tuple[int, ...]) -> float:
+            if not w_tup:
+                return 0.0
+            hit = p_cache.get(w_tup)
+            if hit is not None:
+                return hit
+            raw = self._norm_model_greek(self.tokenizer.decode(list(w_tup))).strip()
+            if not raw or " " in raw:
+                p_cache[w_tup] = 0.0
+                return 0.0
+            bare = _strip_bare(raw)
+            if not bare or not any("α" <= ch <= "ω" for ch in bare):
+                p_cache[w_tup] = 0.0
+                return 0.0
+            pen = 0.0
+            if forbid_hemera and bare.startswith("ημερ"):
+                pen -= 8.0
+            elif chunk_has_nprop and raw[0].isupper():
+                pen = 0.0
+            elif bare not in known_prefixes and bare not in allowed_prefixes:
+                # Allow regular stem-suffix inflections (e.g. `κρυπτοῦ`) that
+                # GreekInflector parses via morphology rules even if absent
+                # from the literal MorphGNT-train+Swete surface table.
+                restored_w = self._restore_surface_sentence(raw).strip()
+                if (
+                    not restored_w
+                    or " " in restored_w
+                    or self.inflector.analyze_surface(restored_w)[0][1].pos == "UNK"
+                ):
+                    pen -= 3.0
+            p_cache[w_tup] = pen
+            return pen
+
+        return _word_pen, _prefix_pen
+
     def _decode_chunk(
         self,
         morphemes: Sequence[CopticMorpheme],
@@ -766,6 +960,9 @@ class NeuralKoineDecoder:
             )
         else:
             constraints = []
+        word_pen_fn, prefix_pen_fn = self._build_beam_penalty_fns(
+            morphemes, constraints
+        )
         if constraints:
             beam_hyps = constrained_ensemble_beam_search(
                 forward_models=self.forward_models,
@@ -778,6 +975,8 @@ class NeuralKoineDecoder:
                 len_alpha=self.weights.len_alpha,
                 device=self.device,
                 est_tgt_len=est_tgt,
+                word_penalty_fn=word_pen_fn,
+                prefix_penalty_fn=prefix_pen_fn,
             )
         else:
             beam_hyps = self._ensemble_beam_search(
@@ -786,6 +985,8 @@ class NeuralKoineDecoder:
                 max_new_tokens=max_new,
                 min_new_tokens=min_new,
                 len_alpha=self.weights.len_alpha,
+                word_penalty_fn=word_pen_fn,
+                prefix_penalty_fn=prefix_pen_fn,
             )
         ranked = self._rerank_candidates(
             src_ids=src_ids,
@@ -795,9 +996,9 @@ class NeuralKoineDecoder:
             v1_candidate_text=v1_chunk_greek,
             tok_to_seq=tok_to_seq,
         )
-        # Pass-2 Coverage Repair: if pass-1 dropped high-confidence content
-        # Coptic morphemes (e.g. novel collocations like μακάριος ὁ λέων or
-        # Ἰησοῦς ὁ ζῶν), add disjunctive synonym tries and re-rank jointly!
+        # Pass-2 Coverage Repair: if pass-1 dropped content Coptic morphemes,
+        # add positional synonym tries and re-rank jointly (and if pass-2
+        # introduced a newly dropped target such as a tail verb, repair once).
         if (
             self.weights.use_coverage_repair
             and self.lexical_model is not None
@@ -824,17 +1025,23 @@ class NeuralKoineDecoder:
                 max_added=None,
             )
             if missing_tries:
+                all_p2_c = [*constraints, *missing_tries]
+                word_pen_p2, prefix_pen_p2 = self._build_beam_penalty_fns(
+                    morphemes, all_p2_c
+                )
                 repair_hyps = constrained_ensemble_beam_search(
                     forward_models=self.forward_models,
                     tokenizer=self.tokenizer,
                     src_ids=src_ids,
-                    constraints=[*constraints, *missing_tries],
+                    constraints=all_p2_c,
                     beam_size=self.weights.beam_size,
                     max_new_tokens=max_new,
                     min_new_tokens=min_new,
                     len_alpha=self.weights.len_alpha,
                     device=self.device,
                     est_tgt_len=est_tgt,
+                    word_penalty_fn=word_pen_p2,
+                    prefix_penalty_fn=prefix_pen_p2,
                 )
                 merged_hyps: list[tuple[list[int], float]] = list(beam_hyps)
                 seen_h = {tuple(s) for s, _ in merged_hyps}
@@ -856,6 +1063,66 @@ class NeuralKoineDecoder:
                     v1_candidate_text=v1_chunk_greek,
                     tok_to_seq=tok_to_seq,
                 )
+                # Follow-up repair pass ONLY if Pass-2 newly dropped a target
+                # that Pass-1 originally translated (e.g. tail verb `ⲕⲱ`).
+                if ranked and ranked[0][1] and len(all_p2_c) <= 8:
+                    p2_restored = self._restore_surface_sentence(ranked[0][1])
+                    p2_lems = [
+                        _strip_bare(lem)
+                        for gw in p2_restored.split()
+                        for lem, mf, _ in [self.inflector.analyze_surface(gw)[0]]
+                        if mf.pos in {"N-", "V-", "A-", "D-", "X-"}
+                    ]
+                    missing_p3 = build_missing_content_constraints(
+                        morphemes,
+                        existing_constraints=all_p2_c,
+                        predicted_greek_lemmas=p2_lems,
+                        ccl_lexicon=self.ccl_lexicon,
+                        lexical_model=self.lexical_model,
+                        inflector=self.paradigm_inflector,
+                        tokenizer=self.tokenizer,
+                        native_gloss_hints=self.native_gloss_hints,
+                        unaccented=self._unaccented,
+                        min_prob=0.50,
+                        max_added=2,
+                    )
+                    if missing_p3:
+                        all_p3_c = [*all_p2_c, *missing_p3]
+                        word_pen_p3, prefix_pen_p3 = self._build_beam_penalty_fns(
+                            morphemes, all_p3_c
+                        )
+                        p3_hyps = constrained_ensemble_beam_search(
+                            forward_models=self.forward_models,
+                            tokenizer=self.tokenizer,
+                            src_ids=src_ids,
+                            constraints=all_p3_c,
+                            beam_size=self.weights.beam_size,
+                            max_new_tokens=max_new,
+                            min_new_tokens=min_new,
+                            len_alpha=self.weights.len_alpha,
+                            device=self.device,
+                            est_tgt_len=est_tgt,
+                            word_penalty_fn=word_pen_p3,
+                            prefix_penalty_fn=prefix_pen_p3,
+                        )
+                        for s, sc in p3_hyps:
+                            if tuple(s) not in seen_h:
+                                seen_h.add(tuple(s))
+                                merged_hyps.append((s, sc))
+                        merged_hyps = filter_hard_loan_hyps(
+                            merged_hyps,
+                            constraints,
+                            self.tokenizer.word_start_flags(),
+                            eos_id=self.tokenizer.eos_id,
+                        )
+                        ranked = self._rerank_candidates(
+                            src_ids=src_ids,
+                            coptic_only_text=coptic_only_text,
+                            morphemes=morphemes,
+                            beam_hyps=merged_hyps,
+                            v1_candidate_text=v1_chunk_greek,
+                            tok_to_seq=tok_to_seq,
+                        )
         if not ranked or not ranked[0][1]:
             # Zero-null guarantee fallback
             fallback_seqs = [m.seq for m in morphemes[:1]] or [0]
@@ -900,10 +1167,26 @@ class NeuralKoineDecoder:
                 alt_beams.append(v1_words)
 
         loan_bare_set: set[str] = set()
+        loan_surface_to_meta: dict[str, tuple[str, str]] = {}
         for m in morphemes:
             g_hint = resolve_morpheme_loan_hint(m, self.ccl_lexicon)
             if g_hint:
                 loan_bare_set.add(_strip_bare(g_hint))
+                g_pos_h = (
+                    "V-"
+                    if m.pos in {"V", "VSTAT", "VIMP"}
+                    else "N-"
+                    if m.pos in {"N", "NPROP"}
+                    else "A-"
+                    if m.pos == "ADJ"
+                    else "D-"
+                )
+                for form in self.paradigm_inflector.all_inflected_forms(
+                    g_hint, pos=g_pos_h, max_forms=64
+                ):
+                    loan_surface_to_meta.setdefault(
+                        _strip_bare(form), (g_hint, g_pos_h)
+                    )
 
         # Precompute per-source-column mean attention to suppress Transformer sinks
         n_rows = len(attn)
@@ -992,8 +1275,15 @@ class NeuralKoineDecoder:
 
             lem, mf, _lp = self.inflector.analyze_surface(word)[0]
             if mf.pos == "UNK":
-                mf = GreekMorphFeatures(pos="N-")
-                lem = word.lower()
+                loan_meta = loan_surface_to_meta.get(_strip_bare(word))
+                if loan_meta is not None:
+                    lem, loan_pos = loan_meta
+                    mf = GreekMorphFeatures(pos=loan_pos)
+                else:
+                    # Keep unparseable non-loan surfaces honestly marked UNK
+                    # rather than masking them as N-.
+                    mf = GreekMorphFeatures(pos="UNK")
+                    lem = word.lower()
             prov = "L" if _strip_bare(lem) in loan_bare_set else "N"
 
             # Gather up to 3 distinct alternative lemmas from sibling beams
@@ -1203,6 +1493,7 @@ def tune_rerank_weights_on_dev(
             )
         else:
             c_tries = []
+        wp_fn, pp_fn = decoder._build_beam_penalty_fns(ms, c_tries)
         if c_tries:
             beam_hyps = constrained_ensemble_beam_search(
                 forward_models=decoder.forward_models,
@@ -1215,6 +1506,8 @@ def tune_rerank_weights_on_dev(
                 len_alpha=w_base.len_alpha,
                 device=decoder.device,
                 est_tgt_len=est_tgt,
+                word_penalty_fn=wp_fn,
+                prefix_penalty_fn=pp_fn,
             )
         else:
             beam_hyps = decoder._ensemble_beam_search(
@@ -1223,6 +1516,8 @@ def tune_rerank_weights_on_dev(
                 max_new_tokens=max_new,
                 min_new_tokens=min_new,
                 len_alpha=w_base.len_alpha,
+                word_penalty_fn=wp_fn,
+                prefix_penalty_fn=pp_fn,
             )
         if (
             w_base.use_coverage_repair
@@ -1252,17 +1547,21 @@ def tune_rerank_weights_on_dev(
                 max_added=None,
             )
             if miss_tries:
+                all_p2_t = [*c_tries, *miss_tries]
+                wp_p2, pp_p2 = decoder._build_beam_penalty_fns(ms, all_p2_t)
                 rep_hyps = constrained_ensemble_beam_search(
                     forward_models=decoder.forward_models,
                     tokenizer=decoder.tokenizer,
                     src_ids=src_ids,
-                    constraints=[*c_tries, *miss_tries],
+                    constraints=all_p2_t,
                     beam_size=w_base.beam_size,
                     max_new_tokens=max_new,
                     min_new_tokens=min_new,
                     len_alpha=w_base.len_alpha,
                     device=decoder.device,
                     est_tgt_len=est_tgt,
+                    word_penalty_fn=wp_p2,
+                    prefix_penalty_fn=pp_p2,
                 )
                 seen_s = {tuple(s) for s, _ in beam_hyps}
                 for s, sc in rep_hyps:
@@ -1369,10 +1668,17 @@ def tune_rerank_weights_on_dev(
                 r_words = restored_gt.split()
                 if w_base.use_constrained_beam:
                     bare_pen += 0.8 * count_spurious_adjacent_word_repeats(r_words, ms)
+                from zetodos_thomas.ingest.normalize import normalize_coptic
+
                 known_cand_bare: set[str] = set(exp_loans)
                 for _sq, cset in coptic_cand_sets:
                     known_cand_bare.update(cset)
                 chunk_has_nprop = any(m.pos == "NPROP" for m in ms)
+                chunk_lems_t = {
+                    normalize_coptic(m.lemma or m.norm).replace("\u2cff", "")
+                    for m in ms
+                }
+                forbid_hem_t = "ⲉϩⲉ" in chunk_lems_t and "ϩⲟⲟⲩ" not in chunk_lems_t
                 for w in r_words:
                     is_bc = (
                         not decoder._unaccented
@@ -1384,7 +1690,9 @@ def tune_rerank_weights_on_dev(
                     lem, mf, _ = decoder.inflector.analyze_surface(w)[0]
                     bl = _strip_bare(lem)
                     bs = _strip_bare(w)
-                    if (
+                    if w_base.use_constrained_beam and forbid_hem_t and bl == "ημερα":
+                        bare_pen += 2.0
+                    elif (
                         w_base.use_constrained_beam
                         and not is_bc
                         and mf.pos == "UNK"
@@ -1392,7 +1700,7 @@ def tune_rerank_weights_on_dev(
                         and bs not in known_cand_bare
                         and not (w[0].isupper() and chunk_has_nprop)
                     ):
-                        bare_pen += 0.50
+                        bare_pen += 0.80
                     if not is_bc:
                         gl.add(bl)
                         gl.add(bs)

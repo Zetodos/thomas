@@ -16,7 +16,7 @@ from __future__ import annotations
 import math
 import unicodedata
 from collections import defaultdict
-from collections.abc import Mapping, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from dataclasses import dataclass
 
 import torch
@@ -752,6 +752,8 @@ def constrained_ensemble_beam_search(
     device: torch.device,
     max_total_beams: int = 24,
     est_tgt_len: int | None = None,
+    word_penalty_fn: Callable[[tuple[int, ...]], float] | None = None,
+    prefix_penalty_fn: Callable[[tuple[int, ...]], float] | None = None,
 ) -> list[tuple[list[int], float]]:
     """Deterministic Banked Lexically-Constrained Ensemble Beam Search.
 
@@ -922,6 +924,17 @@ def constrained_ensemble_beam_search(
 
             # Free decoding state (act_c == -1)
             bank_k = mask.bit_count()
+            # Precompute current open word tuple & completed-word penalty once
+            # for this parent beam (e.g. unparseable UNK surface or homograph).
+            cur_w = (
+                _last_word_tuple(seq, word_starts)
+                if len(seq) > 1
+                and (word_penalty_fn is not None or prefix_penalty_fn is not None)
+                else ()
+            )
+            closed_w_pen = (
+                word_penalty_fn(cur_w) if word_penalty_fn is not None and cur_w else 0.0
+            )
             # 1. Standard top-K unconstrained expansion
             for val, tid in zip(top_vals_cpu[b_i], top_idx_cpu[b_i], strict=True):
                 itid = int(tid)
@@ -935,7 +948,10 @@ def constrained_ensemble_beam_search(
                     )
                     end_bank = _verified_bank(seq, end_mask, constraints, word_starts)
                     finished_by_bank[end_bank].append(
-                        ([*seq, eos_id], _norm(score + float(val), seq_len))
+                        (
+                            [*seq, eos_id],
+                            _norm(score + closed_w_pen + float(val), seq_len),
+                        )
                     )
                     continue
                 if _has_trigram_repeat(seq, itid):
@@ -944,6 +960,18 @@ def constrained_ensemble_beam_search(
                 # `▁φορ` + `τίον` + `τίον` -> `φορτίοντίον`).
                 if not word_starts[itid] and len(seq) > 1 and seq[-1] == itid:
                     continue
+                if word_starts[itid]:
+                    w_pen = closed_w_pen + (
+                        prefix_penalty_fn((itid,))
+                        if prefix_penalty_fn is not None
+                        else 0.0
+                    )
+                else:
+                    w_pen = (
+                        prefix_penalty_fn((*cur_w, itid))
+                        if prefix_penalty_fn is not None
+                        else 0.0
+                    )
                 new_mask = (
                     _apply_passive_match(
                         seq, mask, constraints, word_starts, est_tgt_len=tgt_len_est
@@ -952,7 +980,7 @@ def constrained_ensemble_beam_search(
                     else mask
                 )
                 next_free[new_mask.bit_count()].append(
-                    ([*seq, itid], score + float(val), new_mask, -1, 0)
+                    ([*seq, itid], score + w_pen + float(val), new_mask, -1, 0)
                 )
 
             # 2. Forced constraint injection (entering unsatisfied constraint trie
@@ -974,7 +1002,13 @@ def constrained_ensemble_beam_search(
                         if _has_trigram_repeat(seq, rt):
                             continue
                         next_inprog[closed_bank].append(
-                            ([*seq, rt], score + r_lp, closed_mask, c_j, nxt_n)
+                            (
+                                [*seq, rt],
+                                score + closed_w_pen + r_lp,
+                                closed_mask,
+                                c_j,
+                                nxt_n,
+                            )
                         )
 
         # Balanced per-bank pruning (Post & Vilar DBA): EVERY populated bank 0..n_c
@@ -1127,11 +1161,13 @@ def constrained_ensemble_beam_search(
 
     has_repair = any(ct.is_repair for ct in constraints)
     has_full = bool(filtered_by_bank.get(n_c))
-    # For Pass-1 (no repair tries), require the full-constraint bank (n_c) when
-    # populated so structural slots (COP/CREL) and hard loans are always met.
-    # For Pass-2 (with soft repair tries), keep the top two hard-loan-valid
-    # banks so reranking can prefer a fluent n_c-1 repair over a padded loop.
-    min_keep_bk = (n_c - 1) if (has_full and has_repair) else (n_c if has_full else 0)
+    # For Pass-1 (no repair tries) or compact repair sets (n_c <= 6), require
+    # the full-constraint bank (n_c) when populated. For large Pass-2 repair
+    # sets (n_c > 6), keep the top two hard-loan-valid banks so reranking can
+    # prefer a fluent n_c-1 repair over a padded loop.
+    min_keep_bk = (
+        (n_c - 1) if (has_full and has_repair and n_c > 6) else (n_c if has_full else 0)
+    )
     for bk in range(n_c, -1, -1):
         if bk < min_keep_bk:
             break
@@ -1300,10 +1336,10 @@ def build_coptic_content_candidate_sets(
         if m.pos == "N" and key_lem == "ⲉϩⲉ":
             cands.discard("ημερα")
         # Disambiguate homonymous `ϩⲉ` ("fall" vs "find") in pit/downward context:
-        # never reward `εὑρίσκω` when `ϩⲓⲉⲓⲧ`/`ⲉⲥⲏⲧ` is in the chunk.
+        # drop `εὑρίσκω` from the reward set without hardcoding any replacement
+        # lemma (remaining candidates come solely from LexicalTranslationModel).
         if m.pos == "V" and key_lem == "ϩⲉ" and has_fall_ctx:
             cands.discard("ευρισκω")
-            cands.update({"πιπτω", "εμπιπτω"})
         if cands:
             out.append((m.seq, cands))
     return out
@@ -1464,7 +1500,7 @@ def build_missing_content_constraints(
     )
     n_morphs = max(len(morphemes), 1)
     n_np = max(sum(1 for x in morphemes if x.pos != "PUNCT"), 1)
-    est_tgt = max(int(n_np * 0.72), 8)
+    est_tgt = max(int(n_np * 0.85), 8)
     added: list[ConstraintTrie] = []
     per_lemma_added: dict[str, int] = defaultdict(int)
 
@@ -1522,42 +1558,6 @@ def build_missing_content_constraints(
             and not is_tail_last_verb
         ):
             continue
-        # Special fall-context disambiguation for homonymous `ϩⲉ` ("fall" vs "find")
-        if m.pos == "V" and key_lem == "ϩⲉ" and has_fall_ctx:
-            syn_surfaces: list[str] = []
-            for f_lem in ("πίπτω", "ἐμπίπτω"):
-                syn_surfaces.extend(
-                    inflector.all_inflected_forms(f_lem, pos="V-", max_forms=48)
-                )
-            rel_p = (m_idx + 0.5) / n_morphs
-            min_st = (
-                0
-                if cur_prec_content == 0
-                else max(cur_prec_content, int((rel_p - 0.22) * est_tgt))
-            )
-            max_st = max(min_st + 20, int((rel_p + 0.35) * est_tgt) + 12)
-            p1_hits = sum(
-                1 for gl in predicted_greek_lemmas if gl in {"πιπτω", "εμπιπτω"}
-            )
-            trie = ConstraintTrie.from_surfaces(
-                label="πίπτω",
-                lemma="πίπτω",
-                surfaces=syn_surfaces,
-                tokenizer=tokenizer,
-                source_seq=m.seq,
-                rel_pos=rel_p,
-                unaccented=unaccented,
-                is_repair=True,
-                min_step=min_st,
-                max_step=max_st,
-                min_count=p1_hits + 1,
-            )
-            if trie is not None:
-                added.append(trie)
-                if max_added is not None and len(added) >= max_added:
-                    break
-            continue
-
         raw_hits = lexical_model.lookup(
             coptic_lemma=key_lem,
             coptic_pos=m.pos,
@@ -1566,6 +1566,12 @@ def build_missing_content_constraints(
             ccl_lexicon=ccl_lexicon,
         )
         hits = _clean_repair_hits(raw_hits, m.pos)
+        if m.pos == "V" and key_lem == "ϩⲉ" and has_fall_ctx:
+            hits = [
+                lc
+                for lc in hits
+                if _strip_bare(str(getattr(lc, "greek_lemma", ""))) != "ευρισκω"
+            ]
         if not hits:
             continue
         top = hits[0]
@@ -1636,9 +1642,13 @@ def build_missing_content_constraints(
         min_st = (
             0
             if cur_prec_content == 0
-            else max(cur_prec_content, int((rel_p - 0.22) * est_tgt))
+            else max(cur_prec_content, int((rel_p - 0.16) * est_tgt))
         )
-        max_st = max(min_st + 20, int((rel_p + 0.35) * est_tgt) + 12)
+        max_st = (
+            None
+            if rel_p >= 0.70
+            else max(min_st + 14, int((rel_p + 0.24) * est_tgt) + 8)
+        )
         syn_bare = {
             _strip_bare(str(getattr(lc, "greek_lemma", ""))) for lc in chosen_hits
         }

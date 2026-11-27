@@ -510,6 +510,10 @@ def test_word_boundary_trie_counting_and_hard_loan_filter() -> None:
 
 
 def test_sok_het_and_fall_context_disambiguation() -> None:
+    from zetodos_thomas.align.lemma_aligner import (
+        LexicalCandidate,
+        LexicalTranslationModel,
+    )
     from zetodos_thomas.neural.constrained_beam import (
         build_coptic_content_candidate_sets,
     )
@@ -524,16 +528,36 @@ def test_sok_het_and_fall_context_disambiguation() -> None:
     # ϩⲏⲧ after ⲥⲱⲕ is NOT a grammaticalized PREP+noun
     assert not is_grammaticalized_prep_noun(ms, 1)
 
+    lex = LexicalTranslationModel(
+        by_lemma_pos={
+            ("ϩⲉ", "V"): [
+                LexicalCandidate("εὑρίσκω", "V-", 0.45, 0.45, 0.45, 262.0, 0.0, "N"),
+                LexicalCandidate("πίπτω", "V-", 0.23, 0.23, 0.23, 167.0, 0.0, "N"),
+            ],
+        },
+        by_lemma={},
+    )
     hints = {
         "ⲥⲱⲕ|V": "ἕλκω",
         "ϩⲏⲧ|N": "καρδία",
         "ϩⲉ|V": "εὑρίσκω",
         "ϩⲓⲉⲓⲧ|N": "βόθυνος",
     }
-    csets = dict(build_coptic_content_candidate_sets(ms, native_gloss_hints=hints))
-    # Do not emit or demand καρδία for ϩⲏⲧ after ⲥⲱⲕ
+    # Without LexicalTranslationModel, `εὑρίσκω` is dropped and nothing is hardcoded
+    csets_no_lex = dict(
+        build_coptic_content_candidate_sets(ms, native_gloss_hints=hints)
+    )
+    assert 1 not in csets_no_lex
+    assert 3 not in csets_no_lex
+
+    # With LexicalTranslationModel, `εὑρίσκω` is dropped while `πίπτω` comes
+    # strictly from lookup (never hardcoded)
+    csets = dict(
+        build_coptic_content_candidate_sets(
+            ms, lexical_model=lex, native_gloss_hints=hints
+        )
+    )
     assert 1 not in csets
-    # In pit context (`ϩⲓⲉⲓⲧ`), never reward `εὑρίσκω` for `ϩⲉ`; expect `πίπτω`
     assert "ευρισκω" not in csets[3]
     assert "πιπτω" in csets[3]
 
@@ -618,3 +642,90 @@ def test_repair_unbounded_low_prob_nouns_last_verb_ptc_and_no_proper_noise(
     assert "ἱμάτιον" in labels
     assert "γίνομαι" in labels  # last unmatched verb kept
     assert len(tries) == 6  # not capped at 3
+
+
+def test_beam_penalty_fns_penalize_dead_unk_prefixes_and_forbid_hemera(
+    tmp_path: Path,
+) -> None:
+    from zetodos_thomas.neural.decoder_v2 import NeuralKoineDecoder, RerankWeights
+
+    texts = [
+        "δαπανήσει ἡμέρας βοῶν βόας ὑβρίζει καί τόξον",
+    ] * 12
+    tok = BilingualTokenizer.train(
+        texts=texts,
+        out_prefix=tmp_path / "tok_pen",
+        vocab_size=384,
+        user_defined_symbols=SPECIAL_USER_SYMBOLS_V3,
+    )
+    cfg = Seq2SeqConfig(
+        vocab_size=tok.vocab_size,
+        d_model=16,
+        n_heads=2,
+        d_ff=32,
+        num_enc_layers=1,
+        num_dec_layers=1,
+        dropout=0.0,
+        attn_dropout=0.0,
+    )
+    model = KoineSeq2SeqTransformer(cfg).eval()
+    inf = GreekInflector(
+        paradigms={},
+        coarse_paradigms={},
+        lemma_genders={},
+        surface_analyses={
+            "ἡμέρας": [("ἡμέρα", "N-APF", 0.0)],
+            "βοῶν": [("βοῦς", "N-GPM", 0.0)],
+            "τόξον": [("τόξον", "N-ASN", 0.0)],
+        },
+        known_lemmas={"ἡμέρα": ("ἡμέρα", "N-"), "βοῦς": ("βοῦς", "N-")},
+    )
+    ccl = CclLexicon(
+        loanwords={"ⲣϩⲩⲃⲣⲓⲍⲉ": [LoanwordEntry("ⲣϩⲩⲃⲣⲓⲍⲉ", "ὑβρίζω", "V-")]},
+        itacism_index={},
+        greek_genders={},
+    )
+    dec = NeuralKoineDecoder(
+        tokenizer=tok,
+        forward_models=[model],
+        ccl_lexicon=ccl,
+        analyzer_inflector=inf,
+        paradigm_inflector=inf,
+        weights=RerankWeights(use_constrained_beam=True),
+        device="cpu",
+    )
+
+    def _wtup(w: str) -> tuple[int, ...]:
+        return tuple(t for t in tok.encode(w) if t not in (tok.bos_id, tok.eos_id))
+
+    # Chunk with `ⲉϩⲉ` (ox) and no `ϩⲟⲟⲩ` (day) plus hard loan `ⲣϩⲩⲃⲣⲓⲍⲉ`
+    ms_ox = [
+        _m(0, "ⲉϩⲟⲟⲩ", "ⲉϩⲉ", "N"),
+        _m(1, "ⲣϩⲩⲃⲣⲓⲍⲉ", "ⲣϩⲩⲃⲣⲓⲍⲉ", "V", lang="Greek"),
+    ]
+    w_pen, p_pen = dec._build_beam_penalty_fns(ms_ox, [])
+    assert w_pen is not None and p_pen is not None
+    # Dead UNK surface penalized immediately on prefix AND on word close
+    assert p_pen(_wtup("δαπανήσει")) < 0.0
+    assert w_pen(_wtup("δαπανήσει")) < 0.0
+    # Valid inflected form of chunk loan `ὑβρίζω` is NEVER penalized
+    assert p_pen(_wtup("ὑβρίζει")) == 0.0
+    assert w_pen(_wtup("ὑβρίζει")) == 0.0
+    # Regular inflected form parsed by GreekInflector is NEVER penalized
+    assert p_pen(_wtup("τόξον")) == 0.0
+    # `ἡμέρας` is strongly penalized on `ⲉϩⲉ`-without-`ϩⲟⲟⲩ` chunks
+    assert p_pen(_wtup("ἡμέρας")) <= -8.0
+    assert w_pen(_wtup("ἡμέρας")) <= -8.0
+    assert w_pen(_wtup("βοῶν")) == 0.0
+
+    # Chunk containing `ϩⲟⲟⲩ` ("day") must NOT penalize `ἡμέρας`
+    ms_day = [_m(0, "ϩⲟⲟⲩ", "ϩⲟⲟⲩ", "N")]
+    w_day, p_day = dec._build_beam_penalty_fns(ms_day, [])
+    assert w_day is not None and p_day is not None
+    assert p_day(_wtup("ἡμέρας")) == 0.0
+    assert w_day(_wtup("ἡμέρας")) == 0.0
+
+    # Unparseable non-loan surfaces stay honestly marked UNK (never rewritten to N-)
+    lem_u, mf_u, _ = inf.analyze_surface("δαπανήσει")[0]
+    assert mf_u.pos == "UNK"
+    assert lem_u == "δαπανησει"
