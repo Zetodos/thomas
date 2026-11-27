@@ -8,7 +8,12 @@ from pathlib import Path
 
 import typer
 
-from zetodos_thomas.cli.model_cmd import MODEL_REL, MODEL_V2_REL, MODEL_V3_REL
+from zetodos_thomas.cli.model_cmd import (
+    MODEL_REL,
+    MODEL_V2_REL,
+    MODEL_V3_REL,
+    MODEL_V4_REL,
+)
 from zetodos_thomas.eval.benchmark import (
     BENCHMARK_DOC_REL,
     EVAL_REPORT_REL,
@@ -21,6 +26,8 @@ EVAL_REPORT_V2_REL = Path("data/generated/eval-report-v2.json")
 BENCHMARK_DOC_V2_REL = Path("docs/benchmark-report-v2.md")
 EVAL_REPORT_V3_REL = Path("data/generated/eval-report-v3.json")
 BENCHMARK_DOC_V3_REL = Path("docs/benchmark-report-v3.md")
+EVAL_REPORT_V4_REL = Path("data/generated/eval-report-v4.json")
+BENCHMARK_DOC_V4_REL = Path("docs/benchmark-report-v4.md")
 
 eval_app = typer.Typer(
     name="eval",
@@ -53,17 +60,20 @@ def eval_run(
     model: str = typer.Option(
         "v1",
         "--model",
-        help="Model track to evaluate: v1, v2, or v3",
+        help="Model track to evaluate: v1, v2, v3, or v4",
     ),
 ) -> None:
     """Run NT Gospel holdouts + P.Oxy. 1/654/655 benchmark and emit reports."""
     root = require_repo_root(repo_root)
     m_low = model.lower()
+    is_v4 = m_low in {"v4", "model-v4"}
     is_v3 = m_low in {"v3", "model-v3"}
     is_v2 = m_low in {"v2", "model-v2"}
-    is_neural = is_v2 or is_v3
+    is_neural = is_v2 or is_v3 or is_v4
     model_dir = (
-        (root / MODEL_V3_REL)
+        (root / MODEL_V4_REL)
+        if is_v4
+        else (root / MODEL_V3_REL)
         if is_v3
         else (root / MODEL_V2_REL)
         if is_v2
@@ -72,7 +82,9 @@ def eval_run(
     marker = "seq2seq-config.json" if is_neural else "decoder-weights.json"
     if not (model_dir / marker).is_file():
         cmd = (
-            "thomas model build-v3"
+            "thomas model build-v4"
+            if is_v4
+            else "thomas model build-v3"
             if is_v3
             else "thomas model build-v2"
             if is_v2
@@ -88,7 +100,9 @@ def eval_run(
     json_path = report_out or (
         root
         / (
-            EVAL_REPORT_V3_REL
+            EVAL_REPORT_V4_REL
+            if is_v4
+            else EVAL_REPORT_V3_REL
             if is_v3
             else EVAL_REPORT_V2_REL
             if is_v2
@@ -98,7 +112,9 @@ def eval_run(
     md_path = doc_out or (
         root
         / (
-            BENCHMARK_DOC_V3_REL
+            BENCHMARK_DOC_V4_REL
+            if is_v4
+            else BENCHMARK_DOC_V3_REL
             if is_v3
             else BENCHMARK_DOC_V2_REL
             if is_v2

@@ -65,6 +65,9 @@ _CLOSED_PROCLITIC_POS = {
     "VBD",
     "AOPT_PPERS",
     "ACONJ_PPERS",
+    "ACOND_PPERS",
+    "APST_PPERS",
+    "CPRET_PPERS",
     "AFUTCONJ",
     "EXIST",
     "PINT",
@@ -177,7 +180,7 @@ def _extract_ccl_stems(ccl_xml: Path) -> dict[str, list[tuple[str, str, float]]]
             if "(" in raw_orth or " " in raw_orth or not raw_orth:
                 continue
             norm_orth = normalize_coptic(raw_orth)
-            if not norm_orth:
+            if not norm_orth or len(norm_orth) < 2:
                 continue
             usg_el = form.find(f"{_TEI_NS}usg[@type='geo']")
             geo = usg_el.text.strip() if usg_el is not None and usg_el.text else ""
@@ -277,6 +280,10 @@ class CopticAnalyzer:
                 pos_seq: list[str] = ["<s>", "<s>"]
                 for m in unit.morphemes:
                     by_g[m.group_seq].append(m)
+                    # Filter noisy OT single-char NPROP/UNKNOWN tags (e.g. ⲁ as NPROP)
+                    if m.pos == "UNKNOWN" or (m.norm == "ⲁ" and m.pos == "NPROP"):
+                        pos_seq.append("APST" if m.norm == "ⲁ" else m.pos)
+                        continue
                     stem_counts[m.norm][(m.lemma, m.pos)] += 1
                     uni_pos[m.pos] += 1
                     morph_pos[(m.norm, m.pos)] += 1
@@ -288,7 +295,16 @@ class CopticAnalyzer:
 
                 raw_orig_groups = unit.original_text.split()
                 for g_idx, grp_morphs in sorted(by_g.items()):
-                    sig = tuple((m.norm, m.lemma, m.pos) for m in grp_morphs)
+                    sig = tuple(
+                        (
+                            m.norm,
+                            "ⲁ" if (m.norm == "ⲁ" and m.pos == "NPROP") else m.lemma,
+                            "APST" if (m.norm == "ⲁ" and m.pos == "NPROP") else m.pos,
+                        )
+                        for m in grp_morphs
+                    )
+                    if any(pos_v == "UNKNOWN" for _, _, pos_v in sig):
+                        continue
                     ng = normalize_coptic("".join(m.norm for m in grp_morphs))
                     if ng:
                         group_counts[ng][sig] += 1
@@ -339,6 +355,15 @@ class CopticAnalyzer:
             ]
             if entries:
                 proclitic_lex[surf] = entries
+
+        # Ensure fused conditional/past proclitics (e.g. ⲉⲧⲉⲧⲛϣⲁⲛ, ⲉϥϣⲁⲛ) are
+        # available as group prefixes even when attested standalone in OT
+        for norm_s, cnt_s in stem_counts.items():
+            for (lem_s, pos_s), c_s in cnt_s.most_common(2):
+                if pos_s in {"ACOND_PPERS", "AOPT_PPERS", "ACONJ_PPERS"} and c_s >= 2:
+                    existing_p = proclitic_lex.setdefault(norm_s, [])
+                    if not any(p == pos_s for _, _, p, _ in existing_p):
+                        existing_p.append((norm_s, lem_s, pos_s, -0.25))
 
         # Surface contraction ⲩ = ⲟⲩ (ART after ⲉ/ⲁ/ϣⲁ/ϩⲁ/ⲛⲥⲁ/ⲛⲁ or PPERS ⲛⲧⲟⲟⲩ)
         u_list = proclitic_lex.get("ⲩ", [])
@@ -776,10 +801,12 @@ class CopticAnalyzer:
                 "N"
                 if any(rest.endswith(e) for e in _GREEK_LOAN_ENDINGS)
                 else "V"
-                if prev_pos in {"PPERS", "FUT", "ACAUS", "ACONJ", "APST"}
+                if prev_pos in {"PPERS", "FUT", "ACAUS", "ACONJ", "APST", "ACOND_PPERS"}
                 else "NPROP"
             )
-            single_char_pen = 2.0 if (start_idx == 1 and prev_pos != "<g>") else 0.0
+            # Strongly discourage stripping a 1-2 char proclitic off an unattested OOV
+            # word (prevents shredding e.g. ⲛⲓⲕⲟⲇⲏⲙⲟⲥ -> ⲛⲓ + ⲕⲟⲇⲏⲙⲟⲥ)
+            single_char_pen = 4.2 if (0 < start_idx <= 2 and prev_pos != "<g>") else 0.0
             oov_sc = (
                 -2.8
                 - 1.6 * len(rest)
@@ -866,6 +893,63 @@ class CopticAnalyzer:
                             states[i + k][p_pos].append(
                                 (sc, (*p_seq, (p_norm, p_lemma, p_pos)))
                             )
+
+                # Standard Sahidic haplology ⲧⲉⲧⲛⲁ = ⲧⲉⲧⲛ (PPERS) + ⲛⲁ (FUT) before V
+                if (
+                    rest.startswith("ⲧⲉⲧⲛⲁ")
+                    and len(rest) >= 7
+                    and prev_pos in {"<g>", "CCIRC", "CREL", "CFOC", "CONJ"}
+                ):
+                    tr_p = self._intra(prev_pos, "PPERS") + self._intra("PPERS", "FUT")
+                    for p_score, p_seq in paths_sorted:
+                        if len(p_seq) >= 5:
+                            continue
+                        states[i + 5]["FUT"].append(
+                            (
+                                p_score - 0.55 + tr_p,
+                                (
+                                    *p_seq,
+                                    ("ⲧⲉⲧⲛ", "ⲛⲧⲱⲧⲛ", "PPERS"),
+                                    ("ⲛⲁ", "ⲛⲁ", "FUT"),
+                                ),
+                            )
+                        )
+
+                # Construct transitive verb + bound object inside a single group
+                # (e.g. ⲉϣⲁⲩⲥⲟⲩⲛⲡϣⲏⲛ = ... + ⲥⲟⲩⲛ + ⲡ + ϣⲏⲛ, ⲛⲉϫⲡϫⲏ = ⲛⲉϫ + ⲡ + ϫⲏ)
+                if prev_pos in {
+                    "<g>",
+                    "PPERS",
+                    "FUT",
+                    "APST",
+                    "AAOR",
+                    "ACOND_PPERS",
+                    "ACONJ",
+                    "NEG",
+                    "ACAUS",
+                    "CCIRC",
+                    "CREL",
+                    "CFOC",
+                }:
+                    max_vk = min(8, L - i - 2)
+                    for vk in range(max_vk, 1, -1):
+                        v_piece = norm_group[i : i + vk]
+                        v_hits = self._tables.stem_lex.get(v_piece)
+                        if not v_hits:
+                            continue
+                        for v_lem, v_pos, v_lp in v_hits[:2]:
+                            if v_pos != "V" or v_lp < 0.15:
+                                continue
+                            tr_v = self._intra(prev_pos, "V")
+                            for p_score, p_seq in paths_sorted:
+                                if len(p_seq) >= 5:
+                                    continue
+                                states[i + vk]["V"].append(
+                                    (
+                                        p_score + v_lp - 0.55 + tr_v,
+                                        (*p_seq, (v_piece, v_lem, "V")),
+                                    )
+                                )
 
         return sorted(completed.items(), key=lambda x: (-x[1], x[0]))[:8]
 

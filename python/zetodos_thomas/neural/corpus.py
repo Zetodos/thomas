@@ -16,12 +16,19 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from zetodos_thomas.align.lemma_aligner import (
+    LexicalTranslationModel,
+    _coptic_ao_key,
+    _coptic_orth_key,
+)
 from zetodos_thomas.ingest.apophthegmata import load_apophthegmata_corpus
 from zetodos_thomas.ingest.download import STRONGS_XML_FILENAME
 from zetodos_thomas.ingest.holdouts import (
     assert_clean_training_unit,
     clean_nt_train_ids,
+    greek_token_ngrams,
     load_nt_split,
+    shares_greek_token_ngram,
 )
 from zetodos_thomas.ingest.koine_patristics import load_all_patristic_koine_sentences
 from zetodos_thomas.ingest.morphgnt import load_morphgnt_nt, pair_horner_morphgnt
@@ -90,6 +97,18 @@ _KNOWN_POS_SET = frozenset(KNOWN_COPTIC_POS)
 _CONTENT_LEM_POS = frozenset({"N", "NPROP", "V", "VSTAT", "VBD", "VIMP", "ADV"})
 _EXPLICIT_POS_TAGS = frozenset({"VSTAT", "VIMP", "NPROP"})
 _LOAN_HINT_POS = frozenset({"N", "NPROP", "V", "VSTAT", "VIMP", "ADV"})
+_ASSIMILATED_PRENOMINAL_PREPS: frozenset[tuple[str, str]] = frozenset(
+    {
+        ("ⲙ", "ⲛ"),
+        ("ⲣ", "ⲛ"),
+        ("ⲗ", "ⲛ"),
+        ("ϩⲙ", "ϩⲛ"),
+        ("ⲉϫⲙ", "ⲉϫⲛ"),
+        ("ϩⲓϫⲙ", "ϩⲓϫⲛ"),
+        ("ϩⲁⲧⲙ", "ϩⲁⲧⲛ"),
+        ("ϩⲓⲣⲙ", "ϩⲓⲣⲛ"),
+    }
+)
 _CLAUSE_SPLIT_NORMS = frozenset(
     {"ⲁⲩⲱ", "ϫⲉ", "ϩⲟⲧⲁⲛ", "ⲉϣⲱⲡⲉ", "ⲁⲗⲗⲁ", "ⲉⲓⲉ", "ⲧⲟⲧⲉ", "ⲇⲉ"}
 )
@@ -248,6 +267,14 @@ def resolve_morpheme_loan_hint(
             else base
         )
         if m.lang == "Greek" or hits[0].coptic_lemma in {base, stripped}:
+            # Prevent native Egyptian compound verbs (e.g. ⲣϩⲟⲧⲉ "fear") from
+            # colliding with closed-class Greek particles/conjunctions (e.g. ὅτε).
+            if (
+                m.lang != "Greek"
+                and m.pos in {"N", "NPROP", "V", "VSTAT", "VIMP"}
+                and hits[0].greek_pos not in {"N-", "A-", "V-", "NPROP", ""}
+            ):
+                return None
             g_hint = normalize_greek_target(hits[0].greek_lemma)
             return g_hint or None
     return None
@@ -266,6 +293,7 @@ def serialize_coptic_morphemes(
     unaccented_hints: bool = False,
     native_gloss_hints: Mapping[str, str] | None = None,
     target_tag: str | None = None,
+    canonicalize_preps: bool = False,
 ) -> tuple[str, list[tuple[int, int, int]]]:
     """Serialize Coptic morphemes compactly + optional `<V1>` draft + char spans.
 
@@ -290,6 +318,13 @@ def serialize_coptic_morphemes(
             head = norm_s or lem_s
             if not head:
                 continue
+            # Canonicalize consonant-assimilated prenominal prepositions (e.g. ⲣ/ⲙ -> ⲛ)
+            if (
+                canonicalize_preps
+                and m.pos == "PREP"
+                and (norm_s, lem_s) in _ASSIMILATED_PRENOMINAL_PREPS
+            ):
+                head = lem_s
             disp_head = greekify_coptic(head) if greekify else head
             disp_lem = greekify_coptic(lem_s) if (greekify and lem_s) else lem_s
             toks = [disp_head]
@@ -314,7 +349,25 @@ def serialize_coptic_morphemes(
                 and m.pos in _CONTENT_LEM_POS
                 and (loan_drop_p <= 0.0 or rng is None or rng.random() >= loan_drop_p)
             ):
-                gl_hint = native_gloss_hints.get(lem_s or head)
+                c_pos_key = "VS" if m.pos == "VSTAT" else m.pos
+                key_lem = lem_s or head
+                orth_lem = _coptic_orth_key(key_lem) if len(key_lem) >= 4 else ""
+                ao_lem = _coptic_ao_key(key_lem) if len(key_lem) >= 4 else ""
+                gl_hint = (
+                    native_gloss_hints.get(f"{key_lem}|{c_pos_key}")
+                    or native_gloss_hints.get(f"{head}|{c_pos_key}")
+                    or (
+                        native_gloss_hints.get(f"~{orth_lem}|{c_pos_key}")
+                        if orth_lem
+                        else None
+                    )
+                    or (
+                        native_gloss_hints.get(f"~a{ao_lem}|{c_pos_key}")
+                        if ao_lem
+                        else None
+                    )
+                    or native_gloss_hints.get(key_lem)
+                )
                 if gl_hint:
                     if unaccented_hints:
                         gl_hint = strip_greek_to_bare(gl_hint)
@@ -395,7 +448,10 @@ def _split_long_clause(
 
 
 def split_coptic_unit_for_neural(
-    unit: CopticUnit, *, max_morphemes: int = 36
+    unit: CopticUnit,
+    *,
+    max_morphemes: int = 36,
+    min_tail_morphemes: int = 0,
 ) -> list[list[CopticMorpheme]]:
     """Keep verse-length units intact; split long logia to match NT/OT lengths."""
     ms = list(unit.morphemes)
@@ -419,6 +475,34 @@ def split_coptic_unit_for_neural(
             buf.extend(cl_ms)
     if buf:
         chunks.append(buf)
+
+    # 2. Optionally rebalance tiny orphan tail chunks near a midpoint conjunction
+    if (
+        min_tail_morphemes > 0
+        and len(chunks) >= 2
+        and len(chunks[-1]) < min_tail_morphemes
+    ):
+        merged = [*chunks[-2], *chunks[-1]]
+        if len(merged) <= max_morphemes:
+            chunks[-2:] = [merged]
+        else:
+            mid = len(merged) // 2
+            lo = max(min_tail_morphemes, len(merged) - max_morphemes)
+            hi = min(len(merged) - min_tail_morphemes, max_morphemes)
+            if lo <= hi:
+                best_idx = max(lo, min(mid, hi))
+                best_dist = len(merged) + 1
+                for idx in range(lo, hi + 1):
+                    norm_i = normalize_coptic(merged[idx].norm).replace("\u2cff", "")
+                    is_boundary = (
+                        merged[idx].pos in {"CONJ", "PTC"}
+                        or norm_i in _CLAUSE_SPLIT_NORMS
+                        or (idx > 0 and merged[idx - 1].pos == "PUNCT")
+                    )
+                    if is_boundary and abs(idx - mid) < best_dist:
+                        best_dist = abs(idx - mid)
+                        best_idx = idx
+                chunks[-2:] = [merged[:best_idx], merged[best_idx:]]
     return chunks
 
 
@@ -445,12 +529,111 @@ class ParallelCorpusBundle:
     swete_unaligned_greek: list[str]
     all_clean_greek: list[str]
     all_clean_coptic_units: list[CopticUnit]
-    # model-v3 optional non-biblical & lexicon-bridge datasets
+    # model-v3/v4 optional non-biblical, lexicon-bridge & multi-verse datasets
     apop_coptic_units: list[CopticUnit] = field(default_factory=list)
     apop_eng_pairs: list[tuple[CopticUnit, str]] = field(default_factory=list)
     patristic_greek: list[str] = field(default_factory=list)
     grc_eng_pairs: list[tuple[str, str]] = field(default_factory=list)
     native_gloss_hints: dict[str, str] = field(default_factory=dict)
+    multiverse_aug: list[ParallelExample] = field(default_factory=list)
+
+
+_VERSE_KEY_RE = re.compile(r"^(?:ot\.)?([a-zA-Z0-9]+)\.(\d+)\.(\d+)$")
+
+
+def build_multiverse_windows(
+    examples: Sequence[ParallelExample],
+    *,
+    min_morphemes: int = 36,
+    max_morphemes: int = 72,
+    max_windows: int = 5000,
+) -> list[ParallelExample]:
+    """Concatenate consecutive same-chapter TRAIN verses into 36-72 morph windows.
+
+    Only merges strictly contiguous verse numbers ``(v, v+1)`` already inside
+    ``examples`` so no window ever spans a DEV/HOLDOUT exclusion gap.
+    """
+    by_ch: dict[tuple[str, str, int], list[tuple[int, ParallelExample]]] = {}
+    for ex in examples:
+        m = _VERSE_KEY_RE.match(ex.unit_id)
+        if m is None:
+            continue
+        bk, ch_s, vs_s = m.groups()
+        by_ch.setdefault((ex.domain_tag, bk, int(ch_s)), []).append((int(vs_s), ex))
+
+    windows: list[ParallelExample] = []
+    for key in sorted(by_ch):
+        items = sorted(by_ch[key], key=lambda x: x[0])
+        n = len(items)
+        i = 0
+        while i + 1 < n and len(windows) < max_windows:
+            v0, ex0 = items[i]
+            v1, ex1 = items[i + 1]
+            if v1 != v0 + 1:
+                i += 1
+                continue
+            combined_m: list[CopticMorpheme] = []
+            for m_obj in ex0.coptic_morphemes:
+                combined_m.append(m_obj.model_copy(update={"seq": len(combined_m)}))
+            for m_obj in ex1.coptic_morphemes:
+                combined_m.append(m_obj.model_copy(update={"seq": len(combined_m)}))
+            combined_g = f"{ex0.greek_target} {ex1.greek_target}".strip()
+            uid = f"{ex0.unit_id}+{v1}"
+            if min_morphemes <= len(combined_m) <= max_morphemes and combined_g:
+                windows.append(
+                    ParallelExample(
+                        unit_id=uid,
+                        domain_tag=ex0.domain_tag,
+                        coptic_morphemes=tuple(combined_m),
+                        greek_target=combined_g,
+                    )
+                )
+                i += 2
+                continue
+            # Try 3-verse window when 2 short verses are still < min_morphemes
+            if i + 2 < n and items[i + 2][0] == v1 + 1:
+                v2, ex2 = items[i + 2]
+                for m_obj in ex2.coptic_morphemes:
+                    combined_m.append(m_obj.model_copy(update={"seq": len(combined_m)}))
+                combined_g = f"{combined_g} {ex2.greek_target}".strip()
+                if min_morphemes <= len(combined_m) <= max_morphemes and combined_g:
+                    windows.append(
+                        ParallelExample(
+                            unit_id=f"{ex0.unit_id}+{v1}+{v2}",
+                            domain_tag=ex0.domain_tag,
+                            coptic_morphemes=tuple(combined_m),
+                            greek_target=combined_g,
+                        )
+                    )
+                    i += 3
+                    continue
+            i += 1
+    return windows
+
+
+def select_patristic_training_sentences(
+    raw_sentences: Sequence[tuple[str, str]],
+    *,
+    blocked_nt_verses: Sequence[str],
+    seen_greek: set[str],
+    unaccented: bool = False,
+) -> list[str]:
+    """Filter patristic sentences excluding duplicates and excluded-NT 5-grams."""
+    blocked_ngrams: set[str] = set()
+    for verse in blocked_nt_verses:
+        norm_v = normalize_greek_for_model(verse, unaccented=unaccented).lower()
+        blocked_ngrams.update(greek_token_ngrams(norm_v))
+
+    selected: list[str] = []
+    for _uid, raw_sent in raw_sentences:
+        g_txt = normalize_greek_for_model(raw_sent, unaccented=unaccented)
+        if not g_txt or len(g_txt.split()) < 5 or g_txt in seen_greek:
+            continue
+        if blocked_ngrams and shares_greek_token_ngram(g_txt.lower(), blocked_ngrams):
+            continue
+        seen_greek.add(g_txt)
+        selected.append(g_txt)
+    return selected
 
 
 def _extract_clause_subpairs(
@@ -564,6 +747,8 @@ def build_parallel_corpus_bundle(
     include_patristics: bool = False,
     include_gloss_bridge: bool = False,
     target_tag: str | None = None,
+    lexical_model: LexicalTranslationModel | None = None,
+    include_multiverse_windows: bool = False,
 ) -> ParallelCorpusBundle:
     """Load leak-free NT train/dev, OT x Swete, Swete mono, CCL & v3 corpora."""
     split = load_nt_split(split_path)
@@ -697,17 +882,26 @@ def build_parallel_corpus_bundle(
     aligned_g_set = {ex.greek_target for ex in ot_train}
     swete_unaligned_greek = [g for g in swete_unaligned_greek if g not in aligned_g_set]
 
-    # Optional v3: Patristic & 1st-c. Koine prose (Apostolic Fathers, Epictetus, Philo)
+    # Optional v3/v4: Patristic & 1st-c. Koine prose (minus NT holdout+dev 5-grams)
     patristic_greek: list[str] = []
     if include_patristics:
+        blocked_ids = {
+            uid
+            for p in split.passages
+            if p.role in {PassageRole.HOLDOUT, PassageRole.DEV}
+            for uid in p.unit_ids
+        }
+        blocked_verses = [
+            _fmt_g(u) for uid, u in sorted(morphgnt_all.items()) if uid in blocked_ids
+        ]
         seen_pat = set(all_clean_greek)
-        for _uid, raw_sent in load_all_patristic_koine_sentences(downloads_dir):
-            g_txt = normalize_greek_for_model(raw_sent, unaccented=unaccented_target)
-            if not g_txt or len(g_txt.split()) < 5 or g_txt in seen_pat:
-                continue
-            seen_pat.add(g_txt)
-            patristic_greek.append(g_txt)
-            all_clean_greek.append(g_txt)
+        patristic_greek = select_patristic_training_sentences(
+            load_all_patristic_koine_sentences(downloads_dir),
+            blocked_nt_verses=blocked_verses,
+            seen_greek=seen_pat,
+            unaccented=unaccented_target,
+        )
+        all_clean_greek.extend(patristic_greek)
 
     # Optional v3: Sahidic Apophthegmata Patrum sayings + English translations
     apop_coptic_units: list[CopticUnit] = []
@@ -749,9 +943,71 @@ def build_parallel_corpus_bundle(
             (f"<DOM_LEX> {tgt_prefix}{c_disp} {pos_tag} <LOAN> {g_norm}", g_norm)
         )
 
-    # Optional v3: Native Egyptian CCL x Strong's Greek gloss bridge
+    # Optional v3/v4: POS-disambiguated eflomal + CCL x Strong's native gloss hints
     native_gloss_hints: dict[str, str] = {}
     grc_eng_pairs: list[tuple[str, str]] = []
+
+    if lexical_model is not None:
+        # Precompute orth/ao keys owned by attested (>=5x) lemmas so rare
+        # orthographic variants NEVER collide with and poison frequent lemmas
+        # (e.g. ⲛⲁⲩ "see", ϩⲣⲟⲟⲩ "voice", ϫⲛⲟⲩ "ask", ⲥⲁⲃⲉ "wise").
+        orth_owners: dict[str, set[str]] = {}
+        ao_owners: dict[str, set[str]] = {}
+        for att_lem, att_cnt in coptic_lemma_freq.items():
+            if att_cnt >= 5 and len(att_lem) >= 4:
+                orth_owners.setdefault(_coptic_orth_key(att_lem), set()).add(att_lem)
+                ao_owners.setdefault(_coptic_ao_key(att_lem), set()).add(att_lem)
+
+        # 1. Always inject POS-disambiguated VSTAT hints (e.g. ⲃⲱⲧⲉ|VS -> βδελυκτός,
+        # ϩⲱⲡ|VS -> κρυπτός, ⲱⲛϩ|VS -> ζάω) + rare/mid-freq native content hints
+        # directly from zero-leakage NT+OT eflomal alignments!
+        _cpos_to_tag = {"N": "N", "V": "V", "VS": "VS", "A": "ADV"}
+        for (c_lem, c_cpos), cands in sorted(lexical_model._by_lemma_pos.items()):
+            if not cands or c_cpos not in _cpos_to_tag:
+                continue
+            c_norm = normalize_coptic(c_lem).replace("\u2cff", "")
+            if len(c_norm) < 2:
+                continue
+            top = cands[0]
+            if top.provenance == "L":
+                continue
+            g_norm = normalize_greek_for_model(
+                top.greek_lemma, unaccented=unaccented_target
+            )
+            if not g_norm or len(g_norm) < 2:
+                continue
+            freq = coptic_lemma_freq.get(c_norm, 0)
+            tot_c = top.count_nt + top.count_ot
+            is_vstat = c_cpos == "VS"
+            if is_vstat and tot_c >= 1.0 and top.prob_g_given_c >= 0.15:
+                native_gloss_hints[f"{c_norm}|VS"] = g_norm
+                c_disp = greekify_coptic(c_norm) if greekify else c_norm
+                if (c_disp, g_norm) not in seen_lex:
+                    seen_lex.add((c_disp, g_norm))
+                    lex_aug.append(
+                        (
+                            f"<DOM_LEX> {tgt_prefix}{c_disp} "
+                            f"<POS_VSTAT> <GLOSS> {g_norm}",
+                            g_norm,
+                        )
+                    )
+            elif (
+                not is_vstat
+                and freq < 120
+                and tot_c >= 2.0
+                and top.prob_g_given_c >= (0.55 if freq >= 80 else 0.35)
+            ):
+                pos_k = _cpos_to_tag[c_cpos]
+                native_gloss_hints[f"{c_norm}|{pos_k}"] = g_norm
+                native_gloss_hints.setdefault(c_norm, g_norm)
+                if len(c_norm) >= 4 and top.prob_g_given_c >= 0.50:
+                    ok = _coptic_orth_key(c_norm)
+                    if not (orth_owners.get(ok, set()) - {c_norm}):
+                        native_gloss_hints.setdefault(f"~{ok}|{pos_k}", g_norm)
+                    ak = _coptic_ao_key(c_norm)
+                    if not (ao_owners.get(ak, set()) - {c_norm}):
+                        native_gloss_hints.setdefault(f"~a{ak}|{pos_k}", g_norm)
+
     strongs_xml = downloads_dir / "strongs-greek" / STRONGS_XML_FILENAME
     ccl_xml_cand = (
         downloads_dir / "ccl-ddglc" / "Comprehensive_Coptic_Lexicon-v1.2-2020.xml"
@@ -770,11 +1026,14 @@ def build_parallel_corpus_bundle(
             )
             if not c_disp or not g_norm:
                 continue
-            # Rare native Coptic lemmas (< 10 hits in NT+OT) receive <GLOSS> hint
+            # Rare native Coptic lemmas (< 10 hits in NT+OT, not already attested
+            # in eflomal) receive CCL x Strong's <GLOSS> hint
             if (
                 m.score >= 0.45
                 and coptic_lemma_freq.get(c_norm, 0) < 10
                 and c_norm not in native_gloss_hints
+                and f"{c_norm}|N" not in native_gloss_hints
+                and f"{c_norm}|V" not in native_gloss_hints
             ):
                 native_gloss_hints[c_norm] = g_norm
             if (c_disp, g_norm) not in seen_lex:
@@ -793,6 +1052,19 @@ def build_parallel_corpus_bundle(
                     )
                 )
 
+    multiverse_aug: list[ParallelExample] = []
+    if include_multiverse_windows:
+        multiverse_aug.extend(
+            build_multiverse_windows(
+                nt_train, min_morphemes=36, max_morphemes=72, max_windows=2500
+            )
+        )
+        multiverse_aug.extend(
+            build_multiverse_windows(
+                ot_train, min_morphemes=36, max_morphemes=72, max_windows=2500
+            )
+        )
+
     return ParallelCorpusBundle(
         nt_train=nt_train,
         nt_dev=nt_dev,
@@ -808,4 +1080,5 @@ def build_parallel_corpus_bundle(
         patristic_greek=patristic_greek,
         grc_eng_pairs=grc_eng_pairs,
         native_gloss_hints=native_gloss_hints,
+        multiverse_aug=multiverse_aug,
     )

@@ -164,6 +164,9 @@ class NtHoldoutMetrics(BaseModel):
     content_lemma_f1: float
     all_token_lemma_f1: float
     inflected_surface_f1: float
+    # Faithfulness / completeness diagnostics (model-v4+)
+    content_length_ratio: float | None = None
+    under_translated_count: int | None = None
 
 
 class FragStratumMetrics(BaseModel):
@@ -430,6 +433,7 @@ def evaluate_nt_holdouts(
     c_by_id = {c.unit_id: c for c in analyzed_c}
 
     non_empty = 0
+    under_translated = 0
     cl_matched = cl_pred = cl_gold = 0
     cl_ord_matched = 0
     all_matched = all_pred = all_gold = 0
@@ -461,6 +465,8 @@ def evaluate_nt_holdouts(
         cl_pred += p_c
         cl_gold += g_c
         cl_ord_matched += _lcs_len(p_content, g_content)
+        if g_c >= 4 and p_c < int(0.75 * g_c):
+            under_translated += 1
 
         p_all = [_norm_lemma(t.lemma) for t in gen.tokens if t.morph.pos != "X-"]
         g_all = [_norm_lemma(t.lemma) for t in g_unit.tokens if t.morph.pos != "X-"]
@@ -522,6 +528,8 @@ def evaluate_nt_holdouts(
         content_lemma_f1=cf1,
         all_token_lemma_f1=af1,
         inflected_surface_f1=sf1,
+        content_length_ratio=round(cl_pred / max(cl_gold, 1), 4),
+        under_translated_count=under_translated,
     )
 
 
@@ -1301,6 +1309,22 @@ def format_benchmark_markdown(report: EvalReport) -> str:
         ),
         f"| **chrF++ (beta=2)** | **{nt.chrf_pp:.4f}** | Char 1-6 + word 1-2 |",
         f"| BLEU-4 (smoothed) | {nt.bleu_4:.4f} | Corpus normalized surface |",
+        *(
+            [
+                (
+                    f"| Content Length Ratio (pred/gold) | "
+                    f"{nt.content_length_ratio:.4f} | "
+                    f"Target ≈ 1.00 (flags under-/over-translation) |"
+                ),
+                (
+                    f"| Under-Translated Verses (<75% gold content) | "
+                    f"{nt.under_translated_count} / {nt.unit_count} | "
+                    f"Completeness gate (target: 0) |"
+                ),
+            ]
+            if nt.content_length_ratio is not None
+            else []
+        ),
         "",
         "### 1b. Secondary Order-Blind Multiset Diagnostics",
         "",

@@ -15,12 +15,26 @@ import torch.nn.functional as F
 from pydantic import BaseModel
 from torch import Tensor
 
+from zetodos_thomas.align.lemma_aligner import LexicalTranslationModel
 from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon
 from zetodos_thomas.morphology.greek_inflector import GreekInflector
 from zetodos_thomas.neural.accent_restorer import (
     KoineAccentRestorer,
     _accent_class,
     _bare_key,
+)
+from zetodos_thomas.neural.constrained_beam import (
+    CONTENT_COPTIC_POS,
+    assign_bound_group_coptic_seqs,
+    bipartite_lexicon_coverage,
+    build_chunk_lexical_constraints,
+    build_coptic_content_candidate_sets,
+    build_missing_content_constraints,
+    constrained_ensemble_beam_search,
+    count_spurious_adjacent_word_repeats,
+    has_local_loop_repeat,
+    is_bare_coptic_copy_word,
+    wu_attention_coverage_penalty,
 )
 from zetodos_thomas.neural.corpus import (
     make_sub_coptic_unit,
@@ -60,10 +74,18 @@ class RerankWeights(BaseModel):
     w_lm: float = 0.0
     w_loan: float = 0.6
     w_cov: float = 0.0
+    w_bipartite_cov: float = 0.0
+    w_attn_cov: float = 0.0
+    w_under_len: float = 0.0
     len_alpha: float = 0.9
     beam_size: int = 8
+    max_morphemes: int = 36
+    min_tail_morphemes: int = 0
     use_v1_draft: bool = False
     include_v1_candidate: bool = False
+    use_constrained_beam: bool = False
+    use_coverage_repair: bool = False
+    multi_morpheme_align: bool = False
 
     def save_json(self, path: Path) -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
@@ -165,13 +187,7 @@ def _strip_bare(word: str) -> str:
 
 
 def _has_trigram_repeat(seq: list[int], next_id: int) -> bool:
-    if len(seq) < 5:
-        return False
-    tri = (seq[-2], seq[-1], next_id)
-    for i in range(len(seq) - 2):
-        if (seq[i], seq[i + 1], seq[i + 2]) == tri:
-            return True
-    return False
+    return has_local_loop_repeat(seq, next_id)
 
 
 class NeuralKoineDecoder:
@@ -194,11 +210,20 @@ class NeuralKoineDecoder:
         greekify_source: bool = False,
         unaccented_target: bool = False,
         use_target_lang_tag: bool = False,
+        paradigm_inflector: GreekInflector | None = None,
+        lexical_model: LexicalTranslationModel | None = None,
+        canonicalize_preps: bool = False,
     ) -> None:
         self.tokenizer = tokenizer
         self.forward_models = forward_models
         self.ccl_lexicon = ccl_lexicon
         self.inflector = analyzer_inflector
+        self.paradigm_inflector = paradigm_inflector or (
+            v1_decoder.inflector if v1_decoder is not None else analyzer_inflector
+        )
+        self.lexical_model = lexical_model or (
+            v1_decoder.lexicon if v1_decoder is not None else None
+        )
         self.reverse_model = reverse_model
         self.koine_lm = koine_lm
         self.v1_decoder = v1_decoder
@@ -209,6 +234,7 @@ class NeuralKoineDecoder:
         self._greekify = greekify_source
         self._unaccented = unaccented_target
         self._tgt_grc_tag: str | None = "<TGT_GRC>" if use_target_lang_tag else None
+        self._canonicalize_preps = canonicalize_preps
 
         for m in self.forward_models:
             m.to(self.device)
@@ -293,7 +319,12 @@ class NeuralKoineDecoder:
             RerankWeights.load_json(w_path) if w_path.is_file() else RerankWeights()
         )
 
-        need_v1 = weights.use_v1_draft or weights.include_v1_candidate
+        need_v1 = (
+            weights.use_v1_draft
+            or weights.include_v1_candidate
+            or weights.use_constrained_beam
+            or abs(weights.w_bipartite_cov) > 1e-6
+        )
         resolved_v1_dir = v1_model_dir
         if resolved_v1_dir is None and need_v1:
             sibling = model_dir.parent / "model-v1"
@@ -307,6 +338,23 @@ class NeuralKoineDecoder:
         ):
             v1_dec = KoineBeamDecoder.from_model_dir(resolved_v1_dir)
             v1_dec.weights = dataclasses.replace(v1_dec.weights, beam_size=2)
+        paradigm_inf: GreekInflector | None = None
+        if any(model_dir.glob("greek-paradigms-*.json")):
+            paradigm_inf = GreekInflector.load_shards(model_dir)
+        elif v1_dec is not None:
+            paradigm_inf = v1_dec.inflector
+        lex_model: LexicalTranslationModel | None = None
+        if any(model_dir.glob("lemma-align-*.json")):
+            lex_model = LexicalTranslationModel.load_shards(model_dir)
+        elif v1_dec is not None:
+            lex_model = v1_dec.lexicon
+        if v1_dec is not None:
+            if lex_model is not None and any(model_dir.glob("lemma-align-*.json")):
+                v1_dec.lexicon = lex_model
+            if paradigm_inf is not None and any(
+                model_dir.glob("greek-paradigms-*.json")
+            ):
+                v1_dec.inflector = paradigm_inf
         return cls(
             tokenizer=tokenizer,
             forward_models=forward_models,
@@ -322,6 +370,9 @@ class NeuralKoineDecoder:
             greekify_source=cfg.greekify_source,
             unaccented_target=cfg.unaccented_target,
             use_target_lang_tag=cfg.use_target_lang_tag,
+            paradigm_inflector=paradigm_inf,
+            lexical_model=lex_model,
+            canonicalize_preps=getattr(cfg, "canonicalize_preps", False),
         )
 
     @torch.no_grad()
@@ -495,8 +546,9 @@ class NeuralKoineDecoder:
         morphemes: Sequence[CopticMorpheme],
         beam_hyps: list[tuple[list[int], float]],
         v1_candidate_text: str | None = None,
+        tok_to_seq: Sequence[int | None] | None = None,
     ) -> list[tuple[list[int], str, float]]:
-        """Score & sort candidate hypotheses with noisy-channel reranking."""
+        """Score & sort candidate hypotheses with noisy-channel + coverage reranking."""
         w = self.weights
         cands_ids: list[list[int]] = [seq for seq, _ in beam_hyps]
         cands_txt: list[str] = [
@@ -546,30 +598,92 @@ class NeuralKoineDecoder:
                 if d_mf.pos in content_pos:
                     draft_content_lems.add(_strip_bare(d_lem))
 
+        # Multiset/synonym-aware per-morpheme bilingual lexicon coverage
+        coptic_cand_sets: list[tuple[int, set[str]]] = []
+        if abs(w.w_bipartite_cov) > 1e-6:
+            coptic_cand_sets = build_coptic_content_candidate_sets(
+                morphemes,
+                ccl_lexicon=self.ccl_lexicon,
+                lexical_model=self.lexical_model,
+                native_gloss_hints=self.native_gloss_hints,
+            )
+
+        content_seqs = [m.seq for m in morphemes if m.pos in CONTENT_COPTIC_POS]
+        n_cop_content = len(content_seqs)
+        need_attn_cov = (
+            abs(w.w_attn_cov) > 1e-6 and tok_to_seq is not None and bool(content_seqs)
+        )
+
         ranked: list[tuple[list[int], str, float]] = []
         for idx, (seq, g_txt) in enumerate(zip(cands_ids, cands_txt, strict=True)):
             fwd_n = fwd_raw[idx] / (max(len(seq) - 1, 1) ** w.len_alpha)
             loan_bonus = 0.0
             cov_bonus = 0.0
-            if (expected_loans or draft_content_lems) and g_txt:
-                g_lems = set()
+            bip_bonus = 0.0
+            under_pen = 0.0
+            attn_cov = 0.0
+            bare_copy_pen = 0.0
+            if g_txt and (
+                expected_loans
+                or draft_content_lems
+                or coptic_cand_sets
+                or abs(w.w_under_len) > 1e-6
+                or w.use_constrained_beam
+            ):
+                g_lems: set[str] = set()
+                g_content_seq: list[str] = []
                 restored_cand = self._restore_surface_sentence(g_txt)
-                for gw in restored_cand.split():
+                cand_words = restored_cand.split()
+                if w.use_constrained_beam:
+                    bare_copy_pen += 0.8 * count_spurious_adjacent_word_repeats(
+                        cand_words, morphemes
+                    )
+                for gw in cand_words:
+                    is_bare_copy = (
+                        not self._unaccented
+                        and w.use_constrained_beam
+                        and is_bare_coptic_copy_word(gw)
+                    )
+                    if is_bare_copy:
+                        bare_copy_pen += 1.5
                     p0 = self.inflector.analyze_surface(gw)[0]
-                    g_lems.add(_strip_bare(p0[0]))
-                    g_lems.add(_strip_bare(gw))
+                    b_lem = _strip_bare(p0[0])
+                    if not is_bare_copy:
+                        g_lems.add(b_lem)
+                        g_lems.add(_strip_bare(gw))
+                    if p0[1].pos in content_pos:
+                        g_content_seq.append(b_lem)
                 if expected_loans:
                     hit_n = sum(1 for el in expected_loans if el in g_lems)
                     loan_bonus = hit_n / len(expected_loans)
                 if draft_content_lems:
                     cov_n = sum(1 for dl in draft_content_lems if dl in g_lems)
                     cov_bonus = cov_n / len(draft_content_lems)
+                if coptic_cand_sets:
+                    bip_bonus = bipartite_lexicon_coverage(
+                        coptic_cand_sets, g_content_seq
+                    )
+                if abs(w.w_under_len) > 1e-6 and n_cop_content > 0:
+                    # Penalize dropping below 0.85x Coptic content count
+                    min_exp = max(1.0, 0.85 * n_cop_content)
+                    if len(g_content_seq) < min_exp:
+                        under_pen = (min_exp - len(g_content_seq)) / n_cop_content
+            if need_attn_cov and len(seq) >= 2 and tok_to_seq is not None:
+                c_attn = self._extract_cross_attention(src_ids, seq)
+                attn_cov = wu_attention_coverage_penalty(
+                    c_attn, tok_to_seq, content_seqs, tau=0.45
+                )
+
             total = (
                 w.w_fwd * fwd_n
                 + w.w_rev * rev_scores[idx]
                 + w.w_lm * lm_scores[idx]
                 + w.w_loan * loan_bonus
                 + w.w_cov * cov_bonus
+                + w.w_bipartite_cov * bip_bonus
+                + w.w_attn_cov * attn_cov
+                - w.w_under_len * under_pen
+                - bare_copy_pen
             )
             ranked.append((seq, g_txt, total))
 
@@ -591,6 +705,7 @@ class NeuralKoineDecoder:
             greekify=self._greekify,
             unaccented_hints=self._unaccented,
             native_gloss_hints=self.native_gloss_hints,
+            canonicalize_preps=self._canonicalize_preps,
         )
         draft_arg = v1_chunk_greek if self.weights.use_v1_draft else None
         src_text, char_spans = serialize_coptic_morphemes(
@@ -602,6 +717,7 @@ class NeuralKoineDecoder:
             unaccented_hints=self._unaccented,
             native_gloss_hints=self.native_gloss_hints,
             target_tag=self._tgt_grc_tag,
+            canonicalize_preps=self._canonicalize_preps,
         )
         src_ids, tok_to_seq = self.tokenizer.encode_with_coptic_seq_map(
             src_text, char_spans
@@ -609,20 +725,101 @@ class NeuralKoineDecoder:
         n_non_punct = sum(1 for m in morphemes if m.pos != "PUNCT")
         min_new = max(2, int(n_non_punct * 0.45)) if n_non_punct >= 5 else 1
         max_new = min(220, max(24, int(len(morphemes) * 3.0) + 16))
-        beam_hyps = self._ensemble_beam_search(
-            src_ids,
-            beam_size=self.weights.beam_size,
-            max_new_tokens=max_new,
-            min_new_tokens=min_new,
-            len_alpha=self.weights.len_alpha,
-        )
+        est_tgt = max(int(n_non_punct * 0.85), 8)
+        if self.weights.use_constrained_beam:
+            constraints = build_chunk_lexical_constraints(
+                morphemes,
+                ccl_lexicon=self.ccl_lexicon,
+                inflector=self.paradigm_inflector,
+                tokenizer=self.tokenizer,
+                unaccented=self._unaccented,
+            )
+        else:
+            constraints = []
+        if constraints:
+            beam_hyps = constrained_ensemble_beam_search(
+                forward_models=self.forward_models,
+                tokenizer=self.tokenizer,
+                src_ids=src_ids,
+                constraints=constraints,
+                beam_size=self.weights.beam_size,
+                max_new_tokens=max_new,
+                min_new_tokens=min_new,
+                len_alpha=self.weights.len_alpha,
+                device=self.device,
+                est_tgt_len=est_tgt,
+            )
+        else:
+            beam_hyps = self._ensemble_beam_search(
+                src_ids,
+                beam_size=self.weights.beam_size,
+                max_new_tokens=max_new,
+                min_new_tokens=min_new,
+                len_alpha=self.weights.len_alpha,
+            )
         ranked = self._rerank_candidates(
             src_ids=src_ids,
             coptic_only_text=coptic_only_text,
             morphemes=morphemes,
             beam_hyps=beam_hyps,
             v1_candidate_text=v1_chunk_greek,
+            tok_to_seq=tok_to_seq,
         )
+        # Pass-2 Coverage Repair: if pass-1 dropped high-confidence content
+        # Coptic morphemes (e.g. novel collocations like μακάριος ὁ λέων or
+        # Ἰησοῦς ὁ ζῶν), add disjunctive synonym tries and re-rank jointly!
+        if (
+            self.weights.use_coverage_repair
+            and self.lexical_model is not None
+            and ranked
+            and ranked[0][1]
+        ):
+            p1_restored = self._restore_surface_sentence(ranked[0][1])
+            p1_content_lems: list[str] = []
+            for gw in p1_restored.split():
+                lem, mf, _ = self.inflector.analyze_surface(gw)[0]
+                if mf.pos in {"N-", "V-", "A-", "D-"}:
+                    p1_content_lems.append(_strip_bare(lem))
+            missing_tries = build_missing_content_constraints(
+                morphemes,
+                existing_constraints=constraints,
+                predicted_greek_lemmas=p1_content_lems,
+                ccl_lexicon=self.ccl_lexicon,
+                lexical_model=self.lexical_model,
+                inflector=self.paradigm_inflector,
+                tokenizer=self.tokenizer,
+                native_gloss_hints=self.native_gloss_hints,
+                unaccented=self._unaccented,
+                min_prob=0.50,
+                max_added=3,
+            )
+            if missing_tries:
+                repair_hyps = constrained_ensemble_beam_search(
+                    forward_models=self.forward_models,
+                    tokenizer=self.tokenizer,
+                    src_ids=src_ids,
+                    constraints=[*constraints, *missing_tries][:6],
+                    beam_size=self.weights.beam_size,
+                    max_new_tokens=max_new,
+                    min_new_tokens=min_new,
+                    len_alpha=self.weights.len_alpha,
+                    device=self.device,
+                    est_tgt_len=est_tgt,
+                )
+                merged_hyps: list[tuple[list[int], float]] = list(beam_hyps)
+                seen_h = {tuple(s) for s, _ in merged_hyps}
+                for s, sc in repair_hyps:
+                    if tuple(s) not in seen_h:
+                        seen_h.add(tuple(s))
+                        merged_hyps.append((s, sc))
+                ranked = self._rerank_candidates(
+                    src_ids=src_ids,
+                    coptic_only_text=coptic_only_text,
+                    morphemes=morphemes,
+                    beam_hyps=merged_hyps,
+                    v1_candidate_text=v1_chunk_greek,
+                    tok_to_seq=tok_to_seq,
+                )
         if not ranked or not ranked[0][1]:
             # Zero-null guarantee fallback
             fallback_seqs = [m.seq for m in morphemes[:1]] or [0]
@@ -805,6 +1002,15 @@ class NeuralKoineDecoder:
                 )
             )
 
+        if self.weights.multi_morpheme_align and out_tokens:
+            prim = [t.coptic_seqs[0] for t in out_tokens if t.coptic_seqs]
+            if len(prim) == len(out_tokens):
+                spans = assign_bound_group_coptic_seqs(prim, morphemes)
+                out_tokens = [
+                    tok.model_copy(update={"coptic_seqs": sp})
+                    for tok, sp in zip(out_tokens, spans, strict=True)
+                ]
+
         alt_strings = [
             self._restore_surface_sentence(txt) for _, txt, _ in ranked[:3] if txt
         ]
@@ -824,7 +1030,11 @@ class NeuralKoineDecoder:
 
     def decode_unit(self, unit: CopticUnit) -> GeneratedUnit:
         """Deterministically reconstruct Koine Greek for one Coptic unit."""
-        chunks = split_coptic_unit_for_neural(unit, max_morphemes=36)
+        chunks = split_coptic_unit_for_neural(
+            unit,
+            max_morphemes=self.weights.max_morphemes,
+            min_tail_morphemes=self.weights.min_tail_morphemes,
+        )
         all_tokens: list[GeneratedToken] = []
         all_alts: list[str] = []
         for ch_ms in chunks:
@@ -881,15 +1091,32 @@ def tune_rerank_weights_on_dev(
     *,
     decoder: NeuralKoineDecoder,
     dev_units: Sequence[tuple[CopticUnit, GreekUnit]],
+    tune_faithfulness: bool = False,
 ) -> RerankWeights:
     """Grid-search noisy-channel rerank weights via ordered LCS on 51-verse NT DEV."""
-    # Precompute candidate sets & unnormalized log-likelihoods once for fast search
     content_pos = {"N-", "V-", "A-", "D-"}
-    # Cand row: (t_len, fwd, rev, c_len, lm, lb, cb, lm_lcs, lm_p, sf_lcs, sf_p)
+    # Row: (t_len, fwd, rev, c_len, lm, lb, cb, bip, attn_c, under_p,
+    #       lm_lcs, lm_p, sf_lcs, sf_p)
     cached: list[
         tuple[
             list[
-                tuple[int, float, float, int, float, float, float, int, int, int, int]
+                tuple[
+                    int,
+                    float,
+                    float,
+                    int,
+                    float,
+                    float,
+                    float,
+                    float,
+                    float,
+                    float,
+                    float,
+                    int,
+                    int,
+                    int,
+                    int,
+                ]
             ],
             int,
             int,
@@ -899,7 +1126,7 @@ def tune_rerank_weights_on_dev(
     w_base = decoder.weights
     for c_unit, g_unit in dev_units:
         ms = list(c_unit.morphemes)
-        if not ms or len(ms) > 80:
+        if not ms or len(ms) > 96:
             continue
         coptic_only, _ = serialize_coptic_morphemes(
             ms,
@@ -908,9 +1135,10 @@ def tune_rerank_weights_on_dev(
             greekify=decoder._greekify,
             unaccented_hints=decoder._unaccented,
             native_gloss_hints=decoder.native_gloss_hints,
+            canonicalize_preps=decoder._canonicalize_preps,
         )
         v1_t = decoder._v1_draft_for_chunk(c_unit, ms)
-        src_text, _ = serialize_coptic_morphemes(
+        src_text, char_spans = serialize_coptic_morphemes(
             ms,
             ccl_lexicon=decoder.ccl_lexicon,
             domain_tag="<DOM_NT>",
@@ -919,18 +1147,91 @@ def tune_rerank_weights_on_dev(
             unaccented_hints=decoder._unaccented,
             native_gloss_hints=decoder.native_gloss_hints,
             target_tag=decoder._tgt_grc_tag,
+            canonicalize_preps=decoder._canonicalize_preps,
         )
-        src_ids = decoder.tokenizer.encode(src_text)
+        src_ids, tok_to_seq = decoder.tokenizer.encode_with_coptic_seq_map(
+            src_text, char_spans
+        )
         n_np = sum(1 for m in ms if m.pos != "PUNCT")
         min_new = max(2, int(n_np * 0.45)) if n_np >= 5 else 1
         max_new = min(220, max(24, int(len(ms) * 3.0) + 16))
-        beam_hyps = decoder._ensemble_beam_search(
-            src_ids,
-            beam_size=w_base.beam_size,
-            max_new_tokens=max_new,
-            min_new_tokens=min_new,
-            len_alpha=w_base.len_alpha,
-        )
+        est_tgt = max(int(n_np * 0.85), 8)
+        if w_base.use_constrained_beam:
+            c_tries = build_chunk_lexical_constraints(
+                ms,
+                ccl_lexicon=decoder.ccl_lexicon,
+                inflector=decoder.paradigm_inflector,
+                tokenizer=decoder.tokenizer,
+                unaccented=decoder._unaccented,
+            )
+        else:
+            c_tries = []
+        if c_tries:
+            beam_hyps = constrained_ensemble_beam_search(
+                forward_models=decoder.forward_models,
+                tokenizer=decoder.tokenizer,
+                src_ids=src_ids,
+                constraints=c_tries,
+                beam_size=w_base.beam_size,
+                max_new_tokens=max_new,
+                min_new_tokens=min_new,
+                len_alpha=w_base.len_alpha,
+                device=decoder.device,
+                est_tgt_len=est_tgt,
+            )
+        else:
+            beam_hyps = decoder._ensemble_beam_search(
+                src_ids,
+                beam_size=w_base.beam_size,
+                max_new_tokens=max_new,
+                min_new_tokens=min_new,
+                len_alpha=w_base.len_alpha,
+            )
+        if (
+            w_base.use_coverage_repair
+            and decoder.lexical_model is not None
+            and beam_hyps
+        ):
+            p1_txt = decoder._norm_model_greek(
+                decoder.tokenizer.decode(beam_hyps[0][0])
+            )
+            p1_rest = decoder._restore_surface_sentence(p1_txt) if p1_txt else ""
+            p1_lems: list[str] = []
+            for gw in p1_rest.split():
+                lem, mf, _ = decoder.inflector.analyze_surface(gw)[0]
+                if mf.pos in content_pos:
+                    p1_lems.append(_strip_bare(lem))
+            miss_tries = build_missing_content_constraints(
+                ms,
+                existing_constraints=c_tries,
+                predicted_greek_lemmas=p1_lems,
+                ccl_lexicon=decoder.ccl_lexicon,
+                lexical_model=decoder.lexical_model,
+                inflector=decoder.paradigm_inflector,
+                tokenizer=decoder.tokenizer,
+                native_gloss_hints=decoder.native_gloss_hints,
+                unaccented=decoder._unaccented,
+                min_prob=0.50,
+                max_added=3,
+            )
+            if miss_tries:
+                rep_hyps = constrained_ensemble_beam_search(
+                    forward_models=decoder.forward_models,
+                    tokenizer=decoder.tokenizer,
+                    src_ids=src_ids,
+                    constraints=[*c_tries, *miss_tries][:6],
+                    beam_size=w_base.beam_size,
+                    max_new_tokens=max_new,
+                    min_new_tokens=min_new,
+                    len_alpha=w_base.len_alpha,
+                    device=decoder.device,
+                    est_tgt_len=est_tgt,
+                )
+                seen_s = {tuple(s) for s, _ in beam_hyps}
+                for s, sc in rep_hyps:
+                    if tuple(s) not in seen_s:
+                        seen_s.add(tuple(s))
+                        beam_hyps.append((s, sc))
         c_ids = [s for s, _ in beam_hyps]
         c_txts = [decoder._norm_model_greek(decoder.tokenizer.decode(s)) for s in c_ids]
         if v1_t and w_base.include_v1_candidate:
@@ -966,6 +1267,19 @@ def tune_rerank_weights_on_dev(
                 if d_mf.pos in content_pos:
                     draft_lems.add(_strip_bare(d_lem))
 
+        coptic_cand_sets = (
+            build_coptic_content_candidate_sets(
+                ms,
+                ccl_lexicon=decoder.ccl_lexicon,
+                lexical_model=decoder.lexical_model,
+                native_gloss_hints=decoder.native_gloss_hints,
+            )
+            if tune_faithfulness
+            else []
+        )
+        content_seqs = [m.seq for m in ms if m.pos in CONTENT_COPTIC_POS]
+        n_cop_content = len(content_seqs)
+
         g_lem_seq = [
             _strip_bare(t.lemma) for t in g_unit.tokens if t.morph.pos in content_pos
         ]
@@ -977,28 +1291,70 @@ def tune_rerank_weights_on_dev(
         ]
 
         cand_rows: list[
-            tuple[int, float, float, int, float, float, float, int, int, int, int]
+            tuple[
+                int,
+                float,
+                float,
+                int,
+                float,
+                float,
+                float,
+                float,
+                float,
+                float,
+                float,
+                int,
+                int,
+                int,
+                int,
+            ]
         ] = []
         for idx, (seq, gt) in enumerate(zip(c_ids, c_txts, strict=True)):
             t_len = max(len(seq) - 1, 1)
             restored_gt = decoder._restore_surface_sentence(gt) if gt else ""
             lb = 0.0
             cb = 0.0
+            bip = 0.0
+            attn_c = 0.0
+            under_p = 0.0
+            bare_pen = 0.0
             p_lem_seq: list[str] = []
             p_surf_seq = restored_gt.lower().split() if restored_gt else []
             if restored_gt:
                 gl: set[str] = set()
-                for w in restored_gt.split():
+                r_words = restored_gt.split()
+                if w_base.use_constrained_beam:
+                    bare_pen += 0.8 * count_spurious_adjacent_word_repeats(r_words, ms)
+                for w in r_words:
+                    is_bc = (
+                        not decoder._unaccented
+                        and w_base.use_constrained_beam
+                        and is_bare_coptic_copy_word(w)
+                    )
+                    if is_bc:
+                        bare_pen += 1.5
                     lem, mf, _ = decoder.inflector.analyze_surface(w)[0]
                     bl = _strip_bare(lem)
-                    gl.add(bl)
-                    gl.add(_strip_bare(w))
+                    if not is_bc:
+                        gl.add(bl)
+                        gl.add(_strip_bare(w))
                     if mf.pos in content_pos:
                         p_lem_seq.append(bl)
                 if exp_loans:
                     lb = sum(1 for el in exp_loans if el in gl) / len(exp_loans)
                 if draft_lems:
                     cb = sum(1 for dl in draft_lems if dl in gl) / len(draft_lems)
+                if coptic_cand_sets:
+                    bip = bipartite_lexicon_coverage(coptic_cand_sets, p_lem_seq)
+                if tune_faithfulness and n_cop_content > 0:
+                    min_exp = max(1.0, 0.85 * n_cop_content)
+                    if len(p_lem_seq) < min_exp:
+                        under_p = (min_exp - len(p_lem_seq)) / n_cop_content
+            if tune_faithfulness and len(seq) >= 2 and content_seqs:
+                c_attn = decoder._extract_cross_attention(src_ids, seq)
+                attn_c = wu_attention_coverage_penalty(
+                    c_attn, tok_to_seq, content_seqs, tau=0.45
+                )
             cand_rows.append(
                 (
                     t_len,
@@ -1008,6 +1364,10 @@ def tune_rerank_weights_on_dev(
                     lm_raw[idx],
                     lb,
                     cb,
+                    bip,
+                    attn_c,
+                    under_p,
+                    bare_pen,
                     _seq_lcs_len(p_lem_seq, g_lem_seq),
                     len(p_lem_seq),
                     _seq_lcs_len(p_surf_seq, g_surf_seq),
@@ -1016,11 +1376,26 @@ def tune_rerank_weights_on_dev(
             )
         cached.append((cand_rows, len(g_lem_seq), len(g_surf_seq)))
 
-    alpha_grid = (1.0, 0.9, 0.8, 1.1)
-    rev_grid = (0.25, 0.5, 0.0, 0.75) if decoder.reverse_model is not None else (0.0,)
-    lm_grid = (0.15, 0.30, 0.0, 0.45) if decoder.koine_lm is not None else (0.0,)
-    loan_grid = (0.8, 0.4, 1.2, 0.0)
-    cov_grid = (0.0, 0.25, 0.5, 0.8) if w_base.use_v1_draft else (0.0,)
+    if not tune_faithfulness:
+        alpha_grid = (1.0, 0.9, 0.8, 1.1)
+        rev_grid = (
+            (0.25, 0.5, 0.0, 0.75) if decoder.reverse_model is not None else (0.0,)
+        )
+        lm_grid = (0.15, 0.30, 0.0, 0.45) if decoder.koine_lm is not None else (0.0,)
+        loan_grid = (0.8, 0.4, 1.2, 0.0)
+        cov_grid = (0.0, 0.25, 0.5, 0.8) if w_base.use_v1_draft else (0.0,)
+        bip_grid = (0.0,)
+        attn_grid = (0.0,)
+        under_grid = (0.0,)
+    else:
+        alpha_grid = (0.85, 0.95, 1.0)
+        rev_grid = (0.35, 0.65, 0.95) if decoder.reverse_model is not None else (0.0,)
+        lm_grid = (0.0, 0.10, 0.20) if decoder.koine_lm is not None else (0.0,)
+        loan_grid = (1.2, 1.8)
+        cov_grid = (0.0, 0.4) if w_base.use_v1_draft else (0.0,)
+        bip_grid = (0.6, 1.2, 1.8)
+        attn_grid = (0.15, 0.35, 0.60)
+        under_grid = (0.5, 1.2)
 
     best_obj = -1.0
     best_w = w_base
@@ -1029,38 +1404,59 @@ def tune_rerank_weights_on_dev(
             for wl in lm_grid:
                 for wln in loan_grid:
                     for wcv in cov_grid:
-                        lm_m = lm_p = lm_g = 0
-                        sf_m = sf_p = sf_g = 0
-                        for cand_rows, n_g_lem, n_g_surf in cached:
-                            best_r = max(
-                                cand_rows,
-                                key=lambda r: (
-                                    r[1] / (r[0] ** alpha)
-                                    + wr * (r[2] / (r[3] ** alpha))
-                                    + wl * (r[4] / (r[0] ** alpha))
-                                    + wln * r[5]
-                                    + wcv * r[6]
-                                ),
-                            )
-                            lm_m += best_r[7]
-                            lm_p += best_r[8]
-                            lm_g += n_g_lem
-                            sf_m += best_r[9]
-                            sf_p += best_r[10]
-                            sf_g += n_g_surf
-                        lf1 = 2 * lm_m / max(lm_p + lm_g, 1)
-                        sf1 = 2 * sf_m / max(sf_p + sf_g, 1)
-                        obj = 0.60 * lf1 + 0.40 * sf1
-                        if obj > best_obj:
-                            best_obj = obj
-                            best_w = w_base.model_copy(
-                                update={
-                                    "len_alpha": alpha,
-                                    "w_rev": wr,
-                                    "w_lm": wl,
-                                    "w_loan": wln,
-                                    "w_cov": wcv,
-                                }
-                            )
+                        for wbip in bip_grid:
+                            for wat in attn_grid:
+                                for wun in under_grid:
+                                    lm_m = lm_p = lm_g = 0
+                                    sf_m = sf_p = sf_g = 0
+                                    for cand_rows, n_g_lem, n_g_surf in cached:
+                                        best_r = max(
+                                            cand_rows,
+                                            key=lambda r: (
+                                                r[1] / (r[0] ** alpha)
+                                                + wr * (r[2] / (r[3] ** alpha))
+                                                + wl * (r[4] / (r[0] ** alpha))
+                                                + wln * r[5]
+                                                + wcv * r[6]
+                                                + wbip * r[7]
+                                                + wat * r[8]
+                                                - wun * r[9]
+                                                - r[10]
+                                            ),
+                                        )
+                                        lm_m += best_r[11]
+                                        lm_p += best_r[12]
+                                        lm_g += n_g_lem
+                                        sf_m += best_r[13]
+                                        sf_p += best_r[14]
+                                        sf_g += n_g_surf
+                                    lf1 = 2 * lm_m / max(lm_p + lm_g, 1)
+                                    sf1 = 2 * sf_m / max(sf_p + sf_g, 1)
+                                    if tune_faithfulness:
+                                        lrec = lm_m / max(lm_g, 1)
+                                        ratio = lm_p / max(lm_g, 1)
+                                        len_fid = max(0.0, 1.0 - abs(1.0 - ratio))
+                                        obj = (
+                                            0.45 * lf1
+                                            + 0.25 * sf1
+                                            + 0.20 * lrec
+                                            + 0.10 * len_fid
+                                        )
+                                    else:
+                                        obj = 0.60 * lf1 + 0.40 * sf1
+                                    if obj > best_obj:
+                                        best_obj = obj
+                                        best_w = w_base.model_copy(
+                                            update={
+                                                "len_alpha": alpha,
+                                                "w_rev": wr,
+                                                "w_lm": wl,
+                                                "w_loan": wln,
+                                                "w_cov": wcv,
+                                                "w_bipartite_cov": wbip,
+                                                "w_attn_cov": wat,
+                                                "w_under_len": wun,
+                                            }
+                                        )
     decoder.weights = best_w
     return best_w
