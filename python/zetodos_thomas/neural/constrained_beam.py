@@ -70,6 +70,40 @@ COMPOUND_PREP_NOUNS: frozenset[str] = frozenset(
 _DETERMINER_POS: frozenset[str] = frozenset({"ART", "PPOS", "PDEM"})
 
 
+def _prev_non_punct(
+    morphemes: Sequence[CopticMorpheme], idx: int
+) -> CopticMorpheme | None:
+    """Return the nearest non-PUNCT morpheme preceding ``idx``, or ``None``."""
+    for j in range(idx - 1, -1, -1):
+        if morphemes[j].pos != "PUNCT":
+            return morphemes[j]
+    return None
+
+
+def _is_sok_het(morphemes: Sequence[CopticMorpheme], idx: int) -> bool:
+    """Return True if ``morphemes[idx]`` is ``ϩⲏⲧ`` directly following verb ``ⲥⲱⲕ``."""
+    m = morphemes[idx]
+    if m.pos != "N":
+        return False
+    key = normalize_coptic(m.lemma or m.norm).replace("\u2cff", "")
+    if key != "ϩⲏⲧ":
+        return False
+    prev = _prev_non_punct(morphemes, idx)
+    if prev is None or prev.pos != "V":
+        return False
+    p_lem = normalize_coptic(prev.lemma or prev.norm).replace("\u2cff", "")
+    return p_lem == "ⲥⲱⲕ"
+
+
+def _chunk_has_fall_context(morphemes: Sequence[CopticMorpheme]) -> bool:
+    """Return True if chunk has pit/downward context disambiguating ``ϩⲉ``='fall'."""
+    for m in morphemes:
+        lem = normalize_coptic(m.lemma or m.norm).replace("\u2cff", "")
+        if lem in {"ϩⲓⲉⲓⲧ", "ⲉⲥⲏⲧ"}:
+            return True
+    return False
+
+
 def is_grammaticalized_prep_noun(morphemes: Sequence[CopticMorpheme], idx: int) -> bool:
     """Return True if ``morphemes[idx]`` is a bare compound-preposition noun."""
     m = morphemes[idx]
@@ -80,11 +114,11 @@ def is_grammaticalized_prep_noun(morphemes: Sequence[CopticMorpheme], idx: int) 
     key = lem_s or norm_s
     if key not in COMPOUND_PREP_NOUNS:
         return False
-    prev_pos: str | None = None
-    for j in range(idx - 1, -1, -1):
-        if morphemes[j].pos != "PUNCT":
-            prev_pos = morphemes[j].pos
-            break
+    # `ⲥⲱⲕ ϩⲏⲧ-` ("lead/guide") is a verbal phrasal idiom, not a PREP+ϩⲏⲧ locative.
+    if _is_sok_het(morphemes, idx):
+        return False
+    prev = _prev_non_punct(morphemes, idx)
+    prev_pos = prev.pos if prev is not None else None
     return prev_pos not in _DETERMINER_POS
 
 
@@ -185,18 +219,17 @@ def count_spurious_adjacent_word_repeats(
     """Count consecutive identical Greek words unsupported by source repeats."""
     if len(greek_words) < 2:
         return 0
-    # Allow adjacent repeats when Coptic itself repeats a lemma within 3 morphs
-    # (e.g. ⲥⲁⲃⲃⲁⲧⲟⲛ ⲛ ⲥⲁⲃⲃⲁⲧⲟⲛ, ϩⲁⲙⲏⲛ ϩⲁⲙⲏⲛ, ⲡϫⲟⲉⲓⲥ ⲡϫⲟⲉⲓⲥ).
+    # Only exempt adjacent repeats when Coptic has an immediate same-lemma
+    # reduplication within 2 non-punct morphs (e.g. ϩⲁⲙⲏⲛ ϩⲁⲙⲏⲛ, ⲥⲁⲃⲃⲁⲧⲟⲛ ⲛ
+    # ⲥⲁⲃⲃⲁⲧⲟⲛ), never distant clause echoes like `ⲃⲁⲗ ... ⲃⲁⲗ` across 5 morphs.
     src_has_adj_repeat = False
     non_punct = [
         normalize_coptic(m.lemma or m.norm).replace("\u2cff", "")
         for m in morphemes
-        if m.pos != "PUNCT"
+        if m.pos in CONTENT_COPTIC_POS
     ]
     for i, lem in enumerate(non_punct):
-        if len(lem) >= 2 and any(
-            non_punct[j] == lem for j in range(i + 1, min(i + 4, len(non_punct)))
-        ):
+        if len(lem) >= 3 and i + 1 < len(non_punct) and non_punct[i + 1] == lem:
             src_has_adj_repeat = True
             break
     if src_has_adj_repeat:
@@ -227,6 +260,7 @@ class ConstraintTrie:
     source_seq: int
     rel_pos: float = 0.5
     is_repair: bool = False
+    is_hard_loan: bool = False
     min_step: int = 0
     max_step: int | None = None
     min_count: int = 1
@@ -247,6 +281,7 @@ class ConstraintTrie:
         rel_pos: float = 0.5,
         unaccented: bool = False,
         is_repair: bool = False,
+        is_hard_loan: bool = False,
         min_step: int = 0,
         max_step: int | None = None,
         min_count: int = 1,
@@ -292,6 +327,7 @@ class ConstraintTrie:
             source_seq=source_seq,
             rel_pos=rel_pos,
             is_repair=is_repair,
+            is_hard_loan=is_hard_loan,
             min_step=min_step,
             max_step=max_step,
             min_count=min_count,
@@ -379,6 +415,7 @@ def build_chunk_lexical_constraints(
     ccl_lexicon: CclLexicon,
     inflector: GreekInflector,
     tokenizer: BilingualTokenizer,
+    lexical_model: LexicalTranslationModel | None = None,
     unaccented: bool = False,
     max_constraints: int | None = None,
 ) -> list[ConstraintTrie]:
@@ -389,6 +426,8 @@ def build_chunk_lexical_constraints(
       ``VIMP``) whose CCL Greek lemma is >= 3 chars.
     - Coptic copula ``COP`` (``ⲡⲉ``/``ⲧⲉ``/``ⲛⲉ``) -> finite ``εἰμί`` forms.
     - Bare object-resumptive ``CREL`` (``has_resumptive_obj``) -> accusative ``ὅς``.
+    - High-confidence lexical interjection ``PTC`` (``greek_pos == "X-"``, e.g.
+      ``ⲟⲩⲟⲓ`` -> ``οὐαί``) when ``lexical_model`` is provided.
     """
     constraints: list[ConstraintTrie] = []
     n_morphs = max(len(morphemes), 1)
@@ -445,6 +484,48 @@ def build_chunk_lexical_constraints(
                     break
             continue
 
+        if m.pos == "PTC" and _is_interjection_ptc(
+            morphemes, m_idx, lexical_model, ccl_lexicon
+        ):
+            assert lexical_model is not None
+            norm_s = normalize_coptic(m.norm).replace("\u2cff", "")
+            lem_s = normalize_coptic(m.lemma).replace("\u2cff", "")
+            # Restrict Pass-1 PTC tries to non-presentative exclamations
+            # (e.g. `ⲟⲩⲟⲓ` -> `οὐαί`); leave `ⲉⲓⲥ`/`ϩⲏⲏⲧⲉ` (`ἰδού`) free so
+            # NT verses that translate `ⲉⲓⲥ` as `ἴδε` or omit it stay exact.
+            if (lem_s or norm_s) in {"ⲉⲓⲥ", "ϩⲏⲏⲧⲉ"}:
+                continue
+            p_hits = lexical_model.lookup(
+                coptic_lemma=lem_s or norm_s,
+                coptic_pos=m.pos,
+                coptic_norm=norm_s,
+                lang=m.lang,
+                ccl_lexicon=ccl_lexicon,
+            )
+            if p_hits:
+                g_lem = p_hits[0].greek_lemma
+                forms = inflector.all_inflected_forms(g_lem, pos=None, max_forms=16)
+                if not forms:
+                    forms = [g_lem]
+                trie = ConstraintTrie.from_surfaces(
+                    label=g_lem,
+                    lemma=g_lem,
+                    surfaces=forms,
+                    tokenizer=tokenizer,
+                    source_seq=m.seq,
+                    rel_pos=rel_p,
+                    unaccented=unaccented,
+                    min_step=min_st,
+                )
+                if trie is not None:
+                    constraints.append(trie)
+                    if (
+                        max_constraints is not None
+                        and len(constraints) >= max_constraints
+                    ):
+                        break
+            continue
+
         if m.pos not in _HARD_LOAN_POS:
             continue
         g_hint = resolve_morpheme_loan_hint(m, ccl_lexicon)
@@ -492,6 +573,7 @@ def build_chunk_lexical_constraints(
             source_seq=m.seq,
             rel_pos=rel_p,
             unaccented=unaccented,
+            is_hard_loan=True,
             min_step=min_st,
         )
         if trie is not None:
@@ -516,8 +598,17 @@ def _count_trie_words(
     seq: list[int],
     token_tuples: frozenset[tuple[int, ...]],
     word_starts: list[bool],
+    *,
+    end_is_boundary: bool = True,
 ) -> int:
-    """Count completed words in ``seq`` (excluding BOS) matching ``token_tuples``."""
+    """Count completed word-boundary-delimited matches in ``seq`` (after BOS).
+
+    A match is counted only when it starts at a word boundary and ends at a
+    word boundary (either the next token starts a new word, or the sequence
+    itself ends at a completed word boundary when ``end_is_boundary=True``).
+    This prevents fused subwords such as ``φορτίοντίον`` (``▁φορ`` + ``τίον`` +
+    ``τίον``) from ever being credited as a ``φορτίον`` match.
+    """
     n = len(seq)
     if n <= 1:
         return 0
@@ -525,10 +616,16 @@ def _count_trie_words(
     w_start = 1
     for i in range(2, n):
         if word_starts[seq[i]]:
-            if tuple(seq[w_start:i]) in token_tuples:
+            if (w_start == 1 or word_starts[seq[w_start]]) and tuple(
+                seq[w_start:i]
+            ) in token_tuples:
                 cnt += 1
             w_start = i
-    if tuple(seq[w_start:n]) in token_tuples:
+    if (
+        end_is_boundary
+        and (w_start == 1 or word_starts[seq[w_start]])
+        and tuple(seq[w_start:n]) in token_tuples
+    ):
         cnt += 1
     return cnt
 
@@ -539,16 +636,72 @@ def _verified_bank(
     constraints: Sequence[ConstraintTrie],
     word_starts: list[bool],
 ) -> int:
-    """Count satisfied constraints whose multiplicity meets ``min_count``."""
+    """Count satisfied constraints verified as complete word-boundary matches.
+
+    Verifies every satisfied constraint (including multiplicity across repeated
+    constraints sharing the same ``token_tuples``) against completed word spans.
+    """
     ok = 0
+    group_counts: dict[frozenset[tuple[int, ...]], int] = {}
+    group_used: dict[frozenset[tuple[int, ...]], int] = defaultdict(int)
     for c_idx, ct in enumerate(constraints):
         if not (mask & (1 << c_idx)):
             continue
-        if ct.min_count <= 1 or (
-            _count_trie_words(seq, ct.token_tuples, word_starts) >= ct.min_count
-        ):
+        found = group_counts.get(ct.token_tuples)
+        if found is None:
+            found = _count_trie_words(
+                seq, ct.token_tuples, word_starts, end_is_boundary=True
+            )
+            group_counts[ct.token_tuples] = found
+        needed = max(ct.min_count, group_used[ct.token_tuples] + 1)
+        if found >= needed:
             ok += 1
+            group_used[ct.token_tuples] += 1
     return ok
+
+
+def satisfies_hard_loans(
+    seq: list[int],
+    constraints: Sequence[ConstraintTrie],
+    word_starts: list[bool],
+    *,
+    eos_id: int | None = None,
+) -> bool:
+    """Return True if ``seq`` satisfies every hard-loan trie at word boundaries."""
+    body = seq[:-1] if (eos_id is not None and seq and seq[-1] == eos_id) else seq
+    req_by_group: dict[frozenset[tuple[int, ...]], int] = defaultdict(int)
+    min_by_group: dict[frozenset[tuple[int, ...]], int] = defaultdict(int)
+    for ct in constraints:
+        if not ct.is_hard_loan:
+            continue
+        req_by_group[ct.token_tuples] += 1
+        if ct.min_count > min_by_group[ct.token_tuples]:
+            min_by_group[ct.token_tuples] = ct.min_count
+    if not req_by_group:
+        return True
+    for tup_set, grp_cnt in req_by_group.items():
+        needed = max(grp_cnt, min_by_group[tup_set])
+        if _count_trie_words(body, tup_set, word_starts, end_is_boundary=True) < needed:
+            return False
+    return True
+
+
+def filter_hard_loan_hyps(
+    hyps: Sequence[tuple[list[int], float]],
+    constraints: Sequence[ConstraintTrie],
+    word_starts: list[bool],
+    *,
+    eos_id: int | None = None,
+) -> list[tuple[list[int], float]]:
+    """Drop beams that failed a hard-loan trie whenever any beam passed all."""
+    if not hyps or not any(ct.is_hard_loan for ct in constraints):
+        return list(hyps)
+    passing = [
+        item
+        for item in hyps
+        if satisfies_hard_loans(item[0], constraints, word_starts, eos_id=eos_id)
+    ]
+    return passing if passing else list(hyps)
 
 
 def _apply_passive_match(
@@ -787,6 +940,10 @@ def constrained_ensemble_beam_search(
                     continue
                 if _has_trigram_repeat(seq, itid):
                     continue
+                # Block immediate repetition of a non-word-start subword (e.g.
+                # `▁φορ` + `τίον` + `τίον` -> `φορτίοντίον`).
+                if not word_starts[itid] and len(seq) > 1 and seq[-1] == itid:
+                    continue
                 new_mask = (
                     _apply_passive_match(
                         seq, mask, constraints, word_starts, est_tgt_len=tgt_len_est
@@ -862,16 +1019,34 @@ def constrained_ensemble_beam_search(
                 dest.append(item)
                 added += 1
 
-        free_quota = max(3, max_total_beams // max(n_c + 2, 2))
-        inprog_quota = max(2, free_quota // 2)
-        for bk in range(n_c, -1, -1):
-            lim = max(free_quota, beam_size // 2) if bk in {0, n_c} else free_quota
+        # Constant-budget balanced per-bank pruning (Post & Vilar DBA):
+        # keep total active beams bounded regardless of n_c while ALWAYS
+        # keeping inprog_quota >= 2 so multi-constraint chunks never starve.
+        eff_max_beams = max(max_total_beams, 36)
+        populated_bks = sorted(
+            {bk for bk, v in next_free.items() if v}
+            | {bk for bk, v in next_inprog.items() if v},
+            reverse=True,
+        )
+        n_pop = max(len(populated_bks), 1)
+        base_quota = max(3, max_total_beams // max(n_c + 2, 2))
+        free_quota = max(2, min(base_quota, eff_max_beams // max(min(n_pop, 8) + 1, 2)))
+        inprog_quota = 2
+        for bk in populated_bks:
+            if len(new_active) >= eff_max_beams and bk not in {0, n_c}:
+                continue
+            rem_budget = max(2, eff_max_beams - len(new_active))
+            lim = min(
+                rem_budget,
+                max(free_quota, beam_size // 2) if bk in {0, n_c} else free_quota,
+            )
             if next_free.get(bk):
                 _push(next_free[bk], lim, new_active, seen_states, max_per_parent=2)
             if bk < n_c and next_inprog.get(bk):
+                ip_lim = min(inprog_quota, max(2, eff_max_beams - len(new_active)))
                 _push(
                     next_inprog[bk],
-                    inprog_quota,
+                    ip_lim,
                     new_active,
                     seen_states,
                     max_per_parent=2,
@@ -889,6 +1064,27 @@ def constrained_ensemble_beam_search(
             )
             if best_act < best_fin - 0.5:
                 break
+        # Fallback early-exit only well past expected length when a high-n_c
+        # Pass-2 search cannot reach bank n_c.
+        if n_c >= 8 and step >= max(min_new_tokens + 20, int(tgt_len_est * 1.65) + 20):
+            top_fin_bk = max(
+                (bk for bk, hyps_bk in finished_by_bank.items() if hyps_bk),
+                default=-1,
+            )
+            if top_fin_bk >= 0 and len(finished_by_bank[top_fin_bk]) >= beam_size * 2:
+                has_hl_ok = any(
+                    satisfies_hard_loans(seq, constraints, word_starts, eos_id=eos_id)
+                    for seq, _ in finished_by_bank[top_fin_bk]
+                )
+                if has_hl_ok:
+                    best_fin = max(sc for _, sc in finished_by_bank[top_fin_bk])
+                    best_act = (
+                        max(_norm(sc, len(s) - 1) for s, sc, _, _, _ in active)
+                        if active
+                        else -1e9
+                    )
+                    if best_act < best_fin - 0.35:
+                        break
 
     # Close any remaining active hypotheses
     for seq, sc, mask, act_c, act_node in active:
@@ -903,15 +1099,43 @@ def constrained_ensemble_beam_search(
         fin_bk = _verified_bank(seq, end_mask, constraints, word_starts)
         finished_by_bank[fin_bk].append(([*seq, eos_id], _norm(sc, len(seq))))
 
+    # Enforce hard-loan integrity: never keep a beam that failed a hard-loan
+    # trie whenever at least one finished hypothesis satisfied all hard loans.
+    has_hard_loans = any(ct.is_hard_loan for ct in constraints)
+    any_hard_loan_pass = has_hard_loans and any(
+        satisfies_hard_loans(seq, constraints, word_starts, eos_id=eos_id)
+        for hyps_bk in finished_by_bank.values()
+        for seq, _ in hyps_bk
+    )
+
     # Collect candidates from the full-constraint bank (n_c) when populated;
     # only fall back to lower banks if no full-constraint hypothesis finished.
     dedup: list[tuple[list[int], float]] = []
     seen_seqs: set[tuple[int, ...]] = set()
-    has_full = bool(finished_by_bank.get(n_c))
+    filtered_by_bank: dict[int, list[tuple[list[int], float]]] = {}
+    for bk, hyps in finished_by_bank.items():
+        if any_hard_loan_pass:
+            kept = [
+                h
+                for h in hyps
+                if satisfies_hard_loans(h[0], constraints, word_starts, eos_id=eos_id)
+            ]
+            if kept:
+                filtered_by_bank[bk] = kept
+        elif hyps:
+            filtered_by_bank[bk] = list(hyps)
+
+    has_repair = any(ct.is_repair for ct in constraints)
+    has_full = bool(filtered_by_bank.get(n_c))
+    # For Pass-1 (no repair tries), require the full-constraint bank (n_c) when
+    # populated so structural slots (COP/CREL) and hard loans are always met.
+    # For Pass-2 (with soft repair tries), keep the top two hard-loan-valid
+    # banks so reranking can prefer a fluent n_c-1 repair over a padded loop.
+    min_keep_bk = (n_c - 1) if (has_full and has_repair) else (n_c if has_full else 0)
     for bk in range(n_c, -1, -1):
-        if has_full and bk < n_c:
+        if bk < min_keep_bk:
             break
-        hyps = finished_by_bank.get(bk, [])
+        hyps = filtered_by_bank.get(bk, [])
         hyps.sort(key=lambda item: item[1], reverse=True)
         bk_added = 0
         bk_cap = beam_size if bk == n_c else max(2, beam_size // 2)
@@ -929,6 +1153,85 @@ def constrained_ensemble_beam_search(
     return dedup
 
 
+def _clean_repair_hits(
+    hits: Sequence[object],
+    coptic_pos: str,
+) -> list[object]:
+    """Filter proper-noun, UNK, and closed-class noise from lexical lookup hits."""
+    cleaned: list[object] = []
+    for lc in hits:
+        g_lem = getattr(lc, "greek_lemma", "")
+        g_pos = getattr(lc, "greek_pos", "")
+        if not g_lem or g_pos == "UNK":
+            continue
+        # Never map a common noun/verb/numeral to a capitalized proper noun (e.g.
+        # `ⲁⲥ` -> `Ἅννας`, `ⲥⲁ` -> `Σαμάρεια`, `ⲉϩⲉ` -> `Βόες`).
+        if coptic_pos != "NPROP" and (g_pos == "NPROP" or g_lem[0].isupper()):
+            continue
+        if coptic_pos in {"N", "V", "VSTAT", "VIMP", "NUM"} and (
+            g_pos in {"P-", "C-"} or g_pos.startswith("R")
+        ):
+            continue
+        cleaned.append(lc)
+    return cleaned
+
+
+def _is_interjection_ptc(
+    morphemes: Sequence[CopticMorpheme],
+    idx: int,
+    lexical_model: LexicalTranslationModel | None,
+    ccl_lexicon: CclLexicon | None = None,
+) -> bool:
+    """Return True if ``PTC`` is a high-confidence lexical interjection (e.g. οὐαί)."""
+    m = morphemes[idx]
+    if m.pos != "PTC" or lexical_model is None:
+        return False
+    norm_s = normalize_coptic(m.norm).replace("\u2cff", "")
+    lem_s = normalize_coptic(m.lemma).replace("\u2cff", "")
+    key_lem = lem_s or norm_s
+    if not key_lem or key_lem in {"ⲛϭⲓ", "ⲇⲉ", "ⲅⲁⲣ", "ⲟⲩⲛ", "ⲙⲉⲛ", "ⲅⲉ"}:
+        return False
+    # `ⲉⲓⲥ ϩⲏⲏⲧⲉ` is a single compound presentative ("behold"); never emit a
+    # second `ἰδού` constraint on `ϩⲏⲏⲧⲉ` after `ⲉⲓⲥ`.
+    if key_lem == "ϩⲏⲏⲧⲉ":
+        prev = _prev_non_punct(morphemes, idx)
+        if prev is not None:
+            p_lem = normalize_coptic(prev.lemma or prev.norm).replace("\u2cff", "")
+            if p_lem == "ⲉⲓⲥ":
+                return False
+    hits = lexical_model.lookup(
+        coptic_lemma=key_lem,
+        coptic_pos=m.pos,
+        coptic_norm=norm_s,
+        lang=m.lang,
+        ccl_lexicon=ccl_lexicon,
+    )
+    if not hits:
+        return False
+    top = hits[0]
+    return (
+        top.greek_pos == "X-"
+        and top.prob_g_given_c >= 0.50
+        and (top.count_nt + top.count_ot) >= 3.0
+    )
+
+
+def _is_sok_before_het(morphemes: Sequence[CopticMorpheme], idx: int) -> bool:
+    """Return True if ``morphemes[idx]`` is verb ``ⲥⲱⲕ`` directly preceding ``ϩⲏⲧ``."""
+    m = morphemes[idx]
+    if m.pos != "V":
+        return False
+    key = normalize_coptic(m.lemma or m.norm).replace("\u2cff", "")
+    if key != "ⲥⲱⲕ":
+        return False
+    for j in range(idx + 1, len(morphemes)):
+        if morphemes[j].pos != "PUNCT":
+            nxt = morphemes[j]
+            n_lem = normalize_coptic(nxt.lemma or nxt.norm).replace("\u2cff", "")
+            return nxt.pos == "N" and n_lem == "ϩⲏⲧ"
+    return False
+
+
 def build_coptic_content_candidate_sets(
     morphemes: Sequence[CopticMorpheme],
     *,
@@ -936,13 +1239,21 @@ def build_coptic_content_candidate_sets(
     lexical_model: LexicalTranslationModel | None = None,
     native_gloss_hints: Mapping[str, str] | None = None,
     top_k: int = 12,
+    for_repair: bool = False,
 ) -> list[tuple[int, set[str]]]:
     """Build per-content-morpheme sets of valid bare Greek translation lemmas."""
+    has_fall_ctx = _chunk_has_fall_context(morphemes)
     out: list[tuple[int, set[str]]] = []
     for m_idx, m in enumerate(morphemes):
-        if m.pos not in CONTENT_COPTIC_POS:
+        is_ptc_interj = _is_interjection_ptc(
+            morphemes, m_idx, lexical_model, ccl_lexicon
+        )
+        if m.pos not in CONTENT_COPTIC_POS and not is_ptc_interj:
             continue
         if is_grammaticalized_prep_noun(morphemes, m_idx):
+            continue
+        # Do not reward or demand `καρδία` for `ϩⲏⲧ` inside the `ⲥⲱⲕ ϩⲏⲧ-` idiom.
+        if _is_sok_het(morphemes, m_idx):
             continue
         norm_s = normalize_coptic(m.norm).replace("\u2cff", "")
         lem_s = normalize_coptic(m.lemma).replace("\u2cff", "")
@@ -960,15 +1271,23 @@ def build_coptic_content_candidate_sets(
                 if gl:
                     cands.add(_strip_bare(gl))
         if lexical_model is not None:
-            for lc in lexical_model.lookup(
+            raw_hits = lexical_model.lookup(
                 coptic_lemma=key_lem,
                 coptic_pos=m.pos,
                 coptic_norm=norm_s,
                 lang=m.lang,
                 ccl_lexicon=ccl_lexicon,
-            )[:top_k]:
+            )
+            eff_k = 2 if (for_repair and m.pos == "PTC") else top_k
+            for lc in raw_hits[:eff_k]:
+                if (
+                    for_repair
+                    and m.pos != "NPROP"
+                    and (lc.greek_pos == "NPROP" or lc.greek_lemma[0].isupper())
+                ):
+                    continue
                 cands.add(_strip_bare(lc.greek_lemma))
-            if norm_s and norm_s != key_lem:
+            if norm_s and norm_s != key_lem and not (for_repair and raw_hits):
                 for lc in lexical_model.lookup(
                     coptic_lemma=norm_s,
                     coptic_pos=m.pos,
@@ -976,6 +1295,15 @@ def build_coptic_content_candidate_sets(
                     lang=m.lang,
                 )[:4]:
                     cands.add(_strip_bare(lc.greek_lemma))
+        # Sahidic lemma `ⲉϩⲉ` ("ox/cow", pl. `ⲉϩⲟⲟⲩ`) is never `ἡμέρα` ("day",
+        # lemma `ϩⲟⲟⲩ`); drop homograph leak from eflomal alignment.
+        if m.pos == "N" and key_lem == "ⲉϩⲉ":
+            cands.discard("ημερα")
+        # Disambiguate homonymous `ϩⲉ` ("fall" vs "find") in pit/downward context:
+        # never reward `εὑρίσκω` when `ϩⲓⲉⲓⲧ`/`ⲉⲥⲏⲧ` is in the chunk.
+        if m.pos == "V" and key_lem == "ϩⲉ" and has_fall_ctx:
+            cands.discard("ευρισκω")
+            cands.update({"πιπτω", "εμπιπτω"})
         if cands:
             out.append((m.seq, cands))
     return out
@@ -1105,90 +1433,219 @@ def build_missing_content_constraints(
     native_gloss_hints: Mapping[str, str] | None = None,
     unaccented: bool = False,
     min_prob: float = 0.50,
-    max_added: int = 3,
+    max_added: int | None = None,
 ) -> list[ConstraintTrie]:
-    """Build positional synonym tries for dropped high-confidence content morphs."""
+    """Build positional synonym tries for dropped content morphemes."""
     if lexical_model is None:
         return []
+    has_fall_ctx = _chunk_has_fall_context(morphemes)
     cand_sets = build_coptic_content_candidate_sets(
         morphemes,
         ccl_lexicon=ccl_lexicon,
         lexical_model=lexical_model,
         native_gloss_hints=native_gloss_hints,
         top_k=12,
+        for_repair=True,
     )
     unmatched_idxs = find_unmatched_content_indices(cand_sets, predicted_greek_lemmas)
     if not unmatched_idxs:
         return []
 
     unmatched_seqs = {cand_sets[i][0] for i in unmatched_idxs}
+    cand_by_seq = {sq: cset for sq, cset in cand_sets}
     existing_seqs = {ct.source_seq for ct in existing_constraints}
+    last_unmatched_verb_seq = max(
+        (
+            m.seq
+            for m in morphemes
+            if m.seq in unmatched_seqs and m.pos in {"V", "VSTAT", "VIMP"}
+        ),
+        default=None,
+    )
     n_morphs = max(len(morphemes), 1)
     n_np = max(sum(1 for x in morphemes if x.pos != "PUNCT"), 1)
-    est_tgt = max(int(n_np * 0.85), 8)
+    est_tgt = max(int(n_np * 0.72), 8)
     added: list[ConstraintTrie] = []
+    per_lemma_added: dict[str, int] = defaultdict(int)
 
     prec_content = 0
     for m_idx, m in enumerate(morphemes):
         cur_prec_content = prec_content
-        if m.pos in CONTENT_COPTIC_POS and not is_grammaticalized_prep_noun(
-            morphemes, m_idx
-        ):
+        is_ptc_interj = _is_interjection_ptc(
+            morphemes, m_idx, lexical_model, ccl_lexicon
+        )
+        if (
+            m.pos in CONTENT_COPTIC_POS
+            and not is_grammaticalized_prep_noun(morphemes, m_idx)
+        ) or is_ptc_interj:
             prec_content += 1
         if m.seq not in unmatched_seqs or m.seq in existing_seqs:
             continue
-        if m.pos not in {"N", "NPROP", "V", "VSTAT", "VIMP", "NUM"}:
+        if m.pos not in {"N", "NPROP", "V", "VSTAT", "VIMP", "NUM", "ADV"} and (
+            not is_ptc_interj
+        ):
             continue
-        if is_grammaticalized_prep_noun(morphemes, m_idx):
+        if is_grammaticalized_prep_noun(morphemes, m_idx) or _is_sok_het(
+            morphemes, m_idx
+        ):
             continue
         norm_s = normalize_coptic(m.norm).replace("\u2cff", "")
         lem_s = normalize_coptic(m.lemma).replace("\u2cff", "")
         key_lem = lem_s or norm_s
         if not key_lem or len(key_lem) < 2:
             continue
-        # Skip ultra-generic light verbs/speech introducers
-        if key_lem in {"ϣⲱⲡⲉ", "ⲉⲓⲣⲉ", "ϫⲱ", "ⲡⲉϫⲉ", "ⲉⲥⲏⲧ"} and m.pos != "VSTAT":
+        # Leave presentatives (`ⲉⲓⲥ`, `ϩⲏⲏⲧⲉ`) free in Pass-2 too so optional
+        # `ἰδού` is never forced redundantly.
+        if is_ptc_interj and key_lem in {"ⲉⲓⲥ", "ϩⲏⲏⲧⲉ"}:
             continue
-        hits = lexical_model.lookup(
+        # Skip generic directional/locative adverbs (e.g. ⲉⲃⲟⲗ, ⲉϩⲟⲩⲛ, ⲙⲙⲁⲩ)
+        # while allowing lexical adverbs like ⲛϩⲟⲩⲛ ("inside" -> ἔσωθεν).
+        if m.pos == "ADV" and key_lem in {
+            "ⲉⲃⲟⲗ",
+            "ⲉϩⲟⲩⲛ",
+            "ⲉϩⲣⲁⲓ",
+            "ⲉⲡⲉⲥⲏⲧ",
+            "ⲙⲙⲁⲩ",
+            "ⲧⲏⲣ",
+            "ⲟⲛ",
+            "ϭⲉ",
+        }:
+            continue
+        rel_p_cur = (m_idx + 0.5) / n_morphs
+        is_tail_last_verb = m.seq == last_unmatched_verb_seq and rel_p_cur >= 0.70
+        is_sok_verb = _is_sok_before_het(morphemes, m_idx)
+        # Skip ultra-generic light verbs/speech introducers, EXCEPT always keep
+        # the tail last unmatched verb so closing clauses are never truncated.
+        if (
+            key_lem in {"ϣⲱⲡⲉ", "ⲉⲓⲣⲉ", "ϫⲱ", "ⲡⲉϫⲉ", "ⲉⲥⲏⲧ"}
+            and m.pos != "VSTAT"
+            and not is_tail_last_verb
+        ):
+            continue
+        # Special fall-context disambiguation for homonymous `ϩⲉ` ("fall" vs "find")
+        if m.pos == "V" and key_lem == "ϩⲉ" and has_fall_ctx:
+            syn_surfaces: list[str] = []
+            for f_lem in ("πίπτω", "ἐμπίπτω"):
+                syn_surfaces.extend(
+                    inflector.all_inflected_forms(f_lem, pos="V-", max_forms=48)
+                )
+            rel_p = (m_idx + 0.5) / n_morphs
+            min_st = (
+                0
+                if cur_prec_content == 0
+                else max(cur_prec_content, int((rel_p - 0.22) * est_tgt))
+            )
+            max_st = max(min_st + 20, int((rel_p + 0.35) * est_tgt) + 12)
+            p1_hits = sum(
+                1 for gl in predicted_greek_lemmas if gl in {"πιπτω", "εμπιπτω"}
+            )
+            trie = ConstraintTrie.from_surfaces(
+                label="πίπτω",
+                lemma="πίπτω",
+                surfaces=syn_surfaces,
+                tokenizer=tokenizer,
+                source_seq=m.seq,
+                rel_pos=rel_p,
+                unaccented=unaccented,
+                is_repair=True,
+                min_step=min_st,
+                max_step=max_st,
+                min_count=p1_hits + 1,
+            )
+            if trie is not None:
+                added.append(trie)
+                if max_added is not None and len(added) >= max_added:
+                    break
+            continue
+
+        raw_hits = lexical_model.lookup(
             coptic_lemma=key_lem,
             coptic_pos=m.pos,
             coptic_norm=norm_s,
             lang=m.lang,
             ccl_lexicon=ccl_lexicon,
         )
+        hits = _clean_repair_hits(raw_hits, m.pos)
         if not hits:
             continue
         top = hits[0]
-        tot_cnt = top.count_nt + top.count_ot
-        if top.provenance != "L" and (top.prob_g_given_c < min_prob or tot_cnt < 3.0):
+        tot_cnt = float(getattr(top, "count_nt", 0.0)) + float(
+            getattr(top, "count_ot", 0.0)
+        )
+        top_prob = float(getattr(top, "prob_g_given_c", 0.0))
+        top_prov = str(getattr(top, "provenance", ""))
+        top_lem = str(getattr(top, "greek_lemma", ""))
+        if top_prov != "L":
+            if m.pos in {"N", "NUM"}:
+                # Never drop an unmatched content noun/numeral just because
+                # prob < 0.50 or tot_cnt < 3; require only a real alignment.
+                if top_prob < 0.08 or tot_cnt < 1.0:
+                    continue
+            elif is_ptc_interj:
+                if top_prob < 0.50 or tot_cnt < 3.0:
+                    continue
+            elif m.pos == "ADV":
+                if top_prob < 0.35 or tot_cnt < 3.0:
+                    continue
+            elif is_tail_last_verb or is_sok_verb:
+                if top_prob < 0.12 or tot_cnt < 1.0:
+                    continue
+            else:
+                if top_prob < min_prob or tot_cnt < 3.0:
+                    continue
+        allowed_cands = cand_by_seq.get(m.seq, set())
+        top_pos = str(getattr(top, "greek_pos", ""))
+        if is_ptc_interj:
+            chosen_hits = hits[:1]
+        elif m.pos == "N" and allowed_cands:
+            # Restrict noun repair tries to cleaned candidates in `allowed_cands`
+            # (dropping homograph noise like `ἡμέρα` on `ⲉϩⲉ`), and when the top
+            # hit is a noun (`N-`), prefer same-POS hits (`ⲧⲟⲉⲓⲥ` -> `ἐπίβλημα`).
+            in_allowed = [
+                lc
+                for lc in hits[:3]
+                if _strip_bare(str(getattr(lc, "greek_lemma", ""))) in allowed_cands
+            ]
+            if top_pos == "N-":
+                same_pos = [
+                    lc for lc in in_allowed if str(getattr(lc, "greek_pos", "")) == "N-"
+                ]
+                chosen_hits = same_pos or in_allowed or hits[:1]
+            else:
+                chosen_hits = in_allowed or hits[:1]
+        else:
+            chosen_hits = hits[:3]
+        top_bare = _strip_bare(top_lem)
+        if per_lemma_added[top_bare] >= 2:
             continue
-        syn_surfaces: list[str] = []
-        for lc in hits[:3]:
-            if lc.prob_g_given_c < 0.08 and lc is not top:
+        syn_surfaces = []
+        for lc in chosen_hits:
+            lc_prob = float(getattr(lc, "prob_g_given_c", 0.0))
+            if lc_prob < 0.08 and lc is not top:
                 continue
-            g_pos = (
-                lc.greek_pos if lc.greek_pos in {"N-", "A-", "V-", "NPROP"} else None
-            )
-            syn_surfaces.extend(
-                inflector.all_inflected_forms(lc.greek_lemma, pos=g_pos, max_forms=32)
-            )
+            lc_lem = str(getattr(lc, "greek_lemma", ""))
+            lc_pos = str(getattr(lc, "greek_pos", ""))
+            g_pos = lc_pos if lc_pos in {"N-", "A-", "V-", "NPROP"} else None
+            forms = inflector.all_inflected_forms(lc_lem, pos=g_pos, max_forms=32)
+            if not forms and lc_lem:
+                forms = [lc_lem]
+            syn_surfaces.extend(forms)
         if not syn_surfaces:
             continue
         rel_p = (m_idx + 0.5) / n_morphs
         min_st = (
             0
             if cur_prec_content == 0
-            else max(
-                cur_prec_content + (1 if cur_prec_content >= 2 else 0),
-                int((rel_p - 0.14) * est_tgt),
-            )
+            else max(cur_prec_content, int((rel_p - 0.22) * est_tgt))
         )
-        max_st = max(min_st + 6, int((rel_p + 0.16) * est_tgt) + 3)
-        syn_bare = {_strip_bare(lc.greek_lemma) for lc in hits[:3]}
+        max_st = max(min_st + 20, int((rel_p + 0.35) * est_tgt) + 12)
+        syn_bare = {
+            _strip_bare(str(getattr(lc, "greek_lemma", ""))) for lc in chosen_hits
+        }
         p1_hits = sum(1 for gl in predicted_greek_lemmas if gl in syn_bare)
         trie = ConstraintTrie.from_surfaces(
-            label=top.greek_lemma,
-            lemma=top.greek_lemma,
+            label=top_lem,
+            lemma=top_lem,
             surfaces=syn_surfaces,
             tokenizer=tokenizer,
             source_seq=m.seq,
@@ -1201,7 +1658,8 @@ def build_missing_content_constraints(
         )
         if trie is not None:
             added.append(trie)
-            if len(added) >= max_added:
+            per_lemma_added[top_bare] += 1
+            if max_added is not None and len(added) >= max_added:
                 break
     return added
 

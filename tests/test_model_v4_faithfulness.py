@@ -473,3 +473,148 @@ def test_reconstruct_inspect_defaults_to_model_v1() -> None:
 
     sig = inspect.signature(reconstruct_inspect)
     assert sig.parameters["model"].default.default == "v1"
+
+
+def test_word_boundary_trie_counting_and_hard_loan_filter() -> None:
+    from zetodos_thomas.neural.constrained_beam import (
+        _count_trie_words,
+        filter_hard_loan_hyps,
+    )
+
+    # Token IDs: 0=BOS, 1=▁φορ (start), 2=τίον (cont), 3=▁καί (start), 4=EOS
+    word_starts = [True, True, False, True, True]
+    fortion = frozenset({(1, 2)})
+    # Fused `▁φορ τίον τίον` (`φορτίοντίον`) must NOT count as a valid match
+    assert _count_trie_words([0, 1, 2, 2], fortion, word_starts) == 0
+    # Two word-boundary-separated `φορτίον` words count as 2
+    assert _count_trie_words([0, 1, 2, 3, 1, 2], fortion, word_starts) == 2
+
+    ct_loan = ConstraintTrie(
+        label="φορτίον",
+        lemma_bare="φορτιον",
+        edges={0: {1: 1}, 1: {2: 2}, 2: {}},
+        terminals=frozenset({2}),
+        token_tuples=fortion,
+        bare_surfaces=frozenset({"φορτιον"}),
+        source_seq=1,
+        is_hard_loan=True,
+    )
+    hyps = [
+        ([0, 1, 2, 2, 4], -0.2),  # fused, fails hard loan
+        ([0, 3, 4], -0.1),  # missing hard loan
+        ([0, 1, 2, 3, 4], -0.5),  # valid word-boundary hard loan
+    ]
+    kept = filter_hard_loan_hyps(hyps, [ct_loan], word_starts, eos_id=4)
+    assert len(kept) == 1
+    assert kept[0][0] == [0, 1, 2, 3, 4]
+
+
+def test_sok_het_and_fall_context_disambiguation() -> None:
+    from zetodos_thomas.neural.constrained_beam import (
+        build_coptic_content_candidate_sets,
+    )
+
+    ms = [
+        _m(0, "ⲥⲱⲕ", "ⲥⲱⲕ", "V"),
+        _m(1, "ϩⲏⲧ", "ϩⲏⲧ", "N"),
+        _m(2, "ϥ", "ⲛⲧⲟϥ", "PPERO"),
+        _m(3, "ϩⲉ", "ϩⲉ", "V"),
+        _m(4, "ϩⲓⲉⲓⲧ", "ϩⲓⲉⲓⲧ", "N"),
+    ]
+    # ϩⲏⲧ after ⲥⲱⲕ is NOT a grammaticalized PREP+noun
+    assert not is_grammaticalized_prep_noun(ms, 1)
+
+    hints = {
+        "ⲥⲱⲕ|V": "ἕλκω",
+        "ϩⲏⲧ|N": "καρδία",
+        "ϩⲉ|V": "εὑρίσκω",
+        "ϩⲓⲉⲓⲧ|N": "βόθυνος",
+    }
+    csets = dict(build_coptic_content_candidate_sets(ms, native_gloss_hints=hints))
+    # Do not emit or demand καρδία for ϩⲏⲧ after ⲥⲱⲕ
+    assert 1 not in csets
+    # In pit context (`ϩⲓⲉⲓⲧ`), never reward `εὑρίσκω` for `ϩⲉ`; expect `πίπτω`
+    assert "ευρισκω" not in csets[3]
+    assert "πιπτω" in csets[3]
+
+
+def test_repair_unbounded_low_prob_nouns_last_verb_ptc_and_no_proper_noise(
+    tmp_path: Path,
+) -> None:
+    from zetodos_thomas.align.lemma_aligner import (
+        LexicalCandidate,
+        LexicalTranslationModel,
+    )
+    from zetodos_thomas.neural.constrained_beam import (
+        build_missing_content_constraints,
+    )
+
+    texts = [
+        "οὐαί τοῖς Φαρισαίοις κύων βοῦς ἐπίβλημα παλαιός ἱμάτιον γίνομαι",
+    ] * 12
+    tok = BilingualTokenizer.train(
+        texts=texts,
+        out_prefix=tmp_path / "tok_rep",
+        vocab_size=384,
+        user_defined_symbols=SPECIAL_USER_SYMBOLS_V3,
+    )
+    inf = GreekInflector(
+        paradigms={},
+        coarse_paradigms={},
+        lemma_genders={},
+        surface_analyses={},
+    )
+    ccl = CclLexicon(loanwords={}, itacism_index={}, greek_genders={})
+
+    def _lc(g: str, gp: str, pr: float, cnt: float) -> LexicalCandidate:
+        return LexicalCandidate(
+            greek_lemma=g,
+            greek_pos=gp,
+            score=pr,
+            prob_g_given_c=pr,
+            prob_c_given_g=pr,
+            count_nt=cnt,
+            count_ot=0.0,
+            provenance="N",
+        )
+
+    lex = LexicalTranslationModel(
+        by_lemma_pos={
+            ("ⲟⲩⲟⲓ", "C"): [_lc("οὐαί", "X-", 0.86, 69.0)],
+            ("ⲟⲩϩⲟⲣ", "N"): [_lc("κύων", "N-", 0.26, 6.0)],
+            ("ⲧⲟⲉⲓⲥ", "N"): [_lc("ἐπίβλημα", "N-", 0.12, 1.0)],
+            ("ⲁⲥ", "N"): [
+                _lc("Ἅννας", "N-", 0.20, 4.0),
+                _lc("παλαιός", "A-", 0.13, 4.0),
+            ],
+            ("ϣⲧⲏⲛ", "N"): [_lc("ἱμάτιον", "N-", 0.48, 30.0)],
+            ("ϣⲱⲡⲉ", "V"): [_lc("γίνομαι", "V-", 0.49, 100.0)],
+        },
+        by_lemma={},
+    )
+    ms = [
+        _m(0, "ⲟⲩⲟⲉⲓ", "ⲟⲩⲟⲓ", "PTC"),
+        _m(1, "ⲟⲩϩⲟⲣ", "ⲟⲩϩⲟⲣ", "N"),
+        _m(2, "ⲧⲟⲉⲓⲥ", "ⲧⲟⲉⲓⲥ", "N"),
+        _m(3, "ⲁⲥ", "ⲁⲥ", "N"),
+        _m(4, "ϣⲧⲏⲛ", "ϣⲧⲏⲛ", "N"),
+        _m(5, "ϣⲱⲡⲉ", "ϣⲱⲡⲉ", "V"),
+    ]
+    tries = build_missing_content_constraints(
+        ms,
+        existing_constraints=[],
+        predicted_greek_lemmas=[],
+        ccl_lexicon=ccl,
+        lexical_model=lex,
+        inflector=inf,
+        tokenizer=tok,
+    )
+    labels = [t.label for t in tries]
+    assert "οὐαί" in labels
+    assert "κύων" in labels
+    assert "ἐπίβλημα" in labels
+    assert "παλαιός" in labels
+    assert "Ἅννας" not in labels
+    assert "ἱμάτιον" in labels
+    assert "γίνομαι" in labels  # last unmatched verb kept
+    assert len(tries) == 6  # not capped at 3

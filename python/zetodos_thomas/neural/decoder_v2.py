@@ -33,6 +33,7 @@ from zetodos_thomas.neural.constrained_beam import (
     build_missing_content_constraints,
     constrained_ensemble_beam_search,
     count_spurious_adjacent_word_repeats,
+    filter_hard_loan_hyps,
     has_local_loop_repeat,
     is_bare_coptic_copy_word,
     wu_attention_coverage_penalty,
@@ -592,7 +593,7 @@ class NeuralKoineDecoder:
                 expected_loans[_strip_bare(g_hint)] += 1
         n_exp_loans = sum(expected_loans.values())
 
-        content_pos = {"N-", "V-", "A-", "D-"}
+        content_pos = {"N-", "V-", "A-", "D-", "X-"}
         draft_content_lems: set[str] = set()
         if v1_candidate_text and abs(w.w_cov) > 1e-6:
             for dw in normalize_greek_target(v1_candidate_text).split():
@@ -602,13 +603,17 @@ class NeuralKoineDecoder:
 
         # Multiset/synonym-aware per-morpheme bilingual lexicon coverage
         coptic_cand_sets: list[tuple[int, set[str]]] = []
-        if abs(w.w_bipartite_cov) > 1e-6:
+        if abs(w.w_bipartite_cov) > 1e-6 or w.use_constrained_beam:
             coptic_cand_sets = build_coptic_content_candidate_sets(
                 morphemes,
                 ccl_lexicon=self.ccl_lexicon,
                 lexical_model=self.lexical_model,
                 native_gloss_hints=self.native_gloss_hints,
             )
+        known_cand_bare: set[str] = set(expected_loans)
+        for _sq, cset in coptic_cand_sets:
+            known_cand_bare.update(cset)
+        chunk_has_nprop = any(m.pos == "NPROP" for m in morphemes)
 
         content_seqs = [m.seq for m in morphemes if m.pos in CONTENT_COPTIC_POS]
         n_cop_content = len(content_seqs)
@@ -652,6 +657,17 @@ class NeuralKoineDecoder:
                     p0 = self.inflector.analyze_surface(gw)[0]
                     b_lem = _strip_bare(p0[0])
                     b_surf = _strip_bare(gw)
+                    if (
+                        w.use_constrained_beam
+                        and not is_bare_copy
+                        and p0[1].pos == "UNK"
+                        and b_lem not in known_cand_bare
+                        and b_surf not in known_cand_bare
+                        and not (gw[0].isupper() and chunk_has_nprop)
+                    ):
+                        # Penalize unparseable/hallucinated Greek surfaces such
+                        # as `δαπανήσει`, `ἐξαλείπτας`, or `φορτίοντίον`.
+                        bare_copy_pen += 0.50
                     if not is_bare_copy:
                         g_lems.add(b_lem)
                         g_lems.add(b_surf)
@@ -673,10 +689,14 @@ class NeuralKoineDecoder:
                         coptic_cand_sets, g_content_seq
                     )
                 if abs(w.w_under_len) > 1e-6 and n_cop_content > 0:
-                    # Penalize dropping below 0.85x Coptic content count
+                    # Penalize dropping below 0.85x or hallucinating >1.30x
+                    # Coptic content count (prevents Pass-2 padding loops).
                     min_exp = max(1.0, 0.85 * n_cop_content)
+                    max_exp = max(n_cop_content + 3.0, 1.30 * n_cop_content)
                     if len(g_content_seq) < min_exp:
                         under_pen = (min_exp - len(g_content_seq)) / n_cop_content
+                    elif len(g_content_seq) > max_exp:
+                        under_pen = (len(g_content_seq) - max_exp) / n_cop_content
             if need_attn_cov and len(seq) >= 2 and tok_to_seq is not None:
                 c_attn = self._extract_cross_attention(src_ids, seq)
                 attn_cov = wu_attention_coverage_penalty(
@@ -733,7 +753,7 @@ class NeuralKoineDecoder:
         )
         n_non_punct = sum(1 for m in morphemes if m.pos != "PUNCT")
         min_new = max(2, int(n_non_punct * 0.45)) if n_non_punct >= 5 else 1
-        max_new = min(220, max(24, int(len(morphemes) * 3.0) + 16))
+        max_new = min(135, max(24, int(len(morphemes) * 1.85) + 18))
         est_tgt = max(int(n_non_punct * 0.85), 8)
         if self.weights.use_constrained_beam:
             constraints = build_chunk_lexical_constraints(
@@ -741,6 +761,7 @@ class NeuralKoineDecoder:
                 ccl_lexicon=self.ccl_lexicon,
                 inflector=self.paradigm_inflector,
                 tokenizer=self.tokenizer,
+                lexical_model=self.lexical_model,
                 unaccented=self._unaccented,
             )
         else:
@@ -787,7 +808,7 @@ class NeuralKoineDecoder:
             p1_content_lems: list[str] = []
             for gw in p1_restored.split():
                 lem, mf, _ = self.inflector.analyze_surface(gw)[0]
-                if mf.pos in {"N-", "V-", "A-", "D-"}:
+                if mf.pos in {"N-", "V-", "A-", "D-", "X-"}:
                     p1_content_lems.append(_strip_bare(lem))
             missing_tries = build_missing_content_constraints(
                 morphemes,
@@ -800,7 +821,7 @@ class NeuralKoineDecoder:
                 native_gloss_hints=self.native_gloss_hints,
                 unaccented=self._unaccented,
                 min_prob=0.50,
-                max_added=3,
+                max_added=None,
             )
             if missing_tries:
                 repair_hyps = constrained_ensemble_beam_search(
@@ -821,6 +842,12 @@ class NeuralKoineDecoder:
                     if tuple(s) not in seen_h:
                         seen_h.add(tuple(s))
                         merged_hyps.append((s, sc))
+                merged_hyps = filter_hard_loan_hyps(
+                    merged_hyps,
+                    constraints,
+                    self.tokenizer.word_start_flags(),
+                    eos_id=self.tokenizer.eos_id,
+                )
                 ranked = self._rerank_candidates(
                     src_ids=src_ids,
                     coptic_only_text=coptic_only_text,
@@ -1171,6 +1198,7 @@ def tune_rerank_weights_on_dev(
                 ccl_lexicon=decoder.ccl_lexicon,
                 inflector=decoder.paradigm_inflector,
                 tokenizer=decoder.tokenizer,
+                lexical_model=decoder.lexical_model,
                 unaccented=decoder._unaccented,
             )
         else:
@@ -1208,7 +1236,7 @@ def tune_rerank_weights_on_dev(
             p1_lems: list[str] = []
             for gw in p1_rest.split():
                 lem, mf, _ = decoder.inflector.analyze_surface(gw)[0]
-                if mf.pos in content_pos:
+                if mf.pos in {"N-", "V-", "A-", "D-", "X-"}:
                     p1_lems.append(_strip_bare(lem))
             miss_tries = build_missing_content_constraints(
                 ms,
@@ -1221,7 +1249,7 @@ def tune_rerank_weights_on_dev(
                 native_gloss_hints=decoder.native_gloss_hints,
                 unaccented=decoder._unaccented,
                 min_prob=0.50,
-                max_added=3,
+                max_added=None,
             )
             if miss_tries:
                 rep_hyps = constrained_ensemble_beam_search(
@@ -1241,6 +1269,12 @@ def tune_rerank_weights_on_dev(
                     if tuple(s) not in seen_s:
                         seen_s.add(tuple(s))
                         beam_hyps.append((s, sc))
+                beam_hyps = filter_hard_loan_hyps(
+                    beam_hyps,
+                    c_tries,
+                    decoder.tokenizer.word_start_flags(),
+                    eos_id=decoder.tokenizer.eos_id,
+                )
         c_ids = [s for s, _ in beam_hyps]
         c_txts = [decoder._norm_model_greek(decoder.tokenizer.decode(s)) for s in c_ids]
         if v1_t and w_base.include_v1_candidate:
@@ -1335,6 +1369,10 @@ def tune_rerank_weights_on_dev(
                 r_words = restored_gt.split()
                 if w_base.use_constrained_beam:
                     bare_pen += 0.8 * count_spurious_adjacent_word_repeats(r_words, ms)
+                known_cand_bare: set[str] = set(exp_loans)
+                for _sq, cset in coptic_cand_sets:
+                    known_cand_bare.update(cset)
+                chunk_has_nprop = any(m.pos == "NPROP" for m in ms)
                 for w in r_words:
                     is_bc = (
                         not decoder._unaccented
@@ -1346,13 +1384,22 @@ def tune_rerank_weights_on_dev(
                     lem, mf, _ = decoder.inflector.analyze_surface(w)[0]
                     bl = _strip_bare(lem)
                     bs = _strip_bare(w)
+                    if (
+                        w_base.use_constrained_beam
+                        and not is_bc
+                        and mf.pos == "UNK"
+                        and bl not in known_cand_bare
+                        and bs not in known_cand_bare
+                        and not (w[0].isupper() and chunk_has_nprop)
+                    ):
+                        bare_pen += 0.50
                     if not is_bc:
                         gl.add(bl)
                         gl.add(bs)
                         gl_counts[bl] += 1
                         if bs != bl:
                             gl_counts[bs] += 1
-                    if mf.pos in content_pos:
+                    if mf.pos in {"N-", "V-", "A-", "D-", "X-"}:
                         p_lem_seq.append(bl)
                 if n_exp_loans:
                     lb = (
@@ -1365,8 +1412,11 @@ def tune_rerank_weights_on_dev(
                     bip = bipartite_lexicon_coverage(coptic_cand_sets, p_lem_seq)
                 if tune_faithfulness and n_cop_content > 0:
                     min_exp = max(1.0, 0.85 * n_cop_content)
+                    max_exp = max(n_cop_content + 3.0, 1.30 * n_cop_content)
                     if len(p_lem_seq) < min_exp:
                         under_p = (min_exp - len(p_lem_seq)) / n_cop_content
+                    elif len(p_lem_seq) > max_exp:
+                        under_p = (len(p_lem_seq) - max_exp) / n_cop_content
             if tune_faithfulness and len(seq) >= 2 and content_seqs:
                 c_attn = decoder._extract_cross_attention(src_ids, seq)
                 attn_c = wu_attention_coverage_penalty(
