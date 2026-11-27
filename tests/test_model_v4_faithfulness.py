@@ -531,8 +531,26 @@ def test_sok_het_and_fall_context_disambiguation() -> None:
     lex = LexicalTranslationModel(
         by_lemma_pos={
             ("ϩⲉ", "V"): [
-                LexicalCandidate("εὑρίσκω", "V-", 0.45, 0.45, 0.45, 262.0, 0.0, "N"),
-                LexicalCandidate("πίπτω", "V-", 0.23, 0.23, 0.23, 167.0, 0.0, "N"),
+                LexicalCandidate(
+                    greek_lemma="εὑρίσκω",
+                    greek_pos="V-",
+                    score=0.45,
+                    prob_g_given_c=0.45,
+                    prob_c_given_g=0.45,
+                    count_nt=262.0,
+                    count_ot=0.0,
+                    provenance="N",
+                ),
+                LexicalCandidate(
+                    greek_lemma="πίπτω",
+                    greek_pos="V-",
+                    score=0.23,
+                    prob_g_given_c=0.23,
+                    prob_c_given_g=0.23,
+                    count_nt=167.0,
+                    count_ot=0.0,
+                    provenance="N",
+                ),
             ],
         },
         by_lemma={},
