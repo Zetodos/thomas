@@ -8,11 +8,13 @@ from pathlib import Path
 import torch
 
 from zetodos_thomas.ingest.holdouts import greek_token_ngrams, shares_greek_token_ngram
+from zetodos_thomas.lexicon.ccl_lexicon import CclLexicon, LoanwordEntry
 from zetodos_thomas.morphology.greek_inflector import GreekInflector
 from zetodos_thomas.neural.constrained_beam import (
     ConstraintTrie,
     assign_bound_group_coptic_seqs,
     bipartite_lexicon_coverage,
+    build_chunk_lexical_constraints,
     constrained_ensemble_beam_search,
     find_unmatched_content_indices,
     has_local_loop_repeat,
@@ -36,7 +38,13 @@ from zetodos_thomas.schemas.source import UnitKind
 
 
 def _m(
-    seq: int, norm: str, lemma: str, pos: str, *, group_seq: int = 0
+    seq: int,
+    norm: str,
+    lemma: str,
+    pos: str,
+    *,
+    group_seq: int = 0,
+    lang: str | None = None,
 ) -> CopticMorpheme:
     return CopticMorpheme(
         seq=seq,
@@ -44,6 +52,7 @@ def _m(
         norm=norm,
         lemma=lemma,
         pos=pos,
+        lang=lang,
     )
 
 
@@ -320,15 +329,147 @@ def test_position_aware_unmatched_content_and_sahidic_orth_gloss_fallback() -> N
     assert find_unmatched_content_indices(cands, pred) == [0]
 
     ms = [
-        _m(0, "ϭⲣⲟⲙⲡⲉ", "ϭⲣⲟⲙⲡⲉ", "N"),
-        _m(1, "ϣⲁϣⲧ", "ϣⲁϣⲧ", "N"),
+        _m(0, "ⲅⲁⲇ", "ⲅⲁⲇ", "N"),
+        _m(1, "ϭⲣⲟⲙⲡⲉ", "ϭⲣⲟⲙⲡⲉ", "N"),
+        _m(2, "ϣⲁϣⲧ", "ϣⲁϣⲧ", "N"),
     ]
     hints = {
+        "ⲅⲁⲇ": "Γάδ",
+        "~ⲅⲁⲇ|N": "γάλααδ",
         "~ϭⲣⲟⲙⲡⲉ|N": "περιστερά",
         "~aϣⲟϣⲧ|N": "κλείς",
-        "ϭⲣⲟⲙⲡⲉ": "τρυγών",
     }
     ser, _ = serialize_coptic_morphemes(ms, greekify=True, native_gloss_hints=hints)
+    # Exact bare lemma must beat fuzzy ~orth key when both exist
+    assert "<GLOSS> Γάδ" in ser
+    assert "γάλααδ" not in ser
+    # Unattested orthographic variants without exact keys fall back to ~orth / ~ao
     assert "<GLOSS> περιστερά" in ser
     assert "<GLOSS> κλείς" in ser
-    assert "τρυγών" not in ser
+
+
+def test_cop_resumptive_crel_and_unbounded_constraints(tmp_path: Path) -> None:
+    texts = [
+        "εἶπεν Ἰησοῦς μακάριος ἐστίν ὁ λέων ὅν ὁ ἄνθρωπος φάγεται",
+        "καί ὁ μοναχός καί ἡ γνῶσις καί ὁ προφήτης καί ὁ κόσμος",
+        "καί τό δεῖπνον καί ὁ τόπος καί ὁ καρπός καί ὁ ἀσκός",
+    ] * 12
+    tok = BilingualTokenizer.train(
+        texts=texts,
+        out_prefix=tmp_path / "tok_cop",
+        vocab_size=384,
+        user_defined_symbols=SPECIAL_USER_SYMBOLS_V3,
+    )
+    inf = GreekInflector(
+        paradigms={},
+        coarse_paradigms={},
+        lemma_genders={},
+        surface_analyses={},
+    )
+    loans = {
+        "ⲙⲁⲕⲁⲣⲓⲟⲥ": [LoanwordEntry("ⲙⲁⲕⲁⲣⲓⲟⲥ", "μακάριος", "A-")],
+        "ⲙⲟⲛⲁⲭⲟⲥ": [LoanwordEntry("ⲙⲟⲛⲁⲭⲟⲥ", "μοναχός", "N-")],
+        "ⲅⲛⲱⲥⲓⲥ": [LoanwordEntry("ⲅⲛⲱⲥⲓⲥ", "γνῶσις", "N-")],
+        "ⲡⲣⲟⲫⲏⲧⲏⲥ": [LoanwordEntry("ⲡⲣⲟⲫⲏⲧⲏⲥ", "προφήτης", "N-")],
+        "ⲕⲟⲥⲙⲟⲥ": [LoanwordEntry("ⲕⲟⲥⲙⲟⲥ", "κόσμος", "N-")],
+        "ⲇⲓⲡⲛⲟⲛ": [LoanwordEntry("ⲇⲓⲡⲛⲟⲛ", "δεῖπνον", "N-")],
+        "ⲧⲟⲡⲟⲥ": [LoanwordEntry("ⲧⲟⲡⲟⲥ", "τόπος", "N-")],
+        "ⲕⲁⲣⲡⲟⲥ": [LoanwordEntry("ⲕⲁⲣⲡⲟⲥ", "καρπός", "N-")],
+    }
+    ccl = CclLexicon(loanwords=loans, itacism_index={}, greek_genders={})
+    ms = [
+        _m(0, "ⲙⲁⲕⲁⲣⲓⲟⲥ", "ⲙⲁⲕⲁⲣⲓⲟⲥ", "N", lang="Greek"),
+        _m(1, "ⲡⲉ", "ⲡⲉ", "COP"),
+        _m(2, "ⲡ", "ⲡ", "ART"),
+        _m(3, "ⲙⲟⲩⲓ", "ⲙⲟⲩⲓ", "N"),
+        _m(4, "ⲉⲧⲉ", "ⲉⲧⲉⲣⲉ", "CREL"),
+        _m(5, "ⲡ", "ⲡ", "ART"),
+        _m(6, "ⲣⲱⲙⲉ", "ⲣⲱⲙⲉ", "N"),
+        _m(7, "ⲟⲩⲟⲙ", "ⲟⲩⲱⲙ", "V"),
+        _m(8, "ϥ", "ⲛⲧⲟϥ", "PPERO"),
+        # ART + CREL (headless relative) must NOT add accusative ὅς
+        _m(9, "ⲡ", "ⲡ", "ART"),
+        _m(10, "ⲉⲧ", "ⲉⲧⲉⲣⲉ", "CREL"),
+        _m(11, "ⲥⲱⲧⲙ", "ⲥⲱⲧⲙ", "V"),
+        _m(12, "ϥ", "ⲛⲧⲟϥ", "PPERO"),
+        # 7 more hard loans (>6 total) must all get tries (no cap at 6)
+        _m(13, "ⲙⲟⲛⲁⲭⲟⲥ", "ⲙⲟⲛⲁⲭⲟⲥ", "N", lang="Greek"),
+        _m(14, "ⲅⲛⲱⲥⲓⲥ", "ⲅⲛⲱⲥⲓⲥ", "N", lang="Greek"),
+        _m(15, "ⲡⲣⲟⲫⲏⲧⲏⲥ", "ⲡⲣⲟⲫⲏⲧⲏⲥ", "N", lang="Greek"),
+        _m(16, "ⲕⲟⲥⲙⲟⲥ", "ⲕⲟⲥⲙⲟⲥ", "N", lang="Greek"),
+        _m(17, "ⲇⲓⲡⲛⲟⲛ", "ⲇⲓⲡⲛⲟⲛ", "N", lang="Greek"),
+        _m(18, "ⲧⲟⲡⲟⲥ", "ⲧⲟⲡⲟⲥ", "N", lang="Greek"),
+        _m(19, "ⲕⲁⲣⲡⲟⲥ", "ⲕⲁⲣⲡⲟⲥ", "N", lang="Greek"),
+    ]
+    cs = build_chunk_lexical_constraints(
+        ms, ccl_lexicon=ccl, inflector=inf, tokenizer=tok
+    )
+    labels = [c.label for c in cs]
+    assert "εἰμί" in labels
+    assert labels.count("ὅς") == 1  # seq 4 only; ART+CREL at seq 10 excluded
+    assert len(cs) == 10  # 8 loans + 1 COP + 1 resumptive CREL (not capped at 6)
+
+    # Guard edge cases: COP+CREL cleft, CREL+ADV/PREP/EXIST, 1sg/2sg PPERO,
+    # clause-boundary crossing, and imperfect CPRET+COP must NOT fire.
+    from zetodos_thomas.neural.constrained_beam import (
+        _cop_is_nominal_predicate,
+        _crel_has_resumptive_obj,
+    )
+
+    cleft = [
+        _m(0, "ⲡⲉ", "ⲡⲉ", "COP"),
+        _m(1, "ⲛⲧ", "ⲉⲧⲉⲣⲉ", "CREL"),
+        _m(2, "ⲁ", "ⲁ", "APST"),
+        _m(3, "ϥ", "ⲛⲧⲟϥ", "PPERS"),
+        _m(4, "ⲁⲁ", "ⲉⲓⲣⲉ", "V"),
+        _m(5, "ⲧ", "ⲁⲛⲟⲕ", "PPERO"),
+    ]
+    assert not _crel_has_resumptive_obj(cleft, 1)
+
+    non_3p = [
+        _m(0, "ⲉⲛⲧ", "ⲉⲧⲉⲣⲉ", "CREL"),
+        _m(1, "ⲁ", "ⲁ", "APST"),
+        _m(2, "ⲩ", "ⲛⲧⲟⲟⲩ", "PPERS"),
+        _m(3, "ⲥⲁⲛⲟⲩϣ", "ⲥⲁⲛⲟⲩϣ", "V"),
+        _m(4, "ⲕ", "ⲛⲧⲟⲕ", "PPERO"),
+    ]
+    assert not _crel_has_resumptive_obj(non_3p, 0)
+
+    dem_then_next_clause = [
+        _m(0, "ⲉⲧ", "ⲉⲧⲉⲣⲉ", "CREL"),
+        _m(1, "ⲙⲙⲁⲩ", "ⲙⲙⲁⲩ", "ADV"),
+        _m(2, "ⲁ", "ⲁ", "APST"),
+        _m(3, "ϥ", "ⲛⲧⲟϥ", "PPERS"),
+        _m(4, "ⲧⲁⲁ", "ϯ", "V"),
+        _m(5, "ⲥ", "ⲛⲧⲟⲥ", "PPERO"),
+    ]
+    assert not _crel_has_resumptive_obj(dem_then_next_clause, 0)
+
+    embedded_vstat_subject = [
+        _m(0, "ⲉⲛⲧ", "ⲉⲧⲉⲣⲉ", "CREL"),
+        _m(1, "ⲁ", "ⲁ", "APST"),
+        _m(2, "ⲓⲏⲥⲟⲩⲥ", "ⲓⲏⲥⲟⲩⲥ", "NPROP"),
+        _m(3, "ⲉⲧ", "ⲉⲧⲉⲣⲉ", "CREL"),
+        _m(4, "ⲟⲛϩ", "ⲱⲛϩ", "VSTAT"),
+        _m(5, "ϫⲟⲟ", "ϫⲱ", "V"),
+        _m(6, "ⲩ", "ⲛⲧⲟⲟⲩ", "PPERO"),
+    ]
+    assert _crel_has_resumptive_obj(embedded_vstat_subject, 0)
+    assert not _crel_has_resumptive_obj(embedded_vstat_subject, 3)
+
+    imperfect_cop = [
+        _m(0, "ⲛⲉ", "ⲛⲉⲣⲉ", "CPRET"),
+        _m(1, "ϥ", "ⲛⲧⲟϥ", "PPERS"),
+        _m(2, "ⲥⲱⲧⲙ", "ⲥⲱⲧⲙ", "V"),
+        _m(3, "ⲡⲉ", "ⲡⲉ", "COP"),
+    ]
+    assert not _cop_is_nominal_predicate(imperfect_cop, 3)
+
+
+def test_reconstruct_inspect_defaults_to_model_v1() -> None:
+    import inspect
+
+    from zetodos_thomas.cli.reconstruct_cmd import reconstruct_inspect
+
+    sig = inspect.signature(reconstruct_inspect)
+    assert sig.parameters["model"].default.default == "v1"

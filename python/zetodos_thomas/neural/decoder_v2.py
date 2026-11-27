@@ -7,6 +7,7 @@ import dataclasses
 import json
 import math
 import unicodedata
+from collections import Counter
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -583,12 +584,13 @@ class NeuralKoineDecoder:
             for idx, (seq, val) in enumerate(zip(cands_ids, raw_lm, strict=True)):
                 lm_scores[idx] = val / (max(len(seq) - 1, 1) ** w.len_alpha)
 
-        # Expected Greek loanwords from CCL/DDGLC & draft content-lemma coverage set
-        expected_loans: set[str] = set()
+        # Expected Greek loanwords (multiset) from CCL/DDGLC & draft coverage set
+        expected_loans: Counter[str] = Counter()
         for m in morphemes:
             g_hint = resolve_morpheme_loan_hint(m, self.ccl_lexicon)
             if g_hint:
-                expected_loans.add(_strip_bare(g_hint))
+                expected_loans[_strip_bare(g_hint)] += 1
+        n_exp_loans = sum(expected_loans.values())
 
         content_pos = {"N-", "V-", "A-", "D-"}
         draft_content_lems: set[str] = set()
@@ -631,6 +633,7 @@ class NeuralKoineDecoder:
                 or w.use_constrained_beam
             ):
                 g_lems: set[str] = set()
+                g_lem_counts: Counter[str] = Counter()
                 g_content_seq: list[str] = []
                 restored_cand = self._restore_surface_sentence(g_txt)
                 cand_words = restored_cand.split()
@@ -648,14 +651,20 @@ class NeuralKoineDecoder:
                         bare_copy_pen += 1.5
                     p0 = self.inflector.analyze_surface(gw)[0]
                     b_lem = _strip_bare(p0[0])
+                    b_surf = _strip_bare(gw)
                     if not is_bare_copy:
                         g_lems.add(b_lem)
-                        g_lems.add(_strip_bare(gw))
+                        g_lems.add(b_surf)
+                        g_lem_counts[b_lem] += 1
+                        if b_surf != b_lem:
+                            g_lem_counts[b_surf] += 1
                     if p0[1].pos in content_pos:
                         g_content_seq.append(b_lem)
-                if expected_loans:
-                    hit_n = sum(1 for el in expected_loans if el in g_lems)
-                    loan_bonus = hit_n / len(expected_loans)
+                if n_exp_loans:
+                    hit_n = sum(
+                        min(cnt, g_lem_counts[el]) for el, cnt in expected_loans.items()
+                    )
+                    loan_bonus = hit_n / n_exp_loans
                 if draft_content_lems:
                     cov_n = sum(1 for dl in draft_content_lems if dl in g_lems)
                     cov_bonus = cov_n / len(draft_content_lems)
@@ -798,7 +807,7 @@ class NeuralKoineDecoder:
                     forward_models=self.forward_models,
                     tokenizer=self.tokenizer,
                     src_ids=src_ids,
-                    constraints=[*constraints, *missing_tries][:6],
+                    constraints=[*constraints, *missing_tries],
                     beam_size=self.weights.beam_size,
                     max_new_tokens=max_new,
                     min_new_tokens=min_new,
@@ -1219,7 +1228,7 @@ def tune_rerank_weights_on_dev(
                     forward_models=decoder.forward_models,
                     tokenizer=decoder.tokenizer,
                     src_ids=src_ids,
-                    constraints=[*c_tries, *miss_tries][:6],
+                    constraints=[*c_tries, *miss_tries],
                     beam_size=w_base.beam_size,
                     max_new_tokens=max_new,
                     min_new_tokens=min_new,
@@ -1255,11 +1264,11 @@ def tune_rerank_weights_on_dev(
         if decoder.koine_lm is not None:
             lm_raw = decoder.koine_lm.score_token_seqs(c_ids, device=decoder.device)
 
-        exp_loans = {
-            _strip_bare(gh)
-            for m in ms
-            if (gh := resolve_morpheme_loan_hint(m, decoder.ccl_lexicon)) is not None
-        }
+        exp_loans: Counter[str] = Counter()
+        for m in ms:
+            if (gh := resolve_morpheme_loan_hint(m, decoder.ccl_lexicon)) is not None:
+                exp_loans[_strip_bare(gh)] += 1
+        n_exp_loans = sum(exp_loans.values())
         draft_lems: set[str] = set()
         if v1_t:
             for dw in normalize_greek_target(v1_t).split():
@@ -1322,6 +1331,7 @@ def tune_rerank_weights_on_dev(
             p_surf_seq = restored_gt.lower().split() if restored_gt else []
             if restored_gt:
                 gl: set[str] = set()
+                gl_counts: Counter[str] = Counter()
                 r_words = restored_gt.split()
                 if w_base.use_constrained_beam:
                     bare_pen += 0.8 * count_spurious_adjacent_word_repeats(r_words, ms)
@@ -1335,13 +1345,20 @@ def tune_rerank_weights_on_dev(
                         bare_pen += 1.5
                     lem, mf, _ = decoder.inflector.analyze_surface(w)[0]
                     bl = _strip_bare(lem)
+                    bs = _strip_bare(w)
                     if not is_bc:
                         gl.add(bl)
-                        gl.add(_strip_bare(w))
+                        gl.add(bs)
+                        gl_counts[bl] += 1
+                        if bs != bl:
+                            gl_counts[bs] += 1
                     if mf.pos in content_pos:
                         p_lem_seq.append(bl)
-                if exp_loans:
-                    lb = sum(1 for el in exp_loans if el in gl) / len(exp_loans)
+                if n_exp_loans:
+                    lb = (
+                        sum(min(cnt, gl_counts[el]) for el, cnt in exp_loans.items())
+                        / n_exp_loans
+                    )
                 if draft_lems:
                     cb = sum(1 for dl in draft_lems if dl in gl) / len(draft_lems)
                 if coptic_cand_sets:

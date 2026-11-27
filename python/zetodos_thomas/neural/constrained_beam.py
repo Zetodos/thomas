@@ -40,6 +40,27 @@ CONTENT_COPTIC_POS: frozenset[str] = frozenset(
     {"N", "NPROP", "V", "VSTAT", "VBD", "VIMP", "ADV", "NUM"}
 )
 _HARD_LOAN_POS: frozenset[str] = frozenset({"N", "NPROP", "V", "VSTAT", "VIMP"})
+# Decode-time structural constraint surfaces matching model-v1 `_clause_to_slots`:
+# 1) Coptic copula (`COP` ⲡⲉ/ⲧⲉ/ⲛⲉ) -> present indicative forms of εἰμί (tense="P")
+# 2) Object-resumptive relative (`CREL` without ART + PPERO) -> accusative forms of ὅς
+_COPULA_EIMI_SURFACES: tuple[str, ...] = (
+    "ἐστίν",
+    "ἐστί",
+    "εἰσίν",
+    "εἰσί",
+    "εἰμί",
+    "εἶ",
+    "ἐσμέν",
+    "ἐστέ",
+)
+_RESUMPTIVE_HOS_ACC_SURFACES: tuple[str, ...] = (
+    "ὅν",
+    "ἥν",
+    "ὅ",
+    "οὕς",
+    "ἅς",
+    "ἅ",
+)
 # Coptic body-part nouns grammaticalized into compound prepositions when NOT
 # preceded by a determiner (e.g. ⲛ-ϩⲏⲧ-ⲥ "in it", ⲥⲱⲕ ϩⲏⲧ-ϥ "lead before him",
 # ⲛ-ⲧⲟⲟⲧ-ϥ "by him", ϩⲁ-ⲣⲁⲧ-ϥ "under him") — never lexical καρδία/χείρ/πούς.
@@ -277,6 +298,81 @@ class ConstraintTrie:
         )
 
 
+def _cop_is_nominal_predicate(morphemes: Sequence[CopticMorpheme], idx: int) -> bool:
+    """Return True if ``COP`` (ⲡⲉ/ⲧⲉ/ⲛⲉ) heads a nominal clause (not imperfect)."""
+    if morphemes[idx].pos != "COP":
+        return False
+    # Walk backward inside the same clause: if an imperfect converter (CPRET) or
+    # finite non-VBD verb precedes COP, it is a verbal/cleft auxiliary, not εἰμί.
+    for k in range(idx - 1, max(-1, idx - 8), -1):
+        pos_k = morphemes[k].pos
+        if pos_k in {"PUNCT", "CONJ", "VBD"}:
+            break
+        if pos_k in {"CPRET", "V", "VIMP"}:
+            return False
+    return True
+
+
+_THIRD_PERSON_PPERO_LEMMAS: frozenset[str] = frozenset(
+    {"ⲛⲧⲟϥ", "ⲛⲧⲟⲥ", "ⲛⲧⲟⲟⲩ", "ϥ", "ⲥ", "ⲟⲩ"}
+)
+
+
+def _crel_has_resumptive_obj(morphemes: Sequence[CopticMorpheme], idx: int) -> bool:
+    """Return True if bare ``CREL`` has a 3rd-person verbal resumptive ``PPERO``."""
+    if morphemes[idx].pos != "CREL":
+        return False
+    # Articular relatives (`ⲡⲉⲧ-`) and clefts (`ⲡⲉ ⲛⲧ-`) are not oblique ὅν clauses.
+    if idx > 0 and morphemes[idx - 1].pos in {"ART", "COP"}:
+        return False
+    if idx + 1 >= len(morphemes):
+        return False
+    # Non-verbal/adjectival/demonstrative relative heads (`ⲉⲧ ⲟⲛϩ`, `ⲉⲧ ⲙⲙⲁⲩ`,
+    # `ⲉⲧ ϩⲛ`, `ⲉⲧ ⲛⲁⲛⲟⲩϥ`, `ⲉⲧⲉⲩⲛⲧⲁϥ`) do not take a verbal resumptive object.
+    if morphemes[idx + 1].pos in {"VSTAT", "ADV", "PREP", "VBD", "EXIST"}:
+        return False
+    limit = min(idx + 9, len(morphemes))
+    seen_subj = False
+    k = idx + 1
+    while k < limit:
+        pos_k = morphemes[k].pos
+        if pos_k in {
+            "PUNCT",
+            "CONJ",
+            "VBD",
+            "EXIST",
+            "ANEGPST",
+            "CCIRC",
+            "AJUS",
+            "ACONJ",
+            "ACOND",
+            "APREC",
+        }:
+            return False
+        if pos_k == "CREL":
+            # Allow an embedded attributive `CREL + VSTAT` inside the subject NP
+            # (e.g., `ⲓⲏⲥⲟⲩⲥ ⲉⲧ ⲟⲛϩ`), otherwise a new relative clause started.
+            if k + 1 < limit and morphemes[k + 1].pos == "VSTAT":
+                k += 2
+                continue
+            return False
+        if pos_k in {"PPERS", "N", "NPROP", "PPERI", "PDEM"}:
+            seen_subj = True
+        if pos_k == "V":
+            # Stop at the clause's first finite verb so we never cross into a
+            # following clause; require an overt clause subject and a 3rd-person
+            # direct-object suffix pronoun resuming the antecedent.
+            if not seen_subj or k + 1 >= len(morphemes):
+                return False
+            nxt = morphemes[k + 1]
+            if nxt.pos != "PPERO":
+                return False
+            p_lem = normalize_coptic(nxt.lemma or nxt.norm).replace("\u2cff", "")
+            return p_lem in _THIRD_PERSON_PPERO_LEMMAS
+        k += 1
+    return False
+
+
 def build_chunk_lexical_constraints(
     morphemes: Sequence[CopticMorpheme],
     *,
@@ -284,13 +380,15 @@ def build_chunk_lexical_constraints(
     inflector: GreekInflector,
     tokenizer: BilingualTokenizer,
     unaccented: bool = False,
-    max_constraints: int = 6,
+    max_constraints: int | None = None,
 ) -> list[ConstraintTrie]:
-    """Build BPE prefix tries for mandatory content Greek loanwords in a chunk.
+    """Build BPE prefix tries for mandatory chunk loanwords, COP, & resumptive CREL.
 
-    Restricted to unambiguous content Greek loanwords (``N``, ``NPROP``, ``V``,
-    ``VSTAT``, ``VIMP``) whose CCL Greek lemma is >= 3 chars so closed-class
-    particles/conjunctions (``δέ``, ``γάρ``, ``ἀλλά``) remain free.
+    Covers:
+    - Unambiguous content Greek loanwords (``N``, ``NPROP``, ``V``, ``VSTAT``,
+      ``VIMP``) whose CCL Greek lemma is >= 3 chars.
+    - Coptic copula ``COP`` (``ⲡⲉ``/``ⲧⲉ``/``ⲛⲉ``) -> finite ``εἰμί`` forms.
+    - Bare object-resumptive ``CREL`` (``has_resumptive_obj``) -> accusative ``ὅς``.
     """
     constraints: list[ConstraintTrie] = []
     n_morphs = max(len(morphemes), 1)
@@ -303,6 +401,50 @@ def build_chunk_lexical_constraints(
             morphemes, m_idx
         ):
             prec_content += 1
+
+        rel_p = (m_idx + 0.5) / n_morphs
+        min_st = (
+            0
+            if cur_prec_content == 0
+            else max(cur_prec_content, int((rel_p - 0.16) * est_tgt))
+        )
+
+        # Decode-time structural slots from model-v1 `_clause_to_slots`:
+        # nominal COP -> present εἰμί; object-resumptive CREL -> accusative ὅς.
+        if m.pos == "COP" and _cop_is_nominal_predicate(morphemes, m_idx):
+            trie = ConstraintTrie.from_surfaces(
+                label="εἰμί",
+                lemma="εἰμί",
+                surfaces=_COPULA_EIMI_SURFACES,
+                tokenizer=tokenizer,
+                source_seq=m.seq,
+                rel_pos=rel_p,
+                unaccented=unaccented,
+                min_step=min_st,
+            )
+            if trie is not None:
+                constraints.append(trie)
+                if max_constraints is not None and len(constraints) >= max_constraints:
+                    break
+            continue
+
+        if m.pos == "CREL" and _crel_has_resumptive_obj(morphemes, m_idx):
+            trie = ConstraintTrie.from_surfaces(
+                label="ὅς",
+                lemma="ὅς",
+                surfaces=_RESUMPTIVE_HOS_ACC_SURFACES,
+                tokenizer=tokenizer,
+                source_seq=m.seq,
+                rel_pos=rel_p,
+                unaccented=unaccented,
+                min_step=min_st,
+            )
+            if trie is not None:
+                constraints.append(trie)
+                if max_constraints is not None and len(constraints) >= max_constraints:
+                    break
+            continue
+
         if m.pos not in _HARD_LOAN_POS:
             continue
         g_hint = resolve_morpheme_loan_hint(m, ccl_lexicon)
@@ -342,12 +484,6 @@ def build_chunk_lexical_constraints(
                 inflector.all_inflected_forms(cap, pos="NPROP", max_forms=16)
             )
 
-        rel_p = (m_idx + 0.5) / n_morphs
-        min_st = (
-            0
-            if cur_prec_content == 0
-            else max(cur_prec_content, int((rel_p - 0.16) * est_tgt))
-        )
         trie = ConstraintTrie.from_surfaces(
             label=g_hint,
             lemma=g_hint,
@@ -360,7 +496,7 @@ def build_chunk_lexical_constraints(
         )
         if trie is not None:
             constraints.append(trie)
-            if len(constraints) >= max_constraints:
+            if max_constraints is not None and len(constraints) >= max_constraints:
                 break
     return constraints
 
@@ -767,11 +903,14 @@ def constrained_ensemble_beam_search(
         fin_bk = _verified_bank(seq, end_mask, constraints, word_starts)
         finished_by_bank[fin_bk].append(([*seq, eos_id], _norm(sc, len(seq))))
 
-    # Collect candidates prioritizing full-constraint bank (n_c), plus top unconstrained
-    # backup candidates so reranker can see full picture cleanly
+    # Collect candidates from the full-constraint bank (n_c) when populated;
+    # only fall back to lower banks if no full-constraint hypothesis finished.
     dedup: list[tuple[list[int], float]] = []
     seen_seqs: set[tuple[int, ...]] = set()
+    has_full = bool(finished_by_bank.get(n_c))
     for bk in range(n_c, -1, -1):
+        if has_full and bk < n_c:
+            break
         hyps = finished_by_bank.get(bk, [])
         hyps.sort(key=lambda item: item[1], reverse=True)
         bk_added = 0

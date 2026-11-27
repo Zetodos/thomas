@@ -356,6 +356,8 @@ def serialize_coptic_morphemes(
                 gl_hint = (
                     native_gloss_hints.get(f"{key_lem}|{c_pos_key}")
                     or native_gloss_hints.get(f"{head}|{c_pos_key}")
+                    or native_gloss_hints.get(key_lem)
+                    or native_gloss_hints.get(head)
                     or (
                         native_gloss_hints.get(f"~{orth_lem}|{c_pos_key}")
                         if orth_lem
@@ -366,7 +368,6 @@ def serialize_coptic_morphemes(
                         if ao_lem
                         else None
                     )
-                    or native_gloss_hints.get(key_lem)
                 )
                 if gl_hint:
                     if unaccented_hints:
@@ -958,7 +959,7 @@ def build_parallel_corpus_bundle(
                 orth_owners.setdefault(_coptic_orth_key(att_lem), set()).add(att_lem)
                 ao_owners.setdefault(_coptic_ao_key(att_lem), set()).add(att_lem)
 
-        # 1. Always inject POS-disambiguated VSTAT hints (e.g. ⲃⲱⲧⲉ|VS -> βδελυκτός,
+        # 1. Always inject POS-disambiguated VSTAT hints (e.g. ⲃⲱⲧⲉ|VS -> ἀνάθεμα,
         # ϩⲱⲡ|VS -> κρυπτός, ⲱⲛϩ|VS -> ζάω) + rare/mid-freq native content hints
         # directly from zero-leakage NT+OT eflomal alignments!
         _cpos_to_tag = {"N": "N", "V": "V", "VS": "VS", "A": "ADV"}

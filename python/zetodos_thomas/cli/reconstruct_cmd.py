@@ -200,9 +200,9 @@ def reconstruct_inspect(
         help="Thomas unit_id to inspect (e.g. thomas.7)",
     ),
     model: str = typer.Option(
-        "v4",
+        "v1",
         "--model",
-        help="Model track: v1, v2, v3, or v4",
+        help="Model track: v1 (default), v2, v3, or v4 (e.g. --model v4)",
     ),
     repo_root: Path | None = typer.Option(
         None,
