@@ -796,11 +796,14 @@ def test_agreement_critic_sahidic_dialect_fallback_and_phrase_repeat() -> None:
             "στάμνος": [("στάμνος", "N-:----NSF-", 0.0)],
             "στάμνου": [("στάμνος", "N-:----GSF-", 0.0)],
             "ἀκοή": [("ἀκοή", "N-:----NSF-", 0.0)],
+            "δεσμῶν": [("δεσμός", "N-:----GPM-", 0.0)],
+            "σπείρων": [("σπείρω", "V-:-PAPNSM-", 0.0)],
         },
         known_lemmas={
             "εμπορος": ("ἔμπορος", "N-"),
             "κρεμαννυμι": ("κρεμάννυμι", "V-"),
             "στρωννυμι": ("στρώννυμι", "V-"),
+            "πρασσω": ("πράσσω", "V-"),
         },
     )
     critic = KoineAgreementCritic(inf, inf)
@@ -816,6 +819,13 @@ def test_agreement_critic_sahidic_dialect_fallback_and_phrase_repeat() -> None:
     # Genitive article after noun prefers inflecting the noun (`τοῦ στάμνου`) first
     gen_reps = critic.propose_repairs(["ἡ", "ἀκοή", "τοῦ", "στάμνος"])
     assert gen_reps and gen_reps[0] == ["ἡ", "ἀκοή", "τοῦ", "στάμνου"]
+    # `ὁ + -ων/-ῶν` must require an actual NSM participle parse (no blind GPM skip),
+    # and OOV-synthesized GPM guesses (`σιτεύων`) must not trigger `ὁ` -> `τῶν`.
+    assert critic.detect_violations(["ὁ", "δεσμῶν"])
+    assert critic.detect_violations(["ὁ", "σιτεύων"])
+    assert ["τῶν", "σιτεύων"] not in critic.propose_repairs(["ὁ", "σιτεύων"])
+    assert not critic.detect_violations(["ὁ", "σπείρων"])
+    assert not critic.detect_violations(["ὁ", "πράσσων"])
     # Valid Greek has zero violations
     assert not critic.detect_violations(["τήν", "δοκόν"])
     assert not critic.detect_violations(["ἐκ", "ἀκανθῶν"])

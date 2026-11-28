@@ -76,7 +76,8 @@
     "bt_filter_ratio_bounds": [0.42, 1.3],
     "patristic_nt_5gram_filtered": true,
     "use_constrained_beam": true,
-    "max_morphemes": 72,
+    "max_morphemes": 60,
+    "min_tail_morphemes": 10,
     "use_v1_draft": true
   }
 }

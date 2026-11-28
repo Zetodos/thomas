@@ -329,9 +329,6 @@ class KoineAgreementCritic:
 
             # 1. Definite Article + Head Nominal/Adj/Participle
             if low0 in _ARTICLE_PARSES and w1 not in _INDECLINABLE:
-                # Skip `ὁ + ...ων/...ῶν` when w1 could be a present participle (NSM)
-                if low0 == "ὁ" and low1.endswith(("ων", "ῶν")):
-                    continue
                 hd1 = [
                     (lem, m)
                     for lem, m in p1
@@ -355,7 +352,6 @@ class KoineAgreementCritic:
                     # Allow sandwiched attributive modifier/object when words[i+2]
                     # (e.g., head noun or ptcp in `ὁ φαῦλα πράσσων`) agrees with RA.
                     if not ok and i + 2 < n:
-                        low2 = _norm_accent(words[i + 2]).lower()
                         hd2 = [
                             m
                             for _, m in ps[i + 2]
@@ -363,13 +359,6 @@ class KoineAgreementCritic:
                             or (m.pos == "V-" and m.mood == "P")
                         ]
                         if any(self._cng_match(r, h2) for _, r in p0 for h2 in hd2):
-                            ok = True
-                        elif (
-                            not hd2
-                            and low0 == "ὁ"
-                            and low2 not in _ARTICLE_PARSES
-                            and low2.endswith(("ων", "ῶν"))
-                        ):
                             ok = True
                     if not ok:
                         violations.append(
@@ -822,14 +811,25 @@ class KoineAgreementCritic:
                 art_edits: list[dict[int, str]] = []
                 head_edits: list[dict[int, str]] = []
 
-                # Option A: fix the article to match head w1's valid (case, num, gen)
+                # Option A: fix the article to match head w1's valid (case, num, gen),
+                # skipping OOV-synthesized `-ων/-ῶν` GPM fallback lemmas (e.g. fake
+                # `σίτευος` for `σιτεύων`) so we never rewrite `ὁ` -> `τῶν` on an
+                # unattested participle-shaped surface.
                 hd1 = [
                     (lem, m)
                     for lem, m in p1
                     if m.pos in {"N-", "A-"} or (m.pos == "V-" and m.mood == "P")
                 ]
+                w1_norm = _norm_accent(w1)
+                w1_attested = w1_norm in self._multi or w1_norm.lower() in self._multi
                 seen_arts: set[str] = set()
-                for _l1, m1 in hd1:
+                for l1, m1 in hd1:
+                    if (
+                        not w1_attested
+                        and _strip_bare(l1) not in self._analyzer._known_lemmas
+                        and w1_norm.lower().endswith(("ων", "ῶν"))
+                    ):
+                        continue
                     if not (m1.case and m1.number and m1.gender):
                         continue
                     if req_case is not None and m1.case != req_case:
