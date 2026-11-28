@@ -617,7 +617,13 @@ class LexicalTranslationModel:
         if not align_hits and cpos == "VS":
             align_hits = self._by_lemma_pos.get((coptic_lemma, "V"))
         if not align_hits:
-            align_hits = self._by_lemma.get(coptic_lemma, [])
+            raw_any = self._by_lemma.get(coptic_lemma, [])
+            # Do not leak a noun-only homograph (e.g. `ϩⲁⲥ|N` -> `Καϊάφας`,
+            # `ⲕⲟⲧ|N` -> `κόφινος`) onto a verb lookup when no verb entry exists.
+            if cpos in {"V", "VIMP"} and (coptic_lemma, "N") in self._by_lemma_pos:
+                align_hits = [c for c in raw_any if c.greek_pos != "N-"]
+            else:
+                align_hits = raw_any
         orth_discount = 0.0
         if not align_hits and len(coptic_lemma) >= 3:
             orth_hits = self._by_orth_key.get(_coptic_orth_key(coptic_lemma), [])
@@ -634,7 +640,14 @@ class LexicalTranslationModel:
                     if ae_hits:
                         align_hits = ae_hits
                         orth_discount = 0.85
+        allow_proper_noun = coptic_pos in {"N", "NPROP"}
         for cand in align_hits:
+            if (
+                not allow_proper_noun
+                and cand.greek_lemma
+                and cand.greek_lemma[0].isupper()
+            ):
+                continue
             adj_cand = (
                 LexicalCandidate(
                     greek_lemma=cand.greek_lemma,

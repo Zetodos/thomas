@@ -68,6 +68,9 @@ COMPOUND_PREP_NOUNS: frozenset[str] = frozenset(
     {"ϩⲏⲧ", "ⲧⲟⲟⲧ", "ⲣⲁⲧ", "ϩⲣⲁ", "ϩⲏ", "ⲙⲧⲟ", "ⲣⲱ"}
 )
 _DETERMINER_POS: frozenset[str] = frozenset({"ART", "PPOS", "PDEM"})
+_GENERIC_REPAIR_ADVS: frozenset[str] = frozenset(
+    {"ⲉⲃⲟⲗ", "ⲉϩⲟⲩⲛ", "ⲉϩⲣⲁⲓ", "ⲉⲡⲉⲥⲏⲧ", "ⲙⲙⲁⲩ", "ⲧⲏⲣ", "ⲟⲛ", "ϭⲉ"}
+)
 
 
 def _prev_non_punct(
@@ -198,7 +201,7 @@ def has_local_loop_repeat(seq: list[int], next_id: int) -> bool:
     n = len(seq)
     if n >= 2 and seq[-1] == next_id and seq[-2] == next_id:
         return True
-    for span in range(2, 7):
+    for span in range(2, 9):
         if n >= 2 * span - 1 and tuple(seq[-(2 * span - 1) : -(span - 1)]) == (
             *seq[-(span - 1) :],
             next_id,
@@ -281,6 +284,250 @@ def count_spurious_phrase_repeats(
         if cnt > cap and cnt >= 2:
             excess += cnt - cap
     return excess
+
+
+_GREEK_NEG_BARE: frozenset[str] = frozenset(
+    {
+        "ου",
+        "ουκ",
+        "ουχ",
+        "μη",
+        "ουδεισ",
+        "ουδεν",
+        "ουδενα",
+        "ουδενοσ",
+        "ουδενι",
+        "ουδεμια",
+        "μηδεισ",
+        "μηδεν",
+        "μηδενα",
+        "ουδε",
+        "ουτε",
+        "μηδε",
+        "μητε",
+        "ουκετι",
+        "ουπω",
+        "ουδαμωσ",
+        "ουδεποτε",
+        "μηκετι",
+        "μηπω",
+        "μηποτε",
+        "ουχι",
+        "μητι",
+    }
+)
+_INDIC_NEG_SURFACES: tuple[str, ...] = (
+    "οὐ",
+    "μή",
+    "οὐδείς",
+    "οὐδέν",
+    "οὐδέ",
+    "οὔτε",
+    "οὐκέτι",
+    "οὔπω",
+)
+_PROHIB_NEG_SURFACES: tuple[str, ...] = (
+    "μή",
+    "μηδέ",
+    "μήτε",
+    "μηδείς",
+    "μηδέν",
+    "οὐ",
+)
+
+
+def extract_coptic_negation_events(
+    morphemes: Sequence[CopticMorpheme],
+) -> list[tuple[int, int, str]]:
+    """Return ``(m_idx, m.seq, kind)`` for distinct Coptic negation markers.
+
+    Skips circumfix proclitic ``ⲛ`` (paired with ``ⲁⲛ``) and collapses ``ⲁⲛ``
+    that reinforces a preceding negative conjugation within 6 morphemes so
+    clause-level polarity counts match Koine Greek (51/51 exact on NT DEV).
+    """
+    events: list[tuple[int, int, str]] = []
+    last_neg_conj_idx = -100
+    last_neg_coord_idx = -100
+    for idx, m in enumerate(morphemes):
+        if m.pos == "PUNCT":
+            last_neg_conj_idx = -100
+            last_neg_coord_idx = -100
+            continue
+        lem = normalize_coptic(m.lemma or m.norm).replace("\u2cff", "")
+        if m.pos in {"ANEGAOR", "ANEGPST"}:
+            last_neg_conj_idx = idx
+            if idx - last_neg_coord_idx <= 2:
+                continue
+            events.append((idx, m.seq, "indic"))
+        elif m.pos in {"ANEGOPT", "ANEGJUS"}:
+            last_neg_conj_idx = idx
+            if idx - last_neg_coord_idx <= 2:
+                continue
+            events.append((idx, m.seq, "prohib"))
+        elif m.pos == "EXIST" and lem in {"ⲙⲛ", "ⲙⲙⲛ"}:
+            last_neg_conj_idx = idx
+            if idx - last_neg_coord_idx <= 2:
+                continue
+            events.append((idx, m.seq, "indic"))
+        elif m.pos == "NEG":
+            if lem == "ⲛ":
+                continue
+            if lem == "ⲁⲛ" and idx - last_neg_conj_idx <= 6:
+                continue
+            kind = "prohib" if lem in {"ⲙⲡⲣ", "ⲧⲙ"} else "indic"
+            events.append((idx, m.seq, kind))
+        elif m.pos == "CONJ" and lem in {"ⲟⲩⲇⲉ", "ⲟⲩⲧⲉ", "ⲙⲏⲇⲉ", "ⲙⲏⲧⲉ"}:
+            kind = "prohib" if lem in {"ⲙⲏⲇⲉ", "ⲙⲏⲧⲉ"} else "indic"
+            events.append((idx, m.seq, kind))
+            last_neg_coord_idx = idx
+    return events
+
+
+def count_greek_negations(greek_words: Sequence[str]) -> int:
+    """Count distinct Greek negation units (collapsing emphatic ``οὐ μή`` to 1)."""
+    bare = [_strip_bare(w) for w in greek_words]
+    cnt = 0
+    i = 0
+    while i < len(bare):
+        if bare[i] in _GREEK_NEG_BARE:
+            cnt += 1
+            if (
+                bare[i] in {"ου", "ουκ", "ουχ"}
+                and i + 1 < len(bare)
+                and bare[i + 1] == "μη"
+            ):
+                i += 2
+                continue
+        i += 1
+    return cnt
+
+
+def build_missing_negation_constraints(
+    morphemes: Sequence[CopticMorpheme],
+    *,
+    predicted_greek_words: Sequence[str],
+    tokenizer: BilingualTokenizer,
+    unaccented: bool = False,
+    max_added: int = 3,
+) -> list[ConstraintTrie]:
+    """Build positional Pass-2 tries for Coptic negations dropped in Pass-1."""
+    events = extract_coptic_negation_events(morphemes)
+    if not events:
+        return []
+    bare_g = [_strip_bare(w) for w in predicted_greek_words]
+    # Collect positions of distinct Greek negation units (collapsing `οὐ μή`)
+    g_neg_pos: list[float] = []
+    n_g = max(len(bare_g), 1)
+    i = 0
+    while i < len(bare_g):
+        if bare_g[i] in _GREEK_NEG_BARE:
+            g_neg_pos.append((i + 0.5) / n_g)
+            if (
+                bare_g[i] in {"ου", "ουκ", "ουχ"}
+                and i + 1 < len(bare_g)
+                and bare_g[i + 1] == "μη"
+            ):
+                i += 2
+                continue
+        i += 1
+    deficit = len(events) - len(g_neg_pos)
+    # Only inject forced Pass-2 negation tries when Pass-1 dropped ALL negations
+    # in the chunk (total polarity inversion, e.g. `thomas.4`, `thomas.31`,
+    # `thomas.21` chunk 0). When Pass-1 already emitted negations, forcing extra
+    # negation tries in dense multi-clause chunks can cause tail-looping; the
+    # reranker's gentle polarity penalty handles partial deficits cleanly.
+    if deficit <= 0 or len(g_neg_pos) > 0:
+        return []
+
+    n_morphs = max(len(morphemes), 1)
+    n_np = max(sum(1 for m in morphemes if m.pos != "PUNCT"), 1)
+    est_tgt = max(int(n_np * 0.85), 8)
+    added: list[ConstraintTrie] = []
+    cur_count = 0
+    for m_idx, sq, kind in events[: min(max_added, 2)]:
+        rel_p = (m_idx + 0.5) / n_morphs
+        min_st = max(0, int((rel_p - 0.20) * est_tgt))
+        max_st = (
+            None
+            if rel_p >= 0.70
+            else max(min_st + 10, int((rel_p + 0.22) * est_tgt) + 6)
+        )
+        cur_count += 1
+        surfs = _PROHIB_NEG_SURFACES if kind == "prohib" else _INDIC_NEG_SURFACES
+        trie = ConstraintTrie.from_surfaces(
+            label="μή" if kind == "prohib" else "οὐ",
+            lemma="μή" if kind == "prohib" else "οὐ",
+            surfaces=surfs,
+            tokenizer=tokenizer,
+            source_seq=sq,
+            rel_pos=rel_p,
+            unaccented=unaccented,
+            is_repair=True,
+            min_step=min_st,
+            max_step=max_st,
+            min_count=cur_count,
+        )
+        if trie is not None:
+            added.append(trie)
+    return added
+
+
+def build_cross_pos_homograph_bans(
+    morphemes: Sequence[CopticMorpheme],
+    *,
+    ccl_lexicon: CclLexicon,
+    lexical_model: LexicalTranslationModel | None,
+    native_gloss_hints: Mapping[str, str] | None = None,
+) -> frozenset[str]:
+    """Return bare Greek noun lemmas that are cross-POS homograph traps for chunk verbs.
+
+    Strictly data-driven from ``lexical_model._by_lemma_pos``: when a chunk has
+    a Coptic verb (``V``/``VSTAT``/``VIMP``) whose lemma/norm also has a strong
+    unrelated ``N`` entry (e.g. ``ⲧⲟⲟⲩ`` V 'buy' vs N 'mountain' ``ὄρος``,
+    ``ⲕⲟⲧ`` V 'build/turn' vs N 'basket' ``κόφινος``), return that noun lemma
+    if it is absent from every actual chunk morpheme's candidate set.
+    """
+    if lexical_model is None:
+        return frozenset()
+    cand_sets = build_coptic_content_candidate_sets(
+        morphemes,
+        ccl_lexicon=ccl_lexicon,
+        lexical_model=lexical_model,
+        native_gloss_hints=native_gloss_hints,
+    )
+    valid_all: set[str] = set()
+    for _sq, cs in cand_sets:
+        valid_all.update(cs)
+    banned: set[str] = set()
+    by_lp = getattr(lexical_model, "_by_lemma_pos", None)
+    if not isinstance(by_lp, dict):
+        return frozenset()
+    for m in morphemes:
+        if m.pos not in {"V", "VSTAT", "VIMP"}:
+            continue
+        keys = {
+            normalize_coptic(x).replace("\u2cff", "") for x in (m.lemma, m.norm) if x
+        }
+        v_hits = [
+            c
+            for k in keys
+            for c in lexical_model.lookup(coptic_lemma=k, coptic_pos=m.pos)[:8]
+        ]
+        v_cands = {_strip_bare(c.greek_lemma) for c in v_hits}
+        v_cnt = sum(float(c.count_nt) + float(c.count_ot) for c in v_hits[:3])
+        for k in keys:
+            for nc in by_lp.get((k, "N"), [])[:2]:
+                n_cnt = float(nc.count_nt) + float(nc.count_ot)
+                if (
+                    nc.greek_pos == "N-"
+                    and nc.prob_g_given_c >= 0.75
+                    and n_cnt >= 20.0
+                    and n_cnt >= 5.0 * max(v_cnt, 1.0)
+                ):
+                    nb = _strip_bare(nc.greek_lemma)
+                    if nb and nb not in v_cands and nb not in valid_all:
+                        banned.add(nb)
+    return frozenset(banned)
 
 
 def _has_trigram_repeat(seq: list[int], next_id: int) -> bool:
@@ -592,7 +839,9 @@ def build_chunk_lexical_constraints(
         if c_hits and c_hits[0].greek_pos in {"N-", "A-", "V-", "NPROP"}:
             g_pos = c_hits[0].greek_pos
 
-        surfaces = inflector.all_inflected_forms(g_hint, pos=g_pos, max_forms=48)
+        surfaces = inflector.all_inflected_forms(
+            g_hint, pos=g_pos, max_forms=96 if g_pos == "V-" else 48
+        )
         # Also include lowercase variant if lemma was capitalized (e.g. Φαρισαῖος)
         if g_hint[0].isupper():
             surfaces.extend(
@@ -1336,6 +1585,12 @@ def build_coptic_content_candidate_sets(
         key_lem = lem_s or norm_s
         if not key_lem:
             continue
+        # When building Pass-2 repair candidate sets, skip generic directional/
+        # discourse adverbs (`ⲉⲃⲟⲗ`, `ⲉϩⲟⲩⲛ`, `ⲉϩⲣⲁⲓ`, `ⲙⲙⲁⲩ`, `ⲧⲏⲣ`, `ⲟⲛ`, `ϭⲉ`)
+        # so they cannot steal compound-verb matches (`εἰσέρχομαι`, `ἐξέρχομαι`)
+        # away from the actual Coptic verb in bipartite matching.
+        if for_repair and m.pos == "ADV" and key_lem in _GENERIC_REPAIR_ADVS:
+            continue
         cands: set[str] = set()
         if ccl_lexicon is not None:
             gh = resolve_morpheme_loan_hint(m, ccl_lexicon)
@@ -1557,7 +1812,7 @@ def build_missing_content_constraints(
             prec_content += 1
         if m.seq not in unmatched_seqs or m.seq in existing_seqs:
             continue
-        if m.pos not in {"N", "NPROP", "V", "VSTAT", "VIMP", "NUM", "ADV"} and (
+        if m.pos not in {"N", "NPROP", "V", "VSTAT", "VIMP", "VBD", "NUM", "ADV"} and (
             not is_ptc_interj
         ):
             continue
@@ -1576,16 +1831,7 @@ def build_missing_content_constraints(
             continue
         # Skip generic directional/locative adverbs (e.g. ⲉⲃⲟⲗ, ⲉϩⲟⲩⲛ, ⲙⲙⲁⲩ)
         # while allowing lexical adverbs like ⲛϩⲟⲩⲛ ("inside" -> ἔσωθεν).
-        if m.pos == "ADV" and key_lem in {
-            "ⲉⲃⲟⲗ",
-            "ⲉϩⲟⲩⲛ",
-            "ⲉϩⲣⲁⲓ",
-            "ⲉⲡⲉⲥⲏⲧ",
-            "ⲙⲙⲁⲩ",
-            "ⲧⲏⲣ",
-            "ⲟⲛ",
-            "ϭⲉ",
-        }:
+        if m.pos == "ADV" and key_lem in _GENERIC_REPAIR_ADVS:
             continue
         rel_p_cur = (m_idx + 0.5) / n_morphs
         is_tail_last_verb = m.seq == last_unmatched_verb_seq and rel_p_cur >= 0.70
@@ -1627,7 +1873,9 @@ def build_missing_content_constraints(
                         else None
                     )
                     oov_forms = inflector.all_inflected_forms(
-                        gl_oov, pos=g_pos_oov, max_forms=32
+                        gl_oov,
+                        pos=g_pos_oov,
+                        max_forms=64 if g_pos_oov == "V-" else 32,
                     )
                     if oov_forms:
                         top_bare_oov = _strip_bare(gl_oov)
@@ -1736,12 +1984,23 @@ def build_missing_content_constraints(
         syn_surfaces = []
         for lc in chosen_hits:
             lc_prob = float(getattr(lc, "prob_g_given_c", 0.0))
-            if lc_prob < 0.08 and lc is not top:
+            lc_cnt = float(getattr(lc, "count_nt", 0.0)) + float(
+                getattr(lc, "count_ot", 0.0)
+            )
+            if (
+                lc is not top
+                and lc_prob < 0.08
+                and not (
+                    lc_prob >= 0.05 and lc_prob >= 0.35 * top_prob and lc_cnt >= 10.0
+                )
+            ):
                 continue
             lc_lem = str(getattr(lc, "greek_lemma", ""))
             lc_pos = str(getattr(lc, "greek_pos", ""))
             g_pos = lc_pos if lc_pos in {"N-", "A-", "V-", "NPROP"} else None
-            forms = inflector.all_inflected_forms(lc_lem, pos=g_pos, max_forms=32)
+            forms = inflector.all_inflected_forms(
+                lc_lem, pos=g_pos, max_forms=64 if g_pos == "V-" else 32
+            )
             if not forms and lc_lem:
                 forms = [lc_lem]
             syn_surfaces.extend(forms)

@@ -269,10 +269,17 @@ class KoineAgreementCritic:
                     lem,
                     mf.model_copy(update={"case": "G", "number": "S", "gender": "F"}),
                 )
-            # 2-termination / masculine-neuter adjective -ον (ASN = NSN = ASM)
+            # 2-termination / masculine-neuter adjective -ον and -μενον participles
+            # (ASN = NSN = ASM)
             if (
-                mf.pos == "A-"
-                and lem.endswith(("ος", "ός"))
+                (
+                    (mf.pos == "A-" and lem.endswith(("ος", "ός")))
+                    or (
+                        mf.pos == "V-"
+                        and mf.mood == "P"
+                        and low.endswith(("μενον", "μένον"))
+                    )
+                )
                 and low.endswith(("ον", "όν"))
                 and mf.number == "S"
             ):
@@ -399,7 +406,7 @@ class KoineAgreementCritic:
                                 )
                             )
 
-            # 3. `ὅμοιος` + bare Nominative noun (governs Dative in Koine)
+            # 3. `ὅμοιος` + [ἐστίν]? + bare Nominative noun (governs Dative in Koine)
             if (
                 any(lem == "ὅμοιος" and m.pos == "A-" for lem, m in p0)
                 and w1 not in _INDECLINABLE
@@ -420,8 +427,30 @@ class KoineAgreementCritic:
                             detail=f"{w0} {w1}",
                         )
                     )
-                # Catch `ὅμοιος + Dat.Sg N- + Nom.Pl appositive N-`
-                # (e.g., `ὁμοία ἀνθρώπῳ ἔμποροι`).
+                # Also catch `ὅμοιος + ἐστίν/ἐστί + bare Nom N-` (`ὁμοία ἐστίν γυνή`)
+                elif (
+                    i + 2 < n
+                    and low1 in {"ἐστίν", "ἐστί"}
+                    and words[i + 2] not in _INDECLINABLE
+                ):
+                    n2_c = [
+                        m
+                        for lem, m in ps[i + 2]
+                        if m.pos == "N-"
+                        and lem not in {"θεός", "κύριος", "Χριστός", "Ἰησοῦς"}
+                    ]
+                    non_n2_c = [m for _, m in ps[i + 2] if m.pos != "N-"]
+                    if n2_c and not non_n2_c and all(m.case == "N" for m in n2_c):
+                        violations.append(
+                            AgreementViolation(
+                                kind="homoios_case",
+                                index=i,
+                                target_index=i + 2,
+                                detail=f"{w0} {w1} {words[i + 2]}",
+                            )
+                        )
+                # Catch `ὅμοιος + Dat.Sg N- + Nom.Pl or Acc.Sg appositive N-`
+                # (e.g., `ὁμοία ἀνθρώπῳ ἔμποροι`, `ὁμοία ἀνθρώπῳ ποιμένα`).
                 elif (
                     i + 2 < n
                     and n1
@@ -433,7 +462,10 @@ class KoineAgreementCritic:
                     if (
                         n2
                         and not non_n2
-                        and all(m.case == "N" and m.number == "P" for m in n2)
+                        and (
+                            all(m.case == "N" and m.number == "P" for m in n2)
+                            or all(m.case == "A" and m.number == "S" for m in n2)
+                        )
                     ):
                         violations.append(
                             AgreementViolation(
@@ -443,6 +475,185 @@ class KoineAgreementCritic:
                                 detail=f"{w1} {words[i + 2]}",
                             )
                         )
+
+            # 3c. Predicate `μακάριος`/`ταλαίπωρος` + copula + definite NP subject
+            # (e.g. `μακαρία ἐστίν ὁ ἄνθρωπος`, `ταλαίπωρος ἐστίν τό σῶμα`).
+            if (
+                i + 3 < n
+                and any(
+                    lem in {"μακάριος", "ταλαίπωρος"} and m.pos == "A-" for lem, m in p0
+                )
+                and low1 in {"ἐστίν", "ἐστί", "εἰσίν", "εἰσί"}
+            ):
+                low2 = _norm_accent(words[i + 2]).lower()
+                if low2 in {"ὁ", "ἡ", "τό", "οἱ", "αἱ", "τά"}:
+                    ra_cng = _ARTICLE_PARSES[low2][0]
+                    n3 = [
+                        m
+                        for _, m in ps[i + 3]
+                        if m.pos == "N-"
+                        and m.case == "N"
+                        and m.number == ra_cng[1]
+                        and m.gender == ra_cng[2]
+                    ]
+                    if n3 and not any(
+                        m.pos == "A-"
+                        and m.case == "N"
+                        and m.number == ra_cng[1]
+                        and m.gender == ra_cng[2]
+                        for _, m in p0
+                    ):
+                        violations.append(
+                            AgreementViolation(
+                                kind="pred_gender",
+                                index=i + 3,
+                                target_index=i,
+                                detail=f"{w0} .. {words[i + 2]} {words[i + 3]}",
+                            )
+                        )
+
+            # 3d. Direct numeral or post-nominal modifier agreement:
+            # - `τρεῖς`/`τρία` + following noun (`τρεῖς ῥήματα` -> `τρία ῥήματα`)
+            # - noun + following `εἷς`/`μία`/`ἕν` (`μαργαρίτην ἕν` -> `ἕνα`)
+            # - noun + immediately following unambiguous post-nominal adj/ptcp
+            #   (`περιτομή ἀληθινῆς`, `στάμνος μεστόν`, `πῦρ ἐξελθών`,
+            #    `θησαυρόν ἀποκεκρυμμένη`).
+            if low0 in {"τρεῖς", "τρία"} and w1 not in _INDECLINABLE:
+                n1_t = [m for _, m in p1 if m.pos == "N-"]
+                non_n1_t = [m for _, m in p1 if m.pos != "N-"]
+                if (
+                    n1_t
+                    and not non_n1_t
+                    and not any(self._cng_match(r, h) for _, r in p0 for h in n1_t)
+                ):
+                    violations.append(
+                        AgreementViolation(
+                            kind="noun_mod",
+                            index=i + 1,
+                            target_index=i,
+                            detail=f"{w0} {w1}",
+                        )
+                    )
+            if (
+                w0 not in _INDECLINABLE
+                and w1 not in _INDECLINABLE
+                and not w0[0].isupper()
+            ):
+                n0_m = [
+                    (lem, m)
+                    for lem, m in p0
+                    if m.pos == "N-"
+                    and m.case in {"N", "A"}
+                    and m.number == "S"
+                    and lem not in {"θεός", "κύριος", "Χριστός", "Ἰησοῦς"}
+                ]
+                non_n0_m = [m for _, m in p0 if m.pos != "N-"]
+                if n0_m and not non_n0_m:
+                    # Noun + unambiguous post-nominal attributive adj or participle
+                    mod1 = [
+                        (lem, m)
+                        for lem, m in p1
+                        if (
+                            (
+                                m.pos == "A-"
+                                and lem
+                                not in {
+                                    "εἷς",
+                                    "ὅμοιος",
+                                    "μακάριος",
+                                    "ταλαίπωρος",
+                                    "πολύς",
+                                    "πᾶς",
+                                    "οὐδείς",
+                                    "μηδείς",
+                                    "ἄξιος",
+                                    "πρῶτος",
+                                    "ἔσχατος",
+                                    "μόνος",
+                                    "ἄλλος",
+                                    "ἕτερος",
+                                    "μέγας",
+                                    "μικρός",
+                                    "θαυμαστός",
+                                    "κενός",
+                                    "πλήρης",
+                                    "φανερός",
+                                }
+                            )
+                            or (
+                                m.pos == "V-"
+                                and m.mood == "P"
+                                and m.case in {"N", "A"}
+                                and m.number == "S"
+                            )
+                        )
+                    ]
+                    non_mod1 = [
+                        m
+                        for _, m in p1
+                        if m.pos != "A-" and not (m.pos == "V-" and m.mood == "P")
+                    ]
+                    if (
+                        mod1
+                        and not non_mod1
+                        and not any(
+                            self._cng_match(h, r) for _, h in n0_m for _, r in mod1
+                        )
+                        and not (
+                            i + 2 < n
+                            and _norm_accent(words[i + 2]).lower()
+                            in {"ἐστίν", "ἐστί", "ἦν", "ἔσται"}
+                        )
+                        and not (
+                            i + 2 < n
+                            and any(
+                                h2.pos == "N-"
+                                and any(self._cng_match(r, h2) for _, r in mod1)
+                                for _, h2 in ps[i + 2]
+                            )
+                        )
+                    ):
+                        # Check same-case/number gender clash (e.g.
+                        # `στάμνος μεστόν`, `πῦρ ἐξελθών`), or Acc noun +
+                        # passive ptcp (`θησαυρόν ἀποκεκρυμμένη` — never
+                        # active/middle `ἐξουσίαν ἔχων` or `ὡς N ptcp`),
+                        # or Nom.Sg noun + Gen.Sg adj (`περιτομή ἀληθινῆς`).
+                        prev_is_hos = i > 0 and _norm_accent(words[i - 1]).lower() in {
+                            "ὡς",
+                            "ὡσεί",
+                        }
+                        has_gender_clash = not prev_is_hos and any(
+                            h.number == r.number
+                            and h.gender != r.gender
+                            and (
+                                h.case == r.case
+                                or (
+                                    h.case == "A"
+                                    and r.case == "N"
+                                    and r.pos == "V-"
+                                    and r.voice == "P"
+                                )
+                            )
+                            for _, h in n0_m
+                            for _, r in mod1
+                        )
+                        has_nom_gen_adj = all(
+                            r.pos == "A-" and r.case == "G" and r.number == "S"
+                            for _, r in mod1
+                        ) and any(
+                            h.case == "N" and h.gender == r.gender
+                            for _, h in n0_m
+                            for _, r in mod1
+                        )
+                        if has_gender_clash or has_nom_gen_adj:
+                            violations.append(
+                                AgreementViolation(
+                                    kind="noun_mod",
+                                    index=i,
+                                    target_index=i + 1,
+                                    detail=f"{w0} {w1}",
+                                )
+                            )
 
             # 3b. Direct anarthrous Nom.Sg Adj (`κακός`, `ἀγαθός`, ...) + Gen.Sg Noun
             # of same gender (e.g. `κακός ἀνθρώπου` modifying `ἄνθρωπος`), excluding
@@ -542,32 +753,66 @@ class KoineAgreementCritic:
             ):
                 subj = None
                 continue
-            if (
-                i + 1 < n
-                and low in {"ὁ", "ἡ", "οἱ", "αἱ"}
-                and words[i + 1]
-                not in {"Ἰησοῦς", "Χριστός", "Κύριος", "Πέτρος", "Θωμᾶς"}
-                and not any(m.pos == "V-" and m.mood == "P" for _, m in ps[i + 1])
-            ):
-                ra_cng = _ARTICLE_PARSES[low][0]
-                n_hits = [
-                    m
-                    for _, m in ps[i + 1]
-                    if m.pos == "N-"
-                    and m.case == "N"
-                    and m.number == ra_cng[1]
-                    and m.gender == ra_cng[2]
-                ]
-                if n_hits:
-                    subj = (i + 1, ra_cng[1], ra_cng[2])
+            if low in {"πολλοί", "πολλαί"}:
+                subj = (i, "P", "M" if low == "πολλοί" else "F")
+                continue
+            if i + 1 < n and low in {"ὁ", "ἡ", "οἱ", "αἱ"}:
+                # Allow postpositive `δέ`/`γάρ`/`μέν` between article and noun
+                # (e.g. `οἱ δέ μαθηταί σου εἶπεν`).
+                n_pos = i + 1
+                if i + 2 < n and _norm_accent(words[i + 1]).lower() in {
+                    "δέ",
+                    "γάρ",
+                    "μέν",
+                }:
+                    n_pos = i + 2
+                if words[n_pos] not in {
+                    "Ἰησοῦς",
+                    "Χριστός",
+                    "Κύριος",
+                    "Πέτρος",
+                    "Θωμᾶς",
+                } and not any(m.pos == "V-" and m.mood == "P" for _, m in ps[n_pos]):
+                    ra_cng = _ARTICLE_PARSES[low][0]
+                    n_hits = [
+                        m
+                        for _, m in ps[n_pos]
+                        if m.pos == "N-"
+                        and m.case == "N"
+                        and m.number == ra_cng[1]
+                        and m.gender == ra_cng[2]
+                    ]
+                    if n_hits:
+                        subj = (n_pos, ra_cng[1], ra_cng[2])
                 continue
             if subj is not None and i > subj[0]:
-                # M/F Plural Nom subject followed closely by [neg]? + 3sg finite verb
+                # M/F Plural Nom subject followed closely by [poss/neg]? + 3sg verb
                 # (Never flag neuter plural subjects — neuter plural + 3sg is valid!)
+                between_ok = i - subj[0] <= 2 or (
+                    i - subj[0] == 3
+                    and all(
+                        _norm_accent(words[k]).lower()
+                        in {
+                            "μου",
+                            "σου",
+                            "αὐτοῦ",
+                            "αὐτῆς",
+                            "ἡμῶν",
+                            "ὑμῶν",
+                            "αὐτῶν",
+                            "οὐ",
+                            "μή",
+                            "δέ",
+                            "γάρ",
+                            "οὖν",
+                        }
+                        for k in range(subj[0] + 1, i)
+                    )
+                )
                 if (
                     subj[1] == "P"
                     and subj[2] in {"M", "F"}
-                    and i - subj[0] <= 2
+                    and between_ok
                     and any(
                         m.pos == "V-"
                         and m.mood in {"I", "S"}
@@ -587,7 +832,12 @@ class KoineAgreementCritic:
                     )
                     subj = None
                     continue
-                if i <= subj[0] + 1 and words[subj[0]].lower() not in {"ἥτις", "ὅστις"}:
+                is_homoios_w = any(lem == "ὅμοιος" and m.pos == "A-" for lem, m in p)
+                if (
+                    i <= subj[0] + 1
+                    and not is_homoios_w
+                    and words[subj[0]].lower() not in {"ἥτις", "ὅστις"}
+                ):
                     continue
                 # Reset if a transitive/non-copula finite verb intervenes
                 if any(
@@ -598,13 +848,39 @@ class KoineAgreementCritic:
                 ):
                     subj = None
                     continue
-                # Check predicate adjective (`ὅμοιος`) or middle/passive participle
-                # (`ἐστρωμένον`, `κρεμάμενον`) that disagrees with an F/M subject.
+                # Check predicate adjective (`ὅμοιος`, or adj directly before copula
+                # `ἐστίν`/`ἦν`/`ἔσται`, e.g. `ἡ εἰκών ... φανερόν ἐστίν`) or
+                # middle/passive participle (`ἐστρωμένον`, `κρεμάμενον`).
+                next_is_cop = i + 1 < n and _norm_accent(words[i + 1]).lower() in {
+                    "ἐστίν",
+                    "ἐστί",
+                    "εἰσίν",
+                    "εἰσί",
+                    "ἦν",
+                    "ἔσται",
+                }
                 pred_cands = [
                     (lem, m)
                     for lem, m in p
                     if (
                         (lem == "ὅμοιος" and m.pos == "A-")
+                        or (
+                            next_is_cop
+                            and m.pos == "A-"
+                            and lem
+                            in {
+                                "φανερός",
+                                "κρυπτός",
+                                "ἄξιος",
+                                "καλός",
+                                "ἀγαθός",
+                                "δίκαιος",
+                                "μέγας",
+                                "μικρός",
+                                "πλήρης",
+                                "κενός",
+                            }
+                        )
                         or (m.pos == "V-" and m.mood == "P" and m.voice in {"P", "M"})
                     )
                     and m.case in {"N", "A"}
@@ -633,6 +909,10 @@ class KoineAgreementCritic:
                                 )
                             )
                             subj = None
+                    elif is_homoios_w:
+                        # Once `ἡ βασιλεία ὁμοία ...` has been checked, subsequent
+                        # participles modify the parable noun, not `ἡ βασιλεία`.
+                        subj = None
 
         return violations
 
@@ -643,9 +923,9 @@ class KoineAgreementCritic:
             return 0.0
         pen = 0.0
         for v in viols:
-            if v.kind in {"art_head", "prep_case", "subj_verb_num"}:
+            if v.kind in {"art_head", "prep_case", "subj_verb_num", "pred_gender"}:
                 pen += 1.0
-            elif v.kind in {"pred_gender", "app_dative", "adj_noun"}:
+            elif v.kind in {"app_dative", "adj_noun", "noun_mod"}:
                 pen += 0.75
             else:
                 pen += 0.50
@@ -991,6 +1271,39 @@ class KoineAgreementCritic:
                         if v_fix:
                             edits.append({j: v_fix})
                             break
+
+            elif v.kind == "noun_mod":
+                h_idx, t_idx = v.index, v.target_index
+                wt = words[t_idx]
+                h_hits = [
+                    m
+                    for _, m in ps[h_idx]
+                    if m.pos == "N-" and m.case and m.number and m.gender
+                ]
+                if h_hits:
+                    hm = h_hits[0]
+                    h_case, h_num, h_gen = hm.case, hm.number, hm.gender
+                    if h_case and h_num and h_gen:
+                        for lt, mt in ps[t_idx][:2]:
+                            if mt.pos == "V-" and mt.mood == "P":
+                                t_fix = self._inflect_participle_simple(
+                                    wt, lt, mt, h_case, h_num, h_gen
+                                )
+                            else:
+                                t_fix = self._safe_inflect(
+                                    lt,
+                                    mt.model_copy(
+                                        update={
+                                            "case": h_case,
+                                            "number": h_num,
+                                            "gender": h_gen,
+                                        }
+                                    ),
+                                    wt,
+                                )
+                            if t_fix:
+                                edits.append({t_idx: t_fix})
+                                break
 
             elif v.kind == "pred_gender":
                 s_idx, t_idx = v.index, v.target_index

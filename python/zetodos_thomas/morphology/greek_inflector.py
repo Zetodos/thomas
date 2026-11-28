@@ -281,6 +281,7 @@ _VERB_SUFFIX_RULES: tuple[tuple[str, tuple[str, ...], str, bool], ...] = (
     ("ετε", ("ω",), "V-:2PPI-A-", False),
     ("ειν", ("ω",), "V-:--PAN--", False),
     ("σον", ("ω", "ζω", "δω", "τω"), "V-:2AAD-S--", False),
+    ("σω", ("ω", "ζω", "δω", "τω"), "V-:1FAI-S--", False),
     ("ων", ("ω",), "V-:-PAPNSM-", False),
     ("ον", ("ω",), "V-:2PAD-S--", False),
     ("ει", ("εω",), "V-:3PAI-S--", False),
@@ -302,6 +303,9 @@ _NOUN_SUFFIX_RULES: tuple[tuple[str, tuple[str, ...], str, bool], ...] = (
     ("σει", ("σις",), "N-:----DSF-", False),
     ("ους", ("ος",), "N-:----APM-", True),
     ("ευς", ("ευς",), "N-:----NSM-", False),
+    ("ενι", ("ην",), "N-:----DSM-", False),
+    ("ενος", ("ην",), "N-:----GSM-", False),
+    ("ατι", ("αρ",), "N-:----DSN-", False),
     ("οις", ("ος", "ον"), "N-:----DPM-", True),
     ("αις", ("α", "η", "ης"), "N-:----DPF-", True),
     ("ων", ("ος", "η", "α", "ον"), "N-:----GPM-", True),
@@ -593,10 +597,12 @@ def _regular_noun_inflect(
         return None
     if bare.endswith("ος"):
         stem = bare[:-2]
-        if gender == "F" or bare.endswith("οδος"):
-            # 2nd decl feminine follows -ος/-ον/-ου/-ῳ
-            pass
-        if n == "S":
+        if gender == "N":
+            if n == "S":
+                end_map = {"N": "ον", "G": "ου", "D": "ῳ", "A": "ον", "V": "ον"}
+            else:
+                end_map = {"N": "α", "G": "ων", "D": "οις", "A": "α", "V": "α"}
+        elif n == "S":
             end_map = {"N": "ος", "G": "ου", "D": "ῳ", "A": "ον", "V": "ε"}
         else:
             end_map = {"N": "οι", "G": "ων", "D": "οις", "A": "ους", "V": "οι"}
@@ -818,12 +824,12 @@ def _regular_verb_inflect(lemma: str, target: GreekMorphFeatures) -> str | None:
         return None
     norm_lem = _nfc(lemma).lower()
     supp = _SUPPLETIVE_VERBS.get(norm_lem, {})
-    is_contract_e = bare.endswith("έω") or bare.endswith("εω")
-    is_contract_a = bare.endswith("άω") or bare.endswith("αω")
+    is_contract_e = bare.endswith(("έω", "εω", "έομαι", "εομαι"))
+    is_contract_a = bare.endswith(("άω", "αω", "άομαι", "αομαι"))
     if bare.endswith("ω"):
         stem = bare[:-2] if (is_contract_e or is_contract_a) else bare[:-1]
     else:
-        stem = bare[:-4]
+        stem = bare[:-5] if (is_contract_e or is_contract_a) else bare[:-4]
 
     tense = target.tense or "P"
     voice = target.voice or ("M" if bare.endswith("ομαι") else "A")
@@ -1055,6 +1061,10 @@ def _regular_verb_inflect(lemma: str, target: GreekMorphFeatures) -> str | None:
         if tense == "A" and voice == "A":
             return _apply_recessive_with_breathing(_sigmatic_stem(stem) + "αι", lemma)
         if voice in {"M", "P"}:
+            if tense == "P" and is_contract_e:
+                return _preserve_initial_breathing(f"{stem}εῖσθαι", lemma)
+            if tense == "P" and is_contract_a:
+                return _preserve_initial_breathing(f"{stem}ᾶσθαι", lemma)
             return _apply_recessive_with_breathing(
                 f"{_sigmatic_stem(stem)}ασθαι" if tense == "A" else f"{stem}εσθαι",
                 lemma,
@@ -1265,6 +1275,26 @@ def _regular_verb_inflect(lemma: str, target: GreekMorphFeatures) -> str | None:
         return _apply_recessive_with_breathing(aug + impf[(person, number)], lemma)
 
     if voice in {"M", "P"} and tense == "P":
+        if is_contract_e:
+            mp_e = {
+                ("1", "S"): "οῦμαι",
+                ("2", "S"): "ῇ",
+                ("3", "S"): "εῖται",
+                ("1", "P"): "ούμεθα",
+                ("2", "P"): "εῖσθε",
+                ("3", "P"): "οῦνται",
+            }
+            return _preserve_initial_breathing(stem + mp_e[(person, number)], lemma)
+        if is_contract_a:
+            mp_a = {
+                ("1", "S"): "ῶμαι",
+                ("2", "S"): "ᾷ",
+                ("3", "S"): "ᾶται",
+                ("1", "P"): "ώμεθα",
+                ("2", "P"): "ᾶσθε",
+                ("3", "P"): "ῶνται",
+            }
+            return _preserve_initial_breathing(stem + mp_a[(person, number)], lemma)
         mp = {
             ("1", "S"): "ομαι",
             ("2", "S"): "ῃ",
@@ -1771,6 +1801,53 @@ class GreekInflector:
                     for lem, sig, lp in bhits
                 ]
 
+        # 3b. Exact known dictionary lemma (e.g. `σπείρω`, `τρυγών`) before
+        # OOV suffix synthesis so real citation forms are never UNK or misparsed.
+        kl_exact = self._known_lemmas.get(bare)
+        if kl_exact is not None:
+            kl_lem, kl_pos = kl_exact
+            if kl_pos == "V-" and bare.endswith("ω"):
+                return [
+                    (
+                        kl_lem,
+                        GreekMorphFeatures(
+                            pos="V-",
+                            person="1",
+                            tense="P",
+                            voice="A",
+                            mood="I",
+                            number="S",
+                        ),
+                        -2.0,
+                    )
+                ]
+            if kl_pos == "V-" and bare.endswith("ομαι"):
+                return [
+                    (
+                        kl_lem,
+                        GreekMorphFeatures(
+                            pos="V-",
+                            person="1",
+                            tense="P",
+                            voice="M",
+                            mood="I",
+                            number="S",
+                        ),
+                        -2.0,
+                    )
+                ]
+            if kl_pos in {"N-", "A-"}:
+                kl_gnd = self.lemma_gender(kl_lem) or ("M" if kl_pos == "A-" else None)
+                return [
+                    (
+                        kl_lem,
+                        GreekMorphFeatures(
+                            pos=kl_pos, case="N", number="S", gender=kl_gnd
+                        ),
+                        -2.0,
+                    )
+                ]
+
         # 4. Preverb + augment decomposition (e.g. ἐπεφέρετο -> ἐπιφέρω)
         if bare.isalpha() and len(bare) >= 6:
             pv_hits = self._preverb_decompose(bare, norm)
@@ -1911,12 +1988,78 @@ class GreekInflector:
             )
             if reg is not None:
                 return _cap(reg)
+            if eff_target.pos == "N-":
+                third = self._inflect_third_decl_from_paradigm(
+                    norm_lem,
+                    case=eff_target.case or "N",
+                    number=eff_target.number or "S",
+                    gender=eff_target.gender or self.lemma_gender(norm_lem),
+                )
+                if third is not None:
+                    return _cap(third)
         elif eff_target.pos == "V-":
             reg = _regular_verb_inflect(norm_lem, eff_target)
             if reg is not None:
                 return _cap(reg)
 
         return _cap(norm_lem)
+
+    def _inflect_third_decl_from_paradigm(
+        self,
+        norm_lem: str,
+        *,
+        case: str,
+        number: str,
+        gender: str | None,
+    ) -> str | None:
+        """Synthesize missing 3rd-declension case from an attested oblique stem."""
+        if number == "S" and case == "N":
+            return None
+        obl_stem: str | None = None
+        obl_ref: str | None = None
+        for (p_lem, sig), surf in self._paradigms.items():
+            if p_lem != norm_lem or not sig.startswith("N-:"):
+                continue
+            bare_s = _bare_greek_key(surf)
+            if sig.endswith("GS" + (gender or "") + "-") or (
+                len(sig) >= 9 and sig[7:9] == "GS"
+            ):
+                if bare_s.endswith("ος") and len(bare_s) >= 4:
+                    obl_stem = bare_s[:-2]
+                    obl_ref = surf
+                    break
+            elif len(sig) >= 9 and sig[7:9] == "AS" and bare_s.endswith("α"):
+                if len(bare_s) >= 4:
+                    obl_stem = bare_s[:-1]
+                    obl_ref = surf
+            elif (
+                obl_stem is None
+                and len(sig) >= 9
+                and sig[7:9] == "NP"
+                and bare_s.endswith("ες")
+                and len(bare_s) >= 5
+            ):
+                obl_stem = bare_s[:-2]
+                obl_ref = surf
+        if not obl_stem or not obl_ref:
+            return None
+        is_neut = gender == "N"
+        endings: dict[tuple[str, str], str] = {
+            ("S", "G"): "ος",
+            ("S", "D"): "ι",
+            ("P", "G"): "ων",
+        }
+        if not is_neut:
+            endings[("S", "A")] = "α"
+            endings[("P", "N")] = "ες"
+            endings[("P", "A")] = "ας"
+        else:
+            endings[("P", "N")] = "α"
+            endings[("P", "A")] = "α"
+        end = endings.get((number, case))
+        if not end:
+            return None
+        return _apply_persistent_with_breathing(obl_stem + end, obl_ref)
 
     def all_inflected_forms(
         self,
@@ -1998,8 +2141,12 @@ class GreekInflector:
             gnd = self.lemma_gender(norm_lem)
             genders = (
                 ("M", "F", "N")
-                if (eff_pos == "A-" or bare_target.endswith("ος"))
-                else (gnd or "M",)
+                if eff_pos == "A-"
+                else (gnd,)
+                if gnd
+                else ("M", "F", "N")
+                if bare_target.endswith("ος")
+                else ("M",)
             )
             numbers = ("S",) if eff_pos == "NPROP" else ("S", "P")
             for num in numbers:
@@ -2018,10 +2165,11 @@ class GreekInflector:
                         if len(forms) >= max_forms:
                             return forms[:max_forms]
         elif eff_pos == "V-":
-            # High-utility Koine verbal forms: indicative, subjunctive, imperative,
-            # infinitive, and nominative/accusative/genitive participles
+            # High-utility Koine verbal forms ordered so finite Indicative +
+            # Subjunctive (P/A/F) + Infinitive + Imperative are NEVER truncated
+            # by max_forms before participles.
             voices = ("M", "P") if bare_target.endswith("ομαι") else ("A", "M", "P")
-            # Infinitives & imperatives first (very frequent in sayings)
+            # 1. Infinitives & imperatives (very frequent in sayings)
             for t in ("P", "A"):
                 for v in voices:
                     _add(
@@ -2044,7 +2192,31 @@ class GreekInflector:
                                 ),
                             )
                         )
-            # Participles (Masc/Fem/Neut Nom & Acc Sg/Pl)
+            # 2. Finite Indicative & Subjunctive (primary voice first, then secondary)
+            for v in voices:
+                for mood in ("I", "S"):
+                    tenses = ("P", "A", "F") if mood == "I" else ("A", "P")
+                    for t in tenses:
+                        if v == "P" and t == "P" and mood == "S":
+                            continue
+                        for num in ("S", "P"):
+                            for per in ("3", "2", "1"):
+                                _add(
+                                    self.inflect(
+                                        norm_lem,
+                                        GreekMorphFeatures(
+                                            pos="V-",
+                                            person=per,
+                                            tense=t,
+                                            voice=v,
+                                            mood=mood,
+                                            number=num,
+                                        ),
+                                    )
+                                )
+                                if len(forms) >= max_forms:
+                                    return forms[:max_forms]
+            # 3. Participles (Masc Nom/Acc/Gen Sg/Pl)
             for t in ("P", "A"):
                 for v in voices[:2]:
                     for num in ("S", "P"):
@@ -2063,28 +2235,8 @@ class GreekInflector:
                                     ),
                                 )
                             )
-            # Finite Indicative & Subjunctive
-            for mood in ("I", "S"):
-                tenses = ("P", "A", "F") if mood == "I" else ("P", "A")
-                for t in tenses:
-                    for v in voices[:2]:
-                        for num in ("S", "P"):
-                            for per in ("3", "2", "1"):
-                                _add(
-                                    self.inflect(
-                                        norm_lem,
-                                        GreekMorphFeatures(
-                                            pos="V-",
-                                            person=per,
-                                            tense=t,
-                                            voice=v,
-                                            mood=mood,
-                                            number=num,
-                                        ),
-                                    )
-                                )
-                                if len(forms) >= max_forms:
-                                    return forms[:max_forms]
+                            if len(forms) >= max_forms:
+                                return forms[:max_forms]
         return forms[:max_forms]
 
     def save_shards(self, out_dir: Path, *, max_bytes: int = 680_000) -> list[Path]:

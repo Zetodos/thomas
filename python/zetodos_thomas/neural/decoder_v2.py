@@ -31,10 +31,14 @@ from zetodos_thomas.neural.constrained_beam import (
     bipartite_lexicon_coverage,
     build_chunk_lexical_constraints,
     build_coptic_content_candidate_sets,
+    build_cross_pos_homograph_bans,
     build_missing_content_constraints,
+    build_missing_negation_constraints,
     constrained_ensemble_beam_search,
+    count_greek_negations,
     count_spurious_adjacent_word_repeats,
     count_spurious_phrase_repeats,
+    extract_coptic_negation_events,
     filter_hard_loan_hyps,
     has_local_loop_repeat,
     is_bare_coptic_copy_word,
@@ -696,12 +700,45 @@ class NeuralKoineDecoder:
             normalize_coptic(m.lemma or m.norm).replace("\u2cff", "") for m in morphemes
         }
         forbid_hemera = "ⲉϩⲉ" in chunk_lems and "ϩⲟⲟⲩ" not in chunk_lems
+        cross_pos_bans = (
+            build_cross_pos_homograph_bans(
+                morphemes,
+                ccl_lexicon=self.ccl_lexicon,
+                lexical_model=self.lexical_model,
+                native_gloss_hints=self.native_gloss_hints,
+            )
+            if w.use_constrained_beam
+            else frozenset()
+        )
+        n_cop_negs = (
+            len(extract_coptic_negation_events(morphemes))
+            if w.use_constrained_beam
+            else 0
+        )
+        src_adj_content_rep = False
+        cop_content_seq = [
+            normalize_coptic(m.lemma or m.norm).replace("\u2cff", "")
+            for m in morphemes
+            if m.pos in CONTENT_COPTIC_POS
+        ]
+        for ci_r in range(len(cop_content_seq) - 1):
+            if (
+                len(cop_content_seq[ci_r]) >= 3
+                and cop_content_seq[ci_r] == cop_content_seq[ci_r + 1]
+            ):
+                src_adj_content_rep = True
+                break
 
         content_seqs = [m.seq for m in morphemes if m.pos in CONTENT_COPTIC_POS]
         n_cop_content = len(content_seqs)
         need_attn_cov = (
             abs(w.w_attn_cov) > 1e-6 and tok_to_seq is not None and bool(content_seqs)
         )
+
+        coptic_lem_support: Counter[str] = Counter()
+        for _sq, cset in coptic_cand_sets:
+            for cl in cset:
+                coptic_lem_support[cl] += 1
 
         ranked: list[tuple[list[int], str, float]] = []
         for idx, (seq, g_txt) in enumerate(zip(cands_ids, cands_txt, strict=True)):
@@ -735,6 +772,14 @@ class NeuralKoineDecoder:
                     bare_copy_pen += 0.9 * count_spurious_phrase_repeats(
                         cand_words, morphemes
                     )
+                    if n_cop_negs > 0:
+                        g_negs = count_greek_negations(cand_words)
+                        if g_negs == 0:
+                            bare_copy_pen += 1.25 * min(n_cop_negs, 2)
+                        elif g_negs < n_cop_negs:
+                            bare_copy_pen += 0.15 * (n_cop_negs - g_negs)
+                prev_c_lem = ""
+                gw_prev = ""
                 for gw in cand_words:
                     is_bare_copy = (
                         not self._unaccented
@@ -746,7 +791,21 @@ class NeuralKoineDecoder:
                     p0 = self.inflector.analyze_surface(gw)[0]
                     b_lem = _strip_bare(p0[0])
                     b_surf = _strip_bare(gw)
+                    if (
+                        w.use_constrained_beam
+                        and not src_adj_content_rep
+                        and p0[1].pos in {"N-", "A-"}
+                        and len(b_lem) >= 4
+                        and b_lem == prev_c_lem
+                        and b_surf != _strip_bare(gw_prev)
+                        and coptic_lem_support[b_lem] < 2
+                    ):
+                        bare_copy_pen += 0.75
+                    prev_c_lem = b_lem if p0[1].pos in {"N-", "A-"} else ""
+                    gw_prev = gw
                     if w.use_constrained_beam and forbid_hemera and b_lem == "ημερα":
+                        bare_copy_pen += 2.0
+                    elif w.use_constrained_beam and b_lem in cross_pos_bans:
                         bare_copy_pen += 2.0
                     elif (
                         w.use_constrained_beam
@@ -874,6 +933,12 @@ class NeuralKoineDecoder:
             normalize_coptic(m.lemma or m.norm).replace("\u2cff", "") for m in morphemes
         }
         forbid_hemera = "ⲉϩⲉ" in chunk_lems and "ϩⲟⲟⲩ" not in chunk_lems
+        cross_pos_bans = build_cross_pos_homograph_bans(
+            morphemes,
+            ccl_lexicon=self.ccl_lexicon,
+            lexical_model=self.lexical_model,
+            native_gloss_hints=self.native_gloss_hints,
+        )
         w_cache: dict[tuple[int, ...], float] = {}
         p_cache: dict[tuple[int, ...], float] = {}
 
@@ -906,6 +971,8 @@ class NeuralKoineDecoder:
             pen = 0.0
             if forbid_hemera and b_lem == "ημερα":
                 pen -= 8.0
+            elif b_lem in cross_pos_bans:
+                pen -= 6.0
             elif (
                 mf.pos == "UNK"
                 and b_lem not in allowed_bare
@@ -1044,8 +1111,9 @@ class NeuralKoineDecoder:
             and ranked[0][1]
         ):
             p1_restored = self._restore_surface_sentence(ranked[0][1])
+            p1_words = p1_restored.split()
             p1_content_lems: list[str] = []
-            for gw in p1_restored.split():
+            for gw in p1_words:
                 lem, mf, _ = self.inflector.analyze_surface(gw)[0]
                 if mf.pos in {"N-", "V-", "A-", "D-", "X-"}:
                     p1_content_lems.append(_strip_bare(lem))
@@ -1062,6 +1130,14 @@ class NeuralKoineDecoder:
                 min_prob=0.50,
                 max_added=None,
             )
+            missing_neg_tries = build_missing_negation_constraints(
+                morphemes,
+                predicted_greek_words=p1_words,
+                tokenizer=self.tokenizer,
+                unaccented=self._unaccented,
+                max_added=3,
+            )
+            missing_tries = [*missing_tries, *missing_neg_tries]
             if missing_tries:
                 all_p2_c = [*constraints, *missing_tries]
                 word_pen_p2, prefix_pen_p2 = self._build_beam_penalty_fns(
@@ -1162,17 +1238,17 @@ class NeuralKoineDecoder:
                             tok_to_seq=tok_to_seq,
                         )
         # Safe targeted morphological agreement repair: propose verified 1-edit
-        # inflected candidates from the top-2 hypotheses and re-score jointly
+        # inflected candidates from the top-6 hypotheses and re-score jointly
         # with the full noisy-channel ensemble + Koine LM + agreement critic.
         if self.weights.w_agree > 0.0 and ranked and ranked[0][1]:
             ws_flags = self.tokenizer.word_start_flags()
             has_hl = any(ct.is_hard_loan for ct in constraints)
             rep_pool: list[tuple[list[int], float]] = [
-                (seq, sc) for seq, _txt, sc in ranked[:6]
+                (seq, sc) for seq, _txt, sc in ranked[:4]
             ]
             seen_rep = {tuple(s) for s, _ in rep_pool}
             added_any = False
-            for _seq, r_txt, r_sc in ranked[:2]:
+            for _seq, r_txt, r_sc in ranked[:4]:
                 if not r_txt:
                     continue
                 r_words = self._restore_surface_sentence(r_txt).split()

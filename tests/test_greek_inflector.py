@@ -250,3 +250,75 @@ def test_stage7_passive_inflection_paradigms() -> None:
         )
         == "ὤφθην"
     )
+
+
+def test_neuter_os_third_decl_contract_deponent_and_verb_paradigm_coverage() -> None:
+    inf = GreekInflector(
+        paradigms={
+            ("ποιμήν", "N-:----NSM-"): "ποιμήν",
+            ("ποιμήν", "N-:----ASM-"): "ποιμένα",
+            ("φρέαρ", "N-:----GSN-"): "φρέατος",
+        },
+        coarse_paradigms={},
+        lemma_genders={"ποιμήν": "M", "φρέαρ": "N", "τρυγών": "F"},
+        surface_analyses={
+            "ποιμήν": [("ποιμήν", "N-:----NSM-", 0.0)],
+            "ποιμένα": [("ποιμήν", "N-:----ASM-", 0.0)],
+            "φρέατος": [("φρέαρ", "N-:----GSN-", 0.0)],
+        },
+        known_lemmas={
+            "ποιμην": ("ποιμήν", "N-"),
+            "φρεαρ": ("φρέαρ", "N-"),
+            "σπειρω": ("σπείρω", "V-"),
+            "τρυγων": ("τρυγών", "N-"),
+            "θεριζω": ("θερίζω", "V-"),
+        },
+    )
+    # 2-termination / -ος adjective neuter singular & plural
+    assert (
+        inf.inflect(
+            "ταλαίπωρος",
+            GreekMorphFeatures(pos="A-", case="N", number="S", gender="N"),
+        )
+        == "ταλαίπωρον"
+    )
+    assert (
+        inf.inflect(
+            "ταλαίπωρος",
+            GreekMorphFeatures(pos="A-", case="N", number="P", gender="N"),
+        )
+        == "ταλαίπωρα"
+    )
+    # Empirical-stem 3rd-declension noun inflection & parsing
+    assert (
+        inf.inflect(
+            "ποιμήν",
+            GreekMorphFeatures(pos="N-", case="D", number="S", gender="M"),
+        )
+        == "ποιμένι"
+    )
+    assert inf.analyze_surface("ποιμένι")[0][0] == "ποιμήν"
+    assert (
+        inf.inflect(
+            "φρέαρ",
+            GreekMorphFeatures(pos="N-", case="D", number="S", gender="N"),
+        )
+        == "φρέατι"
+    )
+    assert inf.analyze_surface("φρέατι")[0][0] == "φρέαρ"
+    # Exact known citation lemmas & regular -σω 1S verb parsing
+    assert inf.analyze_surface("σπείρω")[0][0] == "σπείρω"
+    assert inf.analyze_surface("σπείρω")[0][1].pos == "V-"
+    assert inf.analyze_surface("τρυγών")[0][0] == "τρυγών"
+    assert inf.analyze_surface("τρυγών")[0][1].case == "N"
+    assert inf.analyze_surface("θερίσω")[0][0] == "θερίζω"
+    # Contract -έομαι deponent verbs produce contracted Koine forms
+    par_forms = inf.all_inflected_forms("παραιτέομαι", pos="V-", max_forms=64)
+    assert "παραιτεῖται" in par_forms
+    assert "παραιτοῦνται" in par_forms
+    assert "παραιτεῖσθαι" in par_forms
+    assert "παραιτήσομαι" in par_forms
+    # Verb paradigm ordering keeps aorist subjunctive forms within max_forms=96
+    deip_forms = inf.all_inflected_forms("δειπνεύω", pos="V-", max_forms=96)
+    assert "δειπνεύσητε" in deip_forms
+    assert "δειπνεύσωσι" in deip_forms
