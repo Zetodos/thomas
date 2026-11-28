@@ -353,11 +353,55 @@ def serialize_coptic_morphemes(
                 key_lem = lem_s or head
                 orth_lem = _coptic_orth_key(key_lem) if len(key_lem) >= 4 else ""
                 ao_lem = _coptic_ao_key(key_lem) if len(key_lem) >= 4 else ""
+                typed_hint = native_gloss_hints.get(
+                    f"{key_lem}|{c_pos_key}"
+                ) or native_gloss_hints.get(f"{head}|{c_pos_key}")
+                if not typed_hint and c_pos_key == "VS":
+                    typed_hint = native_gloss_hints.get(f"{key_lem}|V")
+                untyped_hint: str | None = None
+                if not typed_hint:
+                    # Allow untyped `key_lem` or `head` fallback ONLY when it
+                    # does not conflict with an opposite-POS typed entry or leak
+                    # a noun/adj onto a verb (`ⲕⲟⲧ`->`κόφινος`, `ⲛⲏⲩ`->`οὐράνιος`,
+                    # `ⲥⲛⲧⲉ`->`θεμέλιος`, `ⲙⲉⲥⲧⲉ`->`στυγνητός`), while keeping
+                    # same-POS hints (`ⲡⲉϫⲁ`->`λέγω`, `ⲧⲱϩⲙ`->`καλέω`, `ϩⲓⲟⲙⲉ`->`γυνή`).
+                    for cand_k in (key_lem, head) if head != key_lem else (key_lem,):
+                        cand_u = native_gloss_hints.get(cand_k)
+                        if not cand_u:
+                            continue
+                        if cand_u[0].isupper() and m.pos not in {"N", "NPROP"}:
+                            continue
+                        is_verb_gloss = cand_u.endswith(("ω", "ῶ", "μαι", "μι"))
+                        conflict_pos = (
+                            (
+                                c_pos_key in {"V", "VIMP", "VS"}
+                                and f"{cand_k}|N" in native_gloss_hints
+                                and not is_verb_gloss
+                            )
+                            or (
+                                c_pos_key == "NUM"
+                                and f"{cand_k}|N" in native_gloss_hints
+                            )
+                            or (
+                                c_pos_key == "N"
+                                and f"{cand_k}|V" in native_gloss_hints
+                                and is_verb_gloss
+                            )
+                        )
+                        if conflict_pos:
+                            continue
+                        if c_pos_key in {"V", "VIMP"}:
+                            if cand_k != key_lem and not is_verb_gloss:
+                                continue
+                            if cand_u.endswith(
+                                ("σις", "μα", "μός", "μος", "της", "ία", "εία")
+                            ):
+                                continue
+                        untyped_hint = cand_u
+                        break
                 gl_hint = (
-                    native_gloss_hints.get(f"{key_lem}|{c_pos_key}")
-                    or native_gloss_hints.get(f"{head}|{c_pos_key}")
-                    or native_gloss_hints.get(key_lem)
-                    or native_gloss_hints.get(head)
+                    typed_hint
+                    or untyped_hint
                     or (
                         native_gloss_hints.get(f"~{orth_lem}|{c_pos_key}")
                         if orth_lem
@@ -369,6 +413,8 @@ def serialize_coptic_morphemes(
                         else None
                     )
                 )
+                if gl_hint and gl_hint[0].isupper() and m.pos not in {"N", "NPROP"}:
+                    gl_hint = None
                 if gl_hint:
                     if unaccented_hints:
                         gl_hint = strip_greek_to_bare(gl_hint)

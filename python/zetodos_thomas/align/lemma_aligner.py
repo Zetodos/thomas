@@ -196,6 +196,14 @@ def _coptic_ao_key(lemma: str) -> str:
     return _coptic_orth_key(lemma).replace("ⲁ", "ⲟ")
 
 
+def _coptic_ae_key(lemma: str) -> str:
+    """Conservative Sahidic/NHC II vowel & nasal fallback (ⲁ<->ⲉ, -ⲉ, ⲙⲛⲧ<->ⲙⲧ)."""
+    s = _coptic_orth_key(lemma)
+    if len(s) >= 4 and s.endswith("ⲉ"):
+        s = s[:-1]
+    return s.replace("ⲉ", "ⲁ").replace("ⲙⲛⲧ", "ⲙⲧ")
+
+
 def extract_coptic_right_context(morphemes: Sequence[CopticMorpheme], idx: int) -> str:
     """Extract compact syntactic right-context tag at ``morphemes[idx]``."""
     if idx + 1 >= len(morphemes) or morphemes[idx + 1].pos == "PUNCT":
@@ -235,6 +243,7 @@ class LexicalTranslationModel:
 
         orth_idx: dict[str, list[LexicalCandidate]] = {}
         ao_idx: dict[str, list[LexicalCandidate]] = {}
+        ae_idx: dict[str, list[LexicalCandidate]] = {}
         for c_lem, cands in sorted(by_lemma.items()):
             if len(c_lem) < 3 or not cands:
                 continue
@@ -244,8 +253,15 @@ class LexicalTranslationModel:
             ak = _coptic_ao_key(c_lem)
             if ak not in ao_idx or cands[0].score > ao_idx[ak][0].score:
                 ao_idx[ak] = cands
+            if len(c_lem) >= 4:
+                aek = _coptic_ae_key(c_lem)
+                if len(aek) >= 3 and (
+                    aek not in ae_idx or cands[0].score > ae_idx[aek][0].score
+                ):
+                    ae_idx[aek] = cands
         self._by_orth_key = orth_idx
         self._by_ao_key = ao_idx
+        self._by_ae_key = ae_idx
 
     @classmethod
     def build_from_bitext(
@@ -601,7 +617,13 @@ class LexicalTranslationModel:
         if not align_hits and cpos == "VS":
             align_hits = self._by_lemma_pos.get((coptic_lemma, "V"))
         if not align_hits:
-            align_hits = self._by_lemma.get(coptic_lemma, [])
+            raw_any = self._by_lemma.get(coptic_lemma, [])
+            # Do not leak a noun-only homograph (e.g. `ϩⲁⲥ|N` -> `Καϊάφας`,
+            # `ⲕⲟⲧ|N` -> `κόφινος`) onto a verb lookup when no verb entry exists.
+            if cpos in {"V", "VIMP"} and (coptic_lemma, "N") in self._by_lemma_pos:
+                align_hits = [c for c in raw_any if c.greek_pos != "N-"]
+            else:
+                align_hits = raw_any
         orth_discount = 0.0
         if not align_hits and len(coptic_lemma) >= 3:
             orth_hits = self._by_orth_key.get(_coptic_orth_key(coptic_lemma), [])
@@ -613,7 +635,19 @@ class LexicalTranslationModel:
                 if ao_hits:
                     align_hits = ao_hits
                     orth_discount = 0.7
+                elif len(coptic_lemma) >= 4:
+                    ae_hits = self._by_ae_key.get(_coptic_ae_key(coptic_lemma), [])
+                    if ae_hits:
+                        align_hits = ae_hits
+                        orth_discount = 0.85
+        allow_proper_noun = coptic_pos in {"N", "NPROP"}
         for cand in align_hits:
+            if (
+                not allow_proper_noun
+                and cand.greek_lemma
+                and cand.greek_lemma[0].isupper()
+            ):
+                continue
             adj_cand = (
                 LexicalCandidate(
                     greek_lemma=cand.greek_lemma,

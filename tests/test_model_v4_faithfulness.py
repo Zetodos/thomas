@@ -747,3 +747,295 @@ def test_beam_penalty_fns_penalize_dead_unk_prefixes_and_forbid_hemera(
     lem_u, mf_u, _ = inf.analyze_surface("δαπανήσει")[0]
     assert mf_u.pos == "UNK"
     assert lem_u == "δαπανησει"
+
+
+def test_agreement_critic_sahidic_dialect_fallback_and_phrase_repeat() -> None:
+    from zetodos_thomas.align.lemma_aligner import (
+        LexicalCandidate,
+        LexicalTranslationModel,
+    )
+    from zetodos_thomas.morphology.agreement import KoineAgreementCritic
+    from zetodos_thomas.neural.constrained_beam import count_spurious_phrase_repeats
+
+    inf = GreekInflector(
+        paradigms={
+            ("δοκός", "N-:----ASF-"): "δοκόν",
+            ("ἄκανθα", "N-:----GPF-"): "ἀκανθῶν",
+            ("ἄκανθα", "N-:----APF-"): "ἀκάνθας",
+            ("ἄλευρον", "N-:----ASN-"): "ἄλευρον",
+            ("γυνή", "N-:----NSF-"): "γυνή",
+            ("γυνή", "N-:----DSF-"): "γυναικί",
+            ("ἔμπορος", "N-:----NPM-"): "ἔμποροι",
+            ("ἔμπορος", "N-:----DSM-"): "ἐμπόρῳ",
+            ("ἄνθρωπος", "N-:----DSM-"): "ἀνθρώπῳ",
+            ("στάμνος", "N-:----NSF-"): "στάμνος",
+            ("στάμνος", "N-:----GSF-"): "στάμνου",
+        },
+        coarse_paradigms={},
+        lemma_genders={
+            "δοκός": "F",
+            "ἄκανθα": "F",
+            "ἄλευρον": "N",
+            "γυνή": "F",
+            "ἔμπορος": "M",
+            "ἄνθρωπος": "M",
+            "στάμνος": "F",
+        },
+        surface_analyses={
+            "δοκόν": [("δοκός", "N-:----ASF-", 0.0)],
+            "ἀκάνθας": [("ἄκανθα", "N-:----APF-", 0.0)],
+            "ἀκανθῶν": [("ἄκανθα", "N-:----GPF-", 0.0)],
+            "ἄλευρον": [("ἄλευρον", "N-:----ASN-", 0.0)],
+            "γυνή": [("γυνή", "N-:----NSF-", 0.0)],
+            "γυναικί": [("γυνή", "N-:----DSF-", 0.0)],
+            "ἔμποροι": [("ἔμπορος", "N-:----NPM-", 0.0)],
+            "ἐμπόρῳ": [("ἔμπορος", "N-:----DSM-", 0.0)],
+            "ἀνθρώπῳ": [("ἄνθρωπος", "N-:----DSM-", 0.0)],
+            "ὁμοία": [("ὅμοιος", "A-:----NSF-", 0.0)],
+            "ἐκ": [("ἐκ", "P-:--------", 0.0)],
+            "στάμνος": [("στάμνος", "N-:----NSF-", 0.0)],
+            "στάμνου": [("στάμνος", "N-:----GSF-", 0.0)],
+            "ἀκοή": [("ἀκοή", "N-:----NSF-", 0.0)],
+            "δεσμῶν": [("δεσμός", "N-:----GPM-", 0.0)],
+            "σπείρων": [("σπείρω", "V-:-PAPNSM-", 0.0)],
+        },
+        known_lemmas={
+            "εμπορος": ("ἔμπορος", "N-"),
+            "κρεμαννυμι": ("κρεμάννυμι", "V-"),
+            "στρωννυμι": ("στρώννυμι", "V-"),
+            "πρασσω": ("πράσσω", "V-"),
+        },
+    )
+    critic = KoineAgreementCritic(inf, inf)
+
+    # Article+head, strict prep, homoios dative, and appositive dative repairs
+    assert critic.detect_violations(["τό", "δοκόν"])
+    assert ["τήν", "δοκόν"] in critic.propose_repairs(["τό", "δοκόν"])
+    assert ["ἐκ", "ἀκανθῶν"] in critic.propose_repairs(["ἐκ", "ἀκάνθας"])
+    assert ["ὁμοία", "γυναικί"] in critic.propose_repairs(["ὁμοία", "γυνή"])
+    assert ["ὁμοία", "ἀνθρώπῳ", "ἐμπόρῳ"] in critic.propose_repairs(
+        ["ὁμοία", "ἀνθρώπῳ", "ἔμποροι"]
+    )
+    # Genitive article after noun prefers inflecting the noun (`τοῦ στάμνου`) first
+    gen_reps = critic.propose_repairs(["ἡ", "ἀκοή", "τοῦ", "στάμνος"])
+    assert gen_reps and gen_reps[0] == ["ἡ", "ἀκοή", "τοῦ", "στάμνου"]
+    # `ὁ + -ων/-ῶν` must require an actual NSM participle parse (no blind GPM skip),
+    # and OOV-synthesized GPM guesses (`σιτεύων`) must not trigger `ὁ` -> `τῶν`.
+    assert critic.detect_violations(["ὁ", "δεσμῶν"])
+    assert critic.detect_violations(["ὁ", "σιτεύων"])
+    assert ["τῶν", "σιτεύων"] not in critic.propose_repairs(["ὁ", "σιτεύων"])
+    assert not critic.detect_violations(["ὁ", "σπείρων"])
+    assert not critic.detect_violations(["ὁ", "πράσσων"])
+    # Valid Greek has zero violations
+    assert not critic.detect_violations(["τήν", "δοκόν"])
+    assert not critic.detect_violations(["ἐκ", "ἀκανθῶν"])
+    assert not critic.detect_violations(["τό", "ἄλευρον"])
+
+    # Regular suffix rules parse known lemmas without introducing UNK
+    assert inf.analyze_surface("ἔμπορος")[0][1].pos == "N-"
+    assert inf.analyze_surface("κρεμαμένη")[0][1].pos == "V-"
+    assert inf.analyze_surface("ἐστρωμένη")[0][1].pos == "V-"
+
+    # Sahidic dialectal fallback (`_coptic_ae_key`) resolves NHC II variants
+    lex = LexicalTranslationModel(
+        by_lemma_pos={},
+        by_lemma={
+            "ⲧⲥⲁⲃⲟ": [
+                LexicalCandidate(
+                    greek_lemma="δείκνυμι",
+                    greek_pos="V-",
+                    score=0.5,
+                    prob_g_given_c=0.34,
+                    prob_c_given_g=0.34,
+                    provenance="N",
+                    count_nt=33.0,
+                    count_ot=0.0,
+                )
+            ],
+            "ϩⲟⲙⲛⲧ": [
+                LexicalCandidate(
+                    greek_lemma="χαλκός",
+                    greek_pos="N-",
+                    score=0.5,
+                    prob_g_given_c=0.31,
+                    prob_c_given_g=0.31,
+                    provenance="N",
+                    count_nt=30.0,
+                    count_ot=0.0,
+                )
+            ],
+        },
+    )
+    assert lex.lookup(coptic_lemma="ⲧⲥⲉⲃⲟ", coptic_pos="V")[0].greek_lemma == "δείκνυμι"
+    assert lex.lookup(coptic_lemma="ϩⲟⲙⲧ", coptic_pos="N")[0].greek_lemma == "χαλκός"
+
+    # Phrase stutter counter flags 3x repeated 3-gram when Coptic lemma appears once
+    ms_single = [_m(0, "ⲭⲱⲣⲁ", "ⲭⲱⲣⲁ", "N", lang="Greek")]
+    stutter = "ἐν ταῖς χώραις περιπατεῖτε ἐν ταῖς χώραις καί ἐν ταῖς χώραις".split()
+    assert count_spurious_phrase_repeats(stutter, ms_single) >= 2
+    assert (
+        count_spurious_phrase_repeats("ἐν ταῖς χώραις περιπατεῖτε".split(), ms_single)
+        == 0
+    )
+
+
+def test_negation_events_cross_pos_gloss_hygiene_and_homograph_bans() -> None:
+    from zetodos_thomas.align.lemma_aligner import (
+        LexicalCandidate,
+        LexicalTranslationModel,
+    )
+    from zetodos_thomas.neural.constrained_beam import (
+        build_coptic_content_candidate_sets,
+        build_cross_pos_homograph_bans,
+        count_greek_negations,
+        extract_coptic_negation_events,
+        find_unmatched_content_indices,
+    )
+    from zetodos_thomas.neural.corpus import serialize_coptic_morphemes
+
+    # Negation accounting collapses circumfix `ⲛ...ⲁⲛ` and `ⲟⲩⲇⲉ + ⲙⲉⲣⲉ` to 1 unit
+    ms_neg = [
+        _m(0, "ⲙⲛ", "ⲙⲛ", "EXIST"),
+        _m(1, "ⲡⲣⲟⲫⲏⲧⲏⲥ", "ⲡⲣⲟⲫⲏⲧⲏⲥ", "N"),
+        _m(2, "ⲟⲩⲇⲉ", "ⲟⲩⲇⲉ", "CONJ"),
+        _m(3, "ⲙⲉⲣⲉ", "ⲙⲉⲣⲉ", "ANEGAOR"),
+        _m(4, "ⲥⲟⲓⲛ", "ⲥⲟⲓⲛ", "N"),
+    ]
+    assert len(extract_coptic_negation_events(ms_neg)) == 2
+    assert count_greek_negations(["οὐ", "μή", "εἰσέλθῃ", "οὐδέ", "ὁ", "σκώληξ"]) == 2
+
+    # Cross-POS gloss hygiene blocks inflected-head and opposite-POS `<GLOSS>` leaks
+    hints = {
+        "ⲕⲟⲧ": "κόφινος",
+        "ⲕⲟⲧ|N": "κόφινος",
+        "ⲛⲏⲩ": "οὐράνιος",
+        "ⲥⲛⲧⲉ": "θεμέλιος",
+        "ⲥⲛⲧⲉ|N": "θεμέλιος",
+        "ϩⲁⲥ": "Καϊάφας",
+        "ϩⲁⲥ|N": "Καϊάφας",
+        "ϣⲱⲗⲙ": "ὄσφρησις",
+    }
+    ms_hom = [
+        _m(0, "ⲕⲟⲧ", "ⲕⲱⲧ", "V"),
+        _m(1, "ⲛⲏⲩ", "ⲉⲓ", "V"),
+        _m(2, "ⲥⲛⲧⲉ", "ⲥⲛⲁⲩ", "NUM"),
+        _m(3, "ϩⲁⲥ", "ϩⲁⲥ", "V"),
+        _m(4, "ϣⲱⲗⲙ", "ϣⲱⲗⲙ", "V"),
+    ]
+    ser, _ = serialize_coptic_morphemes(ms_hom, native_gloss_hints=hints)
+    for bad in ("κόφινος", "οὐράνιος", "θεμέλιος", "Καϊάφας", "ὄσφρησις"):
+        assert bad not in ser
+
+    # LexicalTranslationModel blocks proper nouns / noun homographs on verb lookups,
+    # and build_cross_pos_homograph_bans flags verb->noun homograph traps cleanly
+    lex = LexicalTranslationModel(
+        by_lemma_pos={
+            ("ⲧⲟⲟⲩ", "N"): [
+                LexicalCandidate(
+                    greek_lemma="ὄρος",
+                    greek_pos="N-",
+                    score=0.9,
+                    prob_g_given_c=0.91,
+                    prob_c_given_g=0.9,
+                    provenance="N",
+                    count_nt=100.0,
+                    count_ot=0.0,
+                )
+            ],
+            ("ϩⲁⲥ", "N"): [
+                LexicalCandidate(
+                    greek_lemma="Καϊάφας",
+                    greek_pos="N-",
+                    score=0.6,
+                    prob_g_given_c=0.64,
+                    prob_c_given_g=0.6,
+                    provenance="N",
+                    count_nt=5.0,
+                    count_ot=0.0,
+                )
+            ],
+        },
+        by_lemma={
+            "ϩⲁⲥ": [
+                LexicalCandidate(
+                    greek_lemma="Καϊάφας",
+                    greek_pos="N-",
+                    score=0.6,
+                    prob_g_given_c=0.64,
+                    prob_c_given_g=0.6,
+                    provenance="N",
+                    count_nt=5.0,
+                    count_ot=0.0,
+                )
+            ],
+        },
+    )
+    assert lex.lookup(coptic_lemma="ϩⲁⲥ", coptic_pos="V") == []
+    bans = build_cross_pos_homograph_bans(
+        [_m(0, "ⲧⲟⲟⲩ", "ⲧⲟⲟⲩ", "V")],
+        ccl_lexicon=CclLexicon(loanwords={}, itacism_index={}, greek_genders={}),
+        lexical_model=lex,
+    )
+    assert "οροσ" in bans
+
+    # VSTAT gloss lookup falls back to `|V` (`ⲉⲓⲃⲉ` -> `διψάω`) rather than noun
+    # `|N` (`δίψος`), and verb glosses (`ⲧⲱϩⲙ` -> `καλέω`) are never blocked by `|N`.
+    hints_vstat = {
+        "ⲉⲓⲃⲉ": "δίψος",
+        "ⲉⲓⲃⲉ|V": "διψάω",
+        "ⲉⲓⲃⲉ|N": "δίψος",
+        "ϯϩⲉ": "μέθη",
+        "ϯϩⲉ|N": "μέθη",
+        "ⲧⲱϩⲙ": "καλέω",
+        "ⲧⲱϩⲙ|N": "κλῆσις",
+    }
+    ms_vstat = [
+        _m(0, "ⲟⲃⲉ", "ⲉⲓⲃⲉ", "VSTAT"),
+        _m(1, "ⲧⲟϩⲉ", "ϯϩⲉ", "VSTAT"),
+        _m(2, "ⲧⲱϩⲙ", "ⲧⲱϩⲙ", "V"),
+    ]
+    ser_vstat, _ = serialize_coptic_morphemes(ms_vstat, native_gloss_hints=hints_vstat)
+    assert "διψάω" in ser_vstat
+    assert "δίψος" not in ser_vstat
+    assert "μέθη" not in ser_vstat
+    assert "καλέω" in ser_vstat
+
+    # Generic directional adverbs (`ⲉϩⲟⲩⲛ`, `ⲉⲃⲟⲗ`) are excluded from Pass-2
+    # repair candidate sets so they cannot steal compound-verb matches (`εἰσέρχομαι`).
+    lex_dir = LexicalTranslationModel(
+        by_lemma_pos={
+            ("ⲃⲱⲕ", "V"): [
+                LexicalCandidate(
+                    greek_lemma="εἰσέρχομαι",
+                    greek_pos="V-",
+                    score=0.5,
+                    prob_g_given_c=0.4,
+                    prob_c_given_g=0.4,
+                    provenance="N",
+                    count_nt=20.0,
+                    count_ot=0.0,
+                )
+            ],
+            ("ⲉϩⲟⲩⲛ", "ADV"): [
+                LexicalCandidate(
+                    greek_lemma="εἰσέρχομαι",
+                    greek_pos="V-",
+                    score=0.5,
+                    prob_g_given_c=0.4,
+                    prob_c_given_g=0.4,
+                    provenance="N",
+                    count_nt=20.0,
+                    count_ot=0.0,
+                )
+            ],
+        },
+        by_lemma={},
+    )
+    ms_dir = [_m(0, "ⲃⲱⲕ", "ⲃⲱⲕ", "V"), _m(1, "ⲉϩⲟⲩⲛ", "ⲉϩⲟⲩⲛ", "ADV")]
+    csets_rep = build_coptic_content_candidate_sets(
+        ms_dir,
+        lexical_model=lex_dir,
+        for_repair=True,
+    )
+    assert [sq for sq, _ in csets_rep] == [0]
+    assert find_unmatched_content_indices(csets_rep, ["εισερχομαι"]) == []
