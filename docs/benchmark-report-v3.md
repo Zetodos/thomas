@@ -2,6 +2,8 @@
 
 Offline, zero-leakage evaluation across 41 NT holdout verses and span-aligned P.Oxy. 1/654/655 papyri (full canonical NT TRAIN (7,782 verses) included; zero Gospel of Thomas or P.Oxy. material in training; zero curated Thomas idioms, zero CCL manual fallbacks, zero P.Oxy. eval stem cribs, and zero CCL XML loaded by the evaluator).
 
+Human review of the committed model-v3 Logion 7 unit (`thomas.7`), copied without changing these predictions or scores: [logion7-model-v3-review.md](logion7-model-v3-review.md).
+
 ## 1. Intact NT Gospel Holdout Split (`41 verses`)
 
 ### 1a. Primary Order-Preserving & Surface Metrics
